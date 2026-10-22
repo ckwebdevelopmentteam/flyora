@@ -26,6 +26,18 @@ fastify.register(cors, {
 fastify.register(prismaPlugin);
 fastify.register(jwtPlugin);
 
+// Root welcome endpoint
+fastify.get("/", async () => {
+  return {
+    status: "ok",
+    service: "flyora-api",
+    version: "0.1.0",
+    message: "Flyora Travels Fastify API is active",
+    health: "/health",
+    timestamp: new Date().toISOString(),
+  };
+});
+
 // Health check endpoint
 fastify.get("/health", async () => {
   return {
