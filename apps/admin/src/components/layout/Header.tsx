@@ -64,8 +64,8 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
       });
       setAvailability(newStatus);
       setDropdownOpen(false);
-    } catch (err) {
-      console.error("Failed to update availability status", err);
+    } catch {
+      // Failed to update availability status
     } finally {
       setIsUpdating(false);
     }

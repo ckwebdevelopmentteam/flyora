@@ -2,11 +2,11 @@
 
 ## Tour Packages Catalog, Day-by-Day Itinerary Builder & Cloudflare R2 Uploads
 
-**Owner:** Developer 2 (Frontend Admin Portal & Content Management)  
-**Target Workspace:** `apps/admin`  
-**Git Branch:** `sahil` (tracking `origin/develop`)  
-**Backend API Target:** `http://localhost:5000/api/v1`  
-**Design Standard:** Strict Off-White Minimalist (`#F8F8F6` canvas, `#FFFFFF` cards, `#000000` solid black CTAs, `#E4E4E7` borders, `#71717A` ash text)  
+**Owner:** Developer 2 (Frontend Admin Portal & Content Management)
+**Target Workspace:** `apps/admin`
+**Git Branch:** `sahil` (tracking `origin/develop`)
+**Backend API Target:** `http://localhost:5000/api/v1`
+**Design Standard:** Strict Off-White Minimalist (`#F8F8F6` canvas, `#FFFFFF` cards, `#000000` solid black CTAs, `#E4E4E7` borders, `#71717A` ash text)
 **Status:** Completed & Verified — 0 Errors
 
 ---
