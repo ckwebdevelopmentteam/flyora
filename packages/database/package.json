@@ -7,13 +7,20 @@
   "scripts": {
     "generate": "prisma generate",
     "migrate:dev": "prisma migrate dev",
-    "studio": "prisma studio"
+    "studio": "prisma studio",
+    "seed": "tsx src/seed.ts"
+  },
+  "prisma": {
+    "seed": "tsx src/seed.ts"
   },
   "dependencies": {
-    "@prisma/client": "^6.4.1"
+    "@prisma/client": "^6.4.1",
+    "bcryptjs": "^3.0.2"
   },
   "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
     "prisma": "^6.4.1",
+    "tsx": "^4.19.3",
     "typescript": "^5"
   }
 }
