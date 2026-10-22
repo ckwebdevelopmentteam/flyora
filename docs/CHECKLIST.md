@@ -5,22 +5,24 @@ This checklist serves as the master tracking document for the development of Fly
 ---
 
 ## Phase 0: Monorepo Scaffolding & Shared Infrastructure
-- [ ] Initialize monorepo root workspace configuration (`apps/*`, `packages/*`).
-- [ ] Move existing Next.js web application to `apps/web`.
-- [ ] Scaffold `apps/admin` (Vite + React + TypeScript + Tailwind CSS).
-- [ ] Scaffold `apps/api` (Fastify + TypeScript).
-- [ ] Create `packages/types` for shared TypeScript models.
-- [ ] Create `packages/validators` for shared Zod schemas (enquiry, quote, payment).
-- [ ] Create `packages/database` with Prisma ORM setup.
-- [ ] Configure root `turbo.json` and unified `npm run dev` scripts.
-- [ ] Setup Code Quality & Git Hooks:
-  - [ ] Initialize **Husky** (`pre-commit` hook for lint-staged, `commit-msg` hook for commitlint).
-  - [ ] Configure **Commitlint** (`commitlint.config.js` with Conventional Commits rules).
-  - [ ] Configure **lint-staged** (auto-linting TypeScript, ESLint, Prettier formatting).
+
+- [x] Initialize monorepo root workspace configuration (`apps/*`, `packages/*`).
+- [x] Move existing Next.js web application to `apps/web`.
+- [x] Scaffold `apps/admin` (Vite + React + TypeScript + Tailwind CSS).
+- [x] Scaffold `apps/api` (Fastify + TypeScript).
+- [x] Create `packages/types` for shared TypeScript models.
+- [x] Create `packages/validators` for shared Zod schemas (enquiry, quote, payment).
+- [x] Create `packages/database` with Prisma ORM setup.
+- [x] Configure root `turbo.json` and unified `npm run dev` scripts.
+- [x] Setup Code Quality & Git Hooks:
+  - [x] Initialize **Husky** (`pre-commit` hook for lint-staged, `commit-msg` hook for commitlint).
+  - [x] Configure **Commitlint** (`commitlint.config.js` with Conventional Commits rules).
+  - [x] Configure **lint-staged** (auto-linting TypeScript, ESLint, Prettier formatting).
 
 ---
 
 ## Phase 1: Database & Core Fastify API Setup
+
 - [ ] Write `schema.prisma` covering:
   - [ ] `User`, `UserRole`, `StaffAvailability`
   - [ ] `Service`, `UserService` (Service Coordinator mapping)
@@ -42,6 +44,7 @@ This checklist serves as the master tracking document for the development of Fly
 ---
 
 ## Phase 2: Cloudflare R2 Object Storage Integration
+
 - [ ] Set up Cloudflare R2 credentials (Account ID, Access Key ID, Secret Access Key).
 - [ ] Implement presigned upload URL generator for `flyora-public` (Tour images/galleries).
 - [ ] Implement presigned upload URL generator for `flyora-private` (Payment receipt proofs, customer documents).
@@ -50,6 +53,7 @@ This checklist serves as the master tracking document for the development of Fly
 ---
 
 ## Phase 3: "Take Lead" Service Pool & Coordinator Workflow
+
 - [ ] Implement public enquiry submission endpoint (`POST /api/v1/public/enquiry`).
 - [ ] Implement Lead Notification Service:
   - [ ] Dispatch new lead alert to registered phone numbers of coordinators assigned to that service + Admin.
@@ -70,6 +74,7 @@ This checklist serves as the master tracking document for the development of Fly
 ---
 
 ## Phase 4: Quotation Builder & Margin Guard
+
 - [ ] Implement Quotation creation endpoint with itemized breakdown (Hotel, Flight, Visa, Tour, Transfers).
 - [ ] Implement Margin Guard calculation:
   - [ ] Calculate Margin %: `((Selling Price - Supplier Cost) / Selling Price) * 100`.
@@ -82,6 +87,7 @@ This checklist serves as the master tracking document for the development of Fly
 ---
 
 ## Phase 5: Booking & Manual Payment Tracking
+
 - [ ] Implement one-click quote-to-booking conversion endpoint.
 - [ ] Implement manual payment logging:
   - [ ] Record amount, payment mode (NEFT/IMPS, UPI, Cash), and transaction UTR.
@@ -92,6 +98,7 @@ This checklist serves as the master tracking document for the development of Fly
 ---
 
 ## Phase 6: Admin & Coordinator Portal (`apps/admin`)
+
 - [ ] Setup TanStack Query (`@tanstack/react-query`) provider for server-state caching.
 - [ ] Setup Zustand stores (`authStore` for credentials, `filterStore` for lead tabs).
 - [ ] Build Staff Login screen.
@@ -106,6 +113,7 @@ This checklist serves as the master tracking document for the development of Fly
 ---
 
 ## Phase 7: Public Website & SEO (`apps/web`)
+
 - [ ] Build Homepage with hero search, featured tour packages, and services showcase.
 - [ ] Build `/tours/[slug]` tour details page with photo gallery, day-by-day itinerary, inclusions/exclusions.
 - [ ] Build `/services/[slug]` landing pages for Visas, Flights, and Custom Holidays.
@@ -117,6 +125,7 @@ This checklist serves as the master tracking document for the development of Fly
 ---
 
 ## Phase 8: Verification & Production Readiness
+
 - [ ] Verify lead submission from public site routes directly to the correct service coordinator.
 - [ ] Verify image uploads and receipt uploads to Cloudflare R2 buckets.
 - [ ] Verify customer quote shareable link renders correctly on mobile and desktop.
