@@ -78,37 +78,37 @@
 
 ## 3. Developer 2 Checklist (Frontend Admin Package Catalog)
 
-### Branch Name: `feat/m2-packages-admin-ui`
+### Branch Name: `feat/m2-packages-admin-ui` (or `sahil`)
 
-#### Step 1: Packages List Screen (`/catalog/packages`)
+#### Step 1: Packages List Screen (`/packages`)
 
-- [ ] Filterable table showing:
+- [x] Filterable table showing:
   - Thumbnail preview, Package Title, Destination, Duration (e.g. 5D/4N).
   - Service tag (e.g. _Holiday Packages_, _Umrah_).
   - Starting Price (₹).
   - Published / Featured toggle switches.
-- [ ] "Add New Package" button leading to the creator form.
+- [x] "Add New Package" button leading to the creator form.
 
-#### Step 2: Package & Itinerary Builder Form (`/catalog/packages/new` & `/edit/:id`)
+#### Step 2: Package & Itinerary Builder Form (`/packages/new` & `/edit/:slug`)
 
-- [ ] **Tab 1: Basic Information:**
+- [x] **Tab 1: Basic Information:**
   - Package Title, Destination, Duration (Days & Nights), Service selector dropdown, Starting Price.
   - Overview / Tour Summary text area.
-- [ ] **Tab 2: Photo Gallery & Cover (Cloudflare R2 Direct Upload):**
+- [x] **Tab 2: Photo Gallery & Cover (Cloudflare R2 Direct Upload):**
   - Dropzone for Cover Image and Gallery Images.
   - Direct R2 upload workflow:
     1. Client calls `/api/v1/storage/upload-url`.
     2. Uploads file directly to Cloudflare R2 via presigned PUT.
     3. Displays live image preview.
-- [ ] **Tab 3: Day-by-Day Itinerary Builder:**
+- [x] **Tab 3: Day-by-Day Itinerary Builder:**
   - Dynamic array repeater:
     - Day 1: Title (e.g., "Arrival & Dhow Cruise Dinner"), Description.
     - Day 2: Title (e.g., "Dubai City Tour & Burj Khalifa"), Description.
     - "Add Day" button.
-- [ ] **Tab 4: Inclusions & Exclusions:**
+- [x] **Tab 4: Inclusions & Exclusions:**
   - Tag-input for inclusions (Flights, 4-Star Hotel, Daily Breakfast, Visa, Airport Transfers).
   - Tag-input for exclusions (Personal expenses, Tips).
-- [ ] **Tab 5: SEO & OpenGraph:**
+- [x] **Tab 5: SEO & OpenGraph:**
   - Meta Title, Meta Description, SEO Keywords.
 
 ---
@@ -126,12 +126,12 @@
 
 ## 5. PR & Merge Gate (Exit Criteria for Module 2)
 
-- [ ] **PR 2.1 (Dev 1):** Fastify packages API and Cloudflare R2 upload endpoints merged into `develop`.
-- [ ] **PR 2.2 (Dev 2):** Admin Package Catalog and Itinerary Builder merged into `develop`.
-- [ ] **Joint Verification:**
+- [x] **PR 2.1 (Dev 1):** Fastify packages API and Cloudflare R2 upload endpoints merged into `develop`.
+- [x] **PR 2.2 (Dev 2):** Admin Package Catalog and Itinerary Builder merged into `develop`.
+- [x] **Joint Verification:**
   - Super Admin opens Admin dashboard.
   - Creates a package (e.g. _"5D/4N Dubai Family Luxury"_).
   - Uploads cover image to Cloudflare R2.
   - Adds 5-day itinerary, inclusions, and saves.
   - Package is retrievable via `GET /api/v1/packages/5d-4n-dubai-family-luxury`.
-- [ ] `npm run build` passes with 0 errors across all 6 packages.
+- [x] `npm run build` passes with 0 errors across all 6 packages.

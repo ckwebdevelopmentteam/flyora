@@ -8,6 +8,9 @@ import { AdminLayout } from "./components/layout/AdminLayout";
 import { ProtectedRoute } from "./routes/ProtectedRoute";
 import { RoleGuard } from "./routes/RoleGuard";
 
+import { PackagesListPage } from "./pages/PackagesListPage";
+import { PackageBuilderPage } from "./pages/PackageBuilderPage";
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -30,6 +33,28 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<AdminLayout />}>
               <Route index element={<DashboardPage />} />
+
+              {/* Tour Packages Catalog (All staff can view) */}
+              <Route path="packages" element={<PackagesListPage />} />
+
+              {/* Package Builder (Super Admin, Operations Manager, Content Manager) */}
+              <Route
+                element={
+                  <RoleGuard
+                    allowedRoles={[
+                      "SUPER_ADMIN",
+                      "OPERATIONS_MANAGER",
+                      "CONTENT_MANAGER",
+                    ]}
+                  />
+                }
+              >
+                <Route path="packages/new" element={<PackageBuilderPage />} />
+                <Route
+                  path="packages/edit/:slug"
+                  element={<PackageBuilderPage />}
+                />
+              </Route>
 
               {/* Team Management - Restricted to Super Admin & Operations Manager */}
               <Route

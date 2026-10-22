@@ -10,6 +10,7 @@ import {
   Briefcase,
   X,
   Layers,
+  Palmtree,
 } from "lucide-react";
 
 interface SidebarProps {
@@ -27,6 +28,12 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       name: "Dashboard",
       path: "/",
       icon: LayoutDashboard,
+      active: true,
+    },
+    {
+      name: "Tour Packages",
+      path: "/packages",
+      icon: Palmtree,
       active: true,
     },
     {
@@ -63,6 +70,12 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       name: "My Dashboard",
       path: "/",
       icon: LayoutDashboard,
+      active: true,
+    },
+    {
+      name: "Tour Packages",
+      path: "/packages",
+      icon: Palmtree,
       active: true,
     },
     {

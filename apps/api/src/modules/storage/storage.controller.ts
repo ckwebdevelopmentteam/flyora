@@ -4,6 +4,14 @@ import { StorageService, StorageFolder } from "./storage.service";
 export const storageRoutes: FastifyPluginAsync = async (fastify) => {
   const storageService = new StorageService();
 
+  // Support raw binary stream uploads for mock dev endpoint
+  fastify.addContentTypeParser(
+    ["image/jpeg", "image/png", "image/webp", "application/octet-stream"],
+    (_req, _payload, done) => {
+      done(null);
+    },
+  );
+
   // POST /api/v1/storage/upload-url (Authenticated staff)
   fastify.post(
     "/upload-url",
