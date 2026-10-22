@@ -13,6 +13,10 @@ This checklist serves as the master tracking document for the development of Fly
 - [ ] Create `packages/validators` for shared Zod schemas (enquiry, quote, payment).
 - [ ] Create `packages/database` with Prisma ORM setup.
 - [ ] Configure root `turbo.json` and unified `npm run dev` scripts.
+- [ ] Setup Code Quality & Git Hooks:
+  - [ ] Initialize **Husky** (`pre-commit` hook for lint-staged, `commit-msg` hook for commitlint).
+  - [ ] Configure **Commitlint** (`commitlint.config.js` with Conventional Commits rules).
+  - [ ] Configure **lint-staged** (auto-linting TypeScript, ESLint, Prettier formatting).
 
 ---
 

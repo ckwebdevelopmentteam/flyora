@@ -48,6 +48,7 @@ The project is built as a unified TypeScript monorepo with 3 distinct applicatio
 | **Database** | **PostgreSQL** | Relational integrity for Customers, Leads, Quotes, Bookings, Payments, and Staff. |
 | **ORM** | **Prisma** | End-to-end type safety, auto-generated TypeScript types shared with frontend. |
 | **Storage** | **Cloudflare R2** | Zero bandwidth/egress cost, high-speed CDN integration, S3 API compatibility. |
+| **Code Quality & Git Hooks** | **Husky + Commitlint + lint-staged** | Enforces Conventional Commit messages (`feat:`, `fix:`, etc.) and pre-commit linting across both developers. |
 
 ---
 

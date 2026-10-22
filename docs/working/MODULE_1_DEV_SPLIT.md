@@ -41,6 +41,37 @@
 
 ### Branch Name: `feat/m1-api-auth-rbac`
 
+#### Step 0: Git Hooks, Linting & Commit Conventions Setup (Dev 1 sets up for the repo)
+- [ ] Install & initialize **Husky**:
+  - [ ] `.husky/pre-commit`: runs `npx lint-staged` before any commit.
+  - [ ] `.husky/commit-msg`: runs `npx --no -- commitlint --edit ${1}` to enforce proper commit messages.
+- [ ] Install & configure **Commitlint** (`@commitlint/cli`, `@commitlint/config-conventional`):
+  - [ ] Create `commitlint.config.js` with standard conventional commit scopes (`auth`, `users`, `services`, `leads`, `quotes`, `bookings`, `payments`, `db`, `deps`, `docs`).
+- [ ] Configure **lint-staged** in root `package.json`:
+  - [ ] `*.{ts,tsx,js,jsx}`: runs `eslint --fix` and `prettier --write`.
+  - [ ] `*.{json,md,yaml}`: runs `prettier --write`.
+- [ ] **Commit Message Standard (Enforced by Git Hook):**
+  ```text
+  Format: <type>(<optional scope>): <subject>
+
+  Allowed Types:
+    feat     : A new feature
+    fix      : A bug fix
+    docs     : Documentation only changes
+    style    : Formatting, missing semi-colons, etc (no code logic change)
+    refactor : Code change that neither fixes a bug nor adds a feature
+    perf     : Performance improvement
+    test     : Adding or fixing tests
+    chore    : Build tasks, package updates, tooling configs
+
+  Examples:
+    feat(auth): add fastify jwt authentication and login endpoint
+    feat(users): add service-coordinator mapping endpoints
+    fix(auth): handle expired token refresh error cleanly
+    docs(plan): add 2-developer work split and husky setup
+    chore(lint): configure husky and commitlint conventional rules
+  ```
+
 #### Step 1: Base Contracts (Shared with Dev 2 first)
 - [ ] Write `packages/database/prisma/schema.prisma` for Module 1:
   - [ ] `User`, `UserRole` (`SUPER_ADMIN`, `OPERATIONS_MANAGER`, `SERVICE_COORDINATOR`, `ACCOUNTS`, `CONTENT_MANAGER`)
