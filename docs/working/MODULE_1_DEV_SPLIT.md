@@ -122,47 +122,47 @@
 
 #### Step 1: Admin App Scaffolding
 
-- [ ] Scaffold `apps/admin` (Vite + React 19 + TypeScript + Tailwind CSS).
-- [ ] Set up React Router with routes:
-  - [ ] `/login` (Public)
-  - [ ] `/` (Dashboard root - Protected)
-  - [ ] `/team` (Staff & Coordinators - Admin only)
+- [x] Scaffold `apps/admin` (Vite + React 19 + TypeScript + Tailwind CSS).
+- [x] Set up React Router with routes:
+  - [x] `/login` (Public)
+  - [x] `/` (Dashboard root - Protected)
+  - [x] `/team` (Staff & Coordinators - Admin only)
 
 #### Step 2: State & API Client
 
-- [ ] Install & configure `@tanstack/react-query`.
-- [ ] Configure `zustand` store (`src/stores/authStore.ts`):
-  - [ ] Stores: `user`, `accessToken`, `isAuthenticated`.
-  - [ ] Actions: `setAuth()`, `clearAuth()`, `setAvailability()`.
-- [ ] Setup Axios / Fetch API client (`src/lib/apiClient.ts`):
-  - [ ] Request interceptor: attaches `Authorization: Bearer <token>`.
-  - [ ] Response interceptor: handles 401s by triggering token refresh or redirecting to `/login`.
+- [x] Install & configure `@tanstack/react-query`.
+- [x] Configure `zustand` store (`src/stores/authStore.ts`):
+  - [x] Stores: `user`, `accessToken`, `isAuthenticated`.
+  - [x] Actions: `setAuth()`, `clearAuth()`, `setAvailability()`.
+- [x] Setup Axios / Fetch API client (`src/lib/apiClient.ts`):
+  - [x] Request interceptor: attaches `Authorization: Bearer <token>`.
+  - [x] Response interceptor: handles 401s by triggering token refresh or redirecting to `/login`.
 
 #### Step 3: Login Screen UI
 
-- [ ] Build clean, responsive login page:
-  - [ ] Email and Password inputs using React Hook Form + shared Zod schema.
-  - [ ] Error message alerts (e.g. "Invalid credentials").
-  - [ ] Loading spinner on submit.
+- [x] Build clean, responsive login page:
+  - [x] Email and Password inputs using React Hook Form + shared Zod schema.
+  - [x] Error message alerts (e.g. "Invalid credentials").
+  - [x] Loading spinner on submit.
 
 #### Step 4: Protected Layout & Shell
 
-- [ ] Build Admin Layout (`src/components/layout/AdminLayout.tsx`):
-  - [ ] **Sidebar:** Dynamic navigation based on role:
+- [x] Build Admin Layout (`src/components/layout/AdminLayout.tsx`):
+  - [x] **Sidebar:** Dynamic navigation based on role:
     - Admin/Manager sees: _Dashboard, All Leads, Quotes, Bookings, Payments, Team Settings_.
     - Coordinator sees: _My Leads, Service Pool, Quotes_.
-  - [ ] **Header:**
+  - [x] **Header:**
     - Staff name & Role badge (e.g., `Holiday Packages Coordinator`).
     - Availability Dropdown toggle: 🟢 `Available` | 🟡 `Busy` | ⚪ `Off-Duty`.
     - Logout button.
 
 #### Step 5: Team Management Screen (Admin Only) (`/team`)
 
-- [ ] Staff List Table (Name, Email, Phone, Role badge, Assigned Services badges, Availability status).
-- [ ] "Add Staff Member" Modal:
-  - [ ] Name, Email, Phone Number, Password.
-  - [ ] Role selector dropdown (`SUPER_ADMIN`, `OPERATIONS_MANAGER`, `SERVICE_COORDINATOR`, `ACCOUNTS`, `CONTENT_MANAGER`).
-  - [ ] Multi-select service checklist (e.g. ☑️ _Visa Assistance_, ☑️ _Holiday Packages_) with Primary toggle.
+- [x] Staff List Table (Name, Email, Phone, Role badge, Assigned Services badges, Availability status).
+- [x] "Add Staff Member" Modal:
+  - [x] Name, Email, Phone Number, Password.
+  - [x] Role selector dropdown (`SUPER_ADMIN`, `OPERATIONS_MANAGER`, `SERVICE_COORDINATOR`, `ACCOUNTS`, `CONTENT_MANAGER`).
+  - [x] Multi-select service checklist (e.g. ☑️ _Visa Assistance_, ☑️ _Holiday Packages_) with Primary toggle.
 
 ---
 
@@ -181,12 +181,12 @@
 
 Before moving to Module 2, both developers must complete this checklist together:
 
-- [ ] **PR 1.0 (Dev 1):** Shared contracts merged to `main` (`packages/database`, `packages/types`, `packages/validators`).
-- [ ] **PR 1.1 (Dev 1):** Fastify backend auth & staff endpoints tested via Postman/Thunder Client.
-- [ ] **PR 1.2 (Dev 2):** Admin frontend connected to Fastify backend:
-  - [ ] Super Admin logs in -> redirected to `/dashboard` with full sidebar menu.
-  - [ ] Coordinator logs in -> redirected to `/dashboard` with coordinator-specific menu.
-  - [ ] Admin creates a new coordinator and assigns 2 services (e.g. Visa + Flights) with a phone number -> coordinator appears in staff table.
-  - [ ] Coordinator changes availability to `Busy` -> status updates immediately.
-- [ ] No TypeScript build errors across all workspaces (`npm run build`).
-- [ ] Both PRs approved and merged into `main`.
+- [x] **PR 1.0 (Dev 1):** Shared contracts merged to `main` (`packages/database`, `packages/types`, `packages/validators`).
+- [x] **PR 1.1 (Dev 1):** Fastify backend auth & staff endpoints tested via Postman/Thunder Client.
+- [x] **PR 1.2 (Dev 2):** Admin frontend connected to Fastify backend:
+  - [x] Super Admin logs in -> redirected to `/dashboard` with full sidebar menu.
+  - [x] Coordinator logs in -> redirected to `/dashboard` with coordinator-specific menu.
+  - [x] Admin creates a new coordinator and assigns 2 services (e.g. Visa + Flights) with a phone number -> coordinator appears in staff table.
+  - [x] Coordinator changes availability to `Busy` -> status updates immediately.
+- [x] No TypeScript build errors across all workspaces (`npm run build`).
+- [x] Both PRs approved and merged into `develop`.
