@@ -6,6 +6,8 @@ import jwtPlugin from "./plugins/jwt";
 import { authRoutes } from "./modules/auth/auth.controller";
 import { usersRoutes } from "./modules/users/users.controller";
 import { servicesRoutes } from "./modules/services/services.controller";
+import { packagesRoutes } from "./modules/packages/packages.controller";
+import { storageRoutes } from "./modules/storage/storage.controller";
 
 dotenv.config();
 
@@ -38,6 +40,8 @@ fastify.get("/health", async () => {
 fastify.register(authRoutes, { prefix: "/api/v1/auth" });
 fastify.register(usersRoutes, { prefix: "/api/v1/users" });
 fastify.register(servicesRoutes, { prefix: "/api/v1/services" });
+fastify.register(packagesRoutes, { prefix: "/api/v1/packages" });
+fastify.register(storageRoutes, { prefix: "/api/v1/storage" });
 
 // Global Error Handler
 fastify.setErrorHandler((error: any, _request, reply) => {

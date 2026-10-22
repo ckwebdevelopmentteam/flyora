@@ -40,37 +40,39 @@
 
 #### Step 1: Shared Contracts (`packages/types` & `packages/validators`)
 
-- [ ] Define `PackageDetails`, `ItineraryDay` in `packages/types/src/package.ts`.
-- [ ] Define `createPackageSchema`, `updatePackageSchema` in `packages/validators/src/packageSchema.ts`.
-- [ ] Export from root package indexes.
+- [x] Define `PackageDetails`, `ItineraryDay` in `packages/types/src/package.ts`.
+- [x] Define `createPackageSchema`, `updatePackageSchema` in `packages/validators/src/packageSchema.ts`.
+- [x] Export from root package indexes.
 
 #### Step 2: Cloudflare R2 Storage Service (`apps/api/src/modules/storage`)
 
-- [ ] Set up `@aws-sdk/client-s3` client configured with Cloudflare R2 endpoint:
+- [x] Set up `@aws-sdk/client-s3` client configured with Cloudflare R2 endpoint:
   ```text
   endpoint: https://<R2_ACCOUNT_ID>.r2.cloudflarestorage.com
   region: auto
   ```
-- [ ] `POST /api/v1/storage/upload-url`:
+- [x] `POST /api/v1/storage/upload-url`:
   - Request: `{ filename, contentType, folder: "packages" | "destinations" }`
   - Generates presigned `PutObjectCommand` URL (valid for 15 minutes).
   - Returns: `{ uploadUrl, publicUrl, fileKey }`.
+- [x] `GET /api/v1/storage/download-url`:
+  - Generates presigned `GetObjectCommand` URL for private files with 15-min expiration.
 
 #### Step 3: Packages API Endpoints (`apps/api/src/modules/packages`)
 
-- [ ] `GET /api/v1/packages`:
-  - Public listing.
-  - Query filters: `serviceId`, `destination`, `minPrice`, `maxPrice`, `search`.
-- [ ] `GET /api/v1/packages/:slug`:
+- [x] `GET /api/v1/packages`:
+  - Public listing with pagination.
+  - Query filters: `serviceId`, `destination`, `minPrice`, `maxPrice`, `search`, `featuredOnly`.
+- [x] `GET /api/v1/packages/:slug`:
   - Public single package view with full itinerary, inclusions, and SEO metadata.
-- [ ] `POST /api/v1/packages`:
-  - Admin & Content Manager only (`requireRole(['SUPER_ADMIN', 'CONTENT_MANAGER'])`).
+- [x] `POST /api/v1/packages`:
+  - Admin & Content Manager only (`requireRole(['SUPER_ADMIN', 'CONTENT_MANAGER', 'OPERATIONS_MANAGER'])`).
   - Auto-generate unique slug if not provided.
   - Store structured JSON itinerary.
-- [ ] `PUT /api/v1/packages/:id`:
+- [x] `PUT /api/v1/packages/:id`:
   - Update details, itinerary days, prices, and gallery images.
-- [ ] `DELETE /api/v1/packages/:id`:
-  - Soft-delete or unpublish package.
+- [x] `DELETE /api/v1/packages/:id`:
+  - Delete package.
 
 ---
 
