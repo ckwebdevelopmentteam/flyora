@@ -9,6 +9,13 @@ declare module "fastify" {
 }
 
 const prismaPlugin: FastifyPluginAsync = async (fastify) => {
+  try {
+    await prisma.$connect();
+    console.log("🐘 Neon PostgreSQL Database connected successfully");
+  } catch (error: any) {
+    console.error("❌ Failed to connect to Neon PostgreSQL:", error.message);
+  }
+
   fastify.decorate("prisma", prisma);
 
   fastify.addHook("onClose", async () => {
