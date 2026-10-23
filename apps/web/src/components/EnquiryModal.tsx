@@ -7,7 +7,6 @@ import {
   Loader2,
   CheckCircle2,
   MessageCircle,
-  Calendar,
   Users,
   AlertCircle,
   Compass,
@@ -68,24 +67,22 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
     if (!isOpen) return;
 
     let isMounted = true;
-    setIsLoadingServices(true);
 
-    fetch(`${apiUrl}/services`)
-      .then((res) => res.json())
-      .then((data) => {
+    async function loadServices() {
+      setIsLoadingServices(true);
+      try {
+        const res = await fetch(`${apiUrl}/services`);
+        const data = await res.json();
         if (isMounted && data.data && Array.isArray(data.data)) {
           setServices(data.data);
-          if (!formData.serviceId && data.data.length > 0) {
-            setFormData((prev) => ({
-              ...prev,
-              serviceId: defaultServiceId || data.data[0].id,
-            }));
-          }
+          setFormData((prev) => ({
+            ...prev,
+            serviceId:
+              prev.serviceId || defaultServiceId || data.data[0]?.id || "",
+          }));
         }
-      })
-      .catch(() => {
-        // Fallback placeholder options if API is temporarily unreachable
-        if (isMounted && services.length === 0) {
+      } catch {
+        if (isMounted) {
           const fallback = [
             {
               id: "00000000-0000-0000-0000-000000000001",
@@ -109,14 +106,17 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
             },
           ];
           setServices(fallback);
-          if (!formData.serviceId) {
-            setFormData((prev) => ({ ...prev, serviceId: fallback[0].id }));
-          }
+          setFormData((prev) => ({
+            ...prev,
+            serviceId: prev.serviceId || fallback[0].id,
+          }));
         }
-      })
-      .finally(() => {
+      } finally {
         if (isMounted) setIsLoadingServices(false);
-      });
+      }
+    }
+
+    loadServices();
 
     return () => {
       isMounted = false;
@@ -167,9 +167,10 @@ export const EnquiryModal: React.FC<EnquiryModalProps> = ({
           responseData.data?.message ||
           "Your enquiry has been received. Our specialist will contact you shortly.",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setServerError(
-        err.message || "Network error. Please try WhatsApp directly.",
+        (err as Error).message ||
+          "Network error. Please try WhatsApp directly.",
       );
     } finally {
       setIsSubmitting(false);

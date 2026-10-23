@@ -12,7 +12,6 @@ import {
   Sparkles,
   PhoneCall,
   MessageCircle,
-  MapPin,
   CheckCircle2,
 } from "lucide-react";
 import { EnquiryModal } from "../components/EnquiryModal";
