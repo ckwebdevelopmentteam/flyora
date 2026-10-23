@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { LeadItem, LeadStatus, LeadActivityItem } from "@flyora/types";
 import {
   X,
@@ -12,7 +12,14 @@ import {
   Loader2,
   FileText,
   DollarSign,
+  Plus,
+  Copy,
+  Check,
+  ExternalLink,
 } from "lucide-react";
+import { QuotationBuilderModal } from "../../quotes/QuotationBuilderModal";
+import { quotesApi } from "../../quotes/quotesApi";
+import type { QuotationRecord } from "../../quotes/types";
 
 interface LeadDetailDrawerProps {
   lead: LeadItem | null;
@@ -79,7 +86,34 @@ export const LeadDetailDrawer = ({
   );
   const [isSubmittingNote, setIsSubmittingNote] = useState(false);
   const [isUpdatingStatus, setIsUpdatingStatus] = useState(false);
-  const [activeTab, setActiveTab] = useState<"details" | "timeline">("details");
+  const [activeTab, setActiveTab] = useState<"details" | "timeline" | "quotes">(
+    "details",
+  );
+
+  // Quotations state
+  const [isQuoteBuilderOpen, setIsQuoteBuilderOpen] = useState(false);
+  const [quotes, setQuotes] = useState<QuotationRecord[]>([]);
+  const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
+  const [copiedQuoteId, setCopiedQuoteId] = useState<string | null>(null);
+
+  // Load quotes for this lead
+  const loadQuotes = async (leadId: string) => {
+    setIsLoadingQuotes(true);
+    try {
+      const data = await quotesApi.fetchQuotationsForLead(leadId);
+      setQuotes(Array.isArray(data) ? data : []);
+    } catch {
+      setQuotes([]);
+    } finally {
+      setIsLoadingQuotes(false);
+    }
+  };
+
+  useEffect(() => {
+    if (lead?.id && isOpen) {
+      void loadQuotes(lead.id);
+    }
+  }, [lead?.id, isOpen]);
 
   if (!isOpen || !lead) return null;
 
@@ -92,6 +126,22 @@ export const LeadDetailDrawer = ({
       lead.packageTitle || lead.serviceName
     }, how may I assist you today?`,
   )}`;
+
+  const handleCopyQuoteLink = async (quote: QuotationRecord) => {
+    const webBaseUrl =
+      typeof window !== "undefined" && window.location.hostname === "localhost"
+        ? "http://localhost:3000"
+        : "https://flyora.com";
+    const publicUrl = `${webBaseUrl}/quote/${quote.shareToken}`;
+
+    try {
+      await navigator.clipboard.writeText(publicUrl);
+      setCopiedQuoteId(quote.id);
+      setTimeout(() => setCopiedQuoteId(null), 2500);
+    } catch {
+      // Fallback
+    }
+  };
 
   const handleStatusChange = async (
     e: React.ChangeEvent<HTMLSelectElement>,
@@ -211,6 +261,19 @@ export const LeadDetailDrawer = ({
                 <span>WhatsApp</span>
               </a>
             </div>
+
+            {/* Prominent Create Quotation Action */}
+            <button
+              type="button"
+              onClick={() => setIsQuoteBuilderOpen(true)}
+              className="w-full mt-2 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-gradient-to-r from-zinc-900 to-black hover:from-black hover:to-zinc-800 text-white text-xs font-semibold shadow-xs transition group"
+            >
+              <FileText className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Create Quotation (Margin Guard)</span>
+              <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/20 text-white font-mono ml-1">
+                P4
+              </span>
+            </button>
           </div>
 
           {/* Tab Switcher */}
@@ -224,6 +287,19 @@ export const LeadDetailDrawer = ({
               }`}
             >
               Enquiry Details
+            </button>
+            <button
+              onClick={() => setActiveTab("quotes")}
+              className={`py-3 text-xs font-medium border-b-2 transition mr-6 flex items-center gap-1.5 ${
+                activeTab === "quotes"
+                  ? "border-black text-black font-semibold"
+                  : "border-transparent text-zinc-500 hover:text-zinc-800"
+              }`}
+            >
+              <span>Quotations</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-[10px] font-mono text-emerald-800 font-semibold">
+                {quotes?.length || 0}
+              </span>
             </button>
             <button
               onClick={() => setActiveTab("timeline")}
@@ -427,7 +503,7 @@ export const LeadDetailDrawer = ({
                   </div>
                 </form>
               </>
-            ) : (
+            ) : activeTab === "timeline" ? (
               /* Timeline Feed */
               <div className="space-y-4">
                 {activities.length === 0 ? (
@@ -467,10 +543,231 @@ export const LeadDetailDrawer = ({
                   </div>
                 )}
               </div>
+            ) : (
+              /* Quotations Tab Feed */
+              <div className="space-y-4">
+                <div className="flex items-center justify-between pb-1 border-b border-zinc-100">
+                  <span className="text-xs font-semibold text-zinc-800 uppercase tracking-wider">
+                    Generated Proposals ({quotes?.length || 0})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setIsQuoteBuilderOpen(true)}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black text-white hover:bg-zinc-800 text-[11px] font-medium transition shadow-xs"
+                  >
+                    <Plus className="w-3 h-3" />
+                    <span>Create New Quote</span>
+                  </button>
+                </div>
+
+                {isLoadingQuotes ? (
+                  <div className="text-center py-8 text-xs text-zinc-400 flex items-center justify-center gap-2">
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Loading quotations...</span>
+                  </div>
+                ) : !quotes || quotes.length === 0 ? (
+                  <div className="text-center py-10 px-4 rounded-xl border border-dashed border-zinc-300 bg-[#FAFAF9] space-y-3">
+                    <div className="w-10 h-10 rounded-full bg-zinc-100 text-zinc-400 flex items-center justify-center mx-auto">
+                      <FileText className="w-5 h-5 stroke-[1.5]" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs font-medium text-zinc-800">
+                        No quotations created yet
+                      </p>
+                      <p className="text-[11px] text-zinc-500 max-w-xs mx-auto">
+                        Use the offline rates builder to assemble flights,
+                        hotels, and custom transfers with live margin checking.
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsQuoteBuilderOpen(true)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 text-xs font-medium transition shadow-xs"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Launch Quotation Builder</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {(quotes || [])
+                      .filter((q): q is QuotationRecord =>
+                        Boolean(q && q.id && q.shareToken),
+                      )
+                      .map((quote) => {
+                        const webBaseUrl =
+                          typeof window !== "undefined" &&
+                          window.location.hostname === "localhost"
+                            ? "http://localhost:3000"
+                            : "https://flyora.com";
+                        const publicQuoteUrl = `${webBaseUrl}/quote/${quote.shareToken}`;
+
+                        const cleanPhoneNum = lead.customer.phone.replace(
+                          /[^0-9]/g,
+                          "",
+                        );
+                        const formattedPrice =
+                          "₹" +
+                          Math.round(quote.sellingPrice).toLocaleString(
+                            "en-IN",
+                          );
+                        const formattedValidUntil = new Date(
+                          quote.validUntil,
+                        ).toLocaleDateString();
+
+                        const quickWhatsAppText = `Hello ${lead.customer.fullName}! Here is your customized travel quote from Flyora Travels:\nTotal: ${formattedPrice} (All Inclusive)\nValid Until: ${formattedValidUntil}\nProposal Link: ${publicQuoteUrl}`;
+                        const directWhatsAppUrl = `https://wa.me/${cleanPhoneNum}?text=${encodeURIComponent(
+                          quickWhatsAppText,
+                        )}`;
+
+                        return (
+                          <div
+                            key={quote.id}
+                            className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs space-y-3 hover:border-zinc-300 transition"
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2">
+                                <span className="font-mono text-xs font-bold text-zinc-900">
+                                  {quote.quoteNumber}
+                                </span>
+                                <span
+                                  className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-medium ${
+                                    quote.status === "SENT" ||
+                                    quote.status === "ACCEPTED"
+                                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                      : quote.status === "EXPIRED"
+                                        ? "bg-amber-50 text-amber-700 border border-amber-200"
+                                        : quote.status === "REJECTED"
+                                          ? "bg-rose-50 text-rose-700 border border-rose-200"
+                                          : "bg-zinc-100 text-zinc-700"
+                                  }`}
+                                >
+                                  {quote.status}
+                                </span>
+                              </div>
+
+                              <span className="text-[10px] font-mono text-zinc-400">
+                                {new Date(quote.createdAt).toLocaleDateString()}
+                              </span>
+                            </div>
+
+                            {/* Financials Row */}
+                            <div className="grid grid-cols-2 gap-2 p-2 rounded-lg bg-[#F8F8F6] border border-zinc-200/60 text-xs font-mono">
+                              <div>
+                                <span className="text-[10px] text-zinc-400 block font-sans">
+                                  Quoted Price
+                                </span>
+                                <span className="font-bold text-zinc-900">
+                                  {formattedPrice}
+                                </span>
+                              </div>
+                              <div className="text-right">
+                                <span className="text-[10px] text-zinc-400 block font-sans">
+                                  Gross Margin
+                                </span>
+                                <span
+                                  className={`font-semibold ${
+                                    quote.marginPercent >= 12
+                                      ? "text-emerald-700"
+                                      : "text-amber-700"
+                                  }`}
+                                >
+                                  {quote.marginPercent.toFixed(1)}% (+₹
+                                  {Math.round(
+                                    quote.marginAmount,
+                                  ).toLocaleString("en-IN")}
+                                  )
+                                </span>
+                              </div>
+                            </div>
+
+                            {/* Line items count & Validity */}
+                            <div className="flex items-center justify-between text-[11px] text-zinc-500">
+                              <span>
+                                {quote.items?.length || 0} line item(s)
+                              </span>
+                              <span className="font-mono text-[10px]">
+                                Valid until: {formattedValidUntil}
+                              </span>
+                            </div>
+
+                            {/* One-Click Action Buttons */}
+                            <div className="pt-2 border-t border-zinc-100 flex items-center justify-between gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleCopyQuoteLink(quote)}
+                                className="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-700 text-xs font-medium transition"
+                              >
+                                {copiedQuoteId === quote.id ? (
+                                  <>
+                                    <Check className="w-3 h-3 text-emerald-600" />
+                                    <span className="text-emerald-700">
+                                      Copied!
+                                    </span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Copy className="w-3 h-3 text-zinc-400" />
+                                    <span>Copy Link</span>
+                                  </>
+                                )}
+                              </button>
+
+                              {cleanPhoneNum && (
+                                <a
+                                  href={directWhatsAppUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition"
+                                >
+                                  <MessageSquare className="w-3 h-3" />
+                                  <span>WhatsApp</span>
+                                </a>
+                              )}
+
+                              <a
+                                href={publicQuoteUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="p-1.5 rounded-lg text-zinc-400 hover:text-black hover:bg-zinc-100 transition"
+                                title="Preview Customer Proposal"
+                              >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                              </a>
+                            </div>
+                          </div>
+                        );
+                      })}
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>
       </div>
+
+      {/* Quotation Builder Modal */}
+      {isQuoteBuilderOpen && (
+        <QuotationBuilderModal
+          lead={lead}
+          isOpen={isQuoteBuilderOpen}
+          onClose={() => setIsQuoteBuilderOpen(false)}
+          onQuoteCreated={(newQuote) => {
+            if (newQuote && newQuote.id) {
+              setQuotes((prev) => [
+                newQuote,
+                ...(Array.isArray(prev) ? prev : []).filter(
+                  (q) => q && q.id !== newQuote.id,
+                ),
+              ]);
+            }
+            setActiveTab("quotes");
+            if (lead.status !== "QUOTED") {
+              void onUpdateStatus("QUOTED");
+            }
+          }}
+        />
+      )}
     </div>
   );
 };

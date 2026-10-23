@@ -136,12 +136,12 @@ export const createQuotationSchema = z.object({
   - [ ] `GET /api/v1/quotes/lead/:leadId` lists all versions/quotes for a lead.
   - [ ] `GET /api/v1/public/quotes/:shareToken` serves sanitized client view with zero supplier cost fields.
   - [ ] `PATCH /api/v1/quotes/:id/status` updates quote status (`SENT`, `ACCEPTED`, `REJECTED`, `EXPIRED`).
-- [ ] **Dev 2 (Admin UI):**
-  - [ ] "Create Quotation" button in `LeadDetailDrawer.tsx` opens Quotation Builder with pre-filled lead data.
-  - [ ] Dynamic repeater for adding/removing Flight, Hotel, Visa, Transfer line items.
-  - [ ] Real-time Margin Guard bar updates dynamically on every keystroke.
-  - [ ] Warning banner displayed when margin % falls below service target.
-  - [ ] Success modal displays shareable link and "Copy WhatsApp Message" button.
+- [x] **Dev 2 (Admin UI):**
+  - [x] "Create Quotation" button in `LeadDetailDrawer.tsx` opens Quotation Builder with pre-filled lead data.
+  - [x] Dynamic repeater for adding/removing Flight, Hotel, Visa, Transfer line items.
+  - [x] Real-time Margin Guard bar updates dynamically on every keystroke.
+  - [x] Warning banner displayed when margin % falls below service target.
+  - [x] Success modal displays shareable link and "Copy WhatsApp Message" button.
 - [ ] **Dev 3 (Public Web):**
   - [ ] `/quote/[token]` loads quote, handling loading, expired, and not found states.
   - [ ] Responsive, modern customer proposal layout with itinerary cards and inclusion pills.

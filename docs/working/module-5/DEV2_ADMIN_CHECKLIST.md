@@ -9,7 +9,7 @@
 
 ### Step 1: Quotation Builder Modal / Page Layout
 
-- [ ] Create `apps/admin/src/pages/quotes/QuotationBuilderModal.tsx` (or dedicated route `/admin/quotes/new`):
+- [x] Create `apps/admin/src/pages/quotes/QuotationBuilderModal.tsx` (or dedicated route `/admin/quotes/new`):
   - Pre-fill Lead details passed as props or query parameters:
     - Customer Name & Phone Number.
     - Service / Package context.
@@ -21,7 +21,7 @@
 
 ### Step 2: Dynamic Line-Item Repeater Component
 
-- [ ] Build item repeater allowing the coordinator to add multiple line items:
+- [x] Build item repeater allowing the coordinator to add multiple line items:
   - Each row contains:
     - **Item Category:** Select (`FLIGHT`, `HOTEL`, `VISA`, `TRANSFER`, `ACTIVITY`, `OTHER`).
     - **Title:** Text input (e.g., _"IndiGo Return Flights BOM-DXB"_).
@@ -37,14 +37,14 @@
 
 ### Step 3: Inclusions & Exclusions Checklist
 
-- [ ] Add chip / tag input for Inclusions (e.g., _"Breakfast Included"_, _"Airport Transfers"_, _"4-Star Hotel Stay"_).
-- [ ] Add chip / tag input for Exclusions (e.g., _"Personal Expenses"_, _"Tourism Dirham Fee"_, _"Travel Insurance"_).
+- [x] Add chip / tag input for Inclusions (e.g., _"Breakfast Included"_, _"Airport Transfers"_, _"4-Star Hotel Stay"_).
+- [x] Add chip / tag input for Exclusions (e.g., _"Personal Expenses"_, _"Tourism Dirham Fee"_, _"Travel Insurance"_).
 
 ---
 
 ### Step 4: Live Real-Time Margin Guard Component
 
-- [ ] Build `MarginGuardSummaryCard.tsx` positioned prominently in the builder:
+- [x] Build `MarginGuardSummaryCard.tsx` positioned prominently in the builder:
   - Real-time client-side calculation on every keystroke:
     - **Total Net Supplier Cost:** `₹XX,XXX`
     - **Total Quoted Package Price:** `₹XX,XXX`
@@ -61,7 +61,7 @@
 
 ### Step 5: "Share Quote" Success Dialog & WhatsApp Dispatch
 
-- [ ] On successful quote creation (`POST /quotes`):
+- [x] On successful quote creation (`POST /quotes`):
   - Display celebration modal:
     - Quote Number: `FLY-2026-0042`
     - Customer Shareable Link: `https://flyora.com/quote/[shareToken]` with 1-click **"Copy Link"** button.
@@ -86,7 +86,7 @@
 
 ### Step 6: Integration into Coordinator Workspace
 
-- [ ] In `apps/admin/src/pages/leads/LeadDetailDrawer.tsx`:
+- [x] In `apps/admin/src/pages/leads/LeadDetailDrawer.tsx`:
   - Wire the **"Create Quotation"** button to open `QuotationBuilderModal`.
   - Add a **"Quotations"** tab/section in the drawer showing:
     - History of quotes created for this lead.
@@ -97,4 +97,5 @@
 
 ### Step 7: Build Verification
 
-- [ ] Verify `npm run build --workspace=@flyora/admin` compiles with 0 errors.
+- [x] Verify `npm run build --workspace=@flyora/admin` compiles with 0 errors.
+- [x] Verify `npm run test:module5 --workspace=@flyora/admin` passes all 15 tests with 0 failures.
