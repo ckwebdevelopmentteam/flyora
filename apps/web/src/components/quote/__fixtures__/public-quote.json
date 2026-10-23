@@ -1,0 +1,64 @@
+{
+  "statusCode": 200,
+  "data": {
+    "quoteNumber": "FLY-2026-0042",
+    "status": "SENT",
+    "shareToken": "b84edb24-795b-4c73-8d50-9fd38ddf0420",
+    "totalPrice": 119500,
+    "items": [
+      {
+        "id": "flight-1",
+        "type": "FLIGHT",
+        "title": "Return flights · Mumbai to Dubai",
+        "description": "Economy · 20 kg checked baggage and 7 kg cabin baggage",
+        "quantity": 2,
+        "sellingPrice": 28000
+      },
+      {
+        "id": "hotel-1",
+        "type": "HOTEL",
+        "title": "Four nights at Creekside Hotel",
+        "description": "Deluxe double room · Breakfast included",
+        "quantity": 1,
+        "sellingPrice": 40000
+      },
+      {
+        "id": "visa-1",
+        "type": "VISA",
+        "title": "Tourist visa assistance",
+        "description": "Single entry · Standard processing",
+        "quantity": 2,
+        "sellingPrice": 7000
+      },
+      {
+        "id": "transfer-1",
+        "type": "TRANSFER",
+        "title": "Private airport transfers",
+        "description": "Arrival and departure · Air-conditioned sedan",
+        "quantity": 1,
+        "sellingPrice": 4500
+      },
+      {
+        "id": "activity-1",
+        "type": "ACTIVITY",
+        "title": "Dubai Creek evening cruise",
+        "description": "Shared sightseeing experience",
+        "quantity": 2,
+        "sellingPrice": 2500
+      }
+    ],
+    "inclusions": [
+      "Return economy flights",
+      "Daily breakfast",
+      "Airport pick-up and drop-off"
+    ],
+    "exclusions": ["Personal expenses", "Travel insurance"],
+    "validUntil": "2099-10-30T18:29:59.000Z",
+    "isExpired": false,
+    "createdAt": "2026-10-23T06:30:00.000Z",
+    "customerName": "Amina Test",
+    "serviceTitle": "Dubai Holiday",
+    "serviceSlug": "holidays",
+    "coordinator": { "fullName": "Sara Test", "phone": "+91 98765 43210" }
+  }
+}
