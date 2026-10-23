@@ -10,6 +10,7 @@ import { RoleGuard } from "./routes/RoleGuard";
 
 import { PackagesListPage } from "./pages/PackagesListPage";
 import { PackageBuilderPage } from "./pages/PackageBuilderPage";
+import { MasterLeadsPage } from "./pages/admin/MasterLeadsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,6 +66,7 @@ export default function App() {
                 }
               >
                 <Route path="team" element={<TeamPage />} />
+                <Route path="admin/leads" element={<MasterLeadsPage />} />
               </Route>
             </Route>
           </Route>

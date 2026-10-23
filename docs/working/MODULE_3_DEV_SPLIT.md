@@ -219,21 +219,21 @@
 
 #### Step 1: Public Enquiry Capture Modal & Form (`apps/web`) — **START IMMEDIATELY!**
 
-- [ ] Responsive Enquiry Modal / Section on website:
+- [x] Responsive Enquiry Modal / Section on website:
   - Fields: Full Name, 10-digit Phone, Service Dropdown (Holidays, Visa, Flights, Umrah), Travel Date, Adults, Kids, Notes.
   - Validated with `publicEnquirySchema` from `@flyora/validators`.
-- [ ] Submit handler calling `POST /api/v1/public/enquiry`:
+- [x] Submit handler calling `POST /api/v1/public/enquiry`:
   - Loading spinner & disabled submit button.
   - Success message dialog: _"Thank you! Our travel specialist will contact you shortly."_
   - Fallback direct WhatsApp chat button.
-- [ ] Floating Click-to-WhatsApp button on bottom-right of `apps/web`.
+- [x] Floating Click-to-WhatsApp button on bottom-right of `apps/web`.
 
 #### Step 2: Admin Master Lead Control Center (`apps/admin` -> `/admin/leads`)
 
-- [ ] Master table view accessible strictly by `SUPER_ADMIN` and `OPERATIONS_MANAGER` at `/admin/leads`:
+- [x] Master table view accessible strictly by `SUPER_ADMIN` and `OPERATIONS_MANAGER` at `/admin/leads`:
   - Columns: Customer Name, Phone, Service, Assigned Coordinator (or "Unassigned" badge), Status, Date.
   - Filters: By Service, By Assigned Coordinator, By Status, By Date range.
-- [ ] **Manual Reassign Modal:**
+- [x] **Manual Reassign Modal:**
   - If a coordinator is on leave or unresponsive, Admin clicks "Reassign".
   - Dropdown of active coordinators for that service.
   - Calls `PATCH /api/v1/leads/:id/reassign`.

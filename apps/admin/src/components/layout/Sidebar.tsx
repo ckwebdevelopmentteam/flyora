@@ -44,10 +44,9 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     },
     {
       name: "All Leads",
-      path: "#leads",
+      path: "/admin/leads",
       icon: Inbox,
-      active: false,
-      badge: "P3",
+      active: true,
     },
     {
       name: "Quotations",
