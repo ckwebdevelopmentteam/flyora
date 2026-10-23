@@ -99,7 +99,7 @@
 
 ### Branch Name: `feat/m3-leads-take-pool-api`
 
-> ⚠️ **AI Prompt Instruction for Dev 1:**  
+> ⚠️ **AI Prompt Instruction for Dev 1:**
 > _"You are Dev 1. Complete Step 1 (Contracts) FIRST and commit. DO NOT touch `apps/admin` or `apps/web`. Ensure atomic update locking on `/leads/:id/take` to prevent race conditions."_
 
 #### Step 1: Shared Contracts (Priority 1 — Unlocks Dev 2 & 3)
@@ -167,20 +167,20 @@
 
 **Target Workspace:** `apps/admin` (Path: `apps/admin/src/pages/leads/`)
 
-> ⚠️ **AI Prompt Instruction for Dev 2:**  
+> ⚠️ **AI Prompt Instruction for Dev 2:**
 > _"You are Dev 2. Work ONLY inside `apps/admin/src/pages/leads/`. DO NOT touch `MasterLeadsPage` or `/admin/leads` (Dev 3 owns that). If Dev 1 API is not yet running, use typed mock state so your UI is 100% complete without blocking."_
 
 #### Step 1: Navigation & Routing
 
-- [ ] Add **"Leads Workspace"** navigation item in `AdminLayout` (role: Coordinator, Manager, Admin).
-- [ ] Display counter badge for unassigned leads in coordinator's pool.
-- [ ] Add route `/leads` in `apps/admin/src/App.tsx`.
+- [x] Add **"Leads Workspace"** navigation item in `AdminLayout` (role: Coordinator, Manager, Admin).
+- [x] Display counter badge for unassigned leads in coordinator's pool.
+- [x] Add route `/leads` in `apps/admin/src/App.tsx`.
 
 #### Step 2: Service Lead Pool View (Tab 1: "Available to Claim")
 
-- [ ] Shows cards/table of unassigned leads matching coordinator's service:
+- [x] Shows cards/table of unassigned leads matching coordinator's service:
   - Customer Name, Service Tag (e.g., _Dubai Holiday_, _Visa Assistance_), Travel Date, Pax Count, Time Ago.
-- [ ] **"Take Lead" Action Button:**
+- [x] **"Take Lead" Action Button:**
   - Optimistic UI: Immediately removes lead from the pool table on click.
   - Calls `POST /api/v1/leads/:id/take`.
   - On `409 Conflict`: Toast error _"Another coordinator just claimed this lead"_ and refetches pool.
@@ -188,22 +188,22 @@
 
 #### Step 3: My Active Leads View (Tab 2: "My Leads")
 
-- [ ] Filter tabs: `All`, `New`, `Contacted`, `Quoted`, `Negotiating`, `Booked`, `Lost`.
-- [ ] Search input by customer name, phone, or destination.
-- [ ] Follow-up reminder indicator (e.g. "Follow-up Today" badge).
+- [x] Filter tabs: `All`, `New`, `Contacted`, `Quoted`, `Negotiating`, `Booked`, `Lost`.
+- [x] Search input by customer name, phone, or destination.
+- [x] Follow-up reminder indicator (e.g. "Follow-up Today" badge).
 
 #### Step 4: Lead Detail Drawer / Slide-Over Modal
 
-- [ ] **Direct Contact Actions:**
+- [x] **Direct Contact Actions:**
   - Click-to-Call button: `<a href="tel:+91...">`
   - Click-to-WhatsApp button: `<a href="https://wa.me/91...?text=Hello..." target="_blank">`
-- [ ] **Status Selector Dropdown:**
+- [x] **Status Selector Dropdown:**
   - Quick update from `NEW` -> `CONTACTED` -> `QUOTED`, etc.
-- [ ] **Quick Notes & Follow-up:**
+- [x] **Quick Notes & Follow-up:**
   - Textarea to add internal note.
   - Date picker for `followUpDate`.
   - Button "Add Note" appending to activity log.
-- [ ] **Activity Timeline Feed:**
+- [x] **Activity Timeline Feed:**
   - Vertical list showing who claimed, status changes, and timestamped notes.
 
 ---
@@ -214,7 +214,7 @@
 
 **Target Workspaces:** `apps/web` (Public Form) & `apps/admin` (Master Leads: `apps/admin/src/pages/admin/`)
 
-> ⚠️ **AI Prompt Instruction for Dev 3:**  
+> ⚠️ **AI Prompt Instruction for Dev 3:**
 > _"You are Dev 3. You can start `apps/web` IMMEDIATELY with zero waiting because `publicEnquirySchema` already exists! In `apps/admin`, work ONLY in `MasterLeadsPage.tsx` at `/admin/leads`. Do NOT touch Dev 2's Coordinator Workspace files."_
 
 #### Step 1: Public Enquiry Capture Modal & Form (`apps/web`) — **START IMMEDIATELY!**
@@ -243,13 +243,13 @@
 
 ## 8. PR & Merge Gate (Exit Criteria for Module 3)
 
-- [ ] **PR 3.1 (Dev 1):** Backend leads pool, atomic claim locking, status/notes APIs merged.
-- [ ] **PR 3.2 (Dev 2):** Coordinator workspace, claim button with conflict handling, and lead drawer merged.
-- [ ] **PR 3.3 (Dev 3):** Admin master leads table + reassignment and public enquiry web form merged.
-- [ ] **End-to-End Joint Test:**
+- [x] **PR 3.1 (Dev 1):** Backend leads pool, atomic claim locking, status/notes APIs merged.
+- [x] **PR 3.2 (Dev 2):** Coordinator workspace, claim button with conflict handling, and lead drawer merged.
+- [x] **PR 3.3 (Dev 3):** Admin master leads table + reassignment and public enquiry web form merged.
+- [x] **End-to-End Joint Test:**
   1. Dev 3 submits enquiry on `apps/web` (e.g. "Ahmed - Dubai Holiday 4 Pax").
   2. Enquiry appears in Dev 2's "Service Pool" in `apps/admin`.
   3. Dev 2 clicks "Take Lead" -> Lead locks to Dev 2, vanishes from unassigned pool, moves to "My Leads".
   4. Dev 2 changes status to `CONTACTED` and adds note: "Called customer, wants 5-star hotel".
   5. Dev 3 logs into Admin portal -> Sees Ahmed's lead claimed by Dev 2 with updated status and notes.
-- [ ] `npm run build` passes with 0 errors across all 3 apps and packages.
+- [x] `npm run build` passes with 0 errors across all 3 apps and packages.
