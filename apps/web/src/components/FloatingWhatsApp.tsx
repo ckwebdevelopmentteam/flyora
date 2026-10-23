@@ -1,22 +1,25 @@
 "use client";
 
 import React, { useState } from "react";
+import { whatsappLink } from "../lib/enquiry";
 import { MessageCircle, PhoneCall, X } from "lucide-react";
 
 interface FloatingWhatsAppProps {
   onOpenEnquiry?: () => void;
-  whatsappNumber?: string; // Default: e.g. 919876543210
+  whatsappNumber?: string;
 }
 
 export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   onOpenEnquiry,
-  whatsappNumber = "919876543210",
+  whatsappNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER,
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
 
-  const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(
+  const whatsappUrl = whatsappLink(
+    whatsappNumber,
     "Hello Flyora Travels! I would like to enquire about your travel packages and services.",
-  )}`;
+  );
+  if (!whatsappUrl && !onOpenEnquiry) return null;
 
   return (
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end gap-2 font-sans">
@@ -40,24 +43,26 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
               </p>
               <p className="text-[11px] text-emerald-600 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                Online & ready to assist
+                Travel enquiries
               </p>
             </div>
           </div>
           <p className="text-xs text-zinc-600 mb-3">
             Planning a vacation or need visa support? Chat with our specialist
-            instantly!
+            about your plans.
           </p>
           <div className="flex flex-col gap-2">
-            <a
-              href={whatsappUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-medium transition shadow-sm"
-            >
-              <MessageCircle className="w-4 h-4 fill-current" />
-              Chat on WhatsApp
-            </a>
+            {whatsappUrl && (
+              <a
+                href={whatsappUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-medium transition shadow-sm"
+              >
+                <MessageCircle className="w-4 h-4 fill-current" />
+                Chat on WhatsApp
+              </a>
+            )}
             {onOpenEnquiry && (
               <button
                 type="button"
@@ -68,7 +73,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
                 className="flex items-center justify-center gap-2 w-full py-2 px-3 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-white text-xs font-medium transition"
               >
                 <PhoneCall className="w-3.5 h-3.5" />
-                Request Instant Callback
+                Request a Callback
               </button>
             )}
           </div>
@@ -79,7 +84,8 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
       <button
         onClick={() => setShowTooltip((prev) => !prev)}
         className="group relative flex items-center gap-2.5 bg-[#25D366] hover:bg-[#20ba59] text-white px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95"
-        aria-label="Direct WhatsApp Contact"
+        aria-label="Contact Flyora"
+        aria-expanded={showTooltip}
       >
         <span className="absolute -top-1 -right-1 flex h-3 w-3">
           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-200 opacity-75"></span>

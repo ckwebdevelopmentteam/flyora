@@ -1,80 +1,91 @@
 import { FastifyPluginAsync } from "fastify";
 import { AuthService } from "./auth.service";
 import { loginSchema } from "@flyora/validators";
+import { ACCESS_TTL_SECONDS, authConfig, UUID } from "./auth.config";
 
 export const authRoutes: FastifyPluginAsync = async (fastify) => {
-  const authService = new AuthService(fastify);
-
-  // POST /api/v1/auth/login
-  fastify.post("/login", async (request, reply) => {
-    const parseResult = loginSchema.safeParse(request.body);
-    if (!parseResult.success) {
-      return reply.status(400).send({
-        statusCode: 400,
-        error: "Bad Request",
-        message: parseResult.error.errors[0]?.message || "Validation error",
-      });
-    }
-
-    try {
-      const result = await authService.login(parseResult.data);
-      return reply.send({
-        statusCode: 200,
-        data: result,
-      });
-    } catch (err: any) {
-      return reply.status(401).send({
-        statusCode: 401,
-        error: "Unauthorized",
-        message: err.message,
-      });
+  const service = new AuthService(fastify);
+  const config = authConfig();
+  const cookieOptions = {
+    httpOnly: true,
+    secure: config.production,
+    sameSite: "lax" as const,
+    path: "/",
+  };
+  fastify.addHook("onRequest", async (request, reply) => {
+    reply.header("Cache-Control", "no-store");
+    if (
+      request.method !== "GET" &&
+      request.method !== "OPTIONS" &&
+      (!request.headers.origin ||
+        !config.origins.includes(request.headers.origin))
+    ) {
+      return reply
+        .code(403)
+        .send({ statusCode: 403, message: "Untrusted request origin" });
     }
   });
-
-  // GET /api/v1/auth/me
+  function respond(
+    reply: import("fastify").FastifyReply,
+    result: Awaited<ReturnType<AuthService["login"]>>,
+  ) {
+    reply.setCookie(config.cookieName, result.refreshToken, {
+      ...cookieOptions,
+      expires: result.expiresAt,
+    });
+    return reply.send({
+      statusCode: 200,
+      data: {
+        user: result.user,
+        accessToken: result.accessToken,
+        accessExpiresIn: ACCESS_TTL_SECONDS,
+      },
+    });
+  }
+  fastify.post(
+    "/login",
+    { config: { rateLimit: { max: 10, timeWindow: "1 minute" } } },
+    async (request, reply) => {
+      const parsed = loginSchema.safeParse(request.body);
+      if (!parsed.success)
+        return reply
+          .code(400)
+          .send({ statusCode: 400, message: "Invalid login details" });
+      return respond(reply, await service.login(parsed.data));
+    },
+  );
   fastify.get(
     "/me",
     { preHandler: [fastify.authenticate] },
+    async (request, reply) =>
+      reply.send({
+        statusCode: 200,
+        data: await service.getMe(request.user.id),
+      }),
+  );
+  fastify.post(
+    "/refresh",
+    { config: { rateLimit: { max: 60, timeWindow: "1 minute" } } },
     async (request, reply) => {
-      try {
-        const user = await authService.getMe(request.user.id);
-        return reply.send({
-          statusCode: 200,
-          data: user,
+      const raw = request.cookies[config.cookieName];
+      const operation = request.headers["x-refresh-operation"];
+      if (!raw)
+        return reply.code(401).send({
+          statusCode: 401,
+          message: "Session expired. Please sign in again.",
         });
-      } catch (err: any) {
-        return reply.status(404).send({
-          statusCode: 404,
-          error: "Not Found",
-          message: err.message,
+      if (typeof operation !== "string" || !UUID.test(operation))
+        return reply.code(400).send({
+          statusCode: 400,
+          message: "A refresh operation UUID is required",
         });
-      }
+      // No cookie clearing on failed refresh: a delayed response must not erase a newer login.
+      return respond(reply, await service.refreshAccessToken(raw, operation));
     },
   );
-
-  // POST /api/v1/auth/refresh
-  fastify.post("/refresh", async (request, reply) => {
-    const { refreshToken } = (request.body as { refreshToken?: string }) || {};
-    if (!refreshToken) {
-      return reply.status(400).send({
-        statusCode: 400,
-        error: "Bad Request",
-        message: "Refresh token is required",
-      });
-    }
-
-    try {
-      const result = await authService.refreshAccessToken(refreshToken);
-      return reply.send({
-        statusCode: 200,
-        data: result,
-      });
-    } catch (err: any) {
-      return reply.status(401).send({
-        statusCode: 401,
-        error: "Unauthorized",
-        message: err.message,
-      });
-    }
+  fastify.post("/logout", async (request, reply) => {
+    await service.logout(request.cookies[config.cookieName]);
+    reply.clearCookie(config.cookieName, cookieOptions);
+    return reply.send({ statusCode: 200, data: { success: true } });
   });
 };

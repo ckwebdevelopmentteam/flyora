@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:auth": "vitest run src/lib/apiClient.test.ts src/routes/loginRouting.test.tsx",
+    "test:module3": "vitest run src/pages/admin/masterLeads.test.ts src/pages/admin/MasterLeadsPage.test.tsx src/components/leads/ReassignLeadModal.test.tsx"
   },
   "dependencies": {
     "@flyora/types": "*",
@@ -25,14 +27,17 @@
     "zustand": "^5.0.3"
   },
   "devDependencies": {
+    "@testing-library/react": "^16.3.3",
     "@types/node": "^22.13.5",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
+    "jsdom": "^30.1.3",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.7.3",
-    "vite": "^6.2.0"
+    "vite": "^6.2.0",
+    "vitest": "^4.1.12"
   }
 }
