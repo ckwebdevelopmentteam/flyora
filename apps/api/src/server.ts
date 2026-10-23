@@ -8,6 +8,10 @@ import { usersRoutes } from "./modules/users/users.controller";
 import { servicesRoutes } from "./modules/services/services.controller";
 import { packagesRoutes } from "./modules/packages/packages.controller";
 import { storageRoutes } from "./modules/storage/storage.controller";
+import {
+  leadsRoutes,
+  publicEnquiryRoutes,
+} from "./modules/leads/leads.controller";
 
 dotenv.config();
 
@@ -54,6 +58,8 @@ fastify.register(usersRoutes, { prefix: "/api/v1/users" });
 fastify.register(servicesRoutes, { prefix: "/api/v1/services" });
 fastify.register(packagesRoutes, { prefix: "/api/v1/packages" });
 fastify.register(storageRoutes, { prefix: "/api/v1/storage" });
+fastify.register(leadsRoutes, { prefix: "/api/v1/leads" });
+fastify.register(publicEnquiryRoutes, { prefix: "/api/v1/public" });
 
 // Global Error Handler
 fastify.setErrorHandler((error: any, _request, reply) => {
