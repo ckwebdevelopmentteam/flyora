@@ -20,6 +20,11 @@ import {
   quotationRoutes,
   publicQuotationRoutes,
 } from "./modules/quotation/quotation.controller";
+import {
+  bookingsRoutes,
+  paymentsRoutes,
+  publicBookingsRoutes,
+} from "./modules/bookings/bookings.controller";
 
 dotenv.config();
 dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
@@ -78,6 +83,9 @@ fastify.register(leadsRoutes, { prefix: "/api/v1/leads" });
 fastify.register(publicEnquiryRoutes, { prefix: "/api/v1/public" });
 fastify.register(quotationRoutes, { prefix: "/api/v1/quotes" });
 fastify.register(publicQuotationRoutes, { prefix: "/api/v1/public" });
+fastify.register(bookingsRoutes, { prefix: "/api/v1/bookings" });
+fastify.register(paymentsRoutes, { prefix: "/api/v1/payments" });
+fastify.register(publicBookingsRoutes, { prefix: "/api/v1/public" });
 
 // Global Error Handler
 fastify.setErrorHandler((error: any, _request, reply) => {
