@@ -43,3 +43,25 @@ export interface LeadActivityItem {
   details: string;
   createdAt: string;
 }
+
+export interface LeadDetailItem extends LeadItem {
+  activities: LeadActivityItem[];
+}
+
+export interface TakeLeadResponse {
+  success: boolean;
+  lead: LeadItem;
+  message: string;
+}
+
+export interface PublicEnquiryResponse {
+  success: boolean;
+  leadId: string;
+  customerId: string;
+  message: string;
+}
+
+export interface LeadPoolResponse {
+  pool: LeadItem[];
+  total: number;
+}

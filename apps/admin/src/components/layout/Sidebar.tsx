@@ -43,9 +43,15 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       active: true,
     },
     {
-      name: "Leads Workspace",
-      path: "/leads",
+      name: "All Leads",
+      path: "/admin/leads",
       icon: Inbox,
+      active: true,
+    },
+    {
+      name: "Coordinator Pool",
+      path: "/leads",
+      icon: Layers,
       active: true,
     },
     {

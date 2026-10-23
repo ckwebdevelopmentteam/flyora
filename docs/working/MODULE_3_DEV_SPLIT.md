@@ -104,20 +104,20 @@
 
 #### Step 1: Shared Contracts (Priority 1 — Unlocks Dev 2 & 3)
 
-- [ ] In `packages/types/src/lead.ts`:
+- [x] In `packages/types/src/lead.ts`:
   - Ensure exports for `LeadItem`, `LeadStatus`, `LeadSource`, `LeadActivityItem`.
   - Add `TakeLeadResponse`, `UpdateLeadStatusInput`, `AddLeadNoteInput`, `ReassignLeadInput`.
-- [ ] In `packages/validators/src/leadSchema.ts`:
+- [x] In `packages/validators/src/leadSchema.ts`:
   - `claimLeadSchema`: `{ leadId: string }`
   - `updateLeadStatusSchema`: `{ status: z.enum([...LeadStatus]) }`
   - `addLeadNoteSchema`: `{ note: z.string().min(1), followUpDate: z.string().optional() }`
   - `reassignLeadSchema`: `{ assignedToId: z.string().uuid() }`
-- [ ] Export from root `packages/types/src/index.ts` and `packages/validators/src/index.ts`.
-- [ ] **COMMIT & PUSH IMMEDIATELY** with message: `feat(contracts): add lead schemas and types for module 3`.
+- [x] Export from root `packages/types/src/index.ts` and `packages/validators/src/index.ts`.
+- [x] **COMMIT & PUSH IMMEDIATELY** with message: `feat(contracts): add lead schemas and types for module 3`.
 
 #### Step 2: Public Enquiry Intake (`apps/api/src/modules/enquiries` or `leads`)
 
-- [ ] `POST /api/v1/public/enquiry`:
+- [x] `POST /api/v1/public/enquiry`:
   - Validates request against `publicEnquirySchema`.
   - Upserts `Customer` record by phone number.
   - Creates new `Lead` with `assignedToId = null` (unassigned) and `status = 'NEW'`.
@@ -125,7 +125,7 @@
 
 #### Step 3: Atomic "Take Lead" Concurrency Controller (`apps/api/src/modules/leads`)
 
-- [ ] `POST /api/v1/leads/:id/take`:
+- [x] `POST /api/v1/leads/:id/take`:
   - Guard: `requireRole(['SERVICE_COORDINATOR', 'OPERATIONS_MANAGER', 'SUPER_ADMIN'])`.
   - Atomic query execution (prevent race conditions):
     ```ts
@@ -152,12 +152,12 @@
 
 #### Step 4: Coordinator Queues & Daily Management APIs
 
-- [ ] `GET /api/v1/leads/pool`: Returns unassigned leads matching coordinator's `UserService` mappings.
-- [ ] `GET /api/v1/leads/my-leads`: Returns leads assigned to `req.user.id` (supports status filters).
-- [ ] `GET /api/v1/leads/all`: (Super Admin & Ops Manager) Returns all leads across services.
-- [ ] `PATCH /api/v1/leads/:id/status`: Updates stage and logs activity.
-- [ ] `POST /api/v1/leads/:id/notes`: Appends note into `LeadActivity` and updates `followUpDate`.
-- [ ] `PATCH /api/v1/leads/:id/reassign`: (Admin only) Transfers lead to another coordinator.
+- [x] `GET /api/v1/leads/pool`: Returns unassigned leads matching coordinator's `UserService` mappings.
+- [x] `GET /api/v1/leads/my-leads`: Returns leads assigned to `req.user.id` (supports status filters).
+- [x] `GET /api/v1/leads/all`: (Super Admin & Ops Manager) Returns all leads across services.
+- [x] `PATCH /api/v1/leads/:id/status`: Updates stage and logs activity.
+- [x] `POST /api/v1/leads/:id/notes`: Appends note into `LeadActivity` and updates `followUpDate`.
+- [x] `PATCH /api/v1/leads/:id/reassign`: (Admin only) Transfers lead to another coordinator.
 
 ---
 
@@ -219,21 +219,21 @@
 
 #### Step 1: Public Enquiry Capture Modal & Form (`apps/web`) — **START IMMEDIATELY!**
 
-- [ ] Responsive Enquiry Modal / Section on website:
+- [x] Responsive Enquiry Modal / Section on website:
   - Fields: Full Name, 10-digit Phone, Service Dropdown (Holidays, Visa, Flights, Umrah), Travel Date, Adults, Kids, Notes.
   - Validated with `publicEnquirySchema` from `@flyora/validators`.
-- [ ] Submit handler calling `POST /api/v1/public/enquiry`:
+- [x] Submit handler calling `POST /api/v1/public/enquiry`:
   - Loading spinner & disabled submit button.
   - Success message dialog: _"Thank you! Our travel specialist will contact you shortly."_
   - Fallback direct WhatsApp chat button.
-- [ ] Floating Click-to-WhatsApp button on bottom-right of `apps/web`.
+- [x] Floating Click-to-WhatsApp button on bottom-right of `apps/web`.
 
 #### Step 2: Admin Master Lead Control Center (`apps/admin` -> `/admin/leads`)
 
-- [ ] Master table view accessible strictly by `SUPER_ADMIN` and `OPERATIONS_MANAGER` at `/admin/leads`:
+- [x] Master table view accessible strictly by `SUPER_ADMIN` and `OPERATIONS_MANAGER` at `/admin/leads`:
   - Columns: Customer Name, Phone, Service, Assigned Coordinator (or "Unassigned" badge), Status, Date.
   - Filters: By Service, By Assigned Coordinator, By Status, By Date range.
-- [ ] **Manual Reassign Modal:**
+- [x] **Manual Reassign Modal:**
   - If a coordinator is on leave or unresponsive, Admin clicks "Reassign".
   - Dropdown of active coordinators for that service.
   - Calls `PATCH /api/v1/leads/:id/reassign`.
