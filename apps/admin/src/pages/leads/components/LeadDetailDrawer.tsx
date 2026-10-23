@@ -16,10 +16,12 @@ import {
   Copy,
   Check,
   ExternalLink,
+  Sparkles,
 } from "lucide-react";
 import { QuotationBuilderModal } from "../../quotes/QuotationBuilderModal";
 import { quotesApi } from "../../quotes/quotesApi";
 import type { QuotationRecord } from "../../quotes/types";
+import { ConvertBookingModal } from "../../bookings/ConvertBookingModal";
 
 interface LeadDetailDrawerProps {
   lead: LeadItem | null;
@@ -90,11 +92,14 @@ export const LeadDetailDrawer = ({
     "details",
   );
 
-  // Quotations state
+  // Quotations & Booking Conversion state
   const [isQuoteBuilderOpen, setIsQuoteBuilderOpen] = useState(false);
   const [quotes, setQuotes] = useState<QuotationRecord[]>([]);
   const [isLoadingQuotes, setIsLoadingQuotes] = useState(false);
   const [copiedQuoteId, setCopiedQuoteId] = useState<string | null>(null);
+  const [quoteToConvert, setQuoteToConvert] = useState<QuotationRecord | null>(
+    null,
+  );
 
   // Load quotes for this lead
   const loadQuotes = async (leadId: string) => {
@@ -735,6 +740,16 @@ export const LeadDetailDrawer = ({
                                 <ExternalLink className="w-3.5 h-3.5" />
                               </a>
                             </div>
+
+                            {/* 1-Click Convert to Booking Action */}
+                            <button
+                              type="button"
+                              onClick={() => setQuoteToConvert(quote)}
+                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition"
+                            >
+                              <Sparkles className="w-3.5 h-3.5" />
+                              <span>Convert to Booking</span>
+                            </button>
                           </div>
                         );
                       })}
@@ -765,6 +780,26 @@ export const LeadDetailDrawer = ({
             if (lead.status !== "QUOTED") {
               void onUpdateStatus("QUOTED");
             }
+          }}
+        />
+      )}
+
+      {/* Convert to Booking Modal */}
+      {quoteToConvert && (
+        <ConvertBookingModal
+          isOpen={Boolean(quoteToConvert)}
+          onClose={() => setQuoteToConvert(null)}
+          quotation={quoteToConvert}
+          lead={lead}
+          onBookingConverted={() => {
+            if (lead.status !== "BOOKED") {
+              void onUpdateStatus("BOOKED");
+            }
+            setQuotes((prev) =>
+              prev.map((q) =>
+                q.id === quoteToConvert.id ? { ...q, status: "ACCEPTED" } : q,
+              ),
+            );
           }}
         />
       )}

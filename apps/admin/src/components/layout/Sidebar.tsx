@@ -63,10 +63,9 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     },
     {
       name: "Bookings & Payments",
-      path: "#bookings",
+      path: "/bookings",
       icon: CreditCard,
-      active: false,
-      badge: "P5",
+      active: true,
     },
   ];
 
@@ -97,11 +96,10 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       active: true,
     },
     {
-      name: "My Quotes",
-      path: "#quotes",
-      icon: FileText,
-      active: false,
-      badge: "P4",
+      name: "Bookings & Payments",
+      path: "/bookings",
+      icon: CreditCard,
+      active: true,
     },
   ];
 

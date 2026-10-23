@@ -16,6 +16,7 @@ import { PackagesListPage } from "./pages/PackagesListPage";
 import { PackageBuilderPage } from "./pages/PackageBuilderPage";
 import { CoordinatorLeadsPage } from "./pages/leads/CoordinatorLeadsPage";
 import { MasterLeadsPage } from "./pages/admin/MasterLeadsPage";
+import { BookingsPage } from "./pages/bookings/BookingsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -73,6 +74,9 @@ export default function App() {
 
               {/* Coordinator Leads Workspace & Service Pool */}
               <Route path="leads" element={<CoordinatorLeadsPage />} />
+
+              {/* Bookings & Offline Payments Management */}
+              <Route path="bookings" element={<BookingsPage />} />
 
               {/* Package Builder (Super Admin, Operations Manager, Content Manager) */}
               <Route

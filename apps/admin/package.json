@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "test:auth": "vitest run src/lib/apiClient.test.ts src/routes/loginRouting.test.tsx",
     "test:module3": "vitest run src/pages/admin/masterLeads.test.ts src/pages/admin/MasterLeadsPage.test.tsx src/components/leads/ReassignLeadModal.test.tsx",
-    "test:module5": "vitest run src/pages/quotes/marginCalculator.test.ts src/pages/quotes/QuotationBuilderModal.test.tsx src/pages/leads/components/LeadDetailDrawer.test.tsx src/pages/quotes/quotationE2E.test.tsx"
+    "test:module5": "vitest run src/pages/quotes/marginCalculator.test.ts src/pages/quotes/QuotationBuilderModal.test.tsx src/pages/leads/components/LeadDetailDrawer.test.tsx src/pages/quotes/quotationE2E.test.tsx",
+    "test:module6": "vitest run src/pages/bookings/"
   },
   "dependencies": {
     "@flyora/types": "*",
