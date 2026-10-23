@@ -10,6 +10,7 @@ import { RoleGuard } from "./routes/RoleGuard";
 
 import { PackagesListPage } from "./pages/PackagesListPage";
 import { PackageBuilderPage } from "./pages/PackageBuilderPage";
+import { CoordinatorLeadsPage } from "./pages/leads/CoordinatorLeadsPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -36,6 +37,9 @@ export default function App() {
 
               {/* Tour Packages Catalog (All staff can view) */}
               <Route path="packages" element={<PackagesListPage />} />
+
+              {/* Coordinator Leads Workspace & Service Pool */}
+              <Route path="leads" element={<CoordinatorLeadsPage />} />
 
               {/* Package Builder (Super Admin, Operations Manager, Content Manager) */}
               <Route

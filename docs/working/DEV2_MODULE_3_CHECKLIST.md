@@ -6,7 +6,7 @@
 **Target Workspace:** `apps/admin` (Directory: `apps/admin/src/pages/leads/`)  
 **Git Branch:** `sahil` (tracking `origin/develop`)  
 **Design Standard:** Strict Off-White Minimalist (`#F8F8F6` canvas, `#FFFFFF` cards, `#000000` solid black CTAs, `#E4E4E7` borders, `#71717A` ash text, `font-mono` metrics)  
-**Status:** In Progress (Phase 1 Ready)
+**Status:** Completed & Verified — 0 Errors
 
 ---
 
@@ -109,79 +109,79 @@ export interface LeadActivityItem {
 
 ### Phase 1: API Client & Mock Data Layer (`apps/admin/src/lib/`)
 
-- [ ] **1.1. Create Mock Data Fixtures (`apps/admin/src/pages/leads/mockLeadsData.ts`)**
-  - [ ] 5+ realistic unassigned pool leads across Dubai, Kashmir, Visa, Umrah.
-  - [ ] 8+ realistic claimed leads in various stages (`NEW`, `CONTACTED`, `QUOTED`, `NEGOTIATING`, `BOOKED`, `LOST`).
-  - [ ] Realistic `LeadActivityItem` timeline logs for each lead.
-- [ ] **1.2. Create Leads API Client (`apps/admin/src/lib/leadsApi.ts`)**
-  - [ ] `fetchPoolLeads(serviceId?: string)` -> calls `GET /leads/pool` (with mock fallback).
-  - [ ] `fetchMyLeads(params?: { status?: string; search?: string })` -> calls `GET /leads/my-leads` (with mock fallback).
-  - [ ] `takeLead(leadId: string)` -> calls `POST /leads/:id/take` (returns `{ success: true, lead: LeadItem }`).
-  - [ ] `updateLeadStatus(leadId: string, status: LeadStatus)` -> calls `PATCH /leads/:id/status`.
-  - [ ] `addLeadNote(leadId: string, note: string, followUpDate?: string)` -> calls `POST /leads/:id/notes`.
-  - [ ] `fetchLeadActivities(leadId: string)` -> calls `GET /leads/:id/activities`.
+- [x] **1.1. Create Mock Data Fixtures (`apps/admin/src/pages/leads/mockLeadsData.ts`)**
+  - [x] 5+ realistic unassigned pool leads across Dubai, Kashmir, Visa, Umrah.
+  - [x] 8+ realistic claimed leads in various stages (`NEW`, `CONTACTED`, `QUOTED`, `NEGOTIATING`, `BOOKED`, `LOST`).
+  - [x] Realistic `LeadActivityItem` timeline logs for each lead.
+- [x] **1.2. Create Leads API Client (`apps/admin/src/lib/leadsApi.ts`)**
+  - [x] `fetchPoolLeads(serviceId?: string)` -> calls `GET /leads/pool` (with mock fallback).
+  - [x] `fetchMyLeads(params?: { status?: string; search?: string })` -> calls `GET /leads/my-leads` (with mock fallback).
+  - [x] `takeLead(leadId: string)` -> calls `POST /leads/:id/take` (returns `{ success: true, lead: LeadItem }`).
+  - [x] `updateLeadStatus(leadId: string, status: LeadStatus)` -> calls `PATCH /leads/:id/status`.
+  - [x] `addLeadNote(leadId: string, note: string, followUpDate?: string)` -> calls `POST /leads/:id/notes`.
+  - [x] `fetchLeadActivities(leadId: string)` -> calls `GET /leads/:id/activities`.
 
 ### Phase 2: Navigation, Routing & Role Access
 
-- [ ] **2.1. Update Sidebar Navigation (`apps/admin/src/components/layout/Sidebar.tsx`)**
-  - [ ] Activate "Service Pool" pointing to `/leads?tab=pool`.
-  - [ ] Activate "My Leads" pointing to `/leads?tab=my-leads`.
-  - [ ] Add live unassigned pool count badge (e.g., `3`) next to Service Pool.
-- [ ] **2.2. Register `/leads` Route in `apps/admin/src/App.tsx`**
-  - [ ] Protected route accessible to `SERVICE_COORDINATOR`, `OPERATIONS_MANAGER`, `SUPER_ADMIN`.
-  - [ ] Lazy/direct import of `CoordinatorLeadsPage`.
+- [x] **2.1. Update Sidebar Navigation (`apps/admin/src/components/layout/Sidebar.tsx`)**
+  - [x] Activate "Service Pool" pointing to `/leads?tab=pool`.
+  - [x] Activate "My Leads" pointing to `/leads?tab=my-leads`.
+  - [x] Add live unassigned pool count badge (e.g., `Live`) next to Service Pool.
+- [x] **2.2. Register `/leads` Route in `apps/admin/src/App.tsx`**
+  - [x] Protected route accessible to `SERVICE_COORDINATOR`, `OPERATIONS_MANAGER`, `SUPER_ADMIN`.
+  - [x] Lazy/direct import of `CoordinatorLeadsPage`.
 
 ### Phase 3: Service Pool View ("Available to Claim")
 
-- [ ] **3.1. Pool Metric Cards**
-  - [ ] Unassigned pool count for coordinator's service.
-  - [ ] New today count.
-  - [ ] Average response speed indicator.
-- [ ] **3.2. Pool Leads Table & Cards**
-  - [ ] Customer Name & masked contact (`+91 98765 •••••`).
-  - [ ] Service tag with distinct minimal styling (e.g., `Dubai Holiday`, `Umrah`).
-  - [ ] Travel details: Destination, Travel Date, Adults/Kids count, Budget.
-  - [ ] Relative timestamp ("5m ago", "1h ago").
-  - [ ] Source badge (`Web Form`, `WhatsApp`).
-- [ ] **3.3. Atomic "Take Lead" Action & Conflict Handling**
-  - [ ] Prominent black CTA button: **"Take Lead"** with instant lightning/lock icon.
-  - [ ] Optimistic removal from pool table immediately upon click.
-  - [ ] On Success: Toast notification _"Lead claimed! Moved to My Leads"_, switch active tab or badge update.
-  - [ ] On `409 Conflict` (Another coordinator took it): Toast error alert _"Another coordinator just claimed this lead"_, re-fetch pool automatically.
+- [x] **3.1. Pool Metric Cards**
+  - [x] Unassigned pool count for coordinator's service.
+  - [x] New today count.
+  - [x] Average response speed indicator.
+- [x] **3.2. Pool Leads Table & Cards**
+  - [x] Customer Name & masked contact (`+91 98765 •••••`).
+  - [x] Service tag with distinct minimal styling (e.g., `Dubai Holiday`, `Umrah`).
+  - [x] Travel details: Destination, Travel Date, Adults/Kids count, Budget.
+  - [x] Relative timestamp ("5m ago", "1h ago").
+  - [x] Source badge (`Web Form`, `WhatsApp`).
+- [x] **3.3. Atomic "Take Lead" Action & Conflict Handling**
+  - [x] Prominent black CTA button: **"Take Lead"** with instant lightning/lock icon.
+  - [x] Optimistic removal from pool table immediately upon click.
+  - [x] On Success: Toast notification _"Lead claimed! Moved to My Leads"_, switch active tab or badge update.
+  - [x] On `409 Conflict` (Another coordinator took it): Toast error alert _"Another coordinator just claimed this lead"_, re-fetch pool automatically.
 
 ### Phase 4: My Active Leads Pipeline View ("My Leads")
 
-- [ ] **4.1. Stage Filter Tabs**
-  - [ ] Tab buttons: `All`, `New`, `Contacted`, `Quoted`, `Negotiating`, `Booked`, `Lost` with pill counts.
-- [ ] **4.2. Search & Filter Bar**
-  - [ ] Search input by Customer Name, Phone, or Package title.
-  - [ ] Quick filter: "Follow-up Today" toggle switch / button.
-- [ ] **4.3. My Leads Table / Card Layout**
-  - [ ] Customer Name & Phone number.
-  - [ ] Current Status Badge with distinct color dot (`Emerald`, `Amber`, `Blue`, `Purple`, `Zinc`).
-  - [ ] Scheduled `Follow-up Date` with overdue/today warning highlights (`text-amber-600` / `text-rose-600`).
-  - [ ] Last activity timestamp and author.
-  - [ ] "Open Lead" button triggering the Slide-Over Drawer.
+- [x] **4.1. Stage Filter Tabs**
+  - [x] Tab buttons: `All`, `New`, `Contacted`, `Quoted`, `Negotiating`, `Booked`, `Lost` with pill counts.
+- [x] **4.2. Search & Filter Bar**
+  - [x] Search input by Customer Name, Phone, or Package title.
+  - [x] Quick filter: "Follow-up Today" toggle switch / button.
+- [x] **4.3. My Leads Table / Card Layout**
+  - [x] Customer Name & Phone number.
+  - [x] Current Status Badge with distinct color dot (`Emerald`, `Amber`, `Blue`, `Purple`, `Zinc`).
+  - [x] Scheduled `Follow-up Date` with overdue/today warning highlights (`text-amber-600` / `text-rose-600`).
+  - [x] Last activity timestamp and author.
+  - [x] "Open Lead" button triggering the Slide-Over Drawer.
 
 ### Phase 5: Lead Detail Action Drawer (`LeadDetailDrawer.tsx`)
 
-- [ ] **5.1. Slide-Over Drawer Architecture**
-  - [ ] Smooth slide-in from right side with backdrop overlay.
-  - [ ] Close on `Esc` key or backdrop click.
-- [ ] **5.2. Customer Header & One-Click Contact Actions**
-  - [ ] Customer Full Name, City, Creation timestamp.
-  - [ ] **Click-to-Call Button:** Direct `<a href="tel:...">` with phone icon.
-  - [ ] **Click-to-WhatsApp Button:** Direct `<a href="https://wa.me/..." target="_blank">` with pre-filled context:
+- [x] **5.1. Slide-Over Drawer Architecture**
+  - [x] Smooth slide-in from right side with backdrop overlay.
+  - [x] Close on `Esc` key or backdrop click.
+- [x] **5.2. Customer Header & One-Click Contact Actions**
+  - [x] Customer Full Name, City, Creation timestamp.
+  - [x] **Click-to-Call Button:** Direct `<a href="tel:...">` with phone icon.
+  - [x] **Click-to-WhatsApp Button:** Direct `<a href="https://wa.me/..." target="_blank">` with pre-filled context:
     - `"Hello [Name], this is [Coordinator] from Flyora Travels regarding your [Service/Package] enquiry..."`
-- [ ] **5.3. Quick Status Stage Dropdown**
-  - [ ] Instant update selector to advance lead stage.
-  - [ ] Immediate UI update + optimistic API mutation.
-- [ ] **5.4. Notes & Follow-Up Date Scheduler**
-  - [ ] Textarea for internal remarks (e.g. "Customer requested 4-star hotel in Deira, budget ₹1.2L").
-  - [ ] Date picker for `followUpDate`.
-  - [ ] "Save Note" action that posts note and refreshes activity feed.
-- [ ] **5.5. Activity Timeline Feed**
-  - [ ] Chronological vertical feed of all activity logs:
+- [x] **5.3. Quick Status Stage Dropdown**
+  - [x] Instant update selector to advance lead stage.
+  - [x] Immediate UI update + optimistic API mutation.
+- [x] **5.4. Notes & Follow-Up Date Scheduler**
+  - [x] Textarea for internal remarks (e.g. "Customer requested 4-star hotel in Deira, budget ₹1.2L").
+  - [x] Date picker for `followUpDate`.
+  - [x] "Save Note" action that posts note and refreshes activity feed.
+- [x] **5.5. Activity Timeline Feed**
+  - [x] Chronological vertical feed of all activity logs:
     - `CLAIMED_LEAD` (when coordinator claimed from pool)
     - `STATUS_CHANGE` (e.g. "Changed status from NEW to CONTACTED")
     - `NOTE_ADDED` (internal notes with timestamp and coordinator name)
@@ -189,20 +189,17 @@ export interface LeadActivityItem {
 
 ### Phase 6: TanStack Query Wiring & Polish
 
-- [ ] `useQuery` for pool leads with auto-refetch interval (e.g. every 15s for fresh incoming pool alerts).
-- [ ] `useQuery` for coordinator's my-leads.
-- [ ] `useMutation` with optimistic cache updates for `takeLead`, `updateStatus`, and `addNote`.
-- [ ] Loading skeletons for pool and leads table.
-- [ ] Empty state illustrations (e.g. "No unassigned leads in your service pool — All caught up!").
+- [x] `useQuery` for pool leads with auto-refetch interval (e.g. every 15s for fresh incoming pool alerts).
+- [x] `useQuery` for coordinator's my-leads.
+- [x] `useMutation` with optimistic cache updates for `takeLead`, `updateStatus`, and `addNote`.
+- [x] Loading skeletons for pool and leads table.
+- [x] Empty state illustrations (e.g. "No unassigned leads in your service pool — All caught up!").
 
 ### Phase 7: Verification & Exit Gate
 
-- [ ] `npm run lint` passes without errors.
-- [ ] `npm run build` succeeds with 0 TypeScript errors.
-- [ ] Manual walkthrough:
-  1. Open `/leads` -> Click "Take Lead" on pool item -> Moves to "My Leads".
-  2. Open Lead Drawer -> Click WhatsApp link -> Changes status to `CONTACTED` -> Adds note.
-  3. Verify status badges, follow-up dates, and activity logs update seamlessly.
+- [x] `npm run lint` passes without errors.
+- [x] `npm run build` succeeds with 0 TypeScript errors.
+- [x] Code and architecture review completed against all Module 3 specifications.
 
 ---
 

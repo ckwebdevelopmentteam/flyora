@@ -43,11 +43,10 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       active: true,
     },
     {
-      name: "All Leads",
-      path: "#leads",
+      name: "Leads Workspace",
+      path: "/leads",
       icon: Inbox,
-      active: false,
-      badge: "P3",
+      active: true,
     },
     {
       name: "Quotations",
@@ -80,17 +79,16 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
     },
     {
       name: "Service Pool",
-      path: "#pool",
+      path: "/leads?tab=pool",
       icon: Layers,
-      active: false,
-      badge: "P3",
+      active: true,
+      badge: "Live",
     },
     {
       name: "My Leads",
-      path: "#my-leads",
+      path: "/leads?tab=my-leads",
       icon: Inbox,
-      active: false,
-      badge: "P3",
+      active: true,
     },
     {
       name: "My Quotes",
@@ -181,10 +179,25 @@ export const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
                   }`
                 }
               >
-                <div className="flex items-center gap-2.5">
-                  <Icon className="w-3.5 h-3.5 stroke-[1.5]" />
-                  <span>{item.name}</span>
-                </div>
+                {({ isActive }) => (
+                  <>
+                    <div className="flex items-center gap-2.5">
+                      <Icon className="w-3.5 h-3.5 stroke-[1.5]" />
+                      <span>{item.name}</span>
+                    </div>
+                    {item.badge && (
+                      <span
+                        className={`text-[9px] font-mono px-1.5 py-0.2 rounded font-medium ${
+                          isActive
+                            ? "bg-white/20 text-white"
+                            : "bg-blue-100 text-blue-700 font-semibold"
+                        }`}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </>
+                )}
               </NavLink>
             );
           })}

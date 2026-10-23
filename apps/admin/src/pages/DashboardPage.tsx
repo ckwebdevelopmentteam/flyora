@@ -114,7 +114,7 @@ export const DashboardPage = () => {
                 <Layers className="w-4 h-4 stroke-[1.5]" />
               </div>
               <h3 className="text-sm font-medium text-zinc-900">
-                Service Lead Pool (Phase 3)
+                Service Lead Pool & Pipeline
               </h3>
               <p className="text-xs text-zinc-600 leading-relaxed">
                 Incoming leads for your assigned services will appear here for
@@ -122,9 +122,13 @@ export const DashboardPage = () => {
               </p>
             </div>
             <div className="mt-5">
-              <span className="text-[10px] font-mono text-zinc-500 px-2 py-1 rounded bg-[#F6F6F3] border border-zinc-200">
-                Phase 3 Deliverable
-              </span>
+              <Link
+                to="/leads?tab=pool"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 text-xs font-medium transition shadow-xs"
+              >
+                <span>Open Leads Pool</span>
+                <ArrowRight className="w-3 h-3" />
+              </Link>
             </div>
           </div>
         )}
