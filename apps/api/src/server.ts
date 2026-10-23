@@ -1,5 +1,9 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
+import cookie from "@fastify/cookie";
+import rateLimit from "@fastify/rate-limit";
+import path from "node:path";
+import { authConfig } from "./modules/auth/auth.config";
 import dotenv from "dotenv";
 import prismaPlugin from "./plugins/prisma";
 import jwtPlugin from "./plugins/jwt";
@@ -14,19 +18,27 @@ import {
 } from "./modules/leads/leads.controller";
 
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
 const fastify = Fastify({
   logger: {
+    redact: [
+      "req.headers.authorization",
+      "req.headers.cookie",
+      'res.headers["set-cookie"]',
+    ],
     level: process.env.LOG_LEVEL || "warn",
   },
 });
 
 // Register Core Plugins
 fastify.register(cors, {
-  origin: true,
+  origin: authConfig().origins,
   credentials: true,
 });
 
+fastify.register(cookie);
+fastify.register(rateLimit, { global: false });
 fastify.register(prismaPlugin);
 fastify.register(jwtPlugin);
 
@@ -63,13 +75,14 @@ fastify.register(publicEnquiryRoutes, { prefix: "/api/v1/public" });
 
 // Global Error Handler
 fastify.setErrorHandler((error: any, _request, reply) => {
-  fastify.log.error(error);
+  if ((error.statusCode || 500) >= 500)
+    fastify.log.error({ errorName: error.name }, "Request failed");
 
   const statusCode = error.statusCode || 500;
   reply.status(statusCode).send({
     statusCode,
     error: error.name || "InternalServerError",
-    message: error.message || "An unexpected error occurred",
+    message: statusCode >= 500 ? "An unexpected error occurred" : error.message,
   });
 });
 

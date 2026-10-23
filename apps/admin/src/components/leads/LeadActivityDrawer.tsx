@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import {
   X,
@@ -23,10 +23,22 @@ export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
   isOpen,
   onClose,
 }) => {
+  const dialog = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    if (!isOpen || !leadId) return;
+    const element = dialog.current;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    element?.showModal();
+    return () => {
+      element?.close();
+      previousFocus?.focus();
+    };
+  }, [isOpen, leadId]);
   const {
     data: lead,
     isLoading,
     error,
+    refetch,
   } = useQuery<LeadDetailItem>({
     queryKey: ["lead-detail", leadId],
     queryFn: () => leadsApi.getLeadById(leadId!),
@@ -36,17 +48,29 @@ export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
   if (!isOpen || !leadId) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden bg-black/40 backdrop-blur-xs flex justify-end animate-in fade-in duration-200">
+    <dialog
+      ref={dialog}
+      aria-labelledby="lead-history-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      className="fixed inset-y-0 left-auto right-0 m-0 h-dvh max-h-dvh w-full max-w-lg p-0 backdrop:bg-black/40"
+    >
       <div className="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col border-l border-zinc-200 animate-in slide-in-from-right duration-200">
         {/* Drawer Header */}
         <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between bg-[#FAFAF9]">
           <div className="flex items-center gap-2">
             <History className="w-4 h-4 text-zinc-700" />
-            <h3 className="text-sm font-semibold text-zinc-900">
+            <h3
+              id="lead-history-title"
+              className="text-sm font-semibold text-zinc-900"
+            >
               Lead Activity & History
             </h3>
           </div>
           <button
+            aria-label="Close lead history"
             onClick={onClose}
             className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 hover:bg-zinc-200/50"
           >
@@ -63,7 +87,10 @@ export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
             </div>
           ) : error || !lead ? (
             <div className="p-4 rounded-xl bg-rose-50 text-rose-700 text-xs">
-              Failed to load lead details.
+              <span role="alert">Failed to load lead details.</span>{" "}
+              <button onClick={() => refetch()} className="underline">
+                Try again
+              </button>
             </div>
           ) : (
             <>
@@ -106,10 +133,7 @@ export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
                     Call
                   </a>
                   <a
-                    href={`https://wa.me/${lead.customer.phone.replace(
-                      /[^0-9]/g,
-                      "",
-                    )}?text=${encodeURIComponent(
+                    href={`https://wa.me/${(lead.customer.phone.replace(/[^0-9]/g, "").length === 10 ? "91" : "") + lead.customer.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(
                       `Hello ${lead.customer.fullName}, this is regarding your ${lead.serviceName} enquiry with Flyora Travels.`,
                     )}`}
                     target="_blank"
@@ -202,6 +226,6 @@ export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
           )}
         </div>
       </div>
-    </div>
+    </dialog>
   );
 };

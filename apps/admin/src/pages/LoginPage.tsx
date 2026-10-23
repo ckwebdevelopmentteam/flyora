@@ -3,9 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@flyora/validators";
-import type { AuthSession } from "@flyora/types";
-import { apiClient } from "../lib/apiClient";
-import { useAuthStore } from "../stores/authStore";
+import { loginDestination } from "../routes/GuestRoute";
+import { login } from "../lib/apiClient";
 import {
   Eye,
   EyeOff,
@@ -18,7 +17,6 @@ import {
 export const LoginPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const setAuth = useAuthStore((state) => state.setAuth);
 
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -27,7 +25,6 @@ export const LoginPage = () => {
   const {
     register,
     handleSubmit,
-    setValue,
     formState: { errors },
   } = useForm<LoginInput>({
     resolver: zodResolver(loginSchema as any),
@@ -42,10 +39,9 @@ export const LoginPage = () => {
     setErrorMessage(null);
 
     try {
-      const result = await apiClient.post<AuthSession>("/auth/login", data);
-      setAuth(result);
+      await login(data);
 
-      const from = (location.state as any)?.from?.pathname || "/";
+      const from = loginDestination(location.state);
       navigate(from, { replace: true });
     } catch (err: any) {
       setErrorMessage(
@@ -55,12 +51,6 @@ export const LoginPage = () => {
     } finally {
       setIsLoading(false);
     }
-  };
-
-  const handleQuickFillAdmin = () => {
-    setValue("email", "admin@flyora.com");
-    setValue("password", "FlyoraAdmin@2026");
-    setErrorMessage(null);
   };
 
   return (
@@ -100,10 +90,14 @@ export const LoginPage = () => {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             {/* Email Field */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-zinc-600">
+              <label
+                htmlFor="email"
+                className="block text-xs font-medium text-zinc-600"
+              >
                 Email
               </label>
               <input
+                id="email"
                 type="email"
                 {...register("email")}
                 placeholder="name@flyora.com"
@@ -121,11 +115,15 @@ export const LoginPage = () => {
 
             {/* Password Field */}
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium text-zinc-600">
+              <label
+                htmlFor="password"
+                className="block text-xs font-medium text-zinc-600"
+              >
                 Password
               </label>
               <div className="relative">
                 <input
+                  id="password"
                   type={showPassword ? "text" : "password"}
                   {...register("password")}
                   placeholder="••••••••••••"
@@ -136,6 +134,7 @@ export const LoginPage = () => {
                 />
                 <button
                   type="button"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-zinc-400 hover:text-zinc-700"
                 >
@@ -172,17 +171,6 @@ export const LoginPage = () => {
               )}
             </button>
           </form>
-
-          {/* Quick Demo Credentials */}
-          <div className="mt-5 pt-4 border-t border-zinc-100 text-center">
-            <button
-              type="button"
-              onClick={handleQuickFillAdmin}
-              className="text-[11px] text-zinc-500 hover:text-black transition"
-            >
-              Fill demo credentials (admin@flyora.com)
-            </button>
-          </div>
         </div>
 
         {/* Footer */}

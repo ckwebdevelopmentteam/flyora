@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { X, UserCheck, Loader2, AlertCircle, ArrowRight } from "lucide-react";
+import { eligibleCoordinators as getEligibleCoordinators } from "../../pages/admin/masterLeads";
 import { apiClient } from "../../lib/apiClient";
 import { leadsApi } from "../../lib/leadsApi";
 import type { LeadItem, UserProfile } from "@flyora/types";
@@ -21,23 +22,36 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
   const [selectedUserId, setSelectedUserId] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
+  const dialog = useRef<HTMLDialogElement>(null);
+  const submitting = useRef(false);
+  const close = () => {
+    if (!submitting.current) onClose();
+  };
+  useEffect(() => {
+    if (!isOpen || !lead) return;
+    const element = dialog.current;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    element?.showModal();
+    return () => {
+      element?.close();
+      previousFocus?.focus();
+    };
+  }, [isOpen, lead?.id]);
+
   // Fetch all staff members
-  const { data: users = [], isLoading: isLoadingUsers } = useQuery<
-    UserProfile[]
-  >({
+  const {
+    data: users = [],
+    isLoading: isLoadingUsers,
+    error: usersError,
+    refetch,
+  } = useQuery<UserProfile[]>({
     queryKey: ["users"],
     queryFn: () => apiClient.get("/users"),
     enabled: isOpen,
   });
 
   // Filter active staff members eligible to handle leads
-  const eligibleCoordinators = users.filter(
-    (u) =>
-      u.isActive &&
-      (u.role === "SERVICE_COORDINATOR" ||
-        u.role === "OPERATIONS_MANAGER" ||
-        u.role === "SUPER_ADMIN"),
-  );
+  const eligibleCoordinators = lead ? getEligibleCoordinators(users, lead) : [];
 
   const reassignMutation = useMutation({
     mutationFn: ({
@@ -48,13 +62,15 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
       assignedToId: string;
     }) => leadsApi.reassignLead(leadId, assignedToId),
     onSuccess: () => {
+      submitting.current = false;
       onSuccess();
       onClose();
     },
-    onError: (err: any) => {
-      setErrorMsg(
-        err.response?.data?.message || err.message || "Failed to reassign lead",
-      );
+    onError: (err: Error) => {
+      setErrorMsg(err.message || "Failed to reassign lead");
+    },
+    onSettled: () => {
+      submitting.current = false;
     },
   });
 
@@ -62,11 +78,13 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
 
   const handleReassign = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedUserId) {
+    if (submitting.current || isLoadingUsers || usersError) return;
+    if (!eligibleCoordinators.some((user) => user.id === selectedUserId)) {
       setErrorMsg("Please select a target coordinator");
       return;
     }
     setErrorMsg(null);
+    submitting.current = true;
     reassignMutation.mutate({
       leadId: lead.id,
       assignedToId: selectedUserId,
@@ -74,7 +92,15 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs animate-in fade-in duration-200">
+    <dialog
+      ref={dialog}
+      aria-labelledby="reassign-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        close();
+      }}
+      className="fixed inset-0 m-auto p-0 w-full max-w-md max-h-[92dvh] overflow-y-auto rounded-2xl backdrop:bg-black/60"
+    >
       <div className="bg-white rounded-2xl shadow-2xl border border-zinc-200 max-w-md w-full overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between bg-[#FAFAF9]">
@@ -83,7 +109,10 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
               <UserCheck className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-zinc-900">
+              <h3
+                id="reassign-title"
+                className="text-sm font-semibold text-zinc-900"
+              >
                 Reassign Lead
               </h3>
               <p className="text-[11px] text-zinc-500 font-mono">
@@ -92,7 +121,9 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
             </div>
           </div>
           <button
-            onClick={onClose}
+            aria-label="Close reassignment"
+            onClick={close}
+            disabled={reassignMutation.isPending}
             className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 hover:bg-zinc-100"
           >
             <X className="w-4 h-4" />
@@ -104,7 +135,7 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
           {errorMsg && (
             <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{errorMsg}</span>
+              <span role="alert">{errorMsg}</span>
             </div>
           )}
 
@@ -136,15 +167,40 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
             </div>
           </div>
 
+          {usersError && (
+            <div role="alert" className="text-xs text-rose-700">
+              Could not load coordinators.{" "}
+              <button
+                type="button"
+                className="underline"
+                onClick={() => refetch()}
+              >
+                Try again
+              </button>
+            </div>
+          )}
+          {!isLoadingUsers &&
+            !usersError &&
+            eligibleCoordinators.length === 0 && (
+              <p role="status" className="text-xs">
+                No other active coordinators are assigned to this service.
+              </p>
+            )}
           {/* Coordinator Selection */}
           <div>
-            <label className="block text-xs font-medium text-zinc-700 mb-1.5">
+            <label
+              htmlFor="reassign-coordinator"
+              className="block text-xs font-medium text-zinc-700 mb-1.5"
+            >
               Assign To New Coordinator *
             </label>
             <select
+              id="reassign-coordinator"
               value={selectedUserId}
               onChange={(e) => setSelectedUserId(e.target.value)}
-              disabled={isLoadingUsers}
+              disabled={
+                isLoadingUsers || !!usersError || reassignMutation.isPending
+              }
               className="w-full px-3 py-2 rounded-xl border border-zinc-300 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900"
             >
               <option value="">-- Choose Coordinator --</option>
@@ -165,14 +221,20 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
           <div className="pt-2 flex items-center justify-end gap-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={close}
+              disabled={reassignMutation.isPending}
               className="px-4 py-2 rounded-xl border border-zinc-300 text-zinc-700 text-xs font-medium hover:bg-zinc-50 transition"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={reassignMutation.isPending || !selectedUserId}
+              disabled={
+                reassignMutation.isPending ||
+                isLoadingUsers ||
+                !!usersError ||
+                !eligibleCoordinators.some((user) => user.id === selectedUserId)
+              }
               className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50"
             >
               {reassignMutation.isPending ? (
@@ -190,6 +252,6 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
           </div>
         </form>
       </div>
-    </div>
+    </dialog>
   );
 };

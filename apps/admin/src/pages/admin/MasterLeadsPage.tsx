@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Inbox,
@@ -13,7 +13,7 @@ import {
   Layers,
 } from "lucide-react";
 import { apiClient } from "../../lib/apiClient";
-import { leadsApi } from "../../lib/leadsApi";
+import { loadMasterLeads } from "./masterLeads";
 import { ReassignLeadModal } from "../../components/leads/ReassignLeadModal";
 import { LeadActivityDrawer } from "../../components/leads/LeadActivityDrawer";
 import type {
@@ -32,6 +32,8 @@ export const MasterLeadsPage: React.FC = () => {
   const [selectedCoordinator, setSelectedCoordinator] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("");
   const [unassignedOnly, setUnassignedOnly] = useState(false);
+  const [createdFrom, setCreatedFrom] = useState("");
+  const [createdTo, setCreatedTo] = useState("");
   const [page, setPage] = useState(1);
   const limit = 15;
 
@@ -41,13 +43,21 @@ export const MasterLeadsPage: React.FC = () => {
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Fetch Services for filter
-  const { data: services = [] } = useQuery<ServiceSummary[]>({
+  const {
+    data: services = [],
+    error: servicesError,
+    refetch: refetchServices,
+  } = useQuery<ServiceSummary[]>({
     queryKey: ["services"],
     queryFn: () => apiClient.get("/services"),
   });
 
   // Fetch Staff for filter
-  const { data: staffList = [] } = useQuery<UserProfile[]>({
+  const {
+    data: staffList = [],
+    error: staffError,
+    refetch: refetchStaff,
+  } = useQuery<UserProfile[]>({
     queryKey: ["users"],
     queryFn: () => apiClient.get("/users"),
   });
@@ -58,6 +68,7 @@ export const MasterLeadsPage: React.FC = () => {
     isLoading,
     isRefetching,
     refetch,
+    error,
   } = useQuery({
     queryKey: [
       "master-leads",
@@ -66,34 +77,42 @@ export const MasterLeadsPage: React.FC = () => {
       selectedCoordinator,
       selectedStatus,
       unassignedOnly,
+      createdFrom,
+      createdTo,
       page,
     ],
-    queryFn: () =>
-      leadsApi.getAllLeads({
-        search: search.trim() || undefined,
-        serviceId: selectedService || undefined,
-        assignedToId: selectedCoordinator || undefined,
-        status: (selectedStatus as LeadStatus) || undefined,
-        unassignedOnly: unassignedOnly ? "true" : undefined,
-        page,
-        limit,
-      }),
+    queryFn: ({ signal }) =>
+      loadMasterLeads(
+        {
+          search: search.trim() || undefined,
+          serviceId: selectedService || undefined,
+          assignedToId: unassignedOnly
+            ? undefined
+            : selectedCoordinator || undefined,
+          status: (selectedStatus as LeadStatus) || undefined,
+          unassignedOnly: unassignedOnly ? "true" : undefined,
+          page,
+          limit,
+        },
+        createdFrom,
+        createdTo,
+        signal,
+      ),
   });
 
   const leads = leadsData?.leads || [];
   const total = leadsData?.total || 0;
   const totalPages = Math.ceil(total / limit) || 1;
 
-  // Summary counts
-  const unassignedCount = useMemo(
-    () => leads.filter((l) => !l.assignedToId).length,
-    [leads],
-  );
-
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 4000);
-  };
+  useEffect(() => {
+    if (leadsData && page > totalPages) setPage(totalPages);
+  }, [leadsData, page, totalPages]);
+  useEffect(() => {
+    if (!toastMessage) return;
+    const timeout = setTimeout(() => setToastMessage(null), 4000);
+    return () => clearTimeout(timeout);
+  }, [toastMessage]);
+  const showToast = (message: string) => setToastMessage(message);
 
   return (
     <div className="space-y-6">
@@ -101,7 +120,7 @@ export const MasterLeadsPage: React.FC = () => {
       {toastMessage && (
         <div className="fixed bottom-6 right-6 z-50 bg-zinc-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs animate-in fade-in slide-in-from-bottom-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-          <span>{toastMessage}</span>
+          <span role="status">{toastMessage}</span>
         </div>
       )}
 
@@ -127,6 +146,7 @@ export const MasterLeadsPage: React.FC = () => {
             onClick={() => refetch()}
             disabled={isRefetching}
             className="p-2 rounded-xl border border-zinc-200 bg-white text-zinc-600 hover:text-zinc-900 hover:bg-zinc-50 transition shadow-2xs"
+            aria-label="Refresh leads"
             title="Refresh Leads"
           >
             <RefreshCw
@@ -136,6 +156,20 @@ export const MasterLeadsPage: React.FC = () => {
         </div>
       </div>
 
+      {(servicesError || staffError) && (
+        <div role="alert" className="text-sm text-rose-700">
+          Some filter options could not be loaded.{" "}
+          <button
+            className="underline"
+            onClick={() => {
+              void refetchServices();
+              void refetchStaff();
+            }}
+          >
+            Retry filters
+          </button>
+        </div>
+      )}
       {/* Filter Toolbar */}
       <div className="bg-[#FAFAF9] p-3.5 rounded-2xl border border-zinc-200/90 flex flex-wrap items-center gap-3 text-xs">
         {/* Search */}
@@ -143,6 +177,7 @@ export const MasterLeadsPage: React.FC = () => {
           <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-zinc-400" />
           <input
             type="text"
+            aria-label="Search leads"
             placeholder="Search by customer, phone, or service..."
             value={search}
             onChange={(e) => {
@@ -155,6 +190,8 @@ export const MasterLeadsPage: React.FC = () => {
 
         {/* Service Filter */}
         <select
+          disabled={!!servicesError}
+          aria-label="Filter by service"
           value={selectedService}
           onChange={(e) => {
             setSelectedService(e.target.value);
@@ -172,6 +209,8 @@ export const MasterLeadsPage: React.FC = () => {
 
         {/* Coordinator Filter */}
         <select
+          aria-label="Filter by coordinator"
+          disabled={unassignedOnly || !!staffError}
           value={selectedCoordinator}
           onChange={(e) => {
             setSelectedCoordinator(e.target.value);
@@ -189,6 +228,7 @@ export const MasterLeadsPage: React.FC = () => {
 
         {/* Status Filter */}
         <select
+          aria-label="Filter by status"
           value={selectedStatus}
           onChange={(e) => {
             setSelectedStatus(e.target.value);
@@ -205,9 +245,36 @@ export const MasterLeadsPage: React.FC = () => {
           <option value="LOST">LOST</option>
         </select>
 
+        <label className="flex items-center gap-2">
+          Created from
+          <input
+            type="date"
+            value={createdFrom}
+            max={createdTo || undefined}
+            onChange={(event) => {
+              setCreatedFrom(event.target.value);
+              setPage(1);
+            }}
+            className="border rounded-lg p-1.5"
+          />
+        </label>
+        <label className="flex items-center gap-2">
+          Created to
+          <input
+            type="date"
+            value={createdTo}
+            min={createdFrom || undefined}
+            onChange={(event) => {
+              setCreatedTo(event.target.value);
+              setPage(1);
+            }}
+            className="border rounded-lg p-1.5"
+          />
+        </label>
         {/* Unassigned Pool Toggle */}
         <button
           type="button"
+          aria-pressed={unassignedOnly}
           onClick={() => {
             setUnassignedOnly((prev) => !prev);
             setPage(1);
@@ -220,14 +287,20 @@ export const MasterLeadsPage: React.FC = () => {
         >
           <Layers className="w-3.5 h-3.5" />
           <span>Unassigned Pool Only</span>
-          {unassignedCount > 0 && (
-            <span className="w-4 h-4 rounded-full bg-amber-500 text-white text-[10px] font-mono flex items-center justify-center font-bold">
-              {unassignedCount}
-            </span>
-          )}
         </button>
       </div>
 
+      {error && (
+        <div
+          role="alert"
+          className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700"
+        >
+          {error instanceof Error ? error.message : "Failed to load leads."}{" "}
+          <button onClick={() => refetch()} className="underline">
+            Try again
+          </button>
+        </div>
+      )}
       {/* Table Container */}
       <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-2xs">
         <div className="overflow-x-auto">
@@ -249,6 +322,12 @@ export const MasterLeadsPage: React.FC = () => {
                   <td colSpan={7} className="py-16 text-center text-zinc-400">
                     <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-zinc-900" />
                     <span>Loading master leads...</span>
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={7} className="p-8 text-center">
+                    Leads could not be loaded. Try again above.
                   </td>
                 </tr>
               ) : leads.length === 0 ? (
@@ -394,7 +473,8 @@ export const MasterLeadsPage: React.FC = () => {
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              disabled={page <= 1}
+              aria-label="Previous page"
+              disabled={isLoading || !!error || page <= 1}
               className="p-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 disabled:opacity-40 transition"
             >
               <ChevronLeft className="w-4 h-4" />
@@ -404,7 +484,8 @@ export const MasterLeadsPage: React.FC = () => {
             </span>
             <button
               onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
-              disabled={page >= totalPages}
+              aria-label="Next page"
+              disabled={isLoading || !!error || page >= totalPages}
               className="p-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-50 disabled:opacity-40 transition"
             >
               <ChevronRight className="w-4 h-4" />
@@ -415,11 +496,14 @@ export const MasterLeadsPage: React.FC = () => {
 
       {/* Modals & Drawers */}
       <ReassignLeadModal
+        key={reassigningLead?.id || "closed"}
         lead={reassigningLead}
         isOpen={!!reassigningLead}
         onClose={() => setReassigningLead(null)}
         onSuccess={() => {
           queryClient.invalidateQueries({ queryKey: ["master-leads"] });
+          queryClient.invalidateQueries({ queryKey: ["lead-detail"] });
+          queryClient.invalidateQueries({ queryKey: ["leads"] });
           showToast("Lead successfully reassigned to coordinator");
         }}
       />

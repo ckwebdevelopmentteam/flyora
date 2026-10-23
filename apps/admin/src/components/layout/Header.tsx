@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import type { StaffAvailability, UserRole } from "@flyora/types";
 import { useAuthStore } from "../../stores/authStore";
-import { apiClient } from "../../lib/apiClient";
+import { apiClient, logout } from "../../lib/apiClient";
 import { LogOut, ChevronDown, Menu, Loader2, Check } from "lucide-react";
 
 interface HeaderProps {
@@ -37,7 +37,9 @@ const ROLE_LABELS: Record<UserRole, string> = {
 
 export const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
-  const { user, setAvailability, clearAuth } = useAuthStore();
+  const { user, setAvailability } = useAuthStore();
+  const [logoutError, setLogoutError] = useState<string | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -71,9 +73,17 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
     }
   };
 
-  const handleLogout = () => {
-    clearAuth();
-    navigate("/login");
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    setLogoutError(null);
+    try {
+      await logout();
+      navigate("/login");
+    } catch {
+      setLogoutError("Sign out failed. Please try again.");
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   const currentAvailability = user?.availability || "AVAILABLE";
@@ -162,9 +172,16 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
           </div>
         </div>
 
+        {logoutError && (
+          <p role="alert" className="text-xs text-red-700">
+            {logoutError}
+          </p>
+        )}
         {/* Logout */}
         <button
           onClick={handleLogout}
+          disabled={loggingOut}
+          aria-label="Sign out"
           title="Sign Out"
           className="p-1.5 rounded-md text-zinc-400 hover:text-black hover:bg-zinc-100 transition"
         >

@@ -38,5 +38,5 @@ export interface ServiceSummary {
 export interface AuthSession {
   user: UserProfile;
   accessToken: string;
-  refreshToken?: string;
+  accessExpiresIn: number;
 }

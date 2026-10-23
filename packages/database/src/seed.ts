@@ -10,6 +10,20 @@ import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
 
 async function main() {
+  if (process.env.NODE_ENV === "production")
+    throw new Error("The demo seed cannot run in production");
+  const adminPassword = process.env.ADMIN_BOOTSTRAP_PASSWORD;
+  const staffPassword = process.env.DEMO_STAFF_PASSWORD;
+  if (
+    !adminPassword ||
+    !staffPassword ||
+    [adminPassword, staffPassword].some(
+      (value) => Buffer.byteLength(value) < 16 || Buffer.byteLength(value) > 72,
+    )
+  )
+    throw new Error(
+      "Set ADMIN_BOOTSTRAP_PASSWORD and DEMO_STAFF_PASSWORD to 16–72 byte passwords before running the development seed",
+    );
   console.log("🌱 Starting Flyora database seed...");
 
   // 1. Seed Core Services
@@ -67,14 +81,11 @@ async function main() {
   }
 
   // 2. Seed Default Super Admin
-  const adminPasswordHash = await bcrypt.hash("FlyoraAdmin@2026", 10);
+  const adminPasswordHash = await bcrypt.hash(adminPassword, 12);
   const adminUser = await prisma.user.upsert({
     where: { email: "admin@flyora.com" },
     update: {
-      passwordHash: adminPasswordHash,
-      role: UserRole.SUPER_ADMIN,
-      fullName: "Flyora Super Admin",
-      phone: "+919999900000",
+      // Existing credentials and role are not reset by a seed rerun.
     },
     create: {
       email: "admin@flyora.com",
@@ -88,13 +99,12 @@ async function main() {
   console.log(`👑 Super Admin seeded: ${adminUser.email}`);
 
   // 3. Seed Sample Coordinators with Phone Numbers
-  const staffPasswordHash = await bcrypt.hash("FlyoraStaff@2026", 10);
+  const staffPasswordHash = await bcrypt.hash(staffPassword, 12);
 
   // Visa Coordinator
   const visaCoordinator = await prisma.user.upsert({
     where: { email: "visa.coord@flyora.com" },
     update: {
-      passwordHash: staffPasswordHash,
       phone: "+919876543210",
     },
     create: {
@@ -131,7 +141,6 @@ async function main() {
   const holidayCoordinator = await prisma.user.upsert({
     where: { email: "holidays.coord@flyora.com" },
     update: {
-      passwordHash: staffPasswordHash,
       phone: "+919876543211",
     },
     create: {
