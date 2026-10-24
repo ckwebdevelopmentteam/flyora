@@ -16,9 +16,12 @@ import {
 } from "lucide-react";
 import { EnquiryModal } from "../components/EnquiryModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
+import { Navbar } from "../components/Navbar";
+import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isAdvisorModalOpen, setIsAdvisorModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState<
     string | undefined
   >(undefined);
@@ -60,66 +63,17 @@ export default function Home() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#FDFDFC] text-zinc-900 font-sans selection:bg-zinc-900 selection:text-white">
-      {/* Top Banner */}
-      <div className="bg-zinc-900 text-zinc-300 text-[11px] py-2 px-4 text-center font-mono tracking-tight flex items-center justify-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>
-          Flyora Travels Operations Live: Instant Coordinator Assistance
-          Available
-        </span>
-      </div>
+    <div className="min-h-screen bg-[#FDFDFC] text-zinc-900 font-sans selection:bg-[#463d34] selection:text-white pt-2 sm:pt-3">
+      {/* Floating Luxury Navigation Bar */}
+      <Navbar
+        onFindAdvisor={() => openEnquiry()}
+        onBecomeAdvisor={() => setIsAdvisorModalOpen(true)}
+      />
 
-      {/* Navigation */}
-      <nav className="border-b border-zinc-200/80 bg-white/80 backdrop-blur-md sticky top-0 z-40">
-        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-black text-white flex items-center justify-center shadow-xs">
-              <Compass className="w-4 h-4 stroke-[2]" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-sm font-bold tracking-wider uppercase text-zinc-900">
-                Flyora
-              </span>
-              <span className="text-[10px] text-zinc-400 font-mono -mt-1">
-                Travels
-              </span>
-            </div>
-          </div>
-
-          <div className="hidden md:flex items-center gap-8 text-xs font-medium text-zinc-600">
-            <a href="#services" className="hover:text-zinc-900 transition">
-              Services
-            </a>
-            <a href="#why-us" className="hover:text-zinc-900 transition">
-              Why Flyora
-            </a>
-            <a
-              href="http://localhost:3001"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-zinc-400 hover:text-zinc-700 font-mono text-[11px]"
-            >
-              Staff Portal ↗
-            </a>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => openEnquiry()}
-              className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-semibold shadow-xs hover:shadow-md transition active:scale-95 flex items-center gap-2"
-            >
-              <span>Enquire Now</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      {/* Hero Section */}
-      <header className="relative pt-16 pb-20 md:pt-24 md:pb-28 overflow-hidden">
-        <div className="max-w-4xl mx-auto px-5 text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-zinc-100 border border-zinc-200 text-zinc-700 text-xs font-medium mb-6">
+      {/* Hero Section with soft scenic travel backdrop */}
+      <header className="relative pt-10 pb-20 md:pt-16 md:pb-28 overflow-hidden bg-gradient-to-b from-[#eaf0f7]/70 via-[#f4f7fb]/40 to-[#FDFDFC]">
+        <div className="max-w-4xl mx-auto px-5 text-center relative z-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/80 backdrop-blur-xs border border-zinc-200/80 text-zinc-700 text-xs font-medium mb-6 shadow-xs">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
             <span>Dedicated Service Coordinators For Every Journey</span>
           </div>
@@ -338,11 +292,15 @@ export default function Home() {
         </div>
       </footer>
 
-      {/* Interactive Modal & Floating WhatsApp */}
+      {/* Interactive Modals & Floating WhatsApp */}
       <EnquiryModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         defaultServiceId={selectedServiceId}
+      />
+      <BecomeAdvisorModal
+        isOpen={isAdvisorModalOpen}
+        onClose={() => setIsAdvisorModalOpen(false)}
       />
       <FloatingWhatsApp onOpenEnquiry={() => openEnquiry()} />
     </div>
