@@ -17,6 +17,8 @@ export interface NavbarProps {
   onBecomeAdvisor?: () => void;
   defaultSearchOpen?: boolean;
   alwaysShowSearch?: boolean;
+  isFixed?: boolean;
+  className?: string;
 }
 
 const QUICK_SEARCH_SUGGESTIONS = [
@@ -35,6 +37,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onBecomeAdvisor,
   defaultSearchOpen = false,
   alwaysShowSearch = false,
+  isFixed = false,
+  className = "",
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -92,11 +96,17 @@ export const Navbar: React.FC<NavbarProps> = ({
     : [];
 
   return (
-    <header className="sticky top-6 sm:top-8 z-50 px-4 sm:px-8 w-full max-w-5xl mx-auto transition-all duration-300">
+    <header
+      className={`${
+        isFixed
+          ? "fixed top-4 sm:top-6 inset-x-0 pointer-events-none"
+          : "sticky top-6 sm:top-8"
+      } z-50 px-4 sm:px-8 w-full max-w-5xl mx-auto transition-all duration-300 ${className}`}
+    >
       {/* Floating White Navbar Card */}
       <div
-        className={`relative bg-white rounded-2xl border border-black/[0.06] shadow-[0_8px_30px_rgb(0,0,0,0.06)] transition-all duration-300 ${
-          isScrolled ? "shadow-[0_12px_36px_rgb(0,0,0,0.09)]" : ""
+        className={`pointer-events-auto relative bg-white/95 backdrop-blur-md rounded-2xl border border-black/[0.06] shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 ${
+          isScrolled ? "shadow-[0_12px_36px_rgb(0,0,0,0.14)] bg-white" : ""
         }`}
       >
         {isSearchOpen ? (

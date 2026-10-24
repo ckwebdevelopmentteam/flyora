@@ -1,9 +1,22 @@
 @import "tailwindcss";
 
 @theme inline {
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-poppins), var(--font-geist-sans), sans-serif;
   --font-mono: var(--font-geist-mono);
   --font-serif: var(--font-cormorant), "Times New Roman", Times, serif;
+  --font-spartan: var(--font-spartan), var(--font-cormorant), sans-serif;
+  --font-heading: var(--font-spartan), var(--font-cormorant), sans-serif;
+  --font-top: var(--font-spartan), sans-serif;
+  --color-sky: #00a2d9;
+  --color-navy: #0c2233;
+  --color-cream: #faf7f2;
+
+  --animate-marquee: marquee 90s linear infinite;
+  --animate-hero-zoom: heroZoom 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-hero-eyebrow: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both;
+  --animate-hero-heading: heroFadeUp 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+  --animate-hero-description: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.45s both;
+  --animate-hero-cta: heroFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.6s both;
 }
 
 html {
@@ -14,7 +27,37 @@ body {
   min-height: 100%;
   background: #ffffff;
   color: #171717;
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Keyframes for Tailwind animations */
+@keyframes marquee {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+@keyframes heroFadeUp {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 24px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes heroZoom {
+  0% {
+    transform: scale(1.08);
+  }
+  100% {
+    transform: scale(1);
+  }
 }

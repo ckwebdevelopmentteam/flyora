@@ -23,6 +23,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { Navbar } from "../components/Navbar";
+import { HeroSection } from "../components/HeroSection";
 import { EnquiryModal } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
@@ -215,94 +216,91 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F3EC] text-[#1E1B18] font-sans selection:bg-[#463D34] selection:text-white pt-2 sm:pt-3">
-      {/* Top Floating White Navigation Pill (Exact Fora Style) */}
+    <div className="min-h-screen bg-[#F9F3EC] text-[#1E1B18] font-sans selection:bg-[#463D34] selection:text-white">
+      {/* Top Floating White Navigation Pill (Preserved exact navbar) */}
       <Navbar
         alwaysShowSearch={true}
+        isFixed={true}
         onFindAdvisor={() => openEnquiry()}
         onBecomeAdvisor={() => setIsAdvisorModalOpen(true)}
       />
 
       {/* =========================================================================
-          HERO SECTION: 100% exact match to user screenshot (media_1792827078067.png)
-          "Find the perfect travel advisor for you"
-          Warm canvas #F9F3EC, large elegant serif heading, centered GET MATCHED
+          HERO SECTION: 100% exact match to  Tours reference website
+          Full-bleed video (/hero/hero-one.mp4), dark overlays, typography,
+          dual Sky Cyan wipe CTAs, mute/unmute control, and moving cloud-frame marquee
           ========================================================================= */}
-      <section className="pt-12 sm:pt-16 md:pt-20 pb-8 sm:pb-12 text-center max-w-5xl mx-auto px-4 sm:px-6">
-        <h1 className="font-serif text-[42px] sm:text-6xl md:text-7xl lg:text-[76px] font-normal text-[#1E1A17] tracking-[-0.02em] leading-[1.06] max-w-4xl mx-auto">
-          Find the perfect travel
-          <br />
-          advisor for you
-        </h1>
-
-        <p className="mt-5 sm:mt-6 text-sm sm:text-base md:text-[17px] text-[#554C43] max-w-xl mx-auto font-normal leading-relaxed">
-          Match with a hand-picked travel advisor based on your travel needs and
-          preferences.
-        </p>
-
-        {/* Centered Espresso GET MATCHED CTA */}
-        <div className="mt-7 sm:mt-8 flex justify-center">
-          <button
-            onClick={() => openEnquiry()}
-            className="px-8 sm:px-9 py-3.5 sm:py-4 rounded-sm bg-[#463D34] hover:bg-[#38312A] active:bg-[#2C2621] text-white text-xs sm:text-[12.5px] font-sans font-semibold uppercase tracking-[0.14em] shadow-xs hover:shadow-md transition-all duration-200 active:scale-[0.98] cursor-pointer"
-          >
-            GET MATCHED
-          </button>
-        </div>
-      </section>
+      <HeroSection
+        videoSrc="/hero/hero-one.mp4?v=new"
+        posterSrc="/hero/hero-poster.jpg"
+        eyebrow="Flyora Tours & Travels, Est. 2006"
+        title={"It’s not where you go,\nbut how you feel."}
+        description="Custom journeys across India and the world, built around you since 2006."
+        primaryCtaLabel="Start Planning"
+        onPrimaryCtaClick={() => openEnquiry()}
+        secondaryCtaLabel="See Our Journeys"
+        onSecondaryCtaClick={() => {
+          if (carouselRef.current) {
+            carouselRef.current.scrollIntoView({ behavior: "smooth" });
+          }
+        }}
+      />
 
       {/* =========================================================================
           DESTINATION PHOTOGRAPHY CAROUSEL STRIP:
           Exact matching visual cards from user screenshot with circular < and >
+          Elevated with relative z-10 and solid canvas to smoothly cover sticky hero
           ========================================================================= */}
-      <section className="relative w-full max-w-[1400px] mx-auto px-2 sm:px-4 pb-16 sm:pb-24">
-        {/* Floating Circular Navigation Arrows */}
-        <button
-          onClick={scrollLeft}
-          aria-label="Previous destinations"
-          className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 hover:bg-white text-zinc-900 shadow-[0_4px_20px_rgba(0,0,0,0.18)] flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs border border-black/5"
-        >
-          <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
-        </button>
+      <div className="relative z-10 w-full bg-[#F9F3EC]">
+        <section className="relative w-full max-w-[1400px] mx-auto px-2 sm:px-4 pb-16 sm:pb-24">
+          {/* Floating Circular Navigation Arrows */}
+          <button
+            onClick={scrollLeft}
+            aria-label="Previous destinations"
+            className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 hover:bg-white text-zinc-900 shadow-[0_4px_20px_rgba(0,0,0,0.18)] flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs border border-black/5"
+          >
+            <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
+          </button>
 
-        <button
-          onClick={scrollRight}
-          aria-label="Next destinations"
-          className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 hover:bg-white text-zinc-900 shadow-[0_4px_20px_rgba(0,0,0,0.18)] flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs border border-black/5"
-        >
-          <ChevronRight className="w-5 h-5 stroke-[2.2]" />
-        </button>
+          <button
+            onClick={scrollRight}
+            aria-label="Next destinations"
+            className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 hover:bg-white text-zinc-900 shadow-[0_4px_20px_rgba(0,0,0,0.18)] flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs border border-black/5"
+          >
+            <ChevronRight className="w-5 h-5 stroke-[2.2]" />
+          </button>
 
-        {/* Horizontal Carousel Track */}
-        <div
-          ref={carouselRef}
-          className="flex items-center gap-3 sm:gap-4 overflow-x-auto scroll-smooth py-2 px-4 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none]"
-        >
-          {CAROUSEL_DESTINATIONS.map((dest) => (
-            <div
-              key={dest.id}
-              onClick={() => openEnquiry(dest.title)}
-              className="group relative w-48 sm:w-60 md:w-64 aspect-4/3 sm:aspect-square shrink-0 rounded-lg sm:rounded-xl overflow-hidden cursor-pointer shadow-xs hover:shadow-lg transition-all duration-300"
-            >
-              <img
-                src={dest.image}
-                alt={dest.title}
-                loading="lazy"
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-              <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white">
-                <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/80 block mb-0.5">
-                  {dest.category}
-                </span>
-                <p className="text-xs sm:text-sm font-semibold tracking-tight leading-snug line-clamp-1">
-                  {dest.title}
-                </p>
+          {/* Horizontal Carousel Track */}
+          <div
+            ref={carouselRef}
+            className="flex items-center gap-3 sm:gap-4 overflow-x-auto scroll-smooth py-2 px-4 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none]"
+          >
+            {CAROUSEL_DESTINATIONS.map((dest) => (
+              <div
+                key={dest.id}
+                onClick={() => openEnquiry(dest.title)}
+                className="group relative w-48 sm:w-60 md:w-64 aspect-4/3 sm:aspect-square shrink-0 rounded-lg sm:rounded-xl overflow-hidden cursor-pointer shadow-xs hover:shadow-lg transition-all duration-300"
+              >
+                <img
+                  src={dest.image}
+                  alt={dest.title}
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
+                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white">
+                  <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/80 block mb-0.5">
+                    {dest.category}
+                  </span>
+                  <p className="text-xs sm:text-sm font-semibold tracking-tight leading-snug line-clamp-1">
+                    {dest.title}
+                  </p>
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      </section>
+            ))}
+          </div>
+        </section>
+      </div>
 
       {/* =========================================================================
           SECTION: HOW IT WORKS (Trip Planning Made Effortless)
