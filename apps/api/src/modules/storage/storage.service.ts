@@ -2,6 +2,7 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "crypto";
@@ -63,6 +64,11 @@ export class StorageService {
     const fileKey = `${folder}/${Date.now()}-${randomUUID().slice(0, 8)}-${cleanName}.${safeExt}`;
 
     if (!this.isConfigured || !this.s3Client) {
+      if (isPrivate)
+        throw Object.assign(
+          new Error("Private receipt storage is not configured."),
+          { statusCode: 503 },
+        );
       // Mock upload for development when R2 credentials are not yet configured in .env
       const mockPublicUrl = `${this.publicDomain}/${fileKey}`;
       return {
@@ -98,10 +104,10 @@ export class StorageService {
 
   async getPresignedDownloadUrl(fileKey: string, expiresIn = 900) {
     if (!this.isConfigured || !this.s3Client) {
-      return {
-        downloadUrl: `${this.publicDomain}/${fileKey}`,
-        isMock: true,
-      };
+      throw Object.assign(
+        new Error("Private receipt storage is not configured."),
+        { statusCode: 503 },
+      );
     }
 
     const command = new GetObjectCommand({
@@ -117,5 +123,56 @@ export class StorageService {
       downloadUrl,
       isMock: false,
     };
+  }
+
+  async assertReceiptExists(fileKey: string): Promise<void> {
+    if (
+      !/^receipts\/[a-zA-Z0-9][a-zA-Z0-9._-]{0,240}$/.test(fileKey) ||
+      fileKey.includes("..")
+    )
+      throw Object.assign(
+        new Error(
+          "Upload a valid payment receipt before submitting or verifying this payment.",
+        ),
+        { statusCode: 400 },
+      );
+    if (!this.isConfigured || !this.s3Client)
+      throw Object.assign(
+        new Error("Private receipt storage is not configured."),
+        { statusCode: 503 },
+      );
+    let metadata;
+    try {
+      metadata = await this.s3Client.send(
+        new HeadObjectCommand({ Bucket: this.privateBucket, Key: fileKey }),
+        { abortSignal: AbortSignal.timeout(10000) },
+      );
+    } catch (error) {
+      const missing =
+        (error as { $metadata?: { httpStatusCode?: number } }).$metadata
+          ?.httpStatusCode === 404;
+      throw Object.assign(
+        new Error(
+          missing
+            ? "Receipt file is missing from private storage. Upload it again before submitting or verifying the payment."
+            : "Private receipt storage is temporarily unavailable. Please try again.",
+        ),
+        { statusCode: missing ? 404 : 503 },
+      );
+    }
+    const contentType = metadata.ContentType?.split(";")[0].toLowerCase();
+    if (
+      !metadata.ContentLength ||
+      metadata.ContentLength > 10 * 1024 * 1024 ||
+      !["image/png", "image/jpeg", "application/pdf"].includes(
+        contentType || "",
+      )
+    )
+      throw Object.assign(
+        new Error(
+          "Receipt must be a non-empty PNG, JPG or PDF no larger than 10MB.",
+        ),
+        { statusCode: 400 },
+      );
   }
 }

@@ -157,4 +157,90 @@ describe("RecordPaymentModal Component", () => {
       expect(onClose).toHaveBeenCalledOnce();
     });
   });
+
+  it("keeps failed uploads unsubmitted and allows retrying the same file", async () => {
+    vi.mocked(bookingsApi.uploadReceiptSlip)
+      .mockRejectedValueOnce(
+        new Error(
+          "Private storage rejected the receipt upload. Please try again.",
+        ),
+      )
+      .mockResolvedValueOnce({ fileKey: "receipts/retry.png" });
+    render(
+      <RecordPaymentModal isOpen booking={mockBooking} onClose={vi.fn()} />,
+    );
+    const input = screen.getByLabelText("Payment receipt") as HTMLInputElement;
+    const file = new File(["proof"], "slip.png", { type: "image/png" });
+    fireEvent.change(input, { target: { files: [file] } });
+    expect(await screen.findByRole("alert")).toBeTruthy();
+    expect(input.value).toBe("");
+    fireEvent.change(screen.getByPlaceholderText(/e.g. UPI/), {
+      target: { value: "UTR-123" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Record & Submit/ }));
+    expect(bookingsApi.recordPayment).not.toHaveBeenCalled();
+    expect(
+      await screen.findByText(/Please attach a payment receipt/),
+    ).toBeTruthy();
+    fireEvent.change(input, { target: { files: [file] } });
+    expect(await screen.findByText("slip.png")).toBeTruthy();
+    expect(bookingsApi.uploadReceiptSlip).toHaveBeenCalledTimes(2);
+  });
+
+  it("rejects unsupported receipt files before upload", async () => {
+    render(
+      <RecordPaymentModal isOpen booking={mockBooking} onClose={vi.fn()} />,
+    );
+    fireEvent.change(screen.getByLabelText("Payment receipt"), {
+      target: {
+        files: [new File(["html"], "bad.html", { type: "text/html" })],
+      },
+    });
+    expect(await screen.findByRole("alert")).toHaveProperty(
+      "textContent",
+      "Choose a PNG, JPG or PDF receipt.",
+    );
+    expect(bookingsApi.uploadReceiptSlip).not.toHaveBeenCalled();
+  });
+
+  it("prevents duplicate submission and retains the form on a server failure", async () => {
+    let rejectRequest!: (reason: Error) => void;
+    vi.mocked(bookingsApi.uploadReceiptSlip).mockResolvedValue({
+      fileKey: "receipts/slip.png",
+    });
+    vi.mocked(bookingsApi.recordPayment).mockImplementation(
+      () =>
+        new Promise((_resolve, reject) => {
+          rejectRequest = reject;
+        }),
+    );
+    const close = vi.fn(),
+      recorded = vi.fn();
+    const { container } = render(
+      <RecordPaymentModal
+        isOpen
+        booking={mockBooking}
+        onClose={close}
+        onPaymentRecorded={recorded}
+      />,
+    );
+    fireEvent.change(screen.getByPlaceholderText(/e.g. UPI/), {
+      target: { value: "UTR-123" },
+    });
+    fireEvent.change(screen.getByLabelText("Payment receipt"), {
+      target: {
+        files: [new File(["proof"], "slip.png", { type: "image/png" })],
+      },
+    });
+    await screen.findByText("slip.png");
+    fireEvent.submit(container.querySelector("form")!);
+    fireEvent.submit(container.querySelector("form")!);
+    expect(bookingsApi.recordPayment).toHaveBeenCalledOnce();
+    rejectRequest(new Error("Receipt is missing from storage"));
+    expect(
+      await screen.findByText("Receipt is missing from storage"),
+    ).toBeTruthy();
+    expect(close).not.toHaveBeenCalled();
+    expect(recorded).not.toHaveBeenCalled();
+  });
 });

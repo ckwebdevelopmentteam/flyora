@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import type { BookingRecord, PaymentMethod, PaymentRecord } from "./types";
 import { bookingsApi } from "./bookingsApi";
+import { receiptContentType } from "./receiptUpload";
 import { formatINR } from "./paymentCalculator";
 import {
   Calendar,
@@ -46,6 +47,8 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const uploadInFlight = useRef(false);
+  const submitInFlight = useRef(false);
 
   if (!isOpen) return null;
 
@@ -71,23 +74,33 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
   };
 
   const processFileUpload = async (file: File) => {
+    if (uploadInFlight.current || submitInFlight.current) return;
     setUploadError(null);
-
-    // Validate size (10MB limit)
-    if (file.size > 10 * 1024 * 1024) {
-      setUploadError("Receipt file exceeds 10MB maximum limit.");
+    setReceiptFileKey("");
+    setReceiptFileName("");
+    try {
+      receiptContentType(file);
+    } catch (error) {
+      setUploadError((error as Error).message);
+      if (fileInputRef.current) fileInputRef.current.value = "";
       return;
     }
-
+    uploadInFlight.current = true;
     setIsUploadingFile(true);
     try {
       const res = await bookingsApi.uploadReceiptSlip(file);
       setReceiptFileKey(res.fileKey);
       setReceiptFileName(file.name);
-    } catch {
-      setUploadError("Failed to upload receipt slip. Please try again.");
+    } catch (error) {
+      setUploadError(
+        error instanceof Error
+          ? error.message
+          : "Failed to upload receipt slip. Please try again.",
+      );
     } finally {
+      uploadInFlight.current = false;
       setIsUploadingFile(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
     }
   };
 
@@ -101,6 +114,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitInFlight.current || uploadInFlight.current) return;
     setErrorMessage(null);
 
     if (numAmount <= 0) {
@@ -112,6 +126,16 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
       setErrorMessage("Transaction reference or Bank UTR is required.");
       return;
     }
+    if (transactionRef.trim().length < 3) {
+      setErrorMessage(
+        "Transaction reference must contain at least 3 characters.",
+      );
+      return;
+    }
+    if (!paymentDate || !Number.isFinite(Date.parse(paymentDate))) {
+      setErrorMessage("Choose a valid payment date.");
+      return;
+    }
 
     if (!receiptFileKey) {
       setErrorMessage(
@@ -120,6 +144,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
       return;
     }
 
+    submitInFlight.current = true;
     setIsSubmitting(true);
     try {
       const payment = await bookingsApi.recordPayment(booking.id, {
@@ -140,6 +165,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
         err.message || "Failed to record payment. Please try again.",
       );
     } finally {
+      submitInFlight.current = false;
       setIsSubmitting(false);
     }
   };
@@ -156,7 +182,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
 
       <div className="flex min-h-full items-center justify-center p-4">
         <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-zinc-200 overflow-hidden animate-in zoom-in-95 duration-150">
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             {/* Header */}
             <div className="px-6 py-5 bg-[#FAFAF9] border-b border-zinc-200 flex items-center justify-between">
               <div className="flex items-center gap-3">
@@ -342,6 +368,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
                 <input
                   ref={fileInputRef}
                   type="file"
+                  aria-label="Payment receipt"
                   accept="image/png,image/jpeg,image/jpg,application/pdf"
                   onChange={handleFileChange}
                   className="hidden"
@@ -349,9 +376,22 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
 
                 {!receiptFileKey ? (
                   <div
+                    role="button"
+                    tabIndex={0}
+                    aria-disabled={isUploadingFile || isSubmitting}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        e.preventDefault();
+                        if (!uploadInFlight.current && !submitInFlight.current)
+                          fileInputRef.current?.click();
+                      }
+                    }}
                     onDragOver={(e) => e.preventDefault()}
                     onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() => {
+                      if (!uploadInFlight.current && !submitInFlight.current)
+                        fileInputRef.current?.click();
+                    }}
                     className="border-2 border-dashed border-zinc-300 hover:border-zinc-500 rounded-xl p-4 text-center cursor-pointer bg-[#FAFAF9] hover:bg-zinc-50 transition space-y-1.5"
                   >
                     {isUploadingFile ? (
@@ -394,7 +434,10 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
                 )}
 
                 {uploadError && (
-                  <span className="text-[10px] text-rose-600 block mt-1">
+                  <span
+                    role="alert"
+                    className="text-[10px] text-rose-600 block mt-1"
+                  >
                     {uploadError}
                   </span>
                 )}
@@ -428,7 +471,6 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
 
               <button
                 type="submit"
-                onClick={handleSubmit}
                 disabled={isSubmitting || isUploadingFile}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black hover:bg-zinc-800 text-white text-xs font-semibold shadow-xs transition disabled:opacity-50"
               >

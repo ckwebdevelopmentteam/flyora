@@ -6,6 +6,7 @@ import {
   formatPaymentMethod,
 } from "./paymentCalculator";
 import { bookingsApi } from "./bookingsApi";
+import { ReplaceReceiptButton } from "./ReplaceReceiptButton";
 import { useAuthStore } from "../../stores/authStore";
 import {
   Calendar,
@@ -87,6 +88,7 @@ export const BookingDetailDrawer: React.FC<BookingDetailDrawerProps> = ({
   const [rejectionReason, setRejectionReason] = useState<string>("");
 
   const [isLoadingReceipt, setIsLoadingReceipt] = useState<boolean>(false);
+  const [actionError, setActionError] = useState<string | null>(null);
 
   if (!isOpen || !booking) return null;
 
@@ -126,21 +128,19 @@ ${publicVoucherUrl}`;
 
   // Handle viewing receipt with presigned URL
   const handleViewReceipt = async (payment: PaymentRecord) => {
+    setActionError(null);
     setIsLoadingReceipt(true);
     try {
       const res = await bookingsApi.getReceiptPresignedUrl(payment.id);
       if (res && res.url) {
         window.open(res.url, "_blank", "noopener,noreferrer");
       }
-    } catch {
-      // Fallback
-      if (payment.receiptPresignedUrl) {
-        window.open(
-          payment.receiptPresignedUrl,
-          "_blank",
-          "noopener,noreferrer",
-        );
-      }
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Receipt could not be opened. Please try again.",
+      );
     } finally {
       setIsLoadingReceipt(false);
     }
@@ -148,12 +148,19 @@ ${publicVoucherUrl}`;
 
   // Verify payment
   const handleVerifyPayment = async (paymentId: string) => {
+    setActionError(null);
     setVerifyingPaymentId(paymentId);
     try {
       await bookingsApi.verifyPayment(paymentId, { status: "VERIFIED" });
       if (onPaymentVerified) {
         onPaymentVerified();
       }
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Payment could not be verified. Please try again.",
+      );
     } finally {
       setVerifyingPaymentId(null);
     }
@@ -161,6 +168,7 @@ ${publicVoucherUrl}`;
 
   // Reject payment
   const handleRejectPayment = async (paymentId: string) => {
+    setActionError(null);
     setVerifyingPaymentId(paymentId);
     try {
       await bookingsApi.verifyPayment(paymentId, {
@@ -172,6 +180,12 @@ ${publicVoucherUrl}`;
       if (onPaymentVerified) {
         onPaymentVerified();
       }
+    } catch (error) {
+      setActionError(
+        error instanceof Error
+          ? error.message
+          : "Payment could not be rejected. Please try again.",
+      );
     } finally {
       setVerifyingPaymentId(null);
     }
@@ -240,6 +254,14 @@ ${publicVoucherUrl}`;
             </div>
 
             {/* Direct Communication & Voucher Actions */}
+            {actionError && (
+              <p
+                role="alert"
+                className="mt-3 rounded-lg bg-rose-50 p-3 text-xs text-rose-700"
+              >
+                {actionError}
+              </p>
+            )}
             <div className="grid grid-cols-2 gap-2 mt-4">
               {cleanPhone && (
                 <a
@@ -577,6 +599,14 @@ ${publicVoucherUrl}`;
                         )}
 
                         {/* View Presigned Receipt & Accounts Verification */}
+                        {isPending && (
+                          <ReplaceReceiptButton
+                            paymentId={payment.id}
+                            transactionRef={payment.transactionRef}
+                            onReplaced={onPaymentVerified}
+                            onError={setActionError}
+                          />
+                        )}
                         <div className="pt-2 border-t border-zinc-100 flex flex-wrap items-center justify-between gap-2">
                           <button
                             type="button"
