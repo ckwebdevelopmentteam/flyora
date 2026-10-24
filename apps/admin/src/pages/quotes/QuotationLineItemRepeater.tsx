@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import type { QuotationItemType, QuoteItemFormState } from "./types";
 import { ITEM_TYPE_PRESETS } from "./types";
 import {
@@ -59,6 +59,36 @@ const CATEGORY_BADGES: Record<
     border: "border-zinc-200",
   },
 };
+
+function QuantityInput({
+  id,
+  value,
+  onChange,
+}: {
+  id: string;
+  value: number;
+  onChange: (quantity: number) => void;
+}) {
+  const [isCleared, setIsCleared] = useState(false);
+
+  return (
+    <input
+      id={id}
+      type="number"
+      min={1}
+      step={1}
+      value={isCleared ? "" : value}
+      onChange={(event) => {
+        const raw = event.target.value;
+        // Keep the temporary blank in the input; quote data stays numeric.
+        setIsCleared(raw === "");
+        onChange(Math.max(1, parseInt(raw, 10) || 1));
+      }}
+      onBlur={() => setIsCleared(false)}
+      className="w-full text-xs font-mono px-2.5 py-1.5 rounded-lg border border-zinc-200 focus:outline-hidden focus:ring-1 focus:ring-black"
+    />
+  );
+}
 
 export const QuotationLineItemRepeater: React.FC<
   QuotationLineItemRepeaterProps
@@ -256,21 +286,18 @@ export const QuotationLineItemRepeater: React.FC<
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1 border-t border-zinc-100 items-end">
                   {/* Quantity */}
                   <div>
-                    <label className="text-[10px] font-mono text-zinc-400 block mb-0.5">
+                    <label
+                      htmlFor={`quote-quantity-${item.id}`}
+                      className="text-[10px] font-mono text-zinc-400 block mb-0.5"
+                    >
                       Quantity (Pax / Units)
                     </label>
-                    <input
-                      type="number"
-                      min={1}
-                      value={item.quantity || ""}
-                      onChange={(e) =>
-                        handleUpdateItem(
-                          index,
-                          "quantity",
-                          Math.max(1, parseInt(e.target.value, 10) || 1),
-                        )
+                    <QuantityInput
+                      id={`quote-quantity-${item.id}`}
+                      value={item.quantity}
+                      onChange={(quantity) =>
+                        handleUpdateItem(index, "quantity", quantity)
                       }
-                      className="w-full text-xs font-mono px-2.5 py-1.5 rounded-lg border border-zinc-200 focus:outline-hidden focus:ring-1 focus:ring-black"
                     />
                   </div>
 

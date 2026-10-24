@@ -84,6 +84,72 @@ describe("QuotationBuilderModal & Margin Guard (Dev 2)", () => {
     expect(screen.getByDisplayValue("Round-trip Flights")).toBeTruthy();
   });
 
+  it("lets a quantity of one be cleared and replaced without changing another row", () => {
+    render(
+      <QuotationBuilderModal lead={mockLead} isOpen={true} onClose={vi.fn()} />,
+    );
+
+    const [hotel, transfer] = screen.getAllByRole<HTMLInputElement>(
+      "spinbutton",
+      { name: "Quantity (Pax / Units)" },
+    );
+    expect(transfer.value).toBe("1");
+    fireEvent.change(transfer, { target: { value: "" } });
+    expect(transfer.value).toBe("");
+    expect(hotel.value).toBe("3");
+
+    fireEvent.change(transfer, { target: { value: "12" } });
+    fireEvent.blur(transfer);
+    expect(transfer.value).toBe("12");
+    expect(hotel.value).toBe("3");
+  });
+
+  it("restores an empty quantity to one on blur and retains a positive minimum", () => {
+    render(
+      <QuotationBuilderModal lead={mockLead} isOpen={true} onClose={vi.fn()} />,
+    );
+
+    const quantity = screen.getAllByRole<HTMLInputElement>("spinbutton", {
+      name: "Quantity (Pax / Units)",
+    })[0];
+    fireEvent.change(quantity, { target: { value: "" } });
+    expect(quantity.value).toBe("");
+    fireEvent.blur(quantity);
+    expect(quantity.value).toBe("1");
+
+    fireEvent.change(quantity, { target: { value: "0" } });
+    expect(quantity.value).toBe("1");
+    fireEvent.change(quantity, { target: { value: "-2" } });
+    expect(quantity.value).toBe("1");
+  });
+
+  it("uses the replaced numeric quantity in totals and the creation payload", async () => {
+    render(
+      <QuotationBuilderModal lead={mockLead} isOpen={true} onClose={vi.fn()} />,
+    );
+    const quantity = screen.getAllByRole<HTMLInputElement>("spinbutton", {
+      name: "Quantity (Pax / Units)",
+    })[1];
+    fireEvent.change(quantity, { target: { value: "" } });
+    fireEvent.change(quantity, { target: { value: "2" } });
+    fireEvent.blur(quantity);
+
+    const costs = screen.getAllByPlaceholderText("0");
+    fireEvent.change(costs[2], { target: { value: "20000" } });
+    fireEvent.change(costs[3], { target: { value: "28000" } });
+    expect(screen.getAllByText("₹56,000").length).toBeGreaterThan(0);
+
+    fireEvent.click(
+      screen.getByRole("button", { name: "Generate & Finalize Quotation" }),
+    );
+    await waitFor(() =>
+      expect(quotesApi.createQuotation).toHaveBeenCalledOnce(),
+    );
+    expect(
+      vi.mocked(quotesApi.createQuotation).mock.calls[0][0].items[1],
+    ).toMatchObject({ quantity: 2, supplierCost: 20000, sellingPrice: 28000 });
+  });
+
   it("shows sub-target warning alert and exact shortfall when prices are below target margin", async () => {
     render(
       <QuotationBuilderModal lead={mockLead} isOpen={true} onClose={vi.fn()} />,

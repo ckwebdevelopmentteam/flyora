@@ -290,6 +290,9 @@ describe("Dev 2 Module 6 End-to-End Workflow Verification", () => {
     vi.mocked(bookingsApi.fetchBookings).mockResolvedValue([
       currentBookingInStore,
     ]);
+    vi.mocked(bookingsApi.fetchBookingById).mockResolvedValue(
+      currentBookingInStore,
+    );
 
     render(<BookingsPage />);
 

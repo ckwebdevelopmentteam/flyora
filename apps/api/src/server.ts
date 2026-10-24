@@ -1,10 +1,9 @@
+import "./environment";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
-import path from "node:path";
 import { authConfig } from "./modules/auth/auth.config";
-import dotenv from "dotenv";
 import prismaPlugin from "./plugins/prisma";
 import jwtPlugin from "./plugins/jwt";
 import { authRoutes } from "./modules/auth/auth.controller";
@@ -20,9 +19,11 @@ import {
   quotationRoutes,
   publicQuotationRoutes,
 } from "./modules/quotation/quotation.controller";
-
-dotenv.config();
-dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
+import {
+  bookingsRoutes,
+  paymentsRoutes,
+  publicBookingsRoutes,
+} from "./modules/bookings/bookings.controller";
 
 const fastify = Fastify({
   logger: {
@@ -78,6 +79,9 @@ fastify.register(leadsRoutes, { prefix: "/api/v1/leads" });
 fastify.register(publicEnquiryRoutes, { prefix: "/api/v1/public" });
 fastify.register(quotationRoutes, { prefix: "/api/v1/quotes" });
 fastify.register(publicQuotationRoutes, { prefix: "/api/v1/public" });
+fastify.register(bookingsRoutes, { prefix: "/api/v1/bookings" });
+fastify.register(paymentsRoutes, { prefix: "/api/v1/payments" });
+fastify.register(publicBookingsRoutes, { prefix: "/api/v1/public" });
 
 // Global Error Handler
 fastify.setErrorHandler((error: any, _request, reply) => {

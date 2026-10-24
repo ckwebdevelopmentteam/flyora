@@ -1,0 +1,125 @@
+.status {
+  background: #e1eddf;
+  color: #233b2b;
+  padding: 7px 12px;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 650;
+}
+.cancelled {
+  background: #fff0dc;
+  color: #7a351f;
+}
+.cancellation {
+  border: 1px solid #d7ad90;
+  border-radius: 10px;
+  background: #fff4e8;
+  color: #703f21;
+  padding: 18px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+.cancellation strong {
+  display: block;
+}
+.itineraryItem {
+  grid-template-columns: minmax(0, 1fr);
+}
+.financials {
+  margin: 24px 0 18px;
+  display: grid;
+  gap: 14px;
+}
+.financials > div {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+  border-bottom: 1px solid #e3e5de;
+  padding-bottom: 12px;
+  font-size: 14px;
+}
+.financials dt {
+  color: #56624f;
+}
+.financials dd {
+  font-weight: 650;
+  overflow-wrap: anywhere;
+}
+.progress {
+  width: 100%;
+  height: 10px;
+  accent-color: #22764d;
+  border: 0;
+  border-radius: 6px;
+  overflow: hidden;
+  background: #e4e9de;
+}
+.progress::-webkit-progress-bar {
+  background: #e4e9de;
+}
+.progress::-webkit-progress-value {
+  background: #22764d;
+}
+.progress::-moz-progress-bar {
+  background: #22764d;
+}
+.paymentState {
+  font-size: 13px;
+  font-weight: 650;
+  margin: 10px 0;
+  color: #6b4a20;
+}
+.fullyPaid {
+  background: #e8f3e5;
+  color: #245437;
+  padding: 12px;
+  border-radius: 6px;
+}
+.paymentNote {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #5a6554;
+}
+.refresh button {
+  margin-top: 16px;
+  width: 100%;
+  padding: 10px;
+  font-size: 12px;
+}
+.empty {
+  background: #fff;
+  border: 1px solid #e3e5de;
+  border-radius: 10px;
+  padding: 24px;
+  line-height: 1.7;
+}
+@media print {
+  .refresh {
+    display: none;
+  }
+  .cancellation {
+    padding: 3mm;
+    margin-bottom: 4mm;
+    font-size: 10pt;
+    break-inside: avoid;
+  }
+  .financials {
+    margin: 4mm 0;
+    gap: 2mm;
+  }
+  .financials > div {
+    font-size: 10pt;
+    padding-bottom: 2mm;
+  }
+  .paymentNote {
+    font-size: 8pt;
+  }
+  .paymentState {
+    font-size: 10pt;
+  }
+  .progress {
+    height: 2mm;
+  }
+}

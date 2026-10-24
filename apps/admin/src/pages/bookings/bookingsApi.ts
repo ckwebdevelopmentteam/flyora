@@ -1,4 +1,5 @@
 import { apiClient } from "../../lib/apiClient";
+import { receiptContentType } from "./receiptUpload";
 import type {
   BookingRecord,
   PaymentRecord,
@@ -8,137 +9,104 @@ import type {
   BookingsFilterState,
 } from "./types";
 
-const BOOKINGS_STORAGE_KEY = "flyora_admin_bookings_v1";
+import type { BookingDetails, BookingSummary } from "@flyora/types";
 
-function getLocalBookings(): BookingRecord[] {
-  try {
-    const raw = localStorage.getItem(BOOKINGS_STORAGE_KEY);
-    return raw ? JSON.parse(raw) : [];
-  } catch {
-    return [];
-  }
+function normalizeBooking(
+  data: BookingDetails | BookingSummary,
+): BookingRecord {
+  if (!data?.id || !data.bookingRef)
+    throw new Error("The booking response was incomplete. Please refresh.");
+  const common = {
+    id: data.id,
+    bookingRef: data.bookingRef,
+    leadId: data.leadId,
+    quotationId: data.quotationId,
+    status: data.status,
+    totalAmount: data.totalAmount,
+    paidAmount: data.paidAmount,
+    dueAmount: data.dueAmount,
+    travelDate: data.travelDate,
+    createdAt: data.createdAt,
+    quotationNumber: data.quoteNumber,
+    payments: data.payments,
+  };
+  if ("customer" in data)
+    return {
+      ...common,
+      customerName: data.customer.fullName,
+      customerPhone: data.customer.phone,
+      customerEmail: data.customer.email,
+      customerCity: data.customer.city,
+      serviceName: data.service.name,
+      quotationItems: data.quotation.items,
+    };
+  return {
+    ...common,
+    customerName: data.customerName,
+    customerPhone: data.customerPhone,
+    serviceName: data.serviceName,
+  };
 }
-
-function saveLocalBookings(bookings: BookingRecord[]): void {
-  try {
-    localStorage.setItem(BOOKINGS_STORAGE_KEY, JSON.stringify(bookings));
-  } catch {
-    // Ignore storage errors
-  }
+interface BookingPage {
+  items: BookingSummary[];
+  totalPages: number;
 }
-
-let bookingCounter = 100;
-let paymentCounter = 200;
 
 export const bookingsApi = {
   /**
    * Fetch all bookings with optional filtering
    */
   async fetchBookings(filters?: BookingsFilterState): Promise<BookingRecord[]> {
-    try {
-      const params = new URLSearchParams();
-      if (filters?.status && filters.status !== "ALL") {
-        params.set("status", filters.status);
-      }
-      if (filters?.search) {
-        params.set("search", filters.search);
-      }
-      const query = params.toString() ? `?${params.toString()}` : "";
-      const response = await apiClient.get<BookingRecord[]>(
-        `/bookings${query}`,
+    const params = new URLSearchParams({ limit: "100" });
+    if (filters?.status && filters.status !== "ALL")
+      params.set("status", filters.status);
+    if (filters?.serviceId) params.set("serviceId", filters.serviceId);
+    const readPage = async (page: number) => {
+      const query = new URLSearchParams(params);
+      query.set("page", String(page));
+      const result = await apiClient.get<BookingPage>(`/bookings?${query}`);
+      if (
+        !Array.isArray(result?.items) ||
+        !Number.isInteger(result.totalPages) ||
+        result.totalPages < 1
+      )
+        throw new Error("The booking list was incomplete. Please try again.");
+      return result;
+    };
+    const first = await readPage(1);
+    const items = [...first.items];
+    // Fetch further pages in bounded batches; never substitute cached/demo records.
+    for (let page = 2; page <= first.totalPages; page += 4) {
+      const pages = await Promise.all(
+        Array.from(
+          { length: Math.min(4, first.totalPages - page + 1) },
+          (_, offset) => readPage(page + offset),
+        ),
       );
-      if (Array.isArray(response)) {
-        return response;
-      }
-    } catch {
-      // Backend not yet ready -> use fallback store
+      items.push(...pages.flatMap((result) => result.items));
     }
-
-    let results = getLocalBookings();
-
-    // If local storage is empty, initialize with realistic seeded booking
-    if (results.length === 0) {
-      results = [
-        {
-          id: "bk-seeded-01",
-          bookingRef: "BK-2026-0042",
-          leadId: "lead-seeded-01",
-          quotationId: "quote-seeded-01",
-          quotationNumber: "FLY-2026-0042",
-          status: "CONFIRMED",
-          totalAmount: 185000,
-          paidAmount: 60000,
-          dueAmount: 125000,
-          travelDate: "2026-11-20T00:00:00.000Z",
-          createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-          customerName: "Aamir & Priya Sheikh",
-          customerPhone: "+91 98200 11223",
-          customerEmail: "aamir.sheikh@example.com",
-          customerCity: "Bangalore",
-          serviceName: "Dubai Luxury Holidays",
-          packageTitle: "5D/4N Glitz of Dubai",
-          paxCount: 3,
-          adultsCount: 2,
-          kidsCount: 1,
-          notes:
-            "Confirmed advance via WhatsApp. Customer prefers Burj Khalifa evening sunset slot.",
-          payments: [
-            {
-              id: "pay-seed-01",
-              bookingId: "bk-seeded-01",
-              recordedById: "coord-01",
-              recordedByName: "Staff Coordinator",
-              amount: 60000,
-              method: "BANK_TRANSFER_NEFT_IMPS",
-              transactionRef: "HDFC9284918204",
-              receiptFileKey: "receipts/hdfc-slip-01.pdf",
-              receiptPresignedUrl: "https://r2.flyora.com/demo-receipt.pdf",
-              status: "VERIFIED",
-              notes: "Advance 30% credited to Flyora HDFC Current A/C",
-              paymentDate: "2026-10-21",
-              createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
-            },
-          ],
-        },
-      ];
-      saveLocalBookings(results);
-    }
-
-    if (filters?.status && filters.status !== "ALL") {
-      results = results.filter((b) => b.status === filters.status);
-    }
-
-    if (filters?.search) {
-      const q = filters.search.toLowerCase().trim();
-      results = results.filter(
-        (b) =>
-          b.bookingRef.toLowerCase().includes(q) ||
-          b.customerName?.toLowerCase().includes(q) ||
-          b.customerPhone?.toLowerCase().includes(q) ||
-          b.serviceName?.toLowerCase().includes(q),
-      );
-    }
-
-    return results;
+    const results = items.map(normalizeBooking);
+    const search = filters?.search?.trim().toLowerCase();
+    return search
+      ? results.filter((booking) =>
+          [
+            booking.bookingRef,
+            booking.customerName,
+            booking.customerPhone,
+            booking.serviceName,
+          ].some((value) => value?.toLowerCase().includes(search)),
+        )
+      : results;
   },
 
   /**
    * Fetch single booking by ID
    */
   async fetchBookingById(id: string): Promise<BookingRecord | null> {
-    try {
-      const response = await apiClient.get<BookingRecord>(
-        `/bookings/${encodeURIComponent(id)}`,
-      );
-      if (response && response.id) {
-        return response;
-      }
-    } catch {
-      // Fallback
-    }
-
-    const all = await this.fetchBookings();
-    return all.find((b) => b.id === id || b.bookingRef === id) || null;
+    const response = await apiClient.get<BookingDetails>(
+      `/bookings/${encodeURIComponent(id)}`,
+    );
+    return normalizeBooking(response);
   },
 
   /**
@@ -160,57 +128,21 @@ export const bookingsApi = {
       quoteNumber?: string;
     },
   ): Promise<BookingRecord> {
-    try {
-      const response = await apiClient.post<BookingRecord>(
-        "/bookings/convert-quote",
-        {
-          quotationId: payload.quotationId,
-          travelDate: payload.travelDate,
-          notes: payload.notes,
-        },
-      );
-      if (response && response.bookingRef) {
-        const existing = getLocalBookings().filter((b) => b.id !== response.id);
-        saveLocalBookings([response, ...existing]);
-        return response;
-      }
-    } catch {
-      // Backend not yet wired -> fallback local creation
-    }
-
-    bookingCounter += 1;
-    const year = new Date().getFullYear();
-    const totalAmount = Number(payload.sellingPrice) || 100000;
-
-    const newBooking: BookingRecord = {
-      id: `bk-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`,
-      bookingRef: `BK-${year}-${String(bookingCounter).padStart(4, "0")}`,
-      leadId: payload.leadId || "lead-default",
-      quotationId: payload.quotationId,
-      quotationNumber: payload.quoteNumber || "FLY-2026-QUOTE",
-      status: "CONFIRMED",
-      totalAmount,
-      paidAmount: 0,
-      dueAmount: totalAmount,
-      travelDate: payload.travelDate,
-      createdAt: new Date().toISOString(),
-      customerName: payload.customerName || "Valued Traveler",
-      customerPhone: payload.customerPhone || "",
-      customerEmail: payload.customerEmail || "",
-      customerCity: payload.customerCity || "",
-      serviceName: payload.serviceName || "Tour Package",
-      packageTitle: payload.packageTitle || null,
-      paxCount: payload.paxCount || 2,
-      adultsCount: payload.adultsCount || 2,
-      kidsCount: payload.kidsCount || 0,
-      notes: payload.notes || null,
-      payments: [],
+    const response = await apiClient.post<BookingDetails>(
+      "/bookings/convert-quote",
+      {
+        quotationId: payload.quotationId,
+        travelDate: payload.travelDate,
+        notes: payload.notes,
+      },
+    );
+    return {
+      ...normalizeBooking(response),
+      packageTitle: payload.packageTitle,
+      paxCount: payload.paxCount,
+      adultsCount: payload.adultsCount,
+      kidsCount: payload.kidsCount,
     };
-
-    const existing = getLocalBookings().filter((b) => b.id !== newBooking.id);
-    saveLocalBookings([newBooking, ...existing]);
-
-    return newBooking;
   },
 
   /**
@@ -220,50 +152,15 @@ export const bookingsApi = {
     bookingId: string,
     payload: RecordPaymentPayload,
   ): Promise<PaymentRecord> {
-    try {
-      const response = await apiClient.post<PaymentRecord>(
-        `/bookings/${encodeURIComponent(bookingId)}/payments`,
-        payload,
+    const response = await apiClient.post<PaymentRecord>(
+      `/bookings/${encodeURIComponent(bookingId)}/payments`,
+      payload,
+    );
+    if (!response?.id || response.status !== "PENDING")
+      throw new Error(
+        "Payment was not confirmed by the server. Refresh the booking before trying again.",
       );
-      if (response && response.id) {
-        return response;
-      }
-    } catch {
-      // Fallback
-    }
-
-    paymentCounter += 1;
-    const newPayment: PaymentRecord = {
-      id: `pay-${Date.now()}-${paymentCounter}`,
-      bookingId,
-      recordedById: "coord-current",
-      recordedByName: "Staff Coordinator",
-      amount: Number(payload.amount),
-      method: payload.method,
-      transactionRef: payload.transactionRef,
-      receiptFileKey: payload.receiptFileKey,
-      receiptPresignedUrl: `https://r2.flyora.com/${payload.receiptFileKey}`,
-      status: "PENDING",
-      notes: payload.notes || null,
-      paymentDate: payload.paymentDate || new Date().toISOString().slice(0, 10),
-      createdAt: new Date().toISOString(),
-    };
-
-    // Update in local booking record
-    const all = getLocalBookings();
-    const updated = all.map((b) => {
-      if (b.id === bookingId) {
-        const payments = [newPayment, ...(b.payments || [])];
-        return {
-          ...b,
-          payments,
-        };
-      }
-      return b;
-    });
-    saveLocalBookings(updated);
-
-    return newPayment;
+    return response;
   },
 
   /**
@@ -273,90 +170,47 @@ export const bookingsApi = {
     paymentId: string,
     payload: VerifyPaymentPayload,
   ): Promise<PaymentRecord> {
-    try {
-      const response = await apiClient.patch<PaymentRecord>(
-        `/payments/${encodeURIComponent(paymentId)}/verify`,
-        payload,
+    const response = await apiClient.patch<PaymentRecord>(
+      `/payments/${encodeURIComponent(paymentId)}/verify`,
+      payload,
+    );
+    if (response?.id !== paymentId || response.status !== payload.status)
+      throw new Error(
+        "The payment status was not confirmed. Refresh the booking before trying again.",
       );
-      if (response && response.status) {
-        return response;
-      }
-    } catch {
-      // Fallback
-    }
-
-    // Update in local storage
-    const all = getLocalBookings();
-    let updatedPayment: PaymentRecord | null = null;
-
-    const updated = all.map((b) => {
-      if (b.payments) {
-        const payments = b.payments.map((p) => {
-          if (p.id === paymentId) {
-            updatedPayment = {
-              ...p,
-              status: payload.status,
-              notes: payload.notes || p.notes,
-            };
-            return updatedPayment;
-          }
-          return p;
-        });
-
-        // Recalculate paid & due amounts on the booking
-        const verifiedPaid = payments
-          .filter((p) => p.status === "VERIFIED")
-          .reduce((sum, p) => sum + p.amount, 0);
-
-        return {
-          ...b,
-          paidAmount: verifiedPaid,
-          dueAmount: Math.max(0, b.totalAmount - verifiedPaid),
-          payments,
-        };
-      }
-      return b;
-    });
-
-    saveLocalBookings(updated);
-
-    if (updatedPayment) {
-      return updatedPayment;
-    }
-
-    return {
-      id: paymentId,
-      bookingId: "b-default",
-      recordedById: "u-default",
-      amount: 0,
-      method: "UPI",
-      transactionRef: "UTR-DEFAULT",
-      receiptFileKey: "receipts/slip.png",
-      status: payload.status,
-      paymentDate: new Date().toISOString().slice(0, 10),
-      createdAt: new Date().toISOString(),
-    };
+    return response;
   },
 
   /**
    * Fetch 15-minute presigned secure download URL for receipt proof from private R2 bucket
    */
-  async getReceiptPresignedUrl(paymentId: string): Promise<{ url: string }> {
-    try {
-      const response = await apiClient.get<{ url: string }>(
-        `/payments/${encodeURIComponent(paymentId)}/receipt-url`,
+  async replacePaymentReceipt(
+    paymentId: string,
+    receiptFileKey: string,
+  ): Promise<void> {
+    const result = await apiClient.patch<
+      Pick<PaymentRecord, "id" | "status" | "receiptFileKey">
+    >(`/payments/${encodeURIComponent(paymentId)}/receipt`, { receiptFileKey });
+    if (
+      result?.id !== paymentId ||
+      result.receiptFileKey !== receiptFileKey ||
+      result.status !== "PENDING"
+    )
+      throw new Error(
+        "Receipt replacement was not confirmed. Refresh the booking before trying again.",
       );
-      if (response && response.url) {
-        return response;
-      }
-    } catch {
-      // Fallback
-    }
+  },
 
-    // Mock secure presigned URL
-    return {
-      url: `https://r2.flyora.com/flyora-private/receipts/proof-${paymentId}.jpg?signature=temp15m`,
-    };
+  async getReceiptPresignedUrl(paymentId: string): Promise<{ url: string }> {
+    const response = await apiClient.get<{ downloadUrl: string }>(
+      `/payments/${encodeURIComponent(paymentId)}/receipt-url`,
+    );
+    if (
+      !response?.downloadUrl ||
+      new URL(response.downloadUrl).protocol !== "https:"
+    )
+      throw new Error("The receipt could not be opened. Please try again.");
+    return { url: response.downloadUrl };
   },
 
   /**
@@ -365,45 +219,47 @@ export const bookingsApi = {
   async uploadReceiptSlip(
     file: File,
   ): Promise<{ fileKey: string; publicUrl?: string }> {
-    const timestamp = Date.now();
-    const cleanFileName = file.name.replace(/[^a-zA-Z0-9.-]/g, "_");
-    const fileKey = `receipts/${timestamp}-${cleanFileName}`;
-
+    const contentType = receiptContentType(file);
+    const presigned = await apiClient.post<{
+      uploadUrl: string;
+      fileKey: string;
+      isMock: boolean;
+    }>("/storage/upload-url", {
+      folder: "receipts",
+      filename: file.name,
+      contentType,
+    });
+    if (
+      presigned?.isMock !== false ||
+      !presigned.fileKey?.startsWith("receipts/")
+    )
+      throw new Error(
+        "Private receipt storage is unavailable. Please try again after it is configured.",
+      );
+    const url = new URL(presigned.uploadUrl);
+    if (url.protocol !== "https:" || url.username || url.password)
+      throw new Error(
+        "Private receipt storage returned an invalid upload URL.",
+      );
+    let response: Response;
     try {
-      // Step A: Request presigned upload URL from API
-      const presignedRes = await apiClient.post<{
-        uploadUrl: string;
-        fileKey: string;
-      }>("/storage/upload-url", {
-        bucketType: "private",
-        folder: "receipts",
-        fileName: file.name,
-        contentType: file.type,
+      response = await fetch(url.toString(), {
+        method: "PUT",
+        headers: { "Content-Type": contentType },
+        body: file,
+        credentials: "omit",
+        redirect: "error",
+        signal: AbortSignal.timeout(60000),
       });
-
-      if (presignedRes && presignedRes.uploadUrl) {
-        // Step B: Direct upload to Cloudflare R2
-        await fetch(presignedRes.uploadUrl, {
-          method: "PUT",
-          headers: {
-            "Content-Type": file.type,
-          },
-          body: file,
-        });
-
-        return {
-          fileKey: presignedRes.fileKey || fileKey,
-          publicUrl: presignedRes.uploadUrl.split("?")[0],
-        };
-      }
     } catch {
-      // Development simulated upload
+      throw new Error(
+        "Receipt upload failed. Check your connection and try again.",
+      );
     }
-
-    // Return generated file key
-    return {
-      fileKey,
-      publicUrl: URL.createObjectURL(file),
-    };
+    if (!response.ok)
+      throw new Error(
+        "Private storage rejected the receipt upload. Please try again.",
+      );
+    return { fileKey: presigned.fileKey };
   },
 };

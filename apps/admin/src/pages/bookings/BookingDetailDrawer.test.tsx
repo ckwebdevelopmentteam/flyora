@@ -177,4 +177,52 @@ describe("BookingDetailDrawer Component", () => {
 
     windowOpenSpy.mockRestore();
   });
+
+  it("shows missing receipt errors without opening a stale fallback URL", async () => {
+    const open = vi.spyOn(window, "open").mockImplementation(() => null);
+    vi.mocked(bookingsApi.getReceiptPresignedUrl).mockRejectedValue(
+      new Error("Receipt file is missing from private storage"),
+    );
+    render(
+      <BookingDetailDrawer
+        isOpen
+        onClose={vi.fn()}
+        booking={{
+          ...mockBooking,
+          payments: mockBooking.payments!.map((payment) => ({
+            ...payment,
+            receiptPresignedUrl: "https://example.test/expired-receipt",
+          })),
+        }}
+      />,
+    );
+    fireEvent.click(
+      screen.getAllByRole("button", { name: /View Receipt Slip/ })[0],
+    );
+    expect((await screen.findByRole("alert")).textContent).toContain(
+      "Receipt file is missing",
+    );
+    expect(open).not.toHaveBeenCalled();
+    open.mockRestore();
+  });
+
+  it("does not report failed verification as success", async () => {
+    const verified = vi.fn();
+    vi.mocked(bookingsApi.verifyPayment).mockRejectedValue(
+      new Error("Upload the receipt before verification"),
+    );
+    render(
+      <BookingDetailDrawer
+        isOpen
+        onClose={vi.fn()}
+        booking={mockBooking}
+        onPaymentVerified={verified}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Verify" }));
+    expect((await screen.findByRole("alert")).textContent).toContain(
+      "Upload the receipt",
+    );
+    expect(verified).not.toHaveBeenCalled();
+  });
 });

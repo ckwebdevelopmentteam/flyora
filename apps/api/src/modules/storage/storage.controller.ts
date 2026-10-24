@@ -43,8 +43,8 @@ export const storageRoutes: FastifyPluginAsync = async (fastify) => {
           data: result,
         });
       } catch (err: any) {
-        return reply.status(500).send({
-          statusCode: 500,
+        return reply.status(err.statusCode || 500).send({
+          statusCode: err.statusCode || 500,
           error: "InternalServerError",
           message: err.message,
         });
@@ -68,13 +68,13 @@ export const storageRoutes: FastifyPluginAsync = async (fastify) => {
 
       try {
         const result = await storageService.getPresignedDownloadUrl(fileKey);
-        return reply.send({
+        return reply.header("Cache-Control", "no-store").send({
           statusCode: 200,
           data: result,
         });
       } catch (err: any) {
-        return reply.status(500).send({
-          statusCode: 500,
+        return reply.status(err.statusCode || 500).send({
+          statusCode: err.statusCode || 500,
           error: "InternalServerError",
           message: err.message,
         });

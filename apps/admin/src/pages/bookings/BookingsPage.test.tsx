@@ -132,6 +132,9 @@ describe("BookingsPage Component", () => {
 
   it("opens BookingDetailDrawer when Details button is clicked", async () => {
     vi.mocked(bookingsApi.fetchBookings).mockResolvedValue(mockBookingsList);
+    vi.mocked(bookingsApi.fetchBookingById).mockResolvedValue(
+      mockBookingsList[0],
+    );
 
     render(<BookingsPage />);
 
@@ -159,5 +162,19 @@ describe("BookingsPage Component", () => {
     expect(
       screen.getByRole("button", { name: /Record & Submit for Verification/i }),
     ).toBeTruthy();
+  });
+
+  it("reports a failed live booking load and recovers on refresh without demo records", async () => {
+    vi.mocked(bookingsApi.fetchBookings)
+      .mockRejectedValueOnce(new Error("Booking API unavailable"))
+      .mockResolvedValueOnce(mockBookingsList);
+    render(<BookingsPage />);
+    expect((await screen.findByRole("alert")).textContent).toContain(
+      "Booking API unavailable",
+    );
+    expect(screen.queryByText("BK-2026-0001")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "Refresh" }));
+    expect(await screen.findByText("BK-2026-0001")).toBeTruthy();
+    expect(screen.queryByRole("alert")).toBeNull();
   });
 });
