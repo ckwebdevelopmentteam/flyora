@@ -15,13 +15,13 @@ const geistMono = Geist_Mono({
 const cormorant = Cormorant_Garamond({
   variable: "--font-cormorant",
   subsets: ["latin"],
-  weight: ["400", "500", "600"],
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
-  title: "Flyora Travels | Curated Journeys & Bespoke Luxury Experiences",
+  title: "Flyora | Find the Perfect Travel Advisor For You",
   description:
-    "Directly connect with certified travel coordinators. Bespoke itineraries, direct supplier rates, and verified tour packages.",
+    "Match with a hand-picked travel advisor based on your travel needs and preferences. Unlock VIP hotel upgrades, daily breakfast, and custom itineraries.",
 };
 
 export default function RootLayout({

@@ -16,6 +16,7 @@ export interface NavbarProps {
   onFindAdvisor?: () => void;
   onBecomeAdvisor?: () => void;
   defaultSearchOpen?: boolean;
+  alwaysShowSearch?: boolean;
 }
 
 const QUICK_SEARCH_SUGGESTIONS = [
@@ -33,10 +34,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   onFindAdvisor,
   onBecomeAdvisor,
   defaultSearchOpen = false,
+  alwaysShowSearch = false,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(defaultSearchOpen);
+  const [isSearchOpen, setIsSearchOpen] = useState(
+    alwaysShowSearch || defaultSearchOpen,
+  );
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
@@ -133,18 +137,30 @@ export const Navbar: React.FC<NavbarProps> = ({
                     aria-label="Discover destinations, advisors, and more"
                     className="w-full bg-transparent text-xs sm:text-[13px] text-zinc-900 placeholder:text-zinc-500 focus:outline-none"
                   />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsSearchOpen(false);
-                      setSearchQuery("");
-                    }}
-                    title="Close search"
-                    aria-label="Close search"
-                    className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 transition cursor-pointer"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
+                  {searchQuery ? (
+                    <button
+                      type="button"
+                      onClick={() => setSearchQuery("")}
+                      title="Clear search"
+                      aria-label="Clear search"
+                      className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 transition cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  ) : !alwaysShowSearch ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsSearchOpen(false);
+                        setSearchQuery("");
+                      }}
+                      title="Close search"
+                      aria-label="Close search"
+                      className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 transition cursor-pointer"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  ) : null}
                 </div>
               </form>
 
@@ -297,27 +313,37 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={() => {
                   setMobileMenuOpen(false);
                   if (onFindAdvisor) onFindAdvisor();
-                  else handleLinkClick("#why-us");
+                  else handleLinkClick("#how-it-works");
                 }}
                 className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors"
               >
                 FIND AN ADVISOR
               </button>
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  setIsSearchOpen(true);
-                }}
+              <Link
+                href="/explore"
+                onClick={() => setMobileMenuOpen(false)}
                 className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors flex items-center justify-between"
               >
                 <span>EXPLORE &amp; SEARCH</span>
                 <Search className="w-3.5 h-3.5 text-zinc-400" />
-              </button>
+              </Link>
               <button
-                onClick={() => handleLinkClick("#why-us")}
+                onClick={() => handleLinkClick("#how-it-works")}
                 className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors"
               >
-                ABOUT
+                HOW IT WORKS
+              </button>
+              <button
+                onClick={() => handleLinkClick("#perks")}
+                className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors"
+              >
+                VIP PERKS
+              </button>
+              <button
+                onClick={() => handleLinkClick("#faqs")}
+                className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors"
+              >
+                FAQS
               </button>
               <a
                 href="http://localhost:3001"
