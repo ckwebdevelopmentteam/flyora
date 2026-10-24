@@ -26,6 +26,7 @@ import {
 export const BookingsPage: React.FC = () => {
   const [bookings, setBookings] = useState<BookingRecord[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<BookingStatus | "ALL">(
     "ALL",
@@ -42,14 +43,19 @@ export const BookingsPage: React.FC = () => {
 
   const loadBookings = async () => {
     setIsLoading(true);
+    setLoadError(null);
     try {
       const data = await bookingsApi.fetchBookings({
         status: statusFilter,
         search: searchQuery,
       });
       setBookings(data);
-    } catch {
-      setBookings([]);
+    } catch (error) {
+      setLoadError(
+        error instanceof Error
+          ? error.message
+          : "Bookings could not be loaded. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -106,17 +112,45 @@ export const BookingsPage: React.FC = () => {
   const handleRefresh = async () => {
     await loadBookings();
     if (selectedBookingForDrawer) {
-      const refreshed = await bookingsApi.fetchBookingById(
-        selectedBookingForDrawer.id,
-      );
-      if (refreshed) {
-        setSelectedBookingForDrawer(refreshed);
+      try {
+        const refreshed = await bookingsApi.fetchBookingById(
+          selectedBookingForDrawer.id,
+        );
+        if (refreshed) setSelectedBookingForDrawer(refreshed);
+      } catch (error) {
+        setLoadError(
+          error instanceof Error
+            ? error.message
+            : "Booking details could not be refreshed.",
+        );
       }
+    }
+  };
+
+  const openDetails = async (booking: BookingRecord) => {
+    setLoadError(null);
+    try {
+      const details = await bookingsApi.fetchBookingById(booking.id);
+      if (details) setSelectedBookingForDrawer(details);
+    } catch (error) {
+      setLoadError(
+        error instanceof Error
+          ? error.message
+          : "Booking details could not be loaded.",
+      );
     }
   };
 
   return (
     <div className="space-y-6">
+      {loadError && (
+        <p
+          role="alert"
+          className="rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-700"
+        >
+          {loadError}
+        </p>
+      )}
       {/* Page Title & Refresh */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
@@ -348,7 +382,7 @@ export const BookingsPage: React.FC = () => {
                       <td className="px-5 py-3.5">
                         <button
                           type="button"
-                          onClick={() => setSelectedBookingForDrawer(booking)}
+                          onClick={() => void openDetails(booking)}
                           className="font-mono text-xs font-bold text-zinc-900 hover:text-emerald-700 transition"
                         >
                           {booking.bookingRef}
@@ -463,7 +497,7 @@ export const BookingsPage: React.FC = () => {
                           {/* View Details Drawer */}
                           <button
                             type="button"
-                            onClick={() => setSelectedBookingForDrawer(booking)}
+                            onClick={() => void openDetails(booking)}
                             className="px-2.5 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-700 text-[11px] font-medium transition"
                           >
                             Details

@@ -82,7 +82,7 @@ export const bookingsRoutes: FastifyPluginAsync = async (fastify) => {
           request.user.id,
           request.user.role,
         );
-        return reply.send({
+        return reply.header("Cache-Control", "no-store").send({
           statusCode: 200,
           data: result,
         });
@@ -118,7 +118,7 @@ export const bookingsRoutes: FastifyPluginAsync = async (fastify) => {
           request.user.id,
           request.user.role,
         );
-        return reply.send({
+        return reply.header("Cache-Control", "no-store").send({
           statusCode: 200,
           data: booking,
         });
@@ -187,6 +187,42 @@ export const bookingsRoutes: FastifyPluginAsync = async (fastify) => {
 export const paymentsRoutes: FastifyPluginAsync = async (fastify) => {
   const bookingsService = new BookingsService(fastify);
 
+  fastify.patch(
+    "/:id/receipt",
+    { preHandler: [fastify.authenticate] },
+    async (request, reply) => {
+      const params = paymentIdParamSchema.safeParse(request.params);
+      const body = z
+        .object({ receiptFileKey: z.string().min(3).max(255) })
+        .strict()
+        .safeParse(request.body);
+      if (!params.success || !body.success)
+        return reply.status(400).send({
+          statusCode: 400,
+          message: "A valid payment and receipt key are required",
+        });
+      try {
+        const result = await bookingsService.replacePaymentReceipt(
+          params.data.id,
+          request.user.id,
+          request.user.role,
+          body.data.receiptFileKey,
+        );
+        return reply
+          .header("Cache-Control", "no-store")
+          .send({ statusCode: 200, data: result });
+      } catch (error) {
+        const err = error as Error & { statusCode?: number };
+        return reply.status(err.statusCode || 500).send({
+          statusCode: err.statusCode || 500,
+          message: err.statusCode
+            ? err.message
+            : "Receipt could not be replaced. Please try again.",
+        });
+      }
+    },
+  );
+
   // 5. PATCH /api/v1/payments/:id/verify — Verify or Reject Payment (Admin/Accounts only)
   fastify.patch(
     "/:id/verify",
@@ -254,8 +290,10 @@ export const paymentsRoutes: FastifyPluginAsync = async (fastify) => {
       try {
         const result = await bookingsService.getPaymentReceiptUrl(
           paramResult.data.id,
+          request.user.id,
+          request.user.role,
         );
-        return reply.send({
+        return reply.header("Cache-Control", "no-store").send({
           statusCode: 200,
           data: result,
         });

@@ -1,10 +1,9 @@
+import "./environment";
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
-import path from "node:path";
 import { authConfig } from "./modules/auth/auth.config";
-import dotenv from "dotenv";
 import prismaPlugin from "./plugins/prisma";
 import jwtPlugin from "./plugins/jwt";
 import { authRoutes } from "./modules/auth/auth.controller";
@@ -25,9 +24,6 @@ import {
   paymentsRoutes,
   publicBookingsRoutes,
 } from "./modules/bookings/bookings.controller";
-
-dotenv.config();
-dotenv.config({ path: path.resolve(__dirname, "../../../.env") });
 
 const fastify = Fastify({
   logger: {

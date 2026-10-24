@@ -254,6 +254,10 @@ export class BookingsService {
             },
           },
           quotation: true,
+          payments: {
+            orderBy: { createdAt: "desc" },
+            include: { recordedBy: true },
+          },
         },
       }),
     ]);
@@ -274,6 +278,20 @@ export class BookingsService {
       serviceName: b.lead.service.name,
       serviceSlug: b.lead.service.slug,
       coordinatorName: b.lead.assignedTo?.fullName,
+      payments: b.payments.map((payment) => ({
+        id: payment.id,
+        bookingId: payment.bookingId,
+        recordedById: payment.recordedById,
+        recordedByName: payment.recordedBy?.fullName,
+        amount: Number(payment.amount),
+        method: payment.method as PaymentMethod,
+        status: payment.status as PaymentVerificationStatus,
+        transactionRef: payment.transactionRef,
+        receiptFileKey: payment.receiptFileKey,
+        notes: payment.notes,
+        paymentDate: payment.paymentDate.toISOString(),
+        createdAt: payment.createdAt.toISOString(),
+      })),
       createdAt: b.createdAt.toISOString(),
     }));
 
@@ -429,6 +447,8 @@ export class BookingsService {
       ? new Date(input.paymentDate)
       : new Date();
 
+    await this.storageService.assertReceiptExists(input.receiptFileKey);
+
     const payment = await this.fastify.prisma.$transaction(async (tx) => {
       const created = await tx.payment.create({
         data: {
@@ -512,6 +532,9 @@ export class BookingsService {
       throw err;
     }
 
+    if (input.status === "VERIFIED")
+      await this.storageService.assertReceiptExists(payment.receiptFileKey);
+
     const updatedPayment = await this.fastify.prisma.$transaction(
       async (tx) => {
         // 1. Update payment status
@@ -580,9 +603,63 @@ export class BookingsService {
   }
 
   /**
-   * 7. Generate 15-minute Presigned Download URL for Receipt Proof
+   * Replace proof on a pending payment without changing the financial ledger.
    */
-  async getPaymentReceiptUrl(paymentId: string): Promise<{
+  async replacePaymentReceipt(
+    paymentId: string,
+    userId: string,
+    userRole: string,
+    receiptFileKey: string,
+  ): Promise<Pick<PaymentItem, "id" | "status" | "receiptFileKey">> {
+    const payment = await this.fastify.prisma.payment.findUnique({
+      where: { id: paymentId },
+    });
+    if (!payment)
+      throw Object.assign(new Error("Payment record not found"), {
+        statusCode: 404,
+      });
+    await this.getBookingById(payment.bookingId, userId, userRole);
+    if (payment.status !== "PENDING")
+      throw Object.assign(
+        new Error("Only pending payments can have their receipt replaced."),
+        { statusCode: 409 },
+      );
+    await this.storageService.assertReceiptExists(receiptFileKey);
+    await this.fastify.prisma.$transaction(async (tx) => {
+      const changed = await tx.payment.updateMany({
+        where: { id: paymentId, status: "PENDING" },
+        data: { receiptFileKey },
+      });
+      if (changed.count !== 1)
+        throw Object.assign(
+          new Error(
+            "The payment status changed. Refresh the booking before trying again.",
+          ),
+          { statusCode: 409 },
+        );
+      const booking = await tx.booking.findUniqueOrThrow({
+        where: { id: payment.bookingId },
+        select: { leadId: true },
+      });
+      await tx.leadActivity.create({
+        data: {
+          leadId: booking.leadId,
+          userId,
+          action: "PAYMENT_RECEIPT_UPDATED",
+          details:
+            "Replaced receipt proof for a pending payment; amount and verification status unchanged.",
+        },
+      });
+    });
+    return { id: paymentId, status: "PENDING", receiptFileKey };
+  }
+
+  /** Generate a fresh 15-minute private receipt download URL. */
+  async getPaymentReceiptUrl(
+    paymentId: string,
+    userId: string,
+    userRole: string,
+  ): Promise<{
     downloadUrl: string;
     fileKey: string;
     expiresIn: number;
@@ -597,6 +674,8 @@ export class BookingsService {
       throw err;
     }
 
+    await this.getBookingById(payment.bookingId, userId, userRole);
+    await this.storageService.assertReceiptExists(payment.receiptFileKey);
     const { downloadUrl } = await this.storageService.getPresignedDownloadUrl(
       payment.receiptFileKey,
       900,

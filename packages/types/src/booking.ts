@@ -38,6 +38,7 @@ export interface BookingSummary {
   serviceName: string;
   serviceSlug: string;
   coordinatorName?: string;
+  payments?: PaymentItem[];
   createdAt: string;
 }
 
