@@ -46,7 +46,7 @@ export const InclusionsExclusionsSelector: React.FC<
         <div className="flex items-center justify-between">
           <label className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 uppercase tracking-wider">
             <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
-            Package Inclusions ({inclusions.length})
+            Included ({inclusions.length})
           </label>
         </div>
 
@@ -54,7 +54,7 @@ export const InclusionsExclusionsSelector: React.FC<
         <div className="min-h-16 flex flex-wrap gap-1.5 p-2 rounded-lg bg-[#FAFAF9] border border-zinc-200/70">
           {inclusions.length === 0 ? (
             <span className="text-[11px] text-zinc-400 italic">
-              No inclusions added. Click suggestions below or type a custom one.
+              Add what is included in the price.
             </span>
           ) : (
             inclusions.map((item) => (
@@ -81,7 +81,8 @@ export const InclusionsExclusionsSelector: React.FC<
         <div className="flex gap-1.5">
           <input
             type="text"
-            placeholder="Type custom inclusion & Enter..."
+            aria-label="Add an included service"
+            placeholder="Add something included"
             value={customInc}
             onChange={(e) => setCustomInc(e.target.value)}
             onKeyDown={(e) => {
@@ -94,6 +95,7 @@ export const InclusionsExclusionsSelector: React.FC<
           />
           <button
             type="button"
+            aria-label="Add included service"
             onClick={() => handleAddInclusion(customInc)}
             disabled={!customInc.trim()}
             className="px-2.5 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 disabled:opacity-40 text-xs font-medium transition"
@@ -103,10 +105,10 @@ export const InclusionsExclusionsSelector: React.FC<
         </div>
 
         {/* Preset quick suggestions */}
-        <div className="pt-1">
-          <span className="text-[10px] font-mono uppercase text-zinc-400 block mb-1.5">
-            Quick Suggestions
-          </span>
+        <details className="pt-1">
+          <summary className="cursor-pointer text-xs text-slate-500 mb-2">
+            Choose from common options
+          </summary>
           <div className="flex flex-wrap gap-1">
             {COMMON_INCLUSIONS.map((suggestion) => {
               const isSelected = inclusions.includes(suggestion);
@@ -127,7 +129,7 @@ export const InclusionsExclusionsSelector: React.FC<
               );
             })}
           </div>
-        </div>
+        </details>
       </div>
 
       {/* Exclusions Column */}
@@ -135,7 +137,7 @@ export const InclusionsExclusionsSelector: React.FC<
         <div className="flex items-center justify-between">
           <label className="text-xs font-semibold text-zinc-900 flex items-center gap-1.5 uppercase tracking-wider">
             <ShieldAlert className="w-3.5 h-3.5 text-zinc-500" />
-            Package Exclusions ({exclusions.length})
+            Not included ({exclusions.length})
           </label>
         </div>
 
@@ -143,7 +145,7 @@ export const InclusionsExclusionsSelector: React.FC<
         <div className="min-h-16 flex flex-wrap gap-1.5 p-2 rounded-lg bg-[#FAFAF9] border border-zinc-200/70">
           {exclusions.length === 0 ? (
             <span className="text-[11px] text-zinc-400 italic">
-              No exclusions added. Click suggestions below or type a custom one.
+              Add what the customer pays for separately.
             </span>
           ) : (
             exclusions.map((item) => (
@@ -169,7 +171,8 @@ export const InclusionsExclusionsSelector: React.FC<
         <div className="flex gap-1.5">
           <input
             type="text"
-            placeholder="Type custom exclusion & Enter..."
+            aria-label="Add an excluded service"
+            placeholder="Add something not included"
             value={customExc}
             onChange={(e) => setCustomExc(e.target.value)}
             onKeyDown={(e) => {
@@ -182,6 +185,7 @@ export const InclusionsExclusionsSelector: React.FC<
           />
           <button
             type="button"
+            aria-label="Add excluded service"
             onClick={() => handleAddExclusion(customExc)}
             disabled={!customExc.trim()}
             className="px-2.5 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 disabled:opacity-40 text-xs font-medium transition"
@@ -191,10 +195,10 @@ export const InclusionsExclusionsSelector: React.FC<
         </div>
 
         {/* Preset quick suggestions */}
-        <div className="pt-1">
-          <span className="text-[10px] font-mono uppercase text-zinc-400 block mb-1.5">
-            Quick Suggestions
-          </span>
+        <details className="pt-1">
+          <summary className="cursor-pointer text-xs text-slate-500 mb-2">
+            Choose from common options
+          </summary>
           <div className="flex flex-wrap gap-1">
             {COMMON_EXCLUSIONS.map((suggestion) => {
               const isSelected = exclusions.includes(suggestion);
@@ -215,7 +219,7 @@ export const InclusionsExclusionsSelector: React.FC<
               );
             })}
           </div>
-        </div>
+        </details>
       </div>
     </div>
   );
