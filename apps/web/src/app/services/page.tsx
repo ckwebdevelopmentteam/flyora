@@ -129,7 +129,7 @@ const DISCOUNTS_OFFERS = [
     title: "Summer International Holidays",
     description: "Book 45 days in advance & get complimentary 5-star upgrades",
     code: "FLYHOLIDAY25",
-    bgGradient: "from-amber-500 via-amber-600 to-orange-600",
+    image: "/destinations/maldives.jpg",
     serviceId: "Custom Holidays",
   },
   {
@@ -139,7 +139,7 @@ const DISCOUNTS_OFFERS = [
     title: "Schengen & Gulf Visa Processing",
     description: "Apply for 3 or more family members with zero processing fee",
     code: "FLYVISA20",
-    bgGradient: "from-sky-500 via-blue-600 to-indigo-700",
+    image: "/services/visa-assistance.jpg",
     serviceId: "Visas",
   },
   {
@@ -149,7 +149,7 @@ const DISCOUNTS_OFFERS = [
     title: "Executive Umrah & Hajj Packages",
     description: "Complimentary Haram-facing room upgrade on group bookings",
     code: "PILGRIM250",
-    bgGradient: "from-emerald-600 via-teal-700 to-stone-800",
+    image: "/services/umrah-packages.jpg",
     serviceId: "Umrah Packages",
   },
 ];
@@ -498,55 +498,67 @@ export default function ServicesPage() {
         </section>
 
         {/* 3. DISCOUNTS & OFFERS SECTION (Matching Reference Image Row 2) */}
-        <section className="py-12 sm:py-16 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8 sm:mb-10">
-            <span className="text-[11px] font-mono font-semibold uppercase tracking-[0.2em] text-[#8C7A6B]">
-              Seasonal Special Offers
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] mt-1">
+        <section className="py-14 sm:py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
               Exclusive Discounts &amp; Deals
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500 mt-1 max-w-xl mx-auto">
+            <p className="text-base sm:text-lg text-stone-600 mt-3 max-w-2xl mx-auto leading-relaxed">
               Limited-time benefits and promotional upgrades curated for early
               bookers and family travelers.
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7">
             {DISCOUNTS_OFFERS.map((offer) => (
               <div
                 key={offer.id}
-                className={`relative rounded-2xl p-6 sm:p-7 text-white shadow-lg bg-gradient-to-br ${offer.bgGradient} overflow-hidden flex flex-col justify-between group hover:-translate-y-1 transition-all duration-300`}
+                className="relative rounded-2xl min-h-[320px] sm:min-h-[340px] p-6 sm:p-7 text-white shadow-xl overflow-hidden flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300 border border-black/10"
               >
-                {/* Decorative circle glow */}
-                <div className="absolute top-0 right-0 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none" />
+                {/* Background Image */}
+                <Image
+                  src={offer.image}
+                  alt={offer.title}
+                  fill
+                  sizes="(max-width: 768px) 100vw, 33vw"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-[0.72]"
+                />
 
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="px-2.5 py-1 rounded-full bg-black/25 backdrop-blur-md text-[10px] font-mono font-bold tracking-widest uppercase">
+                {/* Dark Gradient Overlay for high text readability */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/35 group-hover:via-black/50 transition-colors" />
+
+                {/* Card Border Outline */}
+                <div className="absolute inset-0 rounded-2xl border border-white/15 pointer-events-none" />
+
+                <div className="relative z-10">
+                  <div className="flex items-center justify-between mb-3.5">
+                    <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-[10.5px] font-mono font-bold tracking-widest uppercase text-white shadow-xs">
                       {offer.tag}
                     </span>
-                    <span className="text-xl sm:text-2xl font-serif font-black tracking-tight">
+                    <span className="text-2xl sm:text-3xl font-serif font-black tracking-tight text-amber-300 drop-shadow-sm">
                       {offer.discount}
                     </span>
                   </div>
 
-                  <h3 className="text-lg sm:text-xl font-serif font-bold leading-snug">
+                  <h3 className="text-xl sm:text-2xl font-serif font-bold leading-snug drop-shadow-sm">
                     {offer.title}
                   </h3>
-                  <p className="text-xs text-white/85 mt-2 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-white/85 mt-2.5 leading-relaxed drop-shadow-xs">
                     {offer.description}
                   </p>
                 </div>
 
-                <div className="pt-6 mt-4 border-t border-white/20 flex items-center justify-between">
-                  <div className="text-[11px] font-mono bg-white/15 px-2.5 py-1 rounded border border-white/25">
-                    CODE: <strong>{offer.code}</strong>
+                <div className="relative z-10 pt-5 mt-4 border-t border-white/20 flex items-center justify-between">
+                  <div className="text-xs font-mono bg-black/45 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 text-white/90">
+                    CODE:{" "}
+                    <strong className="text-amber-300 font-bold">
+                      {offer.code}
+                    </strong>
                   </div>
                   <button
                     type="button"
                     onClick={() => handleCardEnquiry(offer.serviceId)}
-                    className="px-4 py-2 rounded-lg bg-white text-stone-900 text-xs font-semibold hover:bg-stone-100 transition shadow-sm cursor-pointer"
+                    className="px-4 py-2 rounded-lg bg-white text-stone-900 text-xs sm:text-sm font-semibold hover:bg-amber-100 transition shadow-md cursor-pointer active:scale-95"
                   >
                     Claim Deal
                   </button>
