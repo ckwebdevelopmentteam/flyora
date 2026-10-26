@@ -10,7 +10,11 @@ import {
   MessageCircle,
   Phone,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   Plane,
+  Train,
+  Bus,
   Globe,
   Compass,
   Star,
@@ -52,7 +56,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Tour Packages", href: "/tours" },
 ];
 
-// Services dropdown items with visual background cards
+// All 7 Services with matched high-quality image backgrounds
 export const SERVICE_ITEMS: ServiceItem[] = [
   {
     label: "Custom Holidays",
@@ -81,12 +85,40 @@ export const SERVICE_ITEMS: ServiceItem[] = [
     icon: <Plane className="w-3.5 h-3.5 text-sky-300" />,
   },
   {
+    label: "Train Booking",
+    description:
+      "Express reservations, luxury tourist rails & scenic train journeys",
+    serviceId: "Trains",
+    badge: "Scenic Rail",
+    imageSrc: "/services/train-booking.jpg",
+    icon: <Train className="w-3.5 h-3.5 text-emerald-300" />,
+  },
+  {
+    label: "Bus Booking",
+    description:
+      "Premium AC Volvo, sleeper coaches & dependable intercity road transit",
+    serviceId: "Buses",
+    badge: "Highway Comfort",
+    imageSrc: "/services/bus-booking.jpg",
+    icon: <Bus className="w-3.5 h-3.5 text-orange-300" />,
+  },
+  {
     label: "Umrah Packages",
-    description: "Sacred pilgrimages with premium close-to-Haram accommodation",
+    description:
+      "Sacred pilgrimages with premium close-to-Haram accommodation & guidance",
     serviceId: "Umrah Packages",
-    badge: "Sacred Journeys",
+    badge: "Spiritual Journey",
     imageSrc: "/services/umrah-packages.jpg",
-    icon: <Compass className="w-3.5 h-3.5 text-emerald-300" />,
+    icon: <Compass className="w-3.5 h-3.5 text-teal-300" />,
+  },
+  {
+    label: "Hajj Packages",
+    description:
+      "Comprehensive blessed pilgrimage with deluxe Mina camps & sacred guidance",
+    serviceId: "Hajj Packages",
+    badge: "Sacred Pilgrimage",
+    imageSrc: "/services/hajj-packages.jpg",
+    icon: <Sparkles className="w-3.5 h-3.5 text-amber-300" />,
   },
 ];
 
@@ -103,6 +135,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   const [servicesOpen, setServicesOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [servicePage, setServicePage] = useState(0); // 0 = first 4 cards, 1 = next 3 cards
 
   const servicesTriggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -202,6 +235,65 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   const isServicesActive = activePath === "/#services";
+
+  // Reusable single service card component
+  const renderServiceCard = (service: ServiceItem, isThreeCol = false) => (
+    <button
+      key={service.serviceId}
+      type="button"
+      onClick={() => handleServiceClick(service.serviceId)}
+      className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-xl overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer"
+    >
+      {/* Background Image */}
+      <Image
+        src={service.imageSrc}
+        alt={service.label}
+        fill
+        sizes={
+          isThreeCol
+            ? "(max-width: 1024px) 50vw, 33vw"
+            : "(max-width: 1024px) 50vw, 25vw"
+        }
+        className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+      />
+
+      {/* High contrast gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20 group-hover:from-black/95 group-hover:via-black/35 transition-colors duration-300" />
+
+      {/* Border accent */}
+      <div className="absolute inset-0 rounded-xl border border-white/15 group-hover:border-white/35 transition-colors pointer-events-none" />
+
+      {/* Card Content Overlay */}
+      <div className="relative h-full p-4 sm:p-5 flex flex-col justify-between z-10">
+        {/* Top: Category Tag Badge & Action Arrow */}
+        <div className="flex items-center justify-between">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-[10px] font-sans font-medium uppercase tracking-wider text-white">
+            {service.icon}
+            <span>{service.badge}</span>
+          </span>
+          <span className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center text-white/90 group-hover:bg-white group-hover:text-stone-900 group-hover:rotate-45 transition-all duration-300">
+            <ArrowUpRight className="w-3.5 h-3.5" />
+          </span>
+        </div>
+
+        {/* Bottom: Service Name, Description & CTA */}
+        <div>
+          <h3 className="text-white text-[16px] sm:text-[17px] lg:text-[22px] font-serif font-bold tracking-wide leading-tight group-hover:text-[#F3E8DE] transition-colors">
+            {service.label}
+          </h3>
+          <p className="text-white/80 text-[11px] sm:text-[11.5px] line-clamp-2 mt-1 leading-snug">
+            {service.description}
+          </p>
+          <div className="mt-2.5 flex items-center gap-1 text-[10.5px] font-sans font-semibold uppercase tracking-[0.12em] text-[#E6D5C7] group-hover:text-white transition-colors">
+            <span>Enquire Now</span>
+            <span className="text-xs transition-transform duration-300 group-hover:translate-x-0.5">
+              →
+            </span>
+          </div>
+        </div>
+      </div>
+    </button>
+  );
 
   return (
     <header
@@ -349,74 +441,96 @@ export const Navbar: React.FC<NavbarProps> = ({
             onMouseLeave={handleMouseLeave}
             className="hidden md:block absolute top-[calc(100%+8px)] inset-x-0 w-full bg-white/95 backdrop-blur-xl rounded-2xl border border-black/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.14)] p-4 sm:p-5 lg:p-6 transition-all duration-300 animate-in fade-in slide-in-from-top-2 z-50 before:content-[''] before:absolute before:-top-3 before:inset-x-0 before:h-3"
           >
-            {/* Modal Header */}
+            {/* Modal Header: Title on Left, Carousel Arrows on Right */}
             <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-black/[0.06]">
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse" />
                 <span className="text-[11px] font-sans font-semibold uppercase tracking-[0.16em] text-stone-800">
                   Flyora Travel Services
                 </span>
+                <span className="text-[10px] font-mono text-stone-400 px-2 py-0.5 rounded-full bg-stone-100">
+                  {servicePage === 0 ? "1 - 4 of 7" : "5 - 7 of 7"}
+                </span>
               </div>
-              <p className="text-[11px] text-stone-500 font-sans">
-                Select any service to request tailored assistance & pricing
-              </p>
+
+              {/* Left and Right Arrow Navigation */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  data-testid="services-prev-arrow"
+                  onClick={() => setServicePage(0)}
+                  disabled={servicePage === 0}
+                  aria-label="Previous services"
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-black/10 flex items-center justify-center transition-all ${
+                    servicePage === 0
+                      ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
+                      : "opacity-100 cursor-pointer text-stone-700 hover:bg-stone-100 hover:text-black active:scale-95 shadow-xs"
+                  }`}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  data-testid="services-next-arrow"
+                  onClick={() => setServicePage(1)}
+                  disabled={servicePage === 1}
+                  aria-label="Next services"
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-black/10 flex items-center justify-center transition-all ${
+                    servicePage === 1
+                      ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
+                      : "opacity-100 cursor-pointer text-stone-700 hover:bg-stone-100 hover:text-black active:scale-95 shadow-xs"
+                  }`}
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
             </div>
 
-            {/* 4 Service Cards Grid */}
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
-              {SERVICE_ITEMS.map((service) => (
-                <button
-                  key={service.serviceId}
-                  type="button"
-                  onClick={() => handleServiceClick(service.serviceId)}
-                  className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-xl overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer"
-                >
-                  {/* Background Image */}
-                  <Image
-                    src={service.imageSrc}
-                    alt={service.label}
-                    fill
-                    sizes="(max-width: 1024px) 50vw, 25vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
-                  />
+            {/* Carousel Content (7 Cards Across 2 Slides) */}
+            <div className="overflow-hidden w-full">
+              <div
+                className="flex transition-transform duration-500 ease-out"
+                style={{ transform: `translateX(-${servicePage * 100}%)` }}
+              >
+                {/* Slide 1: First 4 Cards */}
+                <div className="w-full shrink-0 grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+                  {SERVICE_ITEMS.slice(0, 4).map((service) =>
+                    renderServiceCard(service, false),
+                  )}
+                </div>
 
-                  {/* High contrast gradient overlay */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20 group-hover:from-black/95 group-hover:via-black/35 transition-colors duration-300" />
+                {/* Slide 2: Next 3 Cards */}
+                <div className="w-full shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
+                  {SERVICE_ITEMS.slice(4, 7).map((service) =>
+                    renderServiceCard(service, true),
+                  )}
+                </div>
+              </div>
+            </div>
 
-                  {/* Border accent */}
-                  <div className="absolute inset-0 rounded-xl border border-white/15 group-hover:border-white/35 transition-colors pointer-events-none" />
-
-                  {/* Card Content Overlay */}
-                  <div className="relative h-full p-4 sm:p-5 flex flex-col justify-between z-10">
-                    {/* Top: Category Tag Badge & Action Arrow */}
-                    <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-[10px] font-sans font-medium uppercase tracking-wider text-white">
-                        {service.icon}
-                        <span>{service.badge}</span>
-                      </span>
-                      <span className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center text-white/90 group-hover:bg-white group-hover:text-stone-900 group-hover:rotate-45 transition-all duration-300">
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </span>
-                    </div>
-
-                    {/* Bottom: Service Name, Description & CTA */}
-                    <div>
-                      <h3 className="text-white text-[16px] sm:text-[17px] lg:text-[18px] font-serif font-medium tracking-wide leading-tight group-hover:text-[#F3E8DE] transition-colors">
-                        {service.label}
-                      </h3>
-                      <p className="text-white/80 text-[11px] sm:text-[11.5px] line-clamp-2 mt-1 leading-snug">
-                        {service.description}
-                      </p>
-                      <div className="mt-2.5 flex items-center gap-1 text-[10.5px] font-sans font-semibold uppercase tracking-[0.12em] text-[#E6D5C7] group-hover:text-white transition-colors">
-                        <span>Enquire Now</span>
-                        <span className="text-xs transition-transform duration-300 group-hover:translate-x-0.5">
-                          →
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </button>
-              ))}
+            {/* Pagination Dots (2 Dots) */}
+            <div className="flex items-center justify-center gap-2 pt-4">
+              <button
+                type="button"
+                data-testid="services-dot-0"
+                onClick={() => setServicePage(0)}
+                aria-label="Page 1: First 4 services"
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                  servicePage === 0
+                    ? "w-7 bg-[#463D34]"
+                    : "w-2 bg-stone-300 hover:bg-stone-400"
+                }`}
+              />
+              <button
+                type="button"
+                data-testid="services-dot-1"
+                onClick={() => setServicePage(1)}
+                aria-label="Page 2: Next 3 services"
+                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                  servicePage === 1
+                    ? "w-7 bg-[#463D34]"
+                    : "w-2 bg-stone-300 hover:bg-stone-400"
+                }`}
+              />
             </div>
           </div>
         )}
@@ -455,7 +569,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <span className="flex items-center gap-2">
                   <Star className="w-3.5 h-3.5 text-stone-400" />
-                  Services
+                  Services ({SERVICE_ITEMS.length})
                 </span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -465,13 +579,13 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
 
               {mobileServicesOpen && (
-                <div className="mt-2.5 mb-2 grid grid-cols-1 sm:grid-cols-2 gap-2 animate-in slide-in-from-top-1 duration-150">
+                <div className="mt-2.5 mb-2 grid grid-cols-1 sm:grid-cols-2 gap-2 animate-in slide-in-from-top-1 duration-150 max-h-[380px] overflow-y-auto pr-1">
                   {SERVICE_ITEMS.map((service) => (
                     <button
                       key={service.serviceId}
                       type="button"
                       onClick={() => handleServiceClick(service.serviceId)}
-                      className="relative h-24 rounded-xl overflow-hidden text-left p-3 flex flex-col justify-end group border border-black/10 cursor-pointer shadow-xs"
+                      className="relative h-24 rounded-xl overflow-hidden text-left p-3 flex flex-col justify-end group border border-black/10 cursor-pointer shadow-xs shrink-0"
                     >
                       <Image
                         src={service.imageSrc}
