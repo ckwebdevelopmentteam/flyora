@@ -37,7 +37,6 @@ interface ServiceHeroConfig {
   heroHeadline: string;
   heroSubheadline: string;
   imageSrc: string;
-  tagline: string;
   icon: React.ReactNode;
 }
 
@@ -47,11 +46,10 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     serviceId: "Custom Holidays",
     name: "Custom Holidays",
     badge: "Tailored Luxury",
-    heroHeadline: "All-in-One Bespoke Holiday Planning",
+    heroHeadline: "Bespoke Luxury Holiday Planning",
     heroSubheadline:
-      "Crafting private luxury itineraries, 5-star villas, and hand-curated experiences worldwide.",
+      "Private luxury itineraries, 5-star villas, and hand-curated experiences worldwide.",
     imageSrc: "/services/custom-holidays.jpg",
-    tagline: "Private Overwater Villas & Alpine Escapes",
     icon: <Star className="w-4 h-4 text-amber-400" />,
   },
   {
@@ -61,9 +59,8 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     badge: "Fast-Track",
     heroHeadline: "Hassle-Free Global Visa Approvals",
     heroSubheadline:
-      "Document auditing, express appointment booking, and 99.2% approval success for 100+ countries.",
+      "Express appointment booking, document audit, and 99.2% approval success for 100+ countries.",
     imageSrc: "/services/visa-assistance.jpg",
-    tagline: "Tourist, Business & Transit Visas",
     icon: <Globe className="w-4 h-4 text-blue-400" />,
   },
   {
@@ -73,9 +70,8 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     badge: "Best Fares",
     heroHeadline: "Commercial & Business Air Ticketing",
     heroSubheadline:
-      "Access unpublished corporate partner fares, flexible routing, and 24/7 dedicated flight rebooking.",
+      "Access unpublished corporate partner fares, flexible routing, and 24/7 flight rebooking.",
     imageSrc: "/services/flight-booking.jpg",
-    tagline: "Worldwide Routes & Corporate Discounts",
     icon: <Plane className="w-4 h-4 text-sky-400" />,
   },
   {
@@ -87,7 +83,6 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Express reservations, tatkal priority bookings, and panoramic luxury tourist rail tickets.",
     imageSrc: "/services/train-booking.jpg",
-    tagline: "High-Speed Rail & Scenic Routes",
     icon: <Train className="w-4 h-4 text-emerald-400" />,
   },
   {
@@ -99,7 +94,6 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Top-tier AC multi-axle coaches, verified city boarding lounges, and live GPS tracking links.",
     imageSrc: "/services/bus-booking.jpg",
-    tagline: "Intercity Road Travel with AC Comfort",
     icon: <Bus className="w-4 h-4 text-orange-400" />,
   },
   {
@@ -109,9 +103,8 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     badge: "Spiritual Journey",
     heroHeadline: "Sacred & Blessed Umrah Pilgrimages",
     heroSubheadline:
-      "Hotels steps from the Holy Haram courtyard, express Saudi visas, private AC transit & Ziyarat guides.",
+      "Hotels steps from the Holy Haram courtyard, Saudi e-visas & private AC vehicle transit.",
     imageSrc: "/services/umrah-packages.jpg",
-    tagline: "Makkah & Madinah Luxury Stays",
     icon: <Compass className="w-4 h-4 text-teal-400" />,
   },
   {
@@ -121,9 +114,8 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     badge: "The Holy Pillar",
     heroHeadline: "The Sacred Journey of a Lifetime",
     heroSubheadline:
-      "Comprehensive guided pilgrimage with deluxe European air-conditioned Mina camps and scholarly guidance.",
+      "Comprehensive guided pilgrimage with deluxe European air-conditioned Mina camps & guidance.",
     imageSrc: "/services/hajj-packages.jpg",
-    tagline: "Fully Guided & Complete Rituals",
     icon: <Sparkles className="w-4 h-4 text-amber-300" />,
   },
 ];
@@ -328,7 +320,7 @@ export default function ServicesPage() {
 
       <main>
         {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & ENQUIRY BAR */}
-        <section className="relative w-full min-h-[620px] lg:min-h-[680px] flex flex-col justify-between overflow-hidden -mt-20 pt-28 pb-14 sm:pb-20">
+        <section className="relative w-full min-h-[580px] lg:h-[620px] flex flex-col justify-between overflow-hidden -mt-20 pt-28 pb-10 sm:pb-14">
           {/* Dynamic Full-Width Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
@@ -345,21 +337,13 @@ export default function ServicesPage() {
           </div>
 
           {/* Hero Content Container */}
-          <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-14 flex-1 flex flex-col justify-center">
-            {/* Tagline / Subtitle Pill */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-white text-xs font-sans font-medium uppercase tracking-wider mb-4 self-start shadow-sm animate-in fade-in duration-300">
-              {activeService.icon}
-              <span>{activeService.badge}</span>
-              <span className="text-white/60">•</span>
-              <span className="text-white/90">{activeService.tagline}</span>
-            </div>
-
+          <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 flex-1 flex flex-col justify-center">
             {/* Main Hero Headline */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-white tracking-tight leading-[1.12] max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-400">
               {activeService.heroHeadline}
             </h1>
 
-            <p className="mt-4 text-sm sm:text-base md:text-lg font-sans text-white/85 max-w-2xl leading-relaxed animate-in fade-in slide-in-from-bottom-3 duration-500">
+            <p className="mt-3 text-sm sm:text-base md:text-lg font-sans text-white/85 max-w-2xl leading-relaxed animate-in fade-in slide-in-from-bottom-3 duration-500">
               {activeService.heroSubheadline}
             </p>
 
