@@ -234,7 +234,10 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  const isServicesActive = activePath === "/#services";
+  const isServicesActive =
+    activePath === "/services" ||
+    activePath.startsWith("/services") ||
+    activePath === "/#services";
 
   // Reusable single service card component
   const renderServiceCard = (service: ServiceItem, isThreeCol = false) => (
@@ -507,30 +510,42 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             </div>
 
-            {/* Pagination Dots (2 Dots) */}
-            <div className="flex items-center justify-center gap-2 pt-4">
-              <button
-                type="button"
-                data-testid="services-dot-0"
-                onClick={() => setServicePage(0)}
-                aria-label="Page 1: First 4 services"
-                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  servicePage === 0
-                    ? "w-7 bg-[#463D34]"
-                    : "w-2 bg-stone-300 hover:bg-stone-400"
-                }`}
-              />
-              <button
-                type="button"
-                data-testid="services-dot-1"
-                onClick={() => setServicePage(1)}
-                aria-label="Page 2: Next 3 services"
-                className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  servicePage === 1
-                    ? "w-7 bg-[#463D34]"
-                    : "w-2 bg-stone-300 hover:bg-stone-400"
-                }`}
-              />
+            {/* Bottom Bar: Link to Dedicated Guide + Pagination Dots */}
+            <div className="flex items-center justify-between pt-3.5 mt-2 border-t border-black/[0.05]">
+              <Link
+                href="/services"
+                onClick={() => setServicesOpen(false)}
+                className="text-[11px] font-sans font-semibold text-stone-600 hover:text-black uppercase tracking-wider transition-colors flex items-center gap-1.5 group cursor-pointer"
+              >
+                <span>Explore Dedicated Services Guide</span>
+                <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-stone-400 group-hover:text-black" />
+              </Link>
+
+              {/* Pagination Dots (2 Dots) */}
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  data-testid="services-dot-0"
+                  onClick={() => setServicePage(0)}
+                  aria-label="Page 1: First 4 services"
+                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                    servicePage === 0
+                      ? "w-7 bg-[#463D34]"
+                      : "w-2 bg-stone-300 hover:bg-stone-400"
+                  }`}
+                />
+                <button
+                  type="button"
+                  data-testid="services-dot-1"
+                  onClick={() => setServicePage(1)}
+                  aria-label="Page 2: Next 3 services"
+                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
+                    servicePage === 1
+                      ? "w-7 bg-[#463D34]"
+                      : "w-2 bg-stone-300 hover:bg-stone-400"
+                  }`}
+                />
+              </div>
             </div>
           </div>
         )}
