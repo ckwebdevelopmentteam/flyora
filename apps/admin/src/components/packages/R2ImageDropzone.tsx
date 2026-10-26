@@ -1,3 +1,4 @@
+import { userMessage } from "../../lib/userMessage";
 import { useState, useRef } from "react";
 import {
   UploadCloud,
@@ -21,7 +22,7 @@ export const R2ImageDropzone = ({
   onChange,
   folder = "packages",
   label = "Cover Image",
-  helperText = "PNG, JPG, or WEBP up to 10MB. Stored directly on Cloudflare R2.",
+  helperText = "PNG, JPG or WEBP · Up to 10 MB.",
 }: R2ImageDropzoneProps) => {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
@@ -61,7 +62,7 @@ export const R2ImageDropzone = ({
       // Step 3: Emit public URL to parent form
       onChange(publicUrl);
     } catch (err: any) {
-      setErrorMessage(err.message || "Failed to upload image to storage");
+      setErrorMessage(userMessage(err, "Failed to upload image to storage"));
     } finally {
       setIsUploading(false);
     }
@@ -130,16 +131,26 @@ export const R2ImageDropzone = ({
           </div>
           <div className="mt-2 flex items-center justify-between px-1">
             <span className="text-[10px] text-zinc-400 font-mono truncate max-w-[280px]">
-              {value}
+              Photo added
             </span>
             <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-mono">
-              R2 Direct
+              Uploaded
             </span>
           </div>
         </div>
       ) : (
         // Dropzone State
         <div
+          role="button"
+          tabIndex={0}
+          aria-label={`Upload ${label || "photo"}`}
+          aria-disabled={isUploading}
+          onKeyDown={(event) => {
+            if ((event.key === "Enter" || event.key === " ") && !isUploading) {
+              event.preventDefault();
+              fileInputRef.current?.click();
+            }
+          }}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -155,7 +166,7 @@ export const R2ImageDropzone = ({
               <Loader2 className="w-6 h-6 animate-spin text-black mx-auto" />
               <div className="space-y-1">
                 <div className="flex justify-between text-[11px] font-mono text-zinc-500">
-                  <span>Uploading to Cloudflare R2...</span>
+                  <span>Uploading photo…</span>
                   <span>{uploadProgress}%</span>
                 </div>
                 <div className="w-full h-1.5 rounded-full bg-zinc-200 overflow-hidden">
@@ -187,6 +198,7 @@ export const R2ImageDropzone = ({
         ref={fileInputRef}
         type="file"
         accept="image/png,image/jpeg,image/webp"
+        aria-label="Package photo"
         className="hidden"
         onChange={(e) => {
           const files = e.target.files;
@@ -200,7 +212,7 @@ export const R2ImageDropzone = ({
       {errorMessage && (
         <div className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50/80 p-2 rounded-md border border-red-200">
           <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{errorMessage}</span>
+          <span role="alert">{errorMessage}</span>
         </div>
       )}
     </div>
@@ -241,7 +253,9 @@ export const R2GalleryUploader = ({
 
       onChange([...urls, ...newUrls]);
     } catch (err: any) {
-      setErrorMessage(err.message || "Failed uploading some images to storage");
+      setErrorMessage(
+        userMessage(err, "Failed uploading some images to storage"),
+      );
     } finally {
       setIsUploading(false);
     }
@@ -301,7 +315,7 @@ export const R2GalleryUploader = ({
       {errorMessage && (
         <div className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50/80 p-2 rounded-md border border-red-200">
           <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{errorMessage}</span>
+          <span role="alert">{errorMessage}</span>
         </div>
       )}
 

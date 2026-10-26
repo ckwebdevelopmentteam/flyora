@@ -1,3 +1,4 @@
+import { userMessage } from "../lib/userMessage";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
@@ -84,6 +85,7 @@ export const PackageBuilderPage = () => {
     watch,
     setValue,
     reset,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<CreatePackageInput>({
     resolver: zodResolver(createPackageSchema as any),
@@ -191,7 +193,7 @@ export const PackageBuilderPage = () => {
     },
     onError: (err: any) => {
       setSubmitError(
-        err.message || "Failed to save package. Please check inputs.",
+        userMessage(err, "Failed to save package. Please check inputs."),
       );
     },
   });
@@ -199,6 +201,30 @@ export const PackageBuilderPage = () => {
   const onSubmit = (formData: CreatePackageInput) => {
     setSubmitError(null);
     saveMutation.mutate(formData);
+  };
+  const onInvalid = (fields: typeof errors) => {
+    const basic = [
+      "title",
+      "slug",
+      "destination",
+      "serviceId",
+      "durationDays",
+      "durationNights",
+      "startingPrice",
+      "overview",
+    ] as const;
+    setActiveTab(
+      basic.some((key) => fields[key])
+        ? "basic"
+        : fields.coverImageUrl || fields.galleryImageUrls
+          ? "media"
+          : fields.itinerary
+            ? "itinerary"
+            : fields.inclusions || fields.exclusions
+              ? "inclusions"
+              : "seo",
+    );
+    setSubmitError("Please check the highlighted fields before saving.");
   };
 
   // Identify which tabs have validation errors
@@ -265,7 +291,7 @@ export const PackageBuilderPage = () => {
           <button
             type="button"
             disabled={saveMutation.isPending || isSubmitting}
-            onClick={handleSubmit(onSubmit)}
+            onClick={handleSubmit(onSubmit, onInvalid)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition shadow-xs"
           >
             {saveMutation.isPending ? (
@@ -310,7 +336,7 @@ export const PackageBuilderPage = () => {
           },
           {
             key: "media",
-            label: "2. Photos & R2 Storage",
+            label: "2. Photos",
             icon: ImageIcon,
             hasError: hasMediaErrors,
           },
@@ -357,7 +383,7 @@ export const PackageBuilderPage = () => {
       </div>
 
       {/* Tab Contents */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
         {/* ================= TAB 1: BASIC INFORMATION ================= */}
         {activeTab === "basic" && (
           <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-xs space-y-5">
@@ -373,10 +399,14 @@ export const PackageBuilderPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Package Title */}
               <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-title"
+                >
                   Package Title <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="package-title"
                   type="text"
                   placeholder="e.g. 5D/4N Dubai Family Luxury & Desert Safari"
                   {...register("title")}
@@ -389,11 +419,14 @@ export const PackageBuilderPage = () => {
                 )}
               </div>
 
-              {/* Unique Slug with generator */}
+              {/* Unique Website address with generator */}
               <div className="md:col-span-2">
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-medium text-zinc-900">
-                    URL Slug
+                  <label
+                    className="block text-xs font-medium text-zinc-900"
+                    htmlFor="package-slug"
+                  >
+                    Website address
                   </label>
                   <button
                     type="button"
@@ -409,6 +442,7 @@ export const PackageBuilderPage = () => {
                     /packages/
                   </span>
                   <input
+                    id="package-slug"
                     type="text"
                     placeholder="5d-4n-dubai-family-luxury"
                     {...register("slug")}
@@ -424,10 +458,14 @@ export const PackageBuilderPage = () => {
 
               {/* Destination */}
               <div>
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-destination"
+                >
                   Destination / Country <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="package-destination"
                   type="text"
                   placeholder="e.g. Dubai, United Arab Emirates"
                   {...register("destination")}
@@ -442,11 +480,15 @@ export const PackageBuilderPage = () => {
 
               {/* Service Category */}
               <div>
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-serviceId"
+                >
                   Operating Service Category{" "}
                   <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="package-serviceId"
                   disabled={isLoadingServices}
                   {...register("serviceId")}
                   className="w-full text-xs px-3.5 py-2 rounded-md border border-zinc-200 bg-[#FAFAF9] text-zinc-900 focus:bg-white focus:border-black outline-none transition"
@@ -468,10 +510,14 @@ export const PackageBuilderPage = () => {
               {/* Duration Days & Nights */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-zinc-900 mb-1">
+                  <label
+                    className="block text-xs font-medium text-zinc-900 mb-1"
+                    htmlFor="package-durationDays"
+                  >
                     Days <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="package-durationDays"
                     type="number"
                     min={1}
                     {...register("durationDays", { valueAsNumber: true })}
@@ -485,10 +531,14 @@ export const PackageBuilderPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-900 mb-1">
+                  <label
+                    className="block text-xs font-medium text-zinc-900 mb-1"
+                    htmlFor="package-durationNights"
+                  >
                     Nights <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="package-durationNights"
                     type="number"
                     min={0}
                     {...register("durationNights", { valueAsNumber: true })}
@@ -504,7 +554,10 @@ export const PackageBuilderPage = () => {
 
               {/* Starting Price */}
               <div>
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-startingPrice"
+                >
                   Starting Price (₹ INR) <span className="text-red-500">*</span>
                 </label>
                 <div className="flex items-center rounded-md border border-zinc-200 bg-[#FAFAF9] focus-within:border-black focus-within:bg-white transition overflow-hidden">
@@ -512,6 +565,7 @@ export const PackageBuilderPage = () => {
                     ₹
                   </span>
                   <input
+                    id="package-startingPrice"
                     type="number"
                     min={1}
                     step={100}
@@ -529,11 +583,15 @@ export const PackageBuilderPage = () => {
 
               {/* Overview / Tour Description */}
               <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-overview"
+                >
                   Overview / Tour Summary{" "}
                   <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  id="package-overview"
                   rows={4}
                   placeholder="Provide an enticing summary of this tour package, key highlights, target traveler profile, and signature inclusions..."
                   {...register("overview")}
@@ -593,10 +651,24 @@ export const PackageBuilderPage = () => {
             <div className="pt-3 border-t border-zinc-100 flex justify-end">
               <button
                 type="button"
-                onClick={() => setActiveTab("media")}
+                onClick={async () => {
+                  if (
+                    await trigger([
+                      "title",
+                      "slug",
+                      "destination",
+                      "serviceId",
+                      "durationDays",
+                      "durationNights",
+                      "startingPrice",
+                      "overview",
+                    ])
+                  )
+                    setActiveTab("media");
+                }}
                 className="px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
               >
-                Proceed to Photos & R2 Storage →
+                Continue to photos →
               </button>
             </div>
           </div>
@@ -607,11 +679,10 @@ export const PackageBuilderPage = () => {
           <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-xs space-y-6">
             <div>
               <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-900 font-mono">
-                Visual Media & Cloudflare R2 Uploads
+                Package photos
               </h2>
               <p className="text-[11px] text-zinc-500 font-mono mt-0.5">
-                Direct browser-to-R2 uploads without passing through Fastify
-                server memory ($0 egress cost).
+                Choose clear photos to help customers explore the trip.
               </p>
             </div>
 
@@ -786,7 +857,10 @@ export const PackageBuilderPage = () => {
             {/* Meta Title */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-medium text-zinc-900">
+                <label
+                  className="block text-xs font-medium text-zinc-900"
+                  htmlFor="package-metaTitle"
+                >
                   Meta Title
                 </label>
                 <span
@@ -800,6 +874,7 @@ export const PackageBuilderPage = () => {
                 </span>
               </div>
               <input
+                id="package-metaTitle"
                 type="text"
                 placeholder="e.g. 5D/4N Dubai Luxury Family Tour Package | Flyora Travels"
                 {...register("metaTitle")}
@@ -810,7 +885,10 @@ export const PackageBuilderPage = () => {
             {/* Meta Description */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-medium text-zinc-900">
+                <label
+                  className="block text-xs font-medium text-zinc-900"
+                  htmlFor="package-metaDescription"
+                >
                   Meta Description
                 </label>
                 <span
@@ -824,6 +902,7 @@ export const PackageBuilderPage = () => {
                 </span>
               </div>
               <textarea
+                id="package-metaDescription"
                 rows={3}
                 placeholder="Book the ultimate 5-day luxury Dubai vacation with Flyora. Includes Desert Safari, Burj Khalifa VIP access, private transfers, and 5-star hotel accommodations."
                 {...register("metaDescription")}
@@ -856,7 +935,7 @@ export const PackageBuilderPage = () => {
               <button
                 type="button"
                 disabled={saveMutation.isPending || isSubmitting}
-                onClick={handleSubmit(onSubmit)}
+                onClick={handleSubmit(onSubmit, onInvalid)}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition shadow-xs"
               >
                 {saveMutation.isPending ? (
