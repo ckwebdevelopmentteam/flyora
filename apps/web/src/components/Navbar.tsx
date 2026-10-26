@@ -1,8 +1,23 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { Menu, X, Sparkles, MessageCircle, Phone } from "lucide-react";
+import Image from "next/image";
+import {
+  Menu,
+  X,
+  Sparkles,
+  MessageCircle,
+  Phone,
+  ChevronDown,
+  Plane,
+  Globe,
+  Compass,
+  Star,
+  Info,
+  Mail,
+  ArrowUpRight,
+} from "lucide-react";
 
 export interface NavbarProps {
   onFindAdvisor?: () => void;
@@ -23,16 +38,56 @@ export interface NavItem {
   serviceId?: string;
 }
 
+export interface ServiceItem {
+  label: string;
+  description: string;
+  serviceId: string;
+  badge: string;
+  imageSrc: string;
+  icon: React.ReactNode;
+}
+
+// Top-level nav items (flat links)
 export const NAV_ITEMS: NavItem[] = [
   { label: "Tour Packages", href: "/tours" },
+];
+
+// Services dropdown items with visual background cards
+export const SERVICE_ITEMS: ServiceItem[] = [
   {
     label: "Custom Holidays",
-    href: "/#how-it-works",
+    description: "Bespoke itineraries crafted around your dream travel style",
     serviceId: "Custom Holidays",
+    badge: "Tailored Luxury",
+    imageSrc: "/services/custom-holidays.jpg",
+    icon: <Star className="w-3.5 h-3.5 text-amber-300" />,
   },
-  { label: "Visas", href: "/#services", serviceId: "Visas" },
-  { label: "Flights", href: "/#services", serviceId: "Flights" },
-  { label: "Umrah", href: "/#services", serviceId: "Umrah Packages" },
+  {
+    label: "Visa Assistance",
+    description:
+      "Hassle-free document verification & processing for 100+ countries",
+    serviceId: "Visas",
+    badge: "Fast & Seamless",
+    imageSrc: "/services/visa-assistance.jpg",
+    icon: <Globe className="w-3.5 h-3.5 text-blue-300" />,
+  },
+  {
+    label: "Flight Booking",
+    description:
+      "Best fare routes, corporate travel & 24/7 dedicated flight support",
+    serviceId: "Flights",
+    badge: "Best Fares",
+    imageSrc: "/services/flight-booking.jpg",
+    icon: <Plane className="w-3.5 h-3.5 text-sky-300" />,
+  },
+  {
+    label: "Umrah Packages",
+    description: "Sacred pilgrimages with premium close-to-Haram accommodation",
+    serviceId: "Umrah Packages",
+    badge: "Sacred Journeys",
+    imageSrc: "/services/umrah-packages.jpg",
+    icon: <Compass className="w-3.5 h-3.5 text-emerald-300" />,
+  },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -45,7 +100,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   ctaLabel = "Plan My Trip",
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [servicesOpen, setServicesOpen] = useState(false);
+  const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+
+  const servicesTriggerRef = useRef<HTMLDivElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,23 +116,78 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Hover handlers with debounce to allow smooth cursor transition between trigger & dropdown
+  const handleMouseEnter = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+      hoverTimeoutRef.current = null;
+    }
+    setServicesOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+    hoverTimeoutRef.current = setTimeout(() => {
+      setServicesOpen(false);
+    }, 200);
+  };
+
+  // Close services dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(e.target as Node) &&
+        servicesTriggerRef.current &&
+        !servicesTriggerRef.current.contains(e.target as Node)
+      ) {
+        setServicesOpen(false);
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setServicesOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleNavClick = (e: React.MouseEvent, item: NavItem) => {
     setMobileMenuOpen(false);
+    setServicesOpen(false);
 
-    // If an enquiry handler is provided and the item represents a service enquiry
     if (item.serviceId && onOpenEnquiry) {
       e.preventDefault();
       onOpenEnquiry(item.serviceId);
       return;
     }
 
-    // Smooth scroll for hash links on the same page
     if (item.href.startsWith("#")) {
       e.preventDefault();
       const element = document.querySelector(item.href);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
+    }
+  };
+
+  const handleServiceClick = (serviceId: string) => {
+    setServicesOpen(false);
+    setMobileMenuOpen(false);
+    if (onOpenEnquiry) {
+      onOpenEnquiry(serviceId);
     }
   };
 
@@ -84,6 +200,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       onBecomeAdvisor();
     }
   };
+
+  const isServicesActive = activePath === "/#services";
 
   return (
     <header
@@ -100,7 +218,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         }`}
       >
         <div className="h-16 px-5 sm:px-7 flex items-center justify-between">
-          {/* Left: Brand Logo (FLYORA in Luxury Serif) */}
+          {/* Left: Brand Logo */}
           <Link
             href="/"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
@@ -111,11 +229,12 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
           </Link>
 
-          {/* Center: 5 Clean Editorial Navigation Links (Replaces previous search bar) */}
+          {/* Center: Nav Links */}
           <nav
             aria-label="Main Navigation"
             className="hidden md:flex items-center gap-5 lg:gap-7 xl:gap-8"
           >
+            {/* Tour Packages — flat link */}
             {NAV_ITEMS.map((item) => {
               const isActive =
                 activePath === item.href ||
@@ -139,9 +258,53 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </Link>
               );
             })}
+
+            {/* Services — hover & click dropdown trigger */}
+            <div
+              ref={servicesTriggerRef}
+              data-testid="services-trigger"
+              onMouseEnter={handleMouseEnter}
+              onMouseLeave={handleMouseLeave}
+              className="relative py-2"
+            >
+              <button
+                type="button"
+                onClick={() => setServicesOpen((prev) => !prev)}
+                className={`flex items-center gap-1 text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 select-none cursor-pointer ${
+                  isServicesActive || servicesOpen
+                    ? "text-[#1C1815] font-semibold"
+                    : "text-[#4A423B] hover:text-black"
+                }`}
+                aria-haspopup="true"
+                aria-expanded={servicesOpen}
+              >
+                Services
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    servicesOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* About — link to homepage section */}
+            <Link
+              href="/#about"
+              className="text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 relative select-none text-[#4A423B] hover:text-black"
+            >
+              About
+            </Link>
+
+            {/* Contact — link to homepage section */}
+            <Link
+              href="/#contact"
+              className="text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 relative select-none text-[#4A423B] hover:text-black"
+            >
+              Contact
+            </Link>
           </nav>
 
-          {/* Right: Quick WhatsApp & Action CTA Button */}
+          {/* Right: Quick actions + CTA */}
           <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
             {/* WhatsApp Quick Chat */}
             <a
@@ -160,11 +323,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={handleCtaClick}
               className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
             >
-              {/* <Sparkles className="w-3.5 h-3.5 text-[#E6D5C7]" /> */}
               <span>{ctaLabel}</span>
             </button>
 
-            {/* Mobile Hamburger Toggle Button */}
+            {/* Mobile Hamburger Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
@@ -179,32 +341,182 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
         </div>
 
-        {/* Mobile Dropdown Drawer */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t border-black/[0.06] px-5 py-4 bg-white/98 backdrop-blur-md rounded-b-2xl animate-in slide-in-from-top-2 duration-200 space-y-3">
-            <div className="flex flex-col space-y-1.5 pt-1">
-              {NAV_ITEMS.map((item) => {
-                const isActive =
-                  activePath === item.href ||
-                  (item.href === "/tours" && activePath.startsWith("/tours"));
-
-                return (
-                  <Link
-                    key={item.label}
-                    href={item.href}
-                    onClick={(e) => handleNavClick(e, item)}
-                    className={`text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2 transition-colors ${
-                      isActive
-                        ? "text-[#1C1815] font-semibold"
-                        : "text-[#38312B] hover:text-black"
-                    }`}
-                  >
-                    {item.label}
-                  </Link>
-                );
-              })}
+        {/* Full-Width Services Dropdown Box Modal (Desktop) */}
+        {servicesOpen && (
+          <div
+            ref={dropdownRef}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+            className="hidden md:block absolute top-[calc(100%+8px)] inset-x-0 w-full bg-white/95 backdrop-blur-xl rounded-2xl border border-black/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.14)] p-4 sm:p-5 lg:p-6 transition-all duration-300 animate-in fade-in slide-in-from-top-2 z-50 before:content-[''] before:absolute before:-top-3 before:inset-x-0 before:h-3"
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-black/[0.06]">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-amber-600 animate-pulse" />
+                <span className="text-[11px] font-sans font-semibold uppercase tracking-[0.16em] text-stone-800">
+                  Flyora Travel Services
+                </span>
+              </div>
+              <p className="text-[11px] text-stone-500 font-sans">
+                Select any service to request tailored assistance & pricing
+              </p>
             </div>
 
+            {/* 4 Service Cards Grid */}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+              {SERVICE_ITEMS.map((service) => (
+                <button
+                  key={service.serviceId}
+                  type="button"
+                  onClick={() => handleServiceClick(service.serviceId)}
+                  className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-xl overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer"
+                >
+                  {/* Background Image */}
+                  <Image
+                    src={service.imageSrc}
+                    alt={service.label}
+                    fill
+                    sizes="(max-width: 1024px) 50vw, 25vw"
+                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-110"
+                  />
+
+                  {/* High contrast gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20 group-hover:from-black/95 group-hover:via-black/35 transition-colors duration-300" />
+
+                  {/* Border accent */}
+                  <div className="absolute inset-0 rounded-xl border border-white/15 group-hover:border-white/35 transition-colors pointer-events-none" />
+
+                  {/* Card Content Overlay */}
+                  <div className="relative h-full p-4 sm:p-5 flex flex-col justify-between z-10">
+                    {/* Top: Category Tag Badge & Action Arrow */}
+                    <div className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-[10px] font-sans font-medium uppercase tracking-wider text-white">
+                        {service.icon}
+                        <span>{service.badge}</span>
+                      </span>
+                      <span className="w-7 h-7 rounded-full bg-white/15 backdrop-blur-md border border-white/25 flex items-center justify-center text-white/90 group-hover:bg-white group-hover:text-stone-900 group-hover:rotate-45 transition-all duration-300">
+                        <ArrowUpRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+
+                    {/* Bottom: Service Name, Description & CTA */}
+                    <div>
+                      <h3 className="text-white text-[16px] sm:text-[17px] lg:text-[18px] font-serif font-medium tracking-wide leading-tight group-hover:text-[#F3E8DE] transition-colors">
+                        {service.label}
+                      </h3>
+                      <p className="text-white/80 text-[11px] sm:text-[11.5px] line-clamp-2 mt-1 leading-snug">
+                        {service.description}
+                      </p>
+                      <div className="mt-2.5 flex items-center gap-1 text-[10.5px] font-sans font-semibold uppercase tracking-[0.12em] text-[#E6D5C7] group-hover:text-white transition-colors">
+                        <span>Enquire Now</span>
+                        <span className="text-xs transition-transform duration-300 group-hover:translate-x-0.5">
+                          →
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Mobile Dropdown Drawer */}
+        {mobileMenuOpen && (
+          <div className="md:hidden border-t border-black/[0.06] px-5 py-4 bg-white/98 backdrop-blur-md rounded-b-2xl animate-in slide-in-from-top-2 duration-200 space-y-1">
+            {/* Tour Packages */}
+            {NAV_ITEMS.map((item) => {
+              const isActive =
+                activePath === item.href ||
+                (item.href === "/tours" && activePath.startsWith("/tours"));
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item)}
+                  className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 transition-colors border-b border-black/[0.04] ${
+                    isActive
+                      ? "text-[#1C1815] font-semibold"
+                      : "text-[#38312B] hover:text-black"
+                  }`}
+                >
+                  <Compass className="w-3.5 h-3.5 text-stone-400" />
+                  {item.label}
+                </Link>
+              );
+            })}
+
+            {/* Services expandable section */}
+            <div>
+              <button
+                type="button"
+                onClick={() => setMobileServicesOpen((p) => !p)}
+                className="w-full flex items-center justify-between gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 text-[#38312B] hover:text-black transition-colors border-b border-black/[0.04] cursor-pointer"
+              >
+                <span className="flex items-center gap-2">
+                  <Star className="w-3.5 h-3.5 text-stone-400" />
+                  Services
+                </span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 transition-transform duration-200 ${
+                    mobileServicesOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+
+              {mobileServicesOpen && (
+                <div className="mt-2.5 mb-2 grid grid-cols-1 sm:grid-cols-2 gap-2 animate-in slide-in-from-top-1 duration-150">
+                  {SERVICE_ITEMS.map((service) => (
+                    <button
+                      key={service.serviceId}
+                      type="button"
+                      onClick={() => handleServiceClick(service.serviceId)}
+                      className="relative h-24 rounded-xl overflow-hidden text-left p-3 flex flex-col justify-end group border border-black/10 cursor-pointer shadow-xs"
+                    >
+                      <Image
+                        src={service.imageSrc}
+                        alt={service.label}
+                        fill
+                        sizes="100vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/45 to-black/10" />
+                      <div className="relative z-10">
+                        <div className="text-[12.5px] font-medium font-serif text-white flex items-center justify-between">
+                          <span>{service.label}</span>
+                          <ArrowUpRight className="w-3.5 h-3.5 text-white/80" />
+                        </div>
+                        <div className="text-[10px] text-white/80 line-clamp-1 mt-0.5">
+                          {service.description}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* About */}
+            <Link
+              href="/#about"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 text-[#38312B] hover:text-black transition-colors border-b border-black/[0.04]"
+            >
+              <Info className="w-3.5 h-3.5 text-stone-400" />
+              About
+            </Link>
+
+            {/* Contact */}
+            <Link
+              href="/#contact"
+              onClick={() => setMobileMenuOpen(false)}
+              className="flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 text-[#38312B] hover:text-black transition-colors border-b border-black/[0.04]"
+            >
+              <Mail className="w-3.5 h-3.5 text-stone-400" />
+              Contact
+            </Link>
+
+            {/* Bottom action area */}
             <div className="pt-3 border-t border-zinc-100 space-y-2.5">
               <button
                 onClick={() => {
@@ -233,17 +545,6 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   <Phone className="w-3.5 h-3.5" />
                   <span>Call Desk</span>
-                </a>
-              </div>
-
-              <div className="pt-2 text-center">
-                <a
-                  href="http://localhost:3001"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-[11px] font-mono text-zinc-400 hover:text-zinc-700"
-                >
-                  Staff &amp; Operations Portal ↗
                 </a>
               </div>
             </div>

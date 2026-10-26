@@ -1,1 +1,8 @@
-export { Navbar, NAV_ITEMS, type NavbarProps, type NavItem } from "../Navbar";
+export {
+  Navbar,
+  NAV_ITEMS,
+  SERVICE_ITEMS,
+  type NavbarProps,
+  type NavItem,
+  type ServiceItem,
+} from "../Navbar";

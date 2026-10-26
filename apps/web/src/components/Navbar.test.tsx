@@ -8,16 +8,19 @@ afterEach(() => {
 });
 
 describe("Navbar Component", () => {
-  it("renders the 5 clean navigation links replacing search bar", () => {
+  it("renders Tour Packages link and Services dropdown button", () => {
     render(<Navbar />);
 
     expect(screen.getByRole("link", { name: /tour packages/i })).toBeDefined();
-    expect(
-      screen.getByRole("link", { name: /custom holidays/i }),
-    ).toBeDefined();
-    expect(screen.getByRole("link", { name: /visas/i })).toBeDefined();
-    expect(screen.getByRole("link", { name: /flights/i })).toBeDefined();
-    expect(screen.getByRole("link", { name: /umrah/i })).toBeDefined();
+    // Services is now a dropdown toggle button, not a link
+    expect(screen.getByRole("button", { name: /services/i })).toBeDefined();
+  });
+
+  it("renders About and Contact links", () => {
+    render(<Navbar />);
+
+    expect(screen.getByRole("link", { name: /about/i })).toBeDefined();
+    expect(screen.getByRole("link", { name: /contact/i })).toBeDefined();
   });
 
   it("renders FLYORA brand logo", () => {
@@ -30,12 +33,13 @@ describe("Navbar Component", () => {
     const onOpenEnquiry = vi.fn();
     render(<Navbar onOpenEnquiry={onOpenEnquiry} ctaLabel="Plan My Trip" />);
 
-    const ctaButton = screen.getByRole("button", {
+    // Get all "plan my trip" buttons — there's one in desktop and one in mobile drawer
+    const ctaButtons = screen.getAllByRole("button", {
       name: /plan my trip/i,
     });
-    expect(ctaButton).toBeDefined();
+    expect(ctaButtons.length).toBeGreaterThanOrEqual(1);
 
-    fireEvent.click(ctaButton);
+    fireEvent.click(ctaButtons[0]);
     expect(onOpenEnquiry).toHaveBeenCalledTimes(1);
   });
 
@@ -43,30 +47,70 @@ describe("Navbar Component", () => {
     const onFindAdvisor = vi.fn();
     render(<Navbar onFindAdvisor={onFindAdvisor} />);
 
-    const ctaButton = screen.getByRole("button", {
+    const ctaButton = screen.getAllByRole("button", {
       name: /plan my trip/i,
-    });
+    })[0];
     fireEvent.click(ctaButton);
 
     expect(onFindAdvisor).toHaveBeenCalledTimes(1);
   });
 
-  it("triggers onOpenEnquiry with serviceId when clicking service link", () => {
+  it("opens services dropdown and shows 4 cards on hover", () => {
     const onOpenEnquiry = vi.fn();
     render(<Navbar onOpenEnquiry={onOpenEnquiry} />);
 
-    const visasLink = screen.getByRole("link", { name: /visas/i });
-    fireEvent.click(visasLink);
+    // Trigger hover on services
+    const servicesTrigger = screen.getByTestId("services-trigger");
+    fireEvent.mouseEnter(servicesTrigger);
 
-    expect(onOpenEnquiry).toHaveBeenCalledWith("Visas");
-
-    const umrahLink = screen.getByRole("link", { name: /umrah/i });
-    fireEvent.click(umrahLink);
-
-    expect(onOpenEnquiry).toHaveBeenCalledWith("Umrah Packages");
+    // All 4 service cards should now be visible
+    expect(
+      screen.getByRole("button", { name: /custom holidays/i }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: /visa assistance/i }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: /flight booking/i }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: /umrah packages/i }),
+    ).toBeDefined();
   });
 
-  it("toggles mobile menu on hamburger button click and displays all 5 links", () => {
+  it("opens services dropdown and shows service items on click", () => {
+    const onOpenEnquiry = vi.fn();
+    render(<Navbar onOpenEnquiry={onOpenEnquiry} />);
+
+    // Open the services dropdown
+    const servicesButton = screen.getByRole("button", { name: /services/i });
+    fireEvent.click(servicesButton);
+
+    // Service items should now be visible as buttons
+    expect(
+      screen.getByRole("button", { name: /custom holidays/i }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("button", { name: /visa assistance/i }),
+    ).toBeDefined();
+  });
+
+  it("triggers onOpenEnquiry when clicking a service item in dropdown", () => {
+    const onOpenEnquiry = vi.fn();
+    render(<Navbar onOpenEnquiry={onOpenEnquiry} />);
+
+    // Open dropdown
+    const servicesButton = screen.getByRole("button", { name: /services/i });
+    fireEvent.click(servicesButton);
+
+    // Click a service item
+    const visaButton = screen.getByRole("button", { name: /visa assistance/i });
+    fireEvent.click(visaButton);
+
+    expect(onOpenEnquiry).toHaveBeenCalledWith("Visas");
+  });
+
+  it("toggles mobile menu on hamburger button click", () => {
     render(<Navbar />);
 
     const menuToggle = screen.getByLabelText(/open menu/i);
@@ -75,7 +119,7 @@ describe("Navbar Component", () => {
     fireEvent.click(menuToggle);
     expect(screen.getByLabelText(/close menu/i)).toBeDefined();
 
-    // Mobile menu items are now also rendered in the DOM
+    // Tour Packages appears in both desktop and mobile
     const tourLinks = screen.getAllByRole("link", { name: /tour packages/i });
     expect(tourLinks.length).toBeGreaterThanOrEqual(2);
   });
