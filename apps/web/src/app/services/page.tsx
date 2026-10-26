@@ -320,7 +320,7 @@ export default function ServicesPage() {
 
       <main>
         {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & ENQUIRY BAR */}
-        <section className="relative w-full min-h-[660px] lg:h-[720px] flex flex-col justify-between overflow-hidden -mt-20 pt-36 sm:pt-40 lg:pt-44 pb-12 sm:pb-16">
+        <section className="relative w-full min-h-[760px] sm:min-h-[800px] lg:h-[830px] lg:min-h-[830px] flex flex-col justify-between overflow-hidden -mt-20 pt-44 sm:pt-48 lg:pt-52 xl:pt-56 pb-12 sm:pb-16">
           {/* Dynamic Full-Width Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
