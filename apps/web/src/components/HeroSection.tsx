@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, ArrowRight } from "lucide-react";
 
 export interface HeroSectionProps {
   eyebrow?: string;
@@ -226,41 +226,63 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             {description}
           </p>
 
-          {/* Dual  Tours Action CTAs with Sky Cyan Wipe Hover Effect */}
-          <div className="animate-hero-cta mt-4 flex flex-wrap items-center justify-center max-md:gap-4 gap-x-6 gap-y-3 max-md:text-[13px] max-md:leading-6 text-[15px] text-white/90">
+          {/* Dual Action CTAs: Matching exact design from attached image */}
+          <div className="animate-hero-cta mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-6 w-full max-w-xl mx-auto">
             {primaryCtaHref ? (
               <a
                 href={primaryCtaHref}
                 onClick={handlePrimaryClick}
-                className="transition-colors relative isolate hover:text-white before:absolute before:inset-0 before:-z-10 before:bg-sky before:origin-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out hover:before:scale-x-100 py-2.5 max-md:text-[13px] max-md:leading-6 text-[15px] border-x px-6 border-white/40 whitespace-nowrap cursor-pointer tracking-wider uppercase font-medium shadow-sm hover:shadow-lg"
+                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-[#08302B] font-heading font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.12em] px-7 sm:px-9 py-3.5 sm:py-4 rounded-[8px] sm:rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.22)] hover:bg-[#FAFCFB] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 cursor-pointer whitespace-nowrap select-none"
               >
-                {primaryCtaLabel}
+                <span>{primaryCtaLabel}</span>
+                <ArrowRight
+                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2] transition-transform duration-200 group-hover:translate-x-1 shrink-0"
+                  aria-hidden="true"
+                />
               </a>
             ) : (
               <button
                 type="button"
                 onClick={handlePrimaryClick}
-                className="transition-colors relative isolate hover:text-white before:absolute before:inset-0 before:-z-10 before:bg-sky before:origin-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out hover:before:scale-x-100 py-2.5 max-md:text-[13px] max-md:leading-6 text-[15px] border-x px-6 border-white/40 whitespace-nowrap cursor-pointer tracking-wider uppercase font-medium shadow-sm hover:shadow-lg"
+                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-[#08302B] font-heading font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.12em] px-7 sm:px-9 py-3.5 sm:py-4 rounded-[8px] sm:rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.22)] hover:bg-[#FAFCFB] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 cursor-pointer whitespace-nowrap select-none"
               >
-                {primaryCtaLabel}
+                <span>{primaryCtaLabel}</span>
+                <ArrowRight
+                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2] transition-transform duration-200 group-hover:translate-x-1 shrink-0"
+                  aria-hidden="true"
+                />
               </button>
             )}
+
+            {/* Vertical Divider Line between CTAs */}
+            <div
+              aria-hidden="true"
+              className="hidden sm:block w-[1px] h-11 bg-white/70 shrink-0"
+            />
 
             {secondaryCtaHref ? (
               <a
                 href={secondaryCtaHref}
                 onClick={handleSecondaryClick}
-                className="transition-colors relative isolate hover:text-white before:absolute before:inset-0 before:-z-10 before:bg-sky before:origin-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out hover:before:scale-x-100 py-2.5 max-md:text-[13px] max-md:leading-6 text-[15px] border-x px-6 border-white/40 whitespace-nowrap cursor-pointer tracking-wider uppercase font-medium shadow-sm hover:shadow-lg"
+                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-[#08302B] font-heading font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.12em] px-7 sm:px-9 py-3.5 sm:py-4 rounded-[8px] sm:rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.22)] hover:bg-[#FAFCFB] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 cursor-pointer whitespace-nowrap select-none"
               >
-                {secondaryCtaLabel}
+                <span>{secondaryCtaLabel}</span>
+                <ArrowRight
+                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2] transition-transform duration-200 group-hover:translate-x-1 shrink-0"
+                  aria-hidden="true"
+                />
               </a>
             ) : (
               <button
                 type="button"
                 onClick={handleSecondaryClick}
-                className="transition-colors relative isolate hover:text-white before:absolute before:inset-0 before:-z-10 before:bg-sky before:origin-left before:scale-x-0 before:transition-transform before:duration-300 before:ease-out hover:before:scale-x-100 py-2.5 max-md:text-[13px] max-md:leading-6 text-[15px] border-x px-6 border-white/40 whitespace-nowrap cursor-pointer tracking-wider uppercase font-medium shadow-sm hover:shadow-lg"
+                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-[#08302B] font-heading font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.12em] px-7 sm:px-9 py-3.5 sm:py-4 rounded-[8px] sm:rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.22)] hover:bg-[#FAFCFB] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 cursor-pointer whitespace-nowrap select-none"
               >
-                {secondaryCtaLabel}
+                <span>{secondaryCtaLabel}</span>
+                <ArrowRight
+                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2] transition-transform duration-200 group-hover:translate-x-1 shrink-0"
+                  aria-hidden="true"
+                />
               </button>
             )}
           </div>
