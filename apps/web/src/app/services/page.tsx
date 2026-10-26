@@ -18,9 +18,7 @@ import {
   Users,
   Send,
   CheckCircle2,
-  ShieldCheck,
-  Headphones,
-  Award,
+  Play,
   ChevronDown,
   ArrowRight,
   Tag,
@@ -152,6 +150,57 @@ const DISCOUNTS_OFFERS = [
     image: "/services/umrah-packages.jpg",
     serviceId: "Umrah Packages",
   },
+];
+
+// Top Pickups Gallery matching user reference design
+const TOP_PICKUPS = [
+  {
+    id: "pickup-1",
+    title: "VILLA AQUARIUM",
+    toursCount: "2 Tours",
+    image: "/gallery/villa-aquarium.jpg",
+    colSpan: "md:col-span-2",
+    serviceId: "Custom Holidays",
+  },
+  {
+    id: "pickup-2",
+    title: "LA CABANE",
+    toursCount: "1 Tour",
+    image: "/gallery/la-cabane.jpg",
+    colSpan: "md:col-span-1",
+    serviceId: "Custom Holidays",
+  },
+  {
+    id: "pickup-3",
+    title: "AZURE",
+    toursCount: "3 Tours",
+    image: "/gallery/azure.jpg",
+    colSpan: "md:col-span-1",
+    serviceId: "Custom Holidays",
+  },
+  {
+    id: "pickup-4",
+    title: "SERENE",
+    toursCount: "1 Tour",
+    image: "/gallery/serene.jpg",
+    colSpan: "md:col-span-1",
+    serviceId: "Custom Holidays",
+  },
+  {
+    id: "pickup-5",
+    title: "VERDANT",
+    toursCount: "2 Tours",
+    image: "/gallery/verdant.jpg",
+    colSpan: "md:col-span-1",
+    serviceId: "Custom Holidays",
+  },
+];
+
+const PICKUP_STATS = [
+  { value: "12", label: "AMAZING DEALS" },
+  { value: "670", label: "SOLD TOURS" },
+  { value: "24", label: "NEW TOURS" },
+  { value: "980", label: "HAPPY CUSTOMERS" },
 ];
 
 // Popular Packages Cards matching the reference image grid
@@ -568,70 +617,155 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        {/* 4. WHY FLYORA / TRUST SECTION (Matching Reference Image "We're Providing Best Service Since...") */}
-        <section className="py-12 sm:py-16 bg-stone-100/60 border-y border-black/[0.05]">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#8C7A6B] font-semibold">
-                Trusted Excellence
-              </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1C1815] mt-1">
-                We’re Providing Premier Travel Services Since 2006
+        {/* 4. TOP PICKUPS FOR YOU GALLERY & COASTAL STATS STRIP (Replacing Trusted Excellence) */}
+        <section className="relative bg-[#F4F9FD] pt-16 sm:pt-20 pb-0 overflow-hidden border-t border-black/[0.04]">
+          {/* Subtle Sailboat Watermark on bottom left matching reference image */}
+          <div className="absolute left-6 bottom-56 w-36 h-36 opacity-10 pointer-events-none select-none text-sky-800">
+            <svg
+              viewBox="0 0 100 100"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-full h-full"
+            >
+              <path
+                d="M10 75 Q50 90 90 75 L78 85 Q50 95 22 85 Z"
+                fill="currentColor"
+                opacity="0.3"
+              />
+              <line x1="50" y1="20" x2="50" y2="75" strokeWidth="3" />
+              <path
+                d="M50 25 L82 70 L50 70 Z"
+                fill="currentColor"
+                opacity="0.2"
+              />
+              <path
+                d="M46 32 L20 70 L46 70 Z"
+                fill="currentColor"
+                opacity="0.15"
+              />
+            </svg>
+          </div>
+
+          <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            {/* Header: Top Pickups For You */}
+            <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans font-bold tracking-tight text-[#16253b]">
+                Top Pickups <span className="text-[#0284c7]">For You</span>
               </h2>
-              <p className="text-xs sm:text-sm text-stone-600 mt-2 max-w-xl mx-auto">
-                Dedicated travel consultants, direct embassy accreditations, and
-                verified global travel standards.
+              <p className="text-xs sm:text-sm text-slate-500 mt-2.5 font-sans leading-relaxed">
+                Plan your perfect vacation with our travel agency. Choose among
+                hundreds of all-inclusive offers!
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Pillar 1 */}
-              <div className="p-6 sm:p-7 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center shrink-0">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-base font-serif font-bold text-stone-900">
-                    Transparent Pricing &amp; Value
-                  </h3>
-                  <p className="text-xs text-stone-600 mt-1.5 leading-relaxed">
-                    Zero hidden surcharges, direct airline and wholesale hotel
-                    alliances to deliver authentic luxury at the best value.
-                  </p>
-                </div>
-              </div>
+            {/* 5-Card Gallery Grid (Row 1: 2 cols + 1 col, Row 2: 1 + 1 + 1) */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+              {TOP_PICKUPS.map((pickup) => (
+                <div
+                  key={pickup.id}
+                  onClick={() => handleCardEnquiry(pickup.serviceId)}
+                  className={`relative ${pickup.colSpan} h-[260px] sm:h-[300px] lg:h-[340px] rounded-2xl overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer`}
+                >
+                  {/* Background Image */}
+                  <Image
+                    src={pickup.image}
+                    alt={pickup.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
 
-              {/* Pillar 2 */}
-              <div className="p-6 sm:p-7 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center shrink-0">
-                  <Headphones className="w-6 h-6" />
-                </div>
-                <div>
-                  <h3 className="text-base font-serif font-bold text-stone-900">
-                    Dedicated 24/7 Concierge
-                  </h3>
-                  <p className="text-xs text-stone-600 mt-1.5 leading-relaxed">
-                    Personal advisor assigned to your itinerary. Instant
-                    rebooking, flight adjustments, and real-time WhatsApp care.
-                  </p>
-                </div>
-              </div>
+                  {/* High contrast gradient at bottom for text readability */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent group-hover:from-black/85 transition-colors" />
 
-              {/* Pillar 3 */}
-              <div className="p-6 sm:p-7 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0">
-                  <Award className="w-6 h-6" />
+                  {/* Card Content Overlay */}
+                  <div className="absolute inset-0 p-5 sm:p-6 flex flex-col justify-end text-white z-10">
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-sans font-bold tracking-wider text-white drop-shadow-md">
+                      {pickup.title}
+                    </h3>
+                    <div className="flex items-center gap-1.5 mt-1 text-xs font-sans text-white/90 drop-shadow-sm group-hover:text-sky-300 transition-colors">
+                      <span>{pickup.toursCount}</span>
+                      <Play className="w-2.5 h-2.5 fill-current" />
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <h3 className="text-base font-serif font-bold text-stone-900">
-                    99.2% Visa &amp; Booking Success
-                  </h3>
-                  <p className="text-xs text-stone-600 mt-1.5 leading-relaxed">
-                    Meticulous document vetting, official ticketing partner
-                    status, and certified Umrah &amp; Hajj tour leadership.
-                  </p>
+              ))}
+            </div>
+
+            {/* View More Button */}
+            <div className="mt-8 sm:mt-10 mb-12 sm:mb-16 text-center">
+              <button
+                type="button"
+                onClick={() => handleCardEnquiry("Custom Holidays")}
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded border border-[#0284c7] text-[#0284c7] text-xs sm:text-sm font-sans font-semibold hover:bg-[#0284c7] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
+              >
+                View More
+              </button>
+            </div>
+          </div>
+
+          {/* Coastal Panoramic Counter Strip (Matching Reference Image) */}
+          <div className="relative w-full h-[180px] sm:h-[210px] lg:h-[230px] overflow-hidden flex items-center justify-center">
+            {/* Panoramic Background Image */}
+            <Image
+              src="/gallery/stats-coastal-bg.jpg"
+              alt="Coastal travel statistics"
+              fill
+              sizes="100vw"
+              className="object-cover object-center brightness-[0.88]"
+            />
+
+            {/* Cyan/blue gradient tint overlay */}
+            <div className="absolute inset-0 bg-gradient-to-r from-sky-950/45 via-sky-900/30 to-sky-950/45" />
+
+            {/* Decorative dashed flight curve line overlay */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none"
+              preserveAspectRatio="none"
+              viewBox="0 0 1200 200"
+            >
+              <path
+                d="M 50 150 Q 300 40 600 110 T 1150 70"
+                fill="none"
+                stroke="white"
+                strokeWidth="1.5"
+                strokeDasharray="6 6"
+                strokeOpacity="0.45"
+              />
+              <path
+                d="M 100 80 Q 400 180 800 60 T 1100 140"
+                fill="none"
+                stroke="white"
+                strokeWidth="1"
+                strokeDasharray="4 6"
+                strokeOpacity="0.3"
+              />
+            </svg>
+
+            {/* 4 Stats Grid */}
+            <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
+              {PICKUP_STATS.map((stat) => (
+                <div
+                  key={stat.label}
+                  className="flex flex-col items-center justify-center"
+                >
+                  <span
+                    className="font-sans text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                    style={{
+                      WebkitTextStroke: "2px rgba(255, 255, 255, 0.95)",
+                      color: "transparent",
+                    }}
+                  >
+                    {stat.value}
+                  </span>
+                  <span className="mt-1 sm:mt-2 text-[11px] sm:text-xs md:text-sm font-sans font-bold uppercase tracking-[0.15em] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                    {stat.label}
+                  </span>
                 </div>
-              </div>
+              ))}
             </div>
           </div>
         </section>
