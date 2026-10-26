@@ -5,16 +5,25 @@ import { Header } from "./Header";
 
 export const AdminLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-[#F8F8F6] text-zinc-900 flex">
+    <div className={`admin-workspace ${collapsed ? "sidebar-collapsed" : ""}`}>
+      <a href="#main-content" className="skip-link">
+        Skip to workspace
+      </a>
       {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <Sidebar
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        collapsed={collapsed}
+        onToggleCollapse={() => setCollapsed(!collapsed)}
+      />
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col min-w-0 lg:pl-60">
+      <div id="workspace-shell" className="workspace-main">
         <Header onToggleSidebar={() => setSidebarOpen(!sidebarOpen)} />
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-6xl w-full mx-auto">
+        <main id="main-content" className="workspace-content" tabIndex={-1}>
           <Outlet />
         </main>
       </div>

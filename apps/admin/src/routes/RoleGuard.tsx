@@ -20,11 +20,8 @@ export const RoleGuard = ({ allowedRoles }: RoleGuardProps) => {
           Access Restricted
         </h2>
         <p className="text-xs text-zinc-500 max-w-sm mb-5 leading-relaxed">
-          Your role (
-          <span className="text-zinc-800 font-mono text-[11px]">
-            {user?.role?.replace(/_/g, " ") || "UNKNOWN"}
-          </span>
-          ) does not have access to this section.
+          You don't have access to this page. Contact your manager if you need
+          help.
         </p>
         <Link
           to="/"
