@@ -320,7 +320,7 @@ export default function ServicesPage() {
 
       <main>
         {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & ENQUIRY BAR */}
-        <section className="relative w-full min-h-[580px] lg:h-[620px] flex flex-col justify-between overflow-hidden -mt-20 pt-28 pb-10 sm:pb-14">
+        <section className="relative w-full min-h-[660px] lg:h-[720px] flex flex-col justify-between overflow-hidden -mt-20 pt-36 sm:pt-40 lg:pt-44 pb-12 sm:pb-16">
           {/* Dynamic Full-Width Background Image */}
           <div className="absolute inset-0 z-0">
             <Image
@@ -337,7 +337,7 @@ export default function ServicesPage() {
           </div>
 
           {/* Hero Content Container */}
-          <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-6 sm:pt-10 flex-1 flex flex-col justify-center">
+          <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center">
             {/* Main Hero Headline */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-white tracking-tight leading-[1.12] max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-400">
               {activeService.heroHeadline}
