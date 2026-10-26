@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
@@ -14,465 +14,904 @@ import {
   Bus,
   Compass,
   Sparkles,
-  Check,
-  ArrowRight,
-  ChevronDown,
+  Calendar,
+  Users,
+  Send,
+  CheckCircle2,
   ShieldCheck,
-  Clock,
   Headphones,
   Award,
+  ChevronDown,
+  ArrowRight,
+  Tag,
   MessageCircle,
+  MapPin,
+  Check,
 } from "lucide-react";
 
-interface ServiceDetail {
+interface ServiceHeroConfig {
   id: string;
   serviceId: string;
+  name: string;
   badge: string;
-  subtitle: string;
-  title: string;
-  description: string;
-  inclusions: string[];
-  ctaText: string;
+  heroHeadline: string;
+  heroSubheadline: string;
   imageSrc: string;
-  accentColor: string;
+  tagline: string;
   icon: React.ReactNode;
 }
 
-const SERVICES_CATALOG: ServiceDetail[] = [
+const HERO_SERVICES: ServiceHeroConfig[] = [
   {
     id: "custom-holidays",
     serviceId: "Custom Holidays",
-    badge: "Bespoke Travel",
-    subtitle: "Private Itineraries & Luxury Stays",
-    title: "Tailored Vacations Crafted Around Your Dream Lifestyle",
-    description:
-      "No rigid templates or pre-packaged compromises. Whether you envision a private overwater sanctuary in the Maldives, an alpine chalet in the Swiss peaks, or a cultural immersion through Kyoto, our master itinerary planners curate every villa, private transfer, and hidden excursion to match your personal rhythm.",
-    inclusions: [
-      "Hand-selected 5-star villas, boutique retreats & private chalets",
-      "Private chauffeured airport and intercity transfers",
-      "Curated VIP dining reservations & off-the-beaten-path experiences",
-      "24/7 dedicated personal concierge support throughout your journey",
-    ],
-    ctaText: "Plan Custom Holiday",
+    name: "Custom Holidays",
+    badge: "Tailored Luxury",
+    heroHeadline: "All-in-One Bespoke Holiday Planning",
+    heroSubheadline:
+      "Crafting private luxury itineraries, 5-star villas, and hand-curated experiences worldwide.",
     imageSrc: "/services/custom-holidays.jpg",
-    accentColor: "from-amber-600/20 to-amber-700/5",
-    icon: <Star className="w-4 h-4 text-amber-600" />,
+    tagline: "Private Overwater Villas & Alpine Escapes",
+    icon: <Star className="w-4 h-4 text-amber-400" />,
   },
   {
     id: "visa-assistance",
     serviceId: "Visas",
-    badge: "Global Documentation",
-    subtitle: "Hassle-Free Approvals for 100+ Countries",
-    title: "Effortless Visa Processing with Unmatched Approval Rates",
-    description:
-      "Navigating consular requirements shouldn't stand between you and your next global journey. Our dedicated visa officers handle document scrutiny, appointment bookings, biometric scheduling, and embassy follow-ups with meticulous attention to detail.",
-    inclusions: [
-      "End-to-end document verification & error prevention checks",
-      "Priority consular appointment scheduling & biometric appointment prep",
-      "Express tourist, business, and transit visa facilitation",
-      "Real-time status updates and dedicated case manager assistance",
-    ],
-    ctaText: "Apply for Visa",
+    name: "Visa Assistance",
+    badge: "Fast-Track",
+    heroHeadline: "Hassle-Free Global Visa Approvals",
+    heroSubheadline:
+      "Document auditing, express appointment booking, and 99.2% approval success for 100+ countries.",
     imageSrc: "/services/visa-assistance.jpg",
-    accentColor: "from-blue-600/20 to-blue-700/5",
-    icon: <Globe className="w-4 h-4 text-blue-600" />,
+    tagline: "Tourist, Business & Transit Visas",
+    icon: <Globe className="w-4 h-4 text-blue-400" />,
   },
   {
     id: "flight-booking",
     serviceId: "Flights",
-    badge: "Commercial & Business Air",
-    subtitle: "Global Airline Network & Best Fares",
-    title: "Exclusive Airline Fares & Seamless Multi-City Flight Routing",
-    description:
-      "Gain access to premier airline alliances, private corporate negotiated rates, and optimized multi-sector flight routes that public search engines overlook. From business class upgrades to large family groups, we ensure every ticket comes with 24/7 rebooking support.",
-    inclusions: [
-      "Access to corporate partner rates & unpublished special airline fares",
-      "Complex multi-city, open-jaw & round-the-world route management",
-      "Advance seat assignments, extra baggage & special meal preferences",
-      "Instant rebooking and cancellation support during unexpected disruptions",
-    ],
-    ctaText: "Book Flights",
+    name: "Flight Booking",
+    badge: "Best Fares",
+    heroHeadline: "Commercial & Business Air Ticketing",
+    heroSubheadline:
+      "Access unpublished corporate partner fares, flexible routing, and 24/7 dedicated flight rebooking.",
     imageSrc: "/services/flight-booking.jpg",
-    accentColor: "from-sky-600/20 to-sky-700/5",
-    icon: <Plane className="w-4 h-4 text-sky-600" />,
+    tagline: "Worldwide Routes & Corporate Discounts",
+    icon: <Plane className="w-4 h-4 text-sky-400" />,
   },
   {
     id: "train-booking",
     serviceId: "Trains",
-    badge: "Scenic Rail & Express",
-    subtitle: "Confirmed Berths & Iconic Scenic Rail",
-    title: "Confirmed Railway Reservations & Iconic Rail Experiences",
-    description:
-      "Experience the timeless romance and scenic majesty of rail journeys without the booking friction. We secure confirmed berths, tatkal bookings, express intercity transit, and tickets for iconic luxury tourist trains across India, Europe, and Asia.",
-    inclusions: [
-      "Confirmed berth allocation across high-demand express & luxury trains",
-      "Tatkal & emergency quota reservation assistance",
-      "Family & group bookings with adjacent compartment seating",
-      "Live PNR tracking, platform updates & connection guidance",
-    ],
-    ctaText: "Book Train Tickets",
+    name: "Train Booking",
+    badge: "Scenic Rail",
+    heroHeadline: "Confirmed Berths & Iconic Rail Journeys",
+    heroSubheadline:
+      "Express reservations, tatkal priority bookings, and panoramic luxury tourist rail tickets.",
     imageSrc: "/services/train-booking.jpg",
-    accentColor: "from-emerald-600/20 to-emerald-700/5",
-    icon: <Train className="w-4 h-4 text-emerald-600" />,
+    tagline: "High-Speed Rail & Scenic Routes",
+    icon: <Train className="w-4 h-4 text-emerald-400" />,
   },
   {
     id: "bus-booking",
     serviceId: "Buses",
+    name: "Bus Booking",
     badge: "Highway Comfort",
-    subtitle: "Premium AC Volvo & Sleeper Coaches",
-    title: "Luxury Volvo Coaches & Dependable Intercity Road Transit",
-    description:
-      "Connect seamlessly between major cities and picturesque hill stations in total comfort. We partner exclusively with top-tier AC Volvo, sleeper, and luxury multi-axle coach operators known for punctual departures and spotless hygiene.",
-    inclusions: [
-      "Top-rated multi-axle Volvo & Scania AC sleeper coaches",
-      "Verified prime boarding & drop-off lounges with security",
-      "Sanitized coaches, onboard charging ports & blankets",
-      "Direct e-ticket dispatch and real-time live GPS bus tracking links",
-    ],
-    ctaText: "Book Bus Journey",
+    heroHeadline: "Luxury Volvo & Sleeper Coach Travel",
+    heroSubheadline:
+      "Top-tier AC multi-axle coaches, verified city boarding lounges, and live GPS tracking links.",
     imageSrc: "/services/bus-booking.jpg",
-    accentColor: "from-orange-600/20 to-orange-700/5",
-    icon: <Bus className="w-4 h-4 text-orange-600" />,
+    tagline: "Intercity Road Travel with AC Comfort",
+    icon: <Bus className="w-4 h-4 text-orange-400" />,
   },
   {
     id: "umrah-packages",
     serviceId: "Umrah Packages",
-    badge: "Sacred Pilgrimage",
-    subtitle: "Makkah & Madinah Curated with Care",
-    title: "Peaceful & Blessed Umrah Pilgrimages Curated for Comfort",
-    description:
-      "Embark on your spiritual journey with complete devotion and zero logistical stress. Our Umrah packages combine luxury hotels steps away from the Holy Haram courtyard, fast electronic visa issuance, private AC ground transport, and knowledgeable Ziyarat guides.",
-    inclusions: [
-      "4-star & 5-star hotels right on the Haram courtyard in Makkah & Madinah",
-      "Swift Saudi Umrah e-visa issuance with comprehensive medical cover",
-      "Private air-conditioned vehicle transfers between Jeddah, Makkah & Madinah",
-      "Historical site Ziyarats led by experienced multilingual guides",
-    ],
-    ctaText: "Explore Umrah Packages",
+    name: "Umrah Packages",
+    badge: "Spiritual Journey",
+    heroHeadline: "Sacred & Blessed Umrah Pilgrimages",
+    heroSubheadline:
+      "Hotels steps from the Holy Haram courtyard, express Saudi visas, private AC transit & Ziyarat guides.",
     imageSrc: "/services/umrah-packages.jpg",
-    accentColor: "from-teal-600/20 to-teal-700/5",
-    icon: <Compass className="w-4 h-4 text-teal-600" />,
+    tagline: "Makkah & Madinah Luxury Stays",
+    icon: <Compass className="w-4 h-4 text-teal-400" />,
   },
   {
     id: "hajj-packages",
     serviceId: "Hajj Packages",
+    name: "Hajj Packages",
     badge: "The Holy Pillar",
-    subtitle: "Complete Guided Rites & Premium Camps",
-    title: "The Sacred Journey of a Lifetime, Fully Guided & Dignified",
-    description:
-      "Performing Hajj is a monumental spiritual milestone. Flyora offers end-to-end guidance from official registration and visa management to upgraded European air-conditioned camps in Mina, private inter-ritual transit, and dedicated scholars to guide your rites.",
-    inclusions: [
-      "Upgraded air-conditioned tents in Mina and Arafat with full board dining",
-      "Dedicated Islamic scholars conducting preparatory seminars & daily ritual guidance",
-      "Reserved air-conditioned transport connecting all holy ritual stations",
-      "24/7 on-ground medical coordination team and dedicated liaison officers",
-    ],
-    ctaText: "Enquire for Hajj",
+    heroHeadline: "The Sacred Journey of a Lifetime",
+    heroSubheadline:
+      "Comprehensive guided pilgrimage with deluxe European air-conditioned Mina camps and scholarly guidance.",
     imageSrc: "/services/hajj-packages.jpg",
-    accentColor: "from-amber-600/20 to-amber-700/5",
-    icon: <Sparkles className="w-4 h-4 text-amber-600" />,
+    tagline: "Fully Guided & Complete Rituals",
+    icon: <Sparkles className="w-4 h-4 text-amber-300" />,
+  },
+];
+
+// Promotional Offer Banners matching the reference image row 2
+const DISCOUNTS_OFFERS = [
+  {
+    id: "offer-1",
+    tag: "HOLIDAY SAVER",
+    discount: "Up to 25% OFF",
+    title: "Summer International Holidays",
+    description: "Book 45 days in advance & get complimentary 5-star upgrades",
+    code: "FLYHOLIDAY25",
+    bgGradient: "from-amber-500 via-amber-600 to-orange-600",
+    serviceId: "Custom Holidays",
+  },
+  {
+    id: "offer-2",
+    tag: "FAMILY VISA BUNDLE",
+    discount: "Flat 20% OFF",
+    title: "Schengen & Gulf Visa Processing",
+    description: "Apply for 3 or more family members with zero processing fee",
+    code: "FLYVISA20",
+    bgGradient: "from-sky-500 via-blue-600 to-indigo-700",
+    serviceId: "Visas",
+  },
+  {
+    id: "offer-3",
+    tag: "PILGRIM SPECIAL",
+    discount: "Save $250 / Pilgrim",
+    title: "Executive Umrah & Hajj Packages",
+    description: "Complimentary Haram-facing room upgrade on group bookings",
+    code: "PILGRIM250",
+    bgGradient: "from-emerald-600 via-teal-700 to-stone-800",
+    serviceId: "Umrah Packages",
+  },
+];
+
+// Popular Packages Cards matching the reference image grid
+const POPULAR_PACKAGES = [
+  {
+    id: "pkg-1",
+    serviceId: "Custom Holidays",
+    title: "5D/4N Dubai Family Luxury Escape",
+    destination: "Dubai, UAE",
+    duration: "5 Days / 4 Nights",
+    startingPrice: "$799",
+    tag: "Featured",
+    image: "/destinations/dubai.jpg",
+    features: ["Burj Khalifa VIP", "Desert Safari BBQ", "Private Yacht"],
+  },
+  {
+    id: "pkg-2",
+    serviceId: "Custom Holidays",
+    title: "4D/3N Maldives Overwater Villa Sanctuary",
+    destination: "North Malé Atoll, Maldives",
+    duration: "4 Days / 3 Nights",
+    startingPrice: "$1,299",
+    tag: "Best Seller",
+    image: "/destinations/maldives.jpg",
+    features: ["Private Plunge Pool", "Seaplane Transfer", "All-Inclusive"],
+  },
+  {
+    id: "pkg-3",
+    serviceId: "Custom Holidays",
+    title: "6D/5N Bali Ubud Rainforest & Seminyak",
+    destination: "Bali, Indonesia",
+    duration: "6 Days / 5 Nights",
+    startingPrice: "$649",
+    tag: "Trending",
+    image: "/destinations/bali.jpg",
+    features: ["Jungle Swing", "Private Villa Pool", "Sunset Seafood"],
+  },
+  {
+    id: "pkg-4",
+    serviceId: "Visas",
+    title: "Schengen & UK Fast-Track Tourist Visa",
+    destination: "Europe & United Kingdom",
+    duration: "Express 7-10 Days",
+    startingPrice: "$180",
+    tag: "99% Approval",
+    image: "/services/visa-assistance.jpg",
+    features: ["Document Audit", "Biometric Slot Booking", "Doorstep Pickup"],
+  },
+  {
+    id: "pkg-5",
+    serviceId: "Umrah Packages",
+    title: "10D/9N Deluxe Makkah & Madinah Umrah",
+    destination: "Saudi Arabia",
+    duration: "10 Days / 9 Nights",
+    startingPrice: "$1,450",
+    tag: "Direct Flight",
+    image: "/services/umrah-packages.jpg",
+    features: ["Clock Tower Hotel", "Private AC Coach", "Ziyarat Guide"],
+  },
+  {
+    id: "pkg-6",
+    serviceId: "Trains",
+    title: "Swiss Panoramic Glacier Express Tour",
+    destination: "Zermatt to St. Moritz, Switzerland",
+    duration: "3 Days Scenic Rail",
+    startingPrice: "$520",
+    tag: "Iconic Rail",
+    image: "/services/train-booking.jpg",
+    features: ["Panoramic Windows", "3-Course Dining", "Swiss Rail Pass"],
   },
 ];
 
 const FAQS = [
   {
-    question: "How does Flyora customize my vacation itinerary?",
+    question: "How do I submit my enquiry through this page?",
     answer:
-      "We begin with a brief consultation to understand your travel dates, preferred destinations, comfort level, and specific interests. A dedicated itinerary designer then crafts a personalized day-by-day plan featuring hand-selected hotels, private transfers, and tailored activities. You review and refine the proposal until it matches your exact vision.",
+      "Select your desired service tab in the top hero, choose your travel date, enter your name and phone number, and click 'Submit Enquiry'. Our travel coordinator receives your message instantly and replies with custom options via WhatsApp and email.",
   },
   {
-    question: "How far in advance should I apply for my travel visa?",
+    question: "Can Flyora handle urgent or emergency visa requests?",
     answer:
-      "We recommend initiating your visa process at least 4 to 8 weeks prior to your intended departure date, depending on the embassy's processing window. For urgent travel, our visa desk provides express visa assistance and appointment fast-tracking where applicable.",
+      "Yes. Our visa documentation desk operates express appointment channels and emergency filing options for travelers needing urgent approvals for Schengen, Dubai, UK, US, and Southeast Asian countries.",
   },
   {
-    question: "Can Flyora handle emergency rebooking or travel disruptions?",
+    question:
+      "Do you arrange complex multi-city flights and train connections?",
     answer:
-      "Yes. Every client has direct access to our 24/7 emergency support desk and personal travel advisor. Whether facing flight cancellations, railway schedule changes, or medical adjustments, our team rebooks flights, coordinates hotel vouchers, and rearranges transfers instantly.",
+      "Absolutely. We specialize in non-standard itineraries, open-jaw flight tickets, family group seating on high-speed rail, and coordinating airport transfers directly with hotel check-ins.",
   },
   {
-    question: "What documents are required for Umrah and Hajj packages?",
+    question: "What is included in the Umrah and Hajj packages?",
     answer:
-      "Pilgrims require a valid passport with at least 6 months of validity, recent passport-sized photographs with white backgrounds, proof of required vaccinations, and official relationship documentation where applicable. Our pilgrimage desk assists with all Saudi visa applications and regulatory paperwork.",
+      "Our holy pilgrimage packages provide full-board guidance including Saudi electronic visa issuance, 4-star/5-star accommodation walking distance from the Haram, private AC ground transit, historical Ziyarat tours, and daily spiritual guidance by experienced scholars.",
   },
   {
-    question: "Are flight, train, and bus tickets confirmed immediately?",
+    question: "Is my payment and booking protected with Flyora?",
     answer:
-      "Yes. Once your itinerary or route is finalized and confirmed, official e-tickets with airline PNRs, railway berth numbers, or bus boarding vouchers are dispatched directly to your email and WhatsApp with verified booking codes.",
-  },
-  {
-    question: "What payment options and booking protection do you offer?",
-    answer:
-      "We accept all major credit and debit cards, net banking, UPI, and international bank transfers via secure encrypted gateways. We also provide transparent cancellation policies and optional comprehensive travel insurance to safeguard your investment.",
+      "Yes. Flyora is an authorized, licensed travel agency. We issue official airline PNRs, verified hotel confirmation vouchers, and clear transparent invoicing with round-the-clock on-ground emergency support.",
   },
 ];
 
 export default function ServicesPage() {
-  const [enquiryOpen, setEnquiryOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<string | undefined>(
+  const [activeServiceIndex, setActiveServiceIndex] = useState(0);
+  const activeService = HERO_SERVICES[activeServiceIndex];
+
+  // Inline Hero Enquiry Bar state
+  const [travelDate, setTravelDate] = useState("");
+  const [travelers, setTravelers] = useState("2 Adults, 0 Kids");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  // Enquiry Modal state for card buttons
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalServiceId, setModalServiceId] = useState<string | undefined>(
     undefined,
   );
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  const handleOpenEnquiry = (serviceId?: string) => {
-    setSelectedService(serviceId);
-    setEnquiryOpen(true);
+  // Listen to hash changes when navigating via anchor links
+  useEffect(() => {
+    const handleHash = () => {
+      if (window.location.hash) {
+        const hash = window.location.hash.replace("#", "");
+        const index = HERO_SERVICES.findIndex((s) => s.id === hash);
+        if (index !== -1) {
+          setActiveServiceIndex(index);
+        }
+      }
+    };
+    handleHash();
+    window.addEventListener("hashchange", handleHash);
+    return () => window.removeEventListener("hashchange", handleHash);
+  }, []);
+
+  const handleHeroSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!fullName || !phone) {
+      // If empty, open modal prefilled
+      setModalServiceId(activeService.serviceId);
+      setModalOpen(true);
+      return;
+    }
+
+    setSubmitted(true);
+    // WhatsApp direct fallback link for instant admin communication
+    const message = encodeURIComponent(
+      `Hello Flyora Team,\n\nI want to enquire about *${activeService.name}*.\nName: ${fullName}\nPhone: ${phone}\nDate: ${travelDate || "Flexible"}\nTravelers: ${travelers}`,
+    );
+    window.open(`https://wa.me/919876543210?text=${message}`, "_blank");
   };
 
-  const toggleFaq = (index: number) => {
-    setOpenFaqIndex((prev) => (prev === index ? null : index));
+  const handleCardEnquiry = (serviceId?: string) => {
+    setModalServiceId(serviceId);
+    setModalOpen(true);
   };
 
   return (
     <div className="min-h-screen bg-[#FDFCFB] text-[#1C1815] selection:bg-[#463D34] selection:text-white">
-      {/* Navigation */}
+      {/* 1. Flyora Floating Navbar */}
       <Navbar
         activePath="/services"
-        onOpenEnquiry={handleOpenEnquiry}
+        onOpenEnquiry={handleCardEnquiry}
         ctaLabel="Plan My Trip"
       />
 
-      <main className="relative pt-6 sm:pt-10">
-        {/* Hero Section */}
-        <section className="relative px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center pt-8 sm:pt-14 pb-12 sm:pb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-stone-100 border border-black/[0.06] mb-5">
-            <span className="w-2 h-2 rounded-full bg-amber-600" />
-            <span className="text-[11px] font-mono uppercase tracking-[0.18em] text-[#463D34] font-medium">
-              Comprehensive Concierge Services
-            </span>
+      <main>
+        {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & ENQUIRY BAR */}
+        <section className="relative w-full min-h-[620px] lg:min-h-[680px] flex flex-col justify-between overflow-hidden -mt-20 pt-28 pb-14 sm:pb-20">
+          {/* Dynamic Full-Width Background Image */}
+          <div className="absolute inset-0 z-0">
+            <Image
+              key={activeService.imageSrc}
+              src={activeService.imageSrc}
+              alt={activeService.name}
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover transition-opacity duration-700 ease-in-out brightness-[0.78]"
+            />
+            {/* Rich gradient overlay for crystal clear contrast */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/35" />
           </div>
 
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-normal tracking-tight text-[#1C1815] leading-[1.12]">
-            Curated Travel &amp; Transit Solutions,{" "}
-            <span className="italic font-light text-[#5A4F44]">
-              Seamlessly Delivered.
-            </span>
-          </h1>
-
-          <p className="mt-5 sm:mt-6 text-sm sm:text-base md:text-lg font-sans text-[#524941] max-w-3xl mx-auto leading-relaxed">
-            From bespoke private holidays and express visa processing to
-            flights, scenic rail, luxury highway coaches, and sacred pilgrimages
-            — Flyora combines world-class personal concierge care with verified
-            travel excellence.
-          </p>
-
-          {/* Quick Jump Pills */}
-          <div className="mt-8 flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
-            {SERVICES_CATALOG.map((s) => (
-              <a
-                key={s.id}
-                href={`#${s.id}`}
-                className="px-3.5 py-1.5 rounded-full bg-white border border-black/[0.08] text-[11.5px] font-sans font-medium text-stone-700 hover:text-black hover:border-black/25 hover:bg-stone-50 transition shadow-2xs flex items-center gap-1.5 cursor-pointer"
-              >
-                {s.icon}
-                <span>{s.serviceId}</span>
-              </a>
-            ))}
-          </div>
-
-          {/* Trust Guarantees Strip */}
-          <div className="mt-12 sm:mt-16 pt-8 border-t border-black/[0.06] grid grid-cols-2 md:grid-cols-4 gap-4 text-left">
-            <div className="p-3.5 rounded-xl bg-white/70 border border-black/[0.05] shadow-2xs">
-              <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-800 mb-2.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-700" />
-              </div>
-              <h4 className="text-xs font-serif font-bold text-stone-900">
-                100+ Global Partners
-              </h4>
-              <p className="text-[11px] text-stone-500 mt-0.5 leading-snug">
-                Direct airline, embassy &amp; hotel alliances
-              </p>
+          {/* Hero Content Container */}
+          <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 sm:pt-14 flex-1 flex flex-col justify-center">
+            {/* Tagline / Subtitle Pill */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-white text-xs font-sans font-medium uppercase tracking-wider mb-4 self-start shadow-sm animate-in fade-in duration-300">
+              {activeService.icon}
+              <span>{activeService.badge}</span>
+              <span className="text-white/60">•</span>
+              <span className="text-white/90">{activeService.tagline}</span>
             </div>
 
-            <div className="p-3.5 rounded-xl bg-white/70 border border-black/[0.05] shadow-2xs">
-              <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-800 mb-2.5">
-                <Clock className="w-4 h-4 text-blue-700" />
-              </div>
-              <h4 className="text-xs font-serif font-bold text-stone-900">
-                Rapid Turnaround
-              </h4>
-              <p className="text-[11px] text-stone-500 mt-0.5 leading-snug">
-                Fast e-visa &amp; instant booking ticketing
-              </p>
-            </div>
+            {/* Main Hero Headline */}
+            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-white tracking-tight leading-[1.12] max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-400">
+              {activeService.heroHeadline}
+            </h1>
 
-            <div className="p-3.5 rounded-xl bg-white/70 border border-black/[0.05] shadow-2xs">
-              <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-800 mb-2.5">
-                <Headphones className="w-4 h-4 text-amber-700" />
-              </div>
-              <h4 className="text-xs font-serif font-bold text-stone-900">
-                24/7 Dedicated Care
-              </h4>
-              <p className="text-[11px] text-stone-500 mt-0.5 leading-snug">
-                Round-the-clock trip &amp; rebooking support
-              </p>
-            </div>
+            <p className="mt-4 text-sm sm:text-base md:text-lg font-sans text-white/85 max-w-2xl leading-relaxed animate-in fade-in slide-in-from-bottom-3 duration-500">
+              {activeService.heroSubheadline}
+            </p>
 
-            <div className="p-3.5 rounded-xl bg-white/70 border border-black/[0.05] shadow-2xs">
-              <div className="w-8 h-8 rounded-lg bg-stone-100 flex items-center justify-center text-stone-800 mb-2.5">
-                <Award className="w-4 h-4 text-[#463D34]" />
+            {/* Service Selection Tabs (Above the white enquiry box, exactly like reference image) */}
+            <div className="mt-8 sm:mt-10">
+              <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-none">
+                {HERO_SERVICES.map((s, idx) => {
+                  const isActive = idx === activeServiceIndex;
+                  return (
+                    <button
+                      key={s.id}
+                      type="button"
+                      onClick={() => {
+                        setActiveServiceIndex(idx);
+                        setSubmitted(false);
+                      }}
+                      className={`px-3.5 sm:px-4 py-2 rounded-t-xl text-xs sm:text-[13px] font-sans font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+                        isActive
+                          ? "bg-white text-stone-900 shadow-md font-semibold"
+                          : "bg-black/40 hover:bg-black/60 text-white/90 backdrop-blur-sm border-t border-x border-white/10"
+                      }`}
+                    >
+                      <span>{s.icon}</span>
+                      <span>{s.name}</span>
+                    </button>
+                  );
+                })}
               </div>
-              <h4 className="text-xs font-serif font-bold text-stone-900">
-                Best Value Guarantee
-              </h4>
-              <p className="text-[11px] text-stone-500 mt-0.5 leading-snug">
-                Transparent pricing with no hidden surcharges
-              </p>
+
+              {/* White Floating Enquiry Box (Embedded in Hero, matching reference image) */}
+              <div className="bg-white rounded-b-2xl rounded-tr-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-black/[0.08] p-4 sm:p-6 transition-all duration-300">
+                {submitted ? (
+                  <div className="py-4 text-center space-y-2 animate-in fade-in duration-300">
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
+                      <CheckCircle2 className="w-6 h-6" />
+                    </div>
+                    <h3 className="text-lg font-serif font-bold text-stone-900">
+                      Enquiry Sent to Flyora Desk!
+                    </h3>
+                    <p className="text-xs text-stone-600 max-w-md mx-auto">
+                      Thank you, {fullName}. Our dedicated coordinator for{" "}
+                      <strong>{activeService.name}</strong> will contact you via
+                      WhatsApp/phone shortly with customized pricing.
+                    </p>
+                    <button
+                      type="button"
+                      onClick={() => setSubmitted(false)}
+                      className="mt-3 text-xs font-semibold text-[#463D34] underline cursor-pointer"
+                    >
+                      Submit another enquiry
+                    </button>
+                  </div>
+                ) : (
+                  <form
+                    onSubmit={handleHeroSubmit}
+                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 items-end"
+                  >
+                    {/* Field 1: Service Chosen */}
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
+                        <Tag className="w-3.5 h-3.5 text-stone-400" />
+                        Selected Service
+                      </label>
+                      <div className="w-full h-11 px-3.5 bg-stone-50 rounded-lg border border-stone-200 text-xs font-semibold text-stone-800 flex items-center justify-between">
+                        <span className="truncate">{activeService.name}</span>
+                        <span className="text-[10px] text-amber-700 font-mono bg-amber-50 px-2 py-0.5 rounded">
+                          {activeService.badge}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Field 2: Travel Date */}
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-stone-400" />
+                        Expected Date
+                      </label>
+                      <input
+                        type="date"
+                        value={travelDate}
+                        onChange={(e) => setTravelDate(e.target.value)}
+                        className="w-full h-11 px-3.5 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition"
+                      />
+                    </div>
+
+                    {/* Field 3: Travelers */}
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-stone-400" />
+                        Guests / Travelers
+                      </label>
+                      <select
+                        value={travelers}
+                        onChange={(e) => setTravelers(e.target.value)}
+                        className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition cursor-pointer"
+                      >
+                        <option value="1 Adult">Solo Traveler (1 Adult)</option>
+                        <option value="2 Adults, 0 Kids">
+                          Couple (2 Adults)
+                        </option>
+                        <option value="Family (2 Adults, 2 Kids)">
+                          Family (2 Adults, 2 Kids)
+                        </option>
+                        <option value="Small Group (3-5 Adults)">
+                          Small Group (3-5 Adults)
+                        </option>
+                        <option value="Large Group (6+ Persons)">
+                          Large Group (6+ Persons)
+                        </option>
+                      </select>
+                    </div>
+
+                    {/* Field 4: Full Name & Phone */}
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
+                        <MessageCircle className="w-3.5 h-3.5 text-stone-400" />
+                        Your Contact
+                      </label>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          placeholder="Your Name"
+                          value={fullName}
+                          onChange={(e) => setFullName(e.target.value)}
+                          className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition"
+                        />
+                        <input
+                          type="tel"
+                          placeholder="Phone / WhatsApp"
+                          value={phone}
+                          onChange={(e) => setPhone(e.target.value)}
+                          className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Field 5: Submit Button */}
+                    <div>
+                      <button
+                        type="submit"
+                        className="w-full h-11 rounded-lg bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-xs font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-md flex items-center justify-center gap-2"
+                      >
+                        <Send className="w-3.5 h-3.5 text-amber-300" />
+                        <span>Submit Enquiry</span>
+                      </button>
+                    </div>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Alternating Editorial Showcase Sections */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto space-y-16 sm:space-y-24 py-8 sm:py-12">
-          {SERVICES_CATALOG.map((service, index) => {
-            const isEven = index % 2 === 0;
+        {/* 3. DISCOUNTS & OFFERS SECTION (Matching Reference Image Row 2) */}
+        <section className="py-12 sm:py-16 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-8 sm:mb-10">
+            <span className="text-[11px] font-mono font-semibold uppercase tracking-[0.2em] text-[#8C7A6B]">
+              Seasonal Special Offers
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] mt-1">
+              Exclusive Discounts &amp; Deals
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-500 mt-1 max-w-xl mx-auto">
+              Limited-time benefits and promotional upgrades curated for early
+              bookers and family travelers.
+            </p>
+          </div>
 
-            return (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
+            {DISCOUNTS_OFFERS.map((offer) => (
               <div
-                key={service.id}
-                id={service.id}
-                className="scroll-mt-28 p-5 sm:p-8 lg:p-10 rounded-3xl bg-white border border-black/[0.06] shadow-[0_8px_30px_rgb(0,0,0,0.03)] hover:shadow-[0_12px_40px_rgb(0,0,0,0.06)] transition-all duration-300"
+                key={offer.id}
+                className={`relative rounded-2xl p-6 sm:p-7 text-white shadow-lg bg-gradient-to-br ${offer.bgGradient} overflow-hidden flex flex-col justify-between group hover:-translate-y-1 transition-all duration-300`}
               >
-                <div
-                  className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center`}
-                >
-                  {/* Photo Column */}
-                  <div
-                    className={`lg:col-span-6 relative ${
-                      isEven ? "lg:order-1" : "lg:order-2"
-                    }`}
-                  >
-                    <div className="relative h-64 sm:h-80 lg:h-[390px] w-full rounded-2xl overflow-hidden border border-black/[0.08] shadow-md group">
-                      <Image
-                        src={service.imageSrc}
-                        alt={service.title}
-                        fill
-                        sizes="(max-width: 1024px) 100vw, 50vw"
-                        className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent" />
+                {/* Decorative circle glow */}
+                <div className="absolute top-0 right-0 w-36 h-36 bg-white/10 rounded-full blur-xl pointer-events-none" />
 
-                      {/* Floating Badge in photo */}
-                      <div className="absolute top-4 left-4 z-10">
-                        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/90 backdrop-blur-md text-stone-900 text-[11px] font-sans font-semibold uppercase tracking-wider shadow-sm">
-                          {service.icon}
-                          <span>{service.badge}</span>
-                        </span>
-                      </div>
-
-                      {/* Bottom Photo Title Accent */}
-                      <div className="absolute bottom-4 left-4 right-4 z-10 text-white">
-                        <p className="text-[11px] font-mono uppercase tracking-widest text-amber-200">
-                          {service.subtitle}
-                        </p>
-                        <p className="text-lg font-serif font-medium mt-0.5">
-                          {service.serviceId}
-                        </p>
-                      </div>
-                    </div>
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="px-2.5 py-1 rounded-full bg-black/25 backdrop-blur-md text-[10px] font-mono font-bold tracking-widest uppercase">
+                      {offer.tag}
+                    </span>
+                    <span className="text-xl sm:text-2xl font-serif font-black tracking-tight">
+                      {offer.discount}
+                    </span>
                   </div>
 
-                  {/* Storytelling & Inclusions Content Column */}
-                  <div
-                    className={`lg:col-span-6 flex flex-col justify-center ${
-                      isEven ? "lg:order-2" : "lg:order-1"
-                    }`}
+                  <h3 className="text-lg sm:text-xl font-serif font-bold leading-snug">
+                    {offer.title}
+                  </h3>
+                  <p className="text-xs text-white/85 mt-2 leading-relaxed">
+                    {offer.description}
+                  </p>
+                </div>
+
+                <div className="pt-6 mt-4 border-t border-white/20 flex items-center justify-between">
+                  <div className="text-[11px] font-mono bg-white/15 px-2.5 py-1 rounded border border-white/25">
+                    CODE: <strong>{offer.code}</strong>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleCardEnquiry(offer.serviceId)}
+                    className="px-4 py-2 rounded-lg bg-white text-stone-900 text-xs font-semibold hover:bg-stone-100 transition shadow-sm cursor-pointer"
                   >
-                    <div className="inline-flex items-center gap-2 mb-2">
-                      <span className="text-[11px] font-mono font-medium uppercase tracking-[0.18em] text-[#8C7A6B]">
-                        Service 0{index + 1} • {service.subtitle}
+                    Claim Deal
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 4. WHY FLYORA / TRUST SECTION (Matching Reference Image "We're Providing Best Service Since...") */}
+        <section className="py-12 sm:py-16 bg-stone-100/60 border-y border-black/[0.05]">
+          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#8C7A6B] font-semibold">
+                Trusted Excellence
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1C1815] mt-1">
+                We’re Providing Premier Travel Services Since 2006
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-600 mt-2 max-w-xl mx-auto">
+                Dedicated travel consultants, direct embassy accreditations, and
+                verified global travel standards.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {/* Pillar 1 */}
+              <div className="p-6 sm:p-7 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-serif font-bold text-stone-900">
+                    Transparent Pricing &amp; Value
+                  </h3>
+                  <p className="text-xs text-stone-600 mt-1.5 leading-relaxed">
+                    Zero hidden surcharges, direct airline and wholesale hotel
+                    alliances to deliver authentic luxury at the best value.
+                  </p>
+                </div>
+              </div>
+
+              {/* Pillar 2 */}
+              <div className="p-6 sm:p-7 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center shrink-0">
+                  <Headphones className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-serif font-bold text-stone-900">
+                    Dedicated 24/7 Concierge
+                  </h3>
+                  <p className="text-xs text-stone-600 mt-1.5 leading-relaxed">
+                    Personal advisor assigned to your itinerary. Instant
+                    rebooking, flight adjustments, and real-time WhatsApp care.
+                  </p>
+                </div>
+              </div>
+
+              {/* Pillar 3 */}
+              <div className="p-6 sm:p-7 rounded-2xl bg-white border border-black/[0.06] shadow-xs flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0">
+                  <Award className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="text-base font-serif font-bold text-stone-900">
+                    99.2% Visa &amp; Booking Success
+                  </h3>
+                  <p className="text-xs text-stone-600 mt-1.5 leading-relaxed">
+                    Meticulous document vetting, official ticketing partner
+                    status, and certified Umrah &amp; Hajj tour leadership.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. POPULAR PACKAGES & SERVICES GRID (Matching Reference Image "Popular Travel Packages") */}
+        <section className="py-14 sm:py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12">
+            <div>
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#8C7A6B] font-semibold">
+                Curated Recommendations
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1C1815] mt-1">
+                Popular Services &amp; Packages
+              </h2>
+            </div>
+            <p className="text-xs sm:text-sm text-stone-500 max-w-md mt-2 sm:mt-0">
+              Select any package below to inspect inclusions or request an
+              instant tailored quote.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {POPULAR_PACKAGES.map((pkg) => (
+              <div
+                key={pkg.id}
+                className="rounded-2xl overflow-hidden bg-white border border-black/[0.07] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+              >
+                <div>
+                  {/* Photo with Tag */}
+                  <div className="relative h-52 sm:h-56 w-full overflow-hidden">
+                    <Image
+                      src={pkg.image}
+                      alt={pkg.title}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      className="object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
+
+                    <div className="absolute top-3 left-3">
+                      <span className="px-2.5 py-1 rounded-full bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
+                        {pkg.tag}
                       </span>
                     </div>
 
-                    <h2 className="text-2xl sm:text-3xl lg:text-[32px] font-serif font-medium text-[#1C1815] leading-snug">
-                      {service.title}
-                    </h2>
-
-                    <p className="mt-3.5 text-sm sm:text-[15px] font-sans text-[#4A423B] leading-relaxed">
-                      {service.description}
-                    </p>
-
-                    {/* Inclusions Checklist */}
-                    <div className="mt-6 pt-5 border-t border-black/[0.06]">
-                      <h3 className="text-xs font-mono font-semibold uppercase tracking-wider text-stone-400 mb-3">
-                        Key Inclusions &amp; Highlights
-                      </h3>
-                      <ul className="space-y-2.5">
-                        {service.inclusions.map((item) => (
-                          <li
-                            key={item}
-                            className="flex items-start gap-2.5 text-xs sm:text-[13px] text-stone-700 leading-snug"
-                          >
-                            <span className="mt-0.5 w-4 h-4 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0">
-                              <Check className="w-2.5 h-2.5 stroke-[2.5]" />
-                            </span>
-                            <span>{item}</span>
-                          </li>
-                        ))}
-                      </ul>
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <div className="flex items-center gap-1.5 text-[11px] text-amber-200">
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>{pkg.destination}</span>
+                      </div>
+                      <p className="text-xs font-mono text-white/80 mt-0.5">
+                        {pkg.duration}
+                      </p>
                     </div>
+                  </div>
 
-                    {/* Actions */}
-                    <div className="mt-7 flex flex-wrap items-center gap-3">
-                      <button
-                        type="button"
-                        onClick={() => handleOpenEnquiry(service.serviceId)}
-                        className="px-5 py-2.5 rounded-lg bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-xs font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs flex items-center gap-2"
-                      >
-                        <span>{service.ctaText}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </button>
+                  {/* Body Details */}
+                  <div className="p-5">
+                    <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 group-hover:text-[#463D34] transition leading-snug">
+                      {pkg.title}
+                    </h3>
 
-                      <a
-                        href={`https://wa.me/919876543210?text=Hello%20Flyora,%20I%20am%20interested%20in%20learning%20more%20about%20your%20${encodeURIComponent(
-                          service.serviceId,
-                        )}%20services.`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="px-4 py-2.5 rounded-lg border border-black/[0.09] text-stone-700 hover:text-emerald-700 hover:border-emerald-500/40 hover:bg-emerald-50/30 text-xs font-medium transition flex items-center gap-1.5 cursor-pointer"
-                      >
-                        <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
-                        <span>Chat With Specialist</span>
-                      </a>
+                    {/* Features list */}
+                    <div className="mt-3.5 space-y-1.5 pt-3 border-t border-black/[0.05]">
+                      {pkg.features.map((feat) => (
+                        <div
+                          key={feat}
+                          className="flex items-center gap-2 text-xs text-stone-600"
+                        >
+                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                          <span>{feat}</span>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </div>
+
+                {/* Footer Action */}
+                <div className="px-5 pb-5 pt-2 flex items-center justify-between border-t border-black/[0.05]">
+                  <div>
+                    <span className="text-[10px] uppercase font-mono text-stone-400 block">
+                      Starting From
+                    </span>
+                    <span className="text-lg font-serif font-black text-stone-900">
+                      {pkg.startingPrice}
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleCardEnquiry(pkg.serviceId)}
+                    className="px-4 py-2 rounded-lg bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                  >
+                    <span>Enquire Now</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
-            );
-          })}
+            ))}
+          </div>
         </section>
 
-        {/* FAQs Section */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto py-12 sm:py-20 border-t border-black/[0.06] mt-8">
-          <div className="text-center mb-10 sm:mb-12">
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#8C7A6B] font-medium">
-              Common Questions
+        {/* 6. MID-PAGE CINEMATIC QUOTE BANNER (Matching Reference Image "Travel isn't a luxury, it's a way of life!") */}
+        <section className="relative w-full py-20 sm:py-28 overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <Image
+              src="/services/custom-holidays.jpg"
+              alt="Travel Banner"
+              fill
+              sizes="100vw"
+              className="object-cover brightness-[0.55]"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
+          </div>
+
+          <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 text-center text-white">
+            <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-[#E6D5C7] font-semibold">
+              The Flyora Creed
             </span>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-normal text-[#1C1815] mt-2">
-              Frequently Asked Questions
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal mt-3 leading-tight">
+              &ldquo;Travel isn&rsquo;t a luxury, it&rsquo;s a way of
+              life!&rdquo;
             </h2>
-            <p className="text-sm font-sans text-stone-500 mt-2 max-w-xl mx-auto">
-              Everything you need to know about booking, visa formalities, and
-              concierge support.
+            <p className="mt-4 text-xs sm:text-sm text-white/85 max-w-xl mx-auto leading-relaxed">
+              Explore the globe with tailored itineraries, verified visas, and
+              first-class care on every departure.
+            </p>
+            <div className="mt-8 flex items-center justify-center gap-3">
+              <button
+                type="button"
+                onClick={() => handleCardEnquiry("Custom Holidays")}
+                className="px-6 py-3 rounded-lg bg-white text-stone-900 text-xs font-semibold uppercase tracking-wider hover:bg-stone-100 transition shadow-lg cursor-pointer"
+              >
+                Plan Your Vacation
+              </button>
+              <a
+                href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20am%20ready%20to%20plan%20my%20trip."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-5 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold uppercase tracking-wider transition flex items-center gap-2 cursor-pointer"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Chat on WhatsApp</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* 7. VERIFIED REVIEWS / TESTIMONIALS (Matching Reference Image "Hear From Travelers") */}
+        <section className="py-14 sm:py-20 bg-stone-50 border-b border-black/[0.05]">
+          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-10">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#8C7A6B] font-semibold">
+                Client Testimonials
+              </span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1C1815] mt-1">
+                Hear From Our Travelers
+              </h2>
+              <p className="text-xs sm:text-sm text-stone-600 mt-2 max-w-md mx-auto">
+                Real stories from travelers who explored the world with Flyora.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="p-6 rounded-2xl bg-white border border-black/[0.06] shadow-xs">
+                <div className="flex items-center gap-1 text-amber-500 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400" />
+                  ))}
+                </div>
+                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
+                  &ldquo;Flyora planned our 10-day honeymoon in Switzerland and
+                  Paris. Every panoramic train, private lake transfer, and
+                  boutique hotel was flawless. Unmatched attention to
+                  detail!&rdquo;
+                </p>
+                <div className="mt-4 pt-3 border-t border-black/[0.05] flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-serif font-bold text-stone-900">
+                      Rohan &amp; Priya Sen
+                    </h4>
+                    <span className="text-[10px] text-stone-400 font-mono">
+                      Custom Holidays Client
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono">
+                    Verified Trip
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white border border-black/[0.06] shadow-xs">
+                <div className="flex items-center gap-1 text-amber-500 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400" />
+                  ))}
+                </div>
+                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
+                  &ldquo;I needed emergency Schengen visas for our family of
+                  four within 12 days. Flyora expedited our appointments and
+                  audited our files. All four visas arrived in 6 days!&rdquo;
+                </p>
+                <div className="mt-4 pt-3 border-t border-black/[0.05] flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-serif font-bold text-stone-900">
+                      Dr. Tariq Mansoor
+                    </h4>
+                    <span className="text-[10px] text-stone-400 font-mono">
+                      Visa Assistance Client
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono">
+                    Verified Trip
+                  </span>
+                </div>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-white border border-black/[0.06] shadow-xs">
+                <div className="flex items-center gap-1 text-amber-500 mb-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className="w-4 h-4 fill-amber-400" />
+                  ))}
+                </div>
+                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
+                  &ldquo;Performing Umrah with my elderly parents was our dream.
+                  Flyora arranged a five-star hotel right in the Clock Tower
+                  with wheelchair assistance and private AC transport. Blessed
+                  journey.&rdquo;
+                </p>
+                <div className="mt-4 pt-3 border-t border-black/[0.05] flex items-center justify-between">
+                  <div>
+                    <h4 className="text-xs font-serif font-bold text-stone-900">
+                      Fatima &amp; Zayan Khan
+                    </h4>
+                    <span className="text-[10px] text-stone-400 font-mono">
+                      Umrah Pilgrims
+                    </span>
+                  </div>
+                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono">
+                    Verified Trip
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 8. GENERAL QUESTIONS (FAQ ACCORDION) */}
+        <section className="py-14 sm:py-20 max-w-4xl mx-auto px-4 sm:px-6">
+          <div className="text-center mb-10">
+            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#8C7A6B] font-semibold">
+              Travel Help Desk
+            </span>
+            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] mt-1">
+              General Questions
+            </h2>
+            <p className="text-xs sm:text-sm text-stone-500 mt-1">
+              Common questions on booking, documentation, and on-trip
+              assistance.
             </p>
           </div>
 
           <div className="space-y-3">
-            {FAQS.map((faq, index) => {
-              const isOpen = openFaqIndex === index;
-
+            {FAQS.map((faq, idx) => {
+              const isOpen = openFaq === idx;
               return (
                 <div
                   key={faq.question}
-                  className="rounded-xl border border-black/[0.07] bg-white overflow-hidden transition-all duration-200 shadow-2xs"
+                  className="rounded-xl border border-black/[0.07] bg-white overflow-hidden shadow-2xs transition"
                 >
                   <button
                     type="button"
-                    onClick={() => toggleFaq(index)}
+                    onClick={() => setOpenFaq(isOpen ? null : idx)}
                     className="w-full px-5 py-4 flex items-center justify-between text-left gap-4 hover:bg-stone-50/60 transition cursor-pointer"
-                    aria-expanded={isOpen}
                   >
-                    <span className="text-sm sm:text-[15px] font-serif font-medium text-stone-900 leading-snug">
+                    <span className="text-sm font-serif font-semibold text-stone-900">
                       {faq.question}
                     </span>
                     <ChevronDown
@@ -481,9 +920,8 @@ export default function ServicesPage() {
                       }`}
                     />
                   </button>
-
                   {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-stone-600 leading-relaxed border-t border-black/[0.04] bg-stone-50/30">
+                    <div className="px-5 pb-5 pt-1 text-xs sm:text-[13px] text-stone-600 leading-relaxed border-t border-black/[0.04] bg-stone-50/30">
                       {faq.answer}
                     </div>
                   )}
@@ -493,47 +931,39 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        {/* Bottom CTA Banner */}
-        <section className="px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto pb-16 sm:pb-24">
-          <div className="p-8 sm:p-12 rounded-3xl bg-gradient-to-br from-[#2B2520] via-[#38312B] to-[#1C1815] text-white text-center shadow-xl relative overflow-hidden">
-            {/* Ambient background glow */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-stone-600/10 rounded-full blur-3xl pointer-events-none" />
-
-            <div className="relative z-10 max-w-2xl mx-auto">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-[10px] font-sans font-medium uppercase tracking-widest text-[#E6D5C7] mb-4">
-                <Sparkles className="w-3 h-3 text-amber-300" />
-                <span>Ready To Embark</span>
-              </span>
-
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-normal tracking-wide text-white">
-                Have a Unique Request or Multi-City Itinerary?
-              </h2>
-
-              <p className="mt-3.5 text-xs sm:text-sm text-white/80 font-sans leading-relaxed">
-                Connect with our senior travel designers to build a seamless
-                custom holiday, coordinate group visas, or book priority
-                tickets.
-              </p>
-
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-                <button
-                  type="button"
-                  onClick={() => handleOpenEnquiry()}
-                  className="px-6 py-3 rounded-lg bg-white hover:bg-stone-100 text-stone-900 text-xs font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-md"
-                >
-                  Request Custom Consultation
-                </button>
-
-                <a
-                  href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20have%20a%20custom%20travel%20requirement."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-6 py-3 rounded-lg border border-white/20 hover:border-white/40 hover:bg-white/10 text-white text-xs font-sans font-semibold uppercase tracking-[0.12em] transition flex items-center gap-2 cursor-pointer"
-                >
-                  <MessageCircle className="w-4 h-4 text-emerald-400" />
-                  <span>WhatsApp Concierge</span>
-                </a>
+        {/* 9. BOTTOM TRUST STATS STRIP (Matching Reference Image bottom row) */}
+        <section className="py-8 bg-white border-t border-black/[0.07]">
+          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            <div>
+              <div className="text-2xl sm:text-3xl font-serif font-bold text-[#463D34]">
+                50,000+
+              </div>
+              <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider mt-0.5">
+                Happy Travelers
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-serif font-bold text-[#463D34]">
+                100+
+              </div>
+              <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider mt-0.5">
+                Global Destinations
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-serif font-bold text-[#463D34]">
+                99.2%
+              </div>
+              <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider mt-0.5">
+                Visa Approval Rate
+              </div>
+            </div>
+            <div>
+              <div className="text-2xl sm:text-3xl font-serif font-bold text-[#463D34]">
+                24/7
+              </div>
+              <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider mt-0.5">
+                Dedicated Concierge
               </div>
             </div>
           </div>
@@ -543,14 +973,14 @@ export default function ServicesPage() {
       {/* Footer */}
       <Footer />
 
-      {/* Floating WhatsApp Quick Action */}
+      {/* Floating WhatsApp Action */}
       <FloatingWhatsApp />
 
-      {/* Enquiry Modal */}
+      {/* Enquiry Modal for Card CTAs */}
       <EnquiryModal
-        isOpen={enquiryOpen}
-        onClose={() => setEnquiryOpen(false)}
-        defaultServiceId={selectedService}
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        defaultServiceId={modalServiceId}
       />
     </div>
   );
