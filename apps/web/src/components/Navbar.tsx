@@ -1,52 +1,51 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  Menu,
-  X,
-  ArrowRight,
-  MessageCircle,
-  Phone,
-  Search,
-  MapPin,
-} from "lucide-react";
+import { Menu, X, Sparkles, MessageCircle, Phone } from "lucide-react";
 
 export interface NavbarProps {
   onFindAdvisor?: () => void;
   onBecomeAdvisor?: () => void;
-  defaultSearchOpen?: boolean;
-  alwaysShowSearch?: boolean;
+  onOpenEnquiry?: (serviceId?: string) => void;
+  activePath?: string;
   isFixed?: boolean;
   className?: string;
+  ctaLabel?: string;
+  // Backwards compatibility props (no-op since search bar is replaced)
+  alwaysShowSearch?: boolean;
+  defaultSearchOpen?: boolean;
 }
 
-const QUICK_SEARCH_SUGGESTIONS = [
-  { label: "China (Shanghai & Cultural Highlights)", query: "China" },
-  { label: "Indonesia (Komodo & Bali Luxury)", query: "Indonesia" },
-  { label: "Italy (Cinque Terre & Amalfi Coast)", query: "Italy" },
-  { label: "Brazil (Rio de Janeiro & Coastline)", query: "Brazil" },
-  { label: "Chile (Patagonian Wilderness)", query: "Chile" },
-  { label: "Aspen (Alpine Spas & Wellness)", query: "Aspen" },
-  { label: "Garry x Olivia (Luxury Travel Advisors)", query: "Garry" },
-  { label: "Stephanie Bloom (London Luxury Advisor)", query: "Stephanie" },
+export interface NavItem {
+  label: string;
+  href: string;
+  serviceId?: string;
+}
+
+export const NAV_ITEMS: NavItem[] = [
+  { label: "Tour Packages", href: "/tours" },
+  {
+    label: "Custom Holidays",
+    href: "/#how-it-works",
+    serviceId: "Custom Holidays",
+  },
+  { label: "Visas", href: "/#services", serviceId: "Visas" },
+  { label: "Flights", href: "/#services", serviceId: "Flights" },
+  { label: "Umrah", href: "/#services", serviceId: "Umrah Packages" },
 ];
 
 export const Navbar: React.FC<NavbarProps> = ({
   onFindAdvisor,
   onBecomeAdvisor,
-  defaultSearchOpen = false,
-  alwaysShowSearch = false,
+  onOpenEnquiry,
+  activePath = "",
   isFixed = false,
   className = "",
+  ctaLabel = "Plan My Trip",
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(
-    alwaysShowSearch || defaultSearchOpen,
-  );
-  const [searchQuery, setSearchQuery] = useState("");
-  const searchInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,325 +55,166 @@ export const Navbar: React.FC<NavbarProps> = ({
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
-  }, [isSearchOpen]);
-
-  const handleLinkClick = (href: string) => {
+  const handleNavClick = (e: React.MouseEvent, item: NavItem) => {
     setMobileMenuOpen(false);
-    if (href.startsWith("#")) {
-      const element = document.querySelector(href);
+
+    // If an enquiry handler is provided and the item represents a service enquiry
+    if (item.serviceId && onOpenEnquiry) {
+      e.preventDefault();
+      onOpenEnquiry(item.serviceId);
+      return;
+    }
+
+    // Smooth scroll for hash links on the same page
+    if (item.href.startsWith("#")) {
+      e.preventDefault();
+      const element = document.querySelector(item.href);
       if (element) {
         element.scrollIntoView({ behavior: "smooth" });
       }
     }
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const query = searchQuery.trim();
-    const targetUrl = query
-      ? `/explore?q=${encodeURIComponent(query)}`
-      : "/explore";
-    if (typeof window !== "undefined") {
-      window.location.href = targetUrl;
+  const handleCtaClick = () => {
+    if (onOpenEnquiry) {
+      onOpenEnquiry();
+    } else if (onFindAdvisor) {
+      onFindAdvisor();
+    } else if (onBecomeAdvisor) {
+      onBecomeAdvisor();
     }
   };
-
-  const handleSuggestionClick = (query: string) => {
-    if (typeof window !== "undefined") {
-      window.location.href = `/explore?q=${encodeURIComponent(query)}`;
-    }
-  };
-
-  const filteredSuggestions = searchQuery.trim()
-    ? QUICK_SEARCH_SUGGESTIONS.filter((s) =>
-        s.label.toLowerCase().includes(searchQuery.trim().toLowerCase()),
-      )
-    : [];
 
   return (
     <header
       className={`${
-        isFixed
-          ? "fixed top-4 sm:top-6 inset-x-0 pointer-events-none"
-          : "sticky top-6 sm:top-8"
-      } z-50 px-4 sm:px-8 w-full max-w-5xl mx-auto transition-all duration-300 ${className}`}
+        isFixed ? "fixed top-4 sm:top-6 inset-x-0" : "sticky top-3 sm:top-5"
+      } z-50 px-4 sm:px-5 w-full max-w-[1360px] mx-auto pointer-events-none transition-all duration-300 ${className}`}
     >
-      {/* Floating White Navbar Card */}
+      {/* Floating Glassmorphic Navbar Card */}
       <div
-        className={`pointer-events-auto relative bg-white/95 backdrop-blur-md rounded-2xl border border-black/[0.06] shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-300 ${
-          isScrolled ? "shadow-[0_12px_36px_rgb(0,0,0,0.14)] bg-white" : ""
+        className={`pointer-events-auto relative bg-white/95 backdrop-blur-md rounded-2xl border border-black/[0.07] transition-all duration-300 ${
+          isScrolled
+            ? "shadow-[0_12px_36px_rgb(0,0,0,0.12)] bg-white"
+            : "shadow-[0_8px_30px_rgb(0,0,0,0.06)]"
         }`}
       >
-        {isSearchOpen ? (
-          /* =========================================================================
-             SEARCH NAVBAR STATE: Exact 1:1 match to user screenshot
-             [ FLYORA   EXPLORE   ( 🔍 Discover destinations, advisors, and more )   GET MATCHED   ≡ ]
-             ========================================================================= */
-          <div className="h-16 px-4 sm:px-6 flex items-center justify-between gap-2.5 sm:gap-4 animate-in fade-in duration-200">
-            {/* Left: Brand Logo & EXPLORE Label (Clean gap, NO vertical line) */}
-            <div className="flex items-center gap-4 sm:gap-6 shrink-0">
-              <Link
-                href="/"
-                className="group flex items-center justify-center transition-opacity hover:opacity-85"
-              >
-                <span className="font-serif text-[22px] sm:text-[24px] font-normal tracking-[0.2em] text-[#1C1815] uppercase select-none">
-                  FLYORA
-                </span>
-              </Link>
-              <Link
-                href="/explore"
-                className="hidden sm:inline-block text-[11.5px] font-sans font-semibold uppercase tracking-[0.14em] text-[#38312B] hover:text-black transition-colors select-none cursor-pointer"
-              >
-                EXPLORE
-              </Link>
-            </div>
+        <div className="h-16 px-5 sm:px-7 flex items-center justify-between">
+          {/* Left: Brand Logo (FLYORA in Luxury Serif) */}
+          <Link
+            href="/"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="group flex items-center gap-2 select-none shrink-0"
+          >
+            <span className="font-serif text-[22px] sm:text-[24px] font-normal tracking-[0.2em] text-[#1C1815] uppercase transition-opacity group-hover:opacity-85">
+              FLYORA
+            </span>
+          </Link>
 
-            {/* Center: Search Input Bar Pill */}
-            <div className="flex-1 max-w-lg mx-1 sm:mx-3 relative">
-              <form onSubmit={handleSearchSubmit} className="relative w-full">
-                <div className="bg-[#F8F3EC] hover:bg-[#F3ECE3] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#463d34]/20 border border-[#EFE8DF] rounded-full px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2.5 transition-all">
-                  <Search className="w-3.5 h-3.5 text-zinc-500 shrink-0 stroke-[2]" />
-                  <input
-                    ref={searchInputRef}
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Discover destinations, advisors, and more"
-                    aria-label="Discover destinations, advisors, and more"
-                    className="w-full bg-transparent text-xs sm:text-[13px] text-zinc-900 placeholder:text-zinc-500 focus:outline-none"
-                  />
-                  {searchQuery ? (
-                    <button
-                      type="button"
-                      onClick={() => setSearchQuery("")}
-                      title="Clear search"
-                      aria-label="Clear search"
-                      className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 transition cursor-pointer"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  ) : !alwaysShowSearch ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setIsSearchOpen(false);
-                        setSearchQuery("");
-                      }}
-                      title="Close search"
-                      aria-label="Close search"
-                      className="p-1 rounded-full text-zinc-400 hover:text-zinc-700 transition cursor-pointer"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                    </button>
-                  ) : null}
-                </div>
-              </form>
+          {/* Center: 5 Clean Editorial Navigation Links (Replaces previous search bar) */}
+          <nav
+            aria-label="Main Navigation"
+            className="hidden md:flex items-center gap-5 lg:gap-7 xl:gap-8"
+          >
+            {NAV_ITEMS.map((item) => {
+              const isActive =
+                activePath === item.href ||
+                (item.href === "/tours" && activePath.startsWith("/tours"));
 
-              {/* Instant Suggestions Dropdown */}
-              {filteredSuggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-xl border border-zinc-200 p-2 z-50 animate-in fade-in slide-in-from-top-1 duration-150">
-                  <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 px-3 py-1">
-                    Matching Destinations &amp; Guides
-                  </p>
-                  {filteredSuggestions.map((item, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => handleSuggestionClick(item.query)}
-                      className="w-full text-left px-3 py-2 rounded-lg text-xs text-zinc-800 hover:bg-[#F8F3EC] hover:text-black flex items-center gap-2 transition"
-                    >
-                      <MapPin className="w-3 h-3 text-[#463d34]" />
-                      <span>{item.label}</span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+              return (
+                <Link
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item)}
+                  className={`text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 relative select-none ${
+                    isActive
+                      ? "text-[#1C1815] font-semibold"
+                      : "text-[#4A423B] hover:text-black"
+                  }`}
+                >
+                  {item.label}
+                  {isActive && (
+                    <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#463D34] rounded-full" />
+                  )}
+                </Link>
+              );
+            })}
+          </nav>
 
-            {/* Right: GET MATCHED Button & Hamburger Menu */}
-            <div className="flex items-center gap-2 sm:gap-3.5 shrink-0">
-              <button
-                onClick={() => {
-                  if (onFindAdvisor) onFindAdvisor();
-                  else if (onBecomeAdvisor) onBecomeAdvisor();
-                }}
-                className="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#463d34] hover:bg-[#38312a] active:bg-[#2b2520] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 shadow-xs cursor-pointer whitespace-nowrap active:scale-[0.98]"
-              >
-                <span className="hidden sm:inline">GET MATCHED</span>
-                <span className="sm:hidden">MATCH</span>
-              </button>
-
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                className="p-1.5 rounded-lg text-[#38312B] hover:text-black hover:bg-zinc-100 transition cursor-pointer"
-              >
-                {mobileMenuOpen ? (
-                  <X className="w-5 h-5 stroke-[1.75]" />
-                ) : (
-                  <Menu className="w-5 h-5 stroke-[1.75]" />
-                )}
-              </button>
-            </div>
-          </div>
-        ) : (
-          /* =========================================================================
-             STANDARD NAVBAR STATE:
-             [ FIND AN ADVISOR   EXPLORE   ABOUT ]   [ FLYORA ]   [ 🔍   BECOME AN ADVISOR ]
-             Clean spacing, NO lone search icon between EXPLORE and ABOUT
-             ========================================================================= */
-          <div className="h-16 px-6 sm:px-8 flex items-center justify-between relative">
-            {/* Left: Navigation Links (Desktop) - Clean spacing, NO stray icons */}
-            <nav
-              aria-label="Primary Navigation"
-              className="hidden md:flex items-center gap-7 lg:gap-8"
+          {/* Right: Quick WhatsApp & Action CTA Button */}
+          <div className="flex items-center gap-2.5 sm:gap-3 shrink-0">
+            {/* WhatsApp Quick Chat */}
+            <a
+              href="https://wa.me/919876543210?text=Hi%20Flyora%20Travels,%20I%20am%20looking%20for%20a%20customized%20tour%20package."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden xl:flex items-center gap-1.5 px-3 py-2 rounded-md border border-black/[0.08] text-[#38312B] hover:text-emerald-700 hover:border-emerald-500/50 hover:bg-emerald-50/40 text-[11px] font-medium transition cursor-pointer"
+              title="Chat on WhatsApp"
             >
-              <button
-                onClick={() => {
-                  if (onFindAdvisor) onFindAdvisor();
-                  else handleLinkClick("#why-us");
-                }}
-                className="text-[12px] font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black transition-colors cursor-pointer"
-              >
-                FIND AN ADVISOR
-              </button>
-              <button
-                onClick={() => setIsSearchOpen(true)}
-                className="text-[12px] font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black transition-colors cursor-pointer"
-              >
-                EXPLORE
-              </button>
-              <button
-                onClick={() => handleLinkClick("#why-us")}
-                className="text-[12px] font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black transition-colors cursor-pointer"
-              >
-                ABOUT
-              </button>
-            </nav>
+              <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+              <span>WhatsApp</span>
+            </a>
 
-            {/* Left: Hamburger Toggle (Mobile) */}
-            <div className="flex md:hidden items-center gap-1">
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-                className="p-1.5 -ml-2 rounded-lg text-[#38312B] hover:text-black hover:bg-zinc-100 transition"
-              >
-                {mobileMenuOpen ? (
-                  <X className="w-5 h-5 stroke-[1.75]" />
-                ) : (
-                  <Menu className="w-5 h-5 stroke-[1.75]" />
-                )}
-              </button>
-              <button
-                onClick={() => setIsSearchOpen(true)}
-                aria-label="Search destinations and advisors"
-                className="p-1.5 rounded-lg text-[#38312B] hover:text-black hover:bg-zinc-100 transition"
-              >
-                <Search className="w-4 h-4 stroke-[2]" />
-              </button>
-            </div>
+            {/* Primary Action Button */}
+            <button
+              onClick={handleCtaClick}
+              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
+            >
+              {/* <Sparkles className="w-3.5 h-3.5 text-[#E6D5C7]" /> */}
+              <span>{ctaLabel}</span>
+            </button>
 
-            {/* Center: Brand Logo (FLYORA in luxury serif typography) */}
-            <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center pointer-events-auto">
-              <Link
-                href="/"
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                className="group flex items-center justify-center"
-              >
-                <span className="font-serif text-[22px] sm:text-[25px] font-normal tracking-[0.22em] text-[#1C1815] uppercase select-none transition-opacity group-hover:opacity-85">
-                  FLYORA
-                </span>
-              </Link>
-            </div>
-
-            {/* Right: Search Icon Button & CTA Button (BECOME AN ADVISOR) */}
-            <div className="flex items-center gap-2 sm:gap-3">
-              <button
-                onClick={() => setIsSearchOpen(true)}
-                aria-label="Search destinations and advisors"
-                title="Search destinations and advisors"
-                className="hidden sm:flex p-2 rounded-full text-[#38312B] hover:text-black hover:bg-zinc-100 transition-colors cursor-pointer"
-              >
-                <Search className="w-4 h-4 stroke-[2]" />
-              </button>
-
-              <button
-                onClick={() => {
-                  if (onBecomeAdvisor) onBecomeAdvisor();
-                  else if (onFindAdvisor) onFindAdvisor();
-                }}
-                className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#463d34] hover:bg-[#352e27] active:bg-[#2b2520] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold sm:font-medium uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap"
-              >
-                <span className="hidden sm:inline">BECOME AN ADVISOR</span>
-                <span className="sm:hidden">ADVISOR</span>
-              </button>
-            </div>
+            {/* Mobile Hamburger Toggle Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              className="md:hidden p-1.5 rounded-lg text-[#38312B] hover:text-black hover:bg-zinc-100 transition cursor-pointer"
+            >
+              {mobileMenuOpen ? (
+                <X className="w-5 h-5 stroke-[1.75]" />
+              ) : (
+                <Menu className="w-5 h-5 stroke-[1.75]" />
+              )}
+            </button>
           </div>
-        )}
+        </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Dropdown Drawer */}
         {mobileMenuOpen && (
-          <div className="border-t border-zinc-100 px-6 py-5 bg-white/95 backdrop-blur-sm rounded-b-2xl animate-in slide-in-from-top-2 duration-200 space-y-4">
-            <div className="flex flex-col space-y-3 pt-1">
-              <button
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (onFindAdvisor) onFindAdvisor();
-                  else handleLinkClick("#how-it-works");
-                }}
-                className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors"
-              >
-                FIND AN ADVISOR
-              </button>
-              <Link
-                href="/explore"
-                onClick={() => setMobileMenuOpen(false)}
-                className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors flex items-center justify-between"
-              >
-                <span>EXPLORE &amp; SEARCH</span>
-                <Search className="w-3.5 h-3.5 text-zinc-400" />
-              </Link>
-              <button
-                onClick={() => handleLinkClick("#how-it-works")}
-                className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors"
-              >
-                HOW IT WORKS
-              </button>
-              <button
-                onClick={() => handleLinkClick("#perks")}
-                className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors"
-              >
-                VIP PERKS
-              </button>
-              <button
-                onClick={() => handleLinkClick("#faqs")}
-                className="text-left text-xs font-sans font-medium uppercase tracking-[0.14em] text-[#38312B] hover:text-black py-1.5 transition-colors"
-              >
-                FAQS
-              </button>
-              <a
-                href="http://localhost:3001"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-left text-[11px] font-mono text-zinc-400 hover:text-zinc-700 py-1"
-              >
-                Staff Portal ↗
-              </a>
+          <div className="md:hidden border-t border-black/[0.06] px-5 py-4 bg-white/98 backdrop-blur-md rounded-b-2xl animate-in slide-in-from-top-2 duration-200 space-y-3">
+            <div className="flex flex-col space-y-1.5 pt-1">
+              {NAV_ITEMS.map((item) => {
+                const isActive =
+                  activePath === item.href ||
+                  (item.href === "/tours" && activePath.startsWith("/tours"));
+
+                return (
+                  <Link
+                    key={item.label}
+                    href={item.href}
+                    onClick={(e) => handleNavClick(e, item)}
+                    className={`text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2 transition-colors ${
+                      isActive
+                        ? "text-[#1C1815] font-semibold"
+                        : "text-[#38312B] hover:text-black"
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                );
+              })}
             </div>
 
             <div className="pt-3 border-t border-zinc-100 space-y-2.5">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  if (onBecomeAdvisor) onBecomeAdvisor();
+                  handleCtaClick();
                 }}
-                className="w-full py-2.5 rounded-lg bg-[#463d34] hover:bg-[#352e27] text-white text-xs font-semibold uppercase tracking-[0.12em] transition text-center flex items-center justify-center gap-2"
+                className="w-full py-2.5 rounded-md bg-[#463D34] hover:bg-[#352E27] text-white text-xs font-semibold uppercase tracking-[0.12em] transition text-center flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
-                <span>BECOME AN ADVISOR</span>
-                <ArrowRight className="w-3.5 h-3.5" />
+                <Sparkles className="w-3.5 h-3.5 text-[#E6D5C7]" />
+                <span>{ctaLabel}</span>
               </button>
 
               <div className="grid grid-cols-2 gap-2 pt-1 text-center">
@@ -382,21 +222,29 @@ export const Navbar: React.FC<NavbarProps> = ({
                   href="https://wa.me/919876543210?text=Hello%20Flyora%20Travels"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="py-2 px-3 rounded-lg bg-emerald-50 text-emerald-700 text-[11px] font-medium flex items-center justify-center gap-1.5 hover:bg-emerald-100 transition"
+                  className="py-2 px-3 rounded-md bg-emerald-50 text-emerald-800 text-[11px] font-medium flex items-center justify-center gap-1.5 hover:bg-emerald-100 transition"
                 >
-                  <MessageCircle className="w-3.5 h-3.5" />
+                  <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
                   <span>WhatsApp</span>
                 </a>
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    if (onFindAdvisor) onFindAdvisor();
-                  }}
-                  className="py-2 px-3 rounded-lg bg-zinc-100 text-zinc-700 text-[11px] font-medium flex items-center justify-center gap-1.5 hover:bg-zinc-200 transition"
+                <a
+                  href="tel:+919876543210"
+                  className="py-2 px-3 rounded-md bg-zinc-100 text-zinc-700 text-[11px] font-medium flex items-center justify-center gap-1.5 hover:bg-zinc-200 transition"
                 >
                   <Phone className="w-3.5 h-3.5" />
-                  <span>Call Coordinator</span>
-                </button>
+                  <span>Call Desk</span>
+                </a>
+              </div>
+
+              <div className="pt-2 text-center">
+                <a
+                  href="http://localhost:3001"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[11px] font-mono text-zinc-400 hover:text-zinc-700"
+                >
+                  Staff &amp; Operations Portal ↗
+                </a>
               </div>
             </div>
           </div>

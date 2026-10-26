@@ -8,14 +8,16 @@ afterEach(() => {
 });
 
 describe("Navbar Component", () => {
-  it("renders desktop navigation links with correct labels", () => {
+  it("renders the 5 clean navigation links replacing search bar", () => {
     render(<Navbar />);
 
+    expect(screen.getByRole("link", { name: /tour packages/i })).toBeDefined();
     expect(
-      screen.getByRole("button", { name: /find an advisor/i }),
+      screen.getByRole("link", { name: /custom holidays/i }),
     ).toBeDefined();
-    expect(screen.getByRole("button", { name: /^explore$/i })).toBeDefined();
-    expect(screen.getByRole("button", { name: /about/i })).toBeDefined();
+    expect(screen.getByRole("link", { name: /visas/i })).toBeDefined();
+    expect(screen.getByRole("link", { name: /flights/i })).toBeDefined();
+    expect(screen.getByRole("link", { name: /umrah/i })).toBeDefined();
   });
 
   it("renders FLYORA brand logo", () => {
@@ -24,56 +26,47 @@ describe("Navbar Component", () => {
     expect(screen.getByText("FLYORA")).toBeDefined();
   });
 
-  it("renders BECOME AN ADVISOR CTA button and triggers handler", () => {
-    const onBecomeAdvisor = vi.fn();
-    render(<Navbar onBecomeAdvisor={onBecomeAdvisor} />);
+  it("renders CTA button and triggers handler", () => {
+    const onOpenEnquiry = vi.fn();
+    render(<Navbar onOpenEnquiry={onOpenEnquiry} ctaLabel="Plan My Trip" />);
 
     const ctaButton = screen.getByRole("button", {
-      name: /become an advisor/i,
+      name: /plan my trip/i,
     });
     expect(ctaButton).toBeDefined();
 
     fireEvent.click(ctaButton);
-    expect(onBecomeAdvisor).toHaveBeenCalledTimes(1);
+    expect(onOpenEnquiry).toHaveBeenCalledTimes(1);
   });
 
-  it("triggers onFindAdvisor when clicking FIND AN ADVISOR link", () => {
+  it("triggers onFindAdvisor fallback when clicking CTA", () => {
     const onFindAdvisor = vi.fn();
     render(<Navbar onFindAdvisor={onFindAdvisor} />);
 
-    const findAdvisorBtn = screen.getByRole("button", {
-      name: /find an advisor/i,
+    const ctaButton = screen.getByRole("button", {
+      name: /plan my trip/i,
     });
-    fireEvent.click(findAdvisorBtn);
+    fireEvent.click(ctaButton);
 
     expect(onFindAdvisor).toHaveBeenCalledTimes(1);
   });
 
-  it("switches to exact search navbar when clicking search or explore", () => {
-    render(<Navbar />);
+  it("triggers onOpenEnquiry with serviceId when clicking service link", () => {
+    const onOpenEnquiry = vi.fn();
+    render(<Navbar onOpenEnquiry={onOpenEnquiry} />);
 
-    const searchBtn = screen.getAllByLabelText(
-      /search destinations and advisors/i,
-    )[0];
-    fireEvent.click(searchBtn);
+    const visasLink = screen.getByRole("link", { name: /visas/i });
+    fireEvent.click(visasLink);
 
-    // Verify exact search navbar elements matching user screenshot
-    expect(
-      screen.getByPlaceholderText(/discover destinations, advisors, and more/i),
-    ).toBeDefined();
-    expect(screen.getByRole("button", { name: /get matched/i })).toBeDefined();
-    expect(screen.getByRole("link", { name: /^explore$/i })).toBeDefined();
+    expect(onOpenEnquiry).toHaveBeenCalledWith("Visas");
 
-    // Close search
-    const closeBtn = screen.getByLabelText(/close search/i);
-    fireEvent.click(closeBtn);
+    const umrahLink = screen.getByRole("link", { name: /umrah/i });
+    fireEvent.click(umrahLink);
 
-    expect(
-      screen.getByRole("button", { name: /find an advisor/i }),
-    ).toBeDefined();
+    expect(onOpenEnquiry).toHaveBeenCalledWith("Umrah Packages");
   });
 
-  it("toggles mobile menu on hamburger button click", () => {
+  it("toggles mobile menu on hamburger button click and displays all 5 links", () => {
     render(<Navbar />);
 
     const menuToggle = screen.getByLabelText(/open menu/i);
@@ -81,5 +74,9 @@ describe("Navbar Component", () => {
 
     fireEvent.click(menuToggle);
     expect(screen.getByLabelText(/close menu/i)).toBeDefined();
+
+    // Mobile menu items are now also rendered in the DOM
+    const tourLinks = screen.getAllByRole("link", { name: /tour packages/i });
+    expect(tourLinks.length).toBeGreaterThanOrEqual(2);
   });
 });

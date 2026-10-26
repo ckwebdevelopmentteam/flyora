@@ -1,116 +1,139 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import {
-  Compass,
-  PhoneCall,
-  Mail,
-  MapPin,
   ShieldCheck,
   Award,
   Clock,
   Sparkles,
+  PhoneCall,
+  Mail,
+  MapPin,
 } from "lucide-react";
 
-export const Footer = () => {
+export interface FooterProps {
+  onOpenEnquiry?: (serviceId?: string) => void;
+  onBecomeAdvisor?: () => void;
+  className?: string;
+}
+
+export const Footer: React.FC<FooterProps> = ({
+  onOpenEnquiry,
+  onBecomeAdvisor,
+  className = "",
+}) => {
   return (
-    <footer className="bg-white border-t border-stone-200/90 text-stone-700 pt-16 pb-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        {/* Trust Badge Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pb-12 border-b border-stone-100">
+    <footer
+      className={`border-t border-black/[0.06] bg-[#F7F2EC] text-[#5C534A] pt-14 pb-10 transition-colors ${className}`}
+    >
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Trust Badges Strip */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pb-12 border-b border-black/[0.06]">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-200/80 flex items-center justify-center shrink-0 text-[#4A2E18]">
+            <div className="w-10 h-10 rounded-xl bg-white border border-black/[0.06] shadow-2xs flex items-center justify-center shrink-0 text-[#463D34]">
               <ShieldCheck className="w-5 h-5 stroke-[1.8]" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-stone-900">
+              <p className="text-xs font-semibold text-[#1C1815]">
                 100% Verified
               </p>
-              <p className="text-[11px] text-stone-500">
-                IATA & Govt Certified
+              <p className="text-[11px] text-[#7A7167]">
+                IATA &amp; Govt Certified
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-200/80 flex items-center justify-center shrink-0 text-[#4A2E18]">
+            <div className="w-10 h-10 rounded-xl bg-white border border-black/[0.06] shadow-2xs flex items-center justify-center shrink-0 text-[#463D34]">
               <Sparkles className="w-5 h-5 stroke-[1.8]" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-stone-900">
+              <p className="text-xs font-semibold text-[#1C1815]">
                 Custom Handcrafted
               </p>
-              <p className="text-[11px] text-stone-500">Zero Rigid Templates</p>
+              <p className="text-[11px] text-[#7A7167]">Zero Rigid Templates</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-200/80 flex items-center justify-center shrink-0 text-[#4A2E18]">
+            <div className="w-10 h-10 rounded-xl bg-white border border-black/[0.06] shadow-2xs flex items-center justify-center shrink-0 text-[#463D34]">
               <Clock className="w-5 h-5 stroke-[1.8]" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-stone-900">
+              <p className="text-xs font-semibold text-[#1C1815]">
                 24/7 Concierge
               </p>
-              <p className="text-[11px] text-stone-500">Real-Time WhatsApp</p>
+              <p className="text-[11px] text-[#7A7167]">Real-Time Assistance</p>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-stone-50 border border-stone-200/80 flex items-center justify-center shrink-0 text-[#4A2E18]">
+            <div className="w-10 h-10 rounded-xl bg-white border border-black/[0.06] shadow-2xs flex items-center justify-center shrink-0 text-[#463D34]">
               <Award className="w-5 h-5 stroke-[1.8]" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-stone-900">
-                Best Rate Guarantee
+              <p className="text-xs font-semibold text-[#1C1815]">
+                Preferred Partner Desk
               </p>
-              <p className="text-[11px] text-stone-500">
-                Direct Hotel Contracts
-              </p>
+              <p className="text-[11px] text-[#7A7167]">4,500+ Luxury Hotels</p>
             </div>
           </div>
         </div>
 
-        {/* Main Footer Links */}
+        {/* Main Footer Directory */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-10 py-12">
-          {/* Brand Info */}
+          {/* Brand & Contact Column */}
           <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-[#4A2E18] text-white flex items-center justify-center shadow-xs">
-                <Compass className="w-4 h-4 stroke-[2]" />
+            <Link href="/" className="inline-block group">
+              <span className="font-serif text-2xl font-normal tracking-[0.2em] text-[#1C1815] uppercase block">
+                FLYORA
+              </span>
+              <span className="text-[10px] text-[#7A7167] font-mono tracking-widest uppercase -mt-1 block">
+                Tours &amp; Travels
+              </span>
+            </Link>
+
+            <p className="text-xs text-[#6B6156] leading-relaxed max-w-sm">
+              Flyora is a modern luxury travel platform matching discerning
+              travelers with handpicked travel curators worldwide. Unlock VIP
+              upgrades, bespoke itineraries, and concierge care.
+            </p>
+
+            <div className="space-y-2 pt-2 text-xs text-[#6B6156]">
+              <div className="flex items-center gap-2">
+                <PhoneCall className="w-3.5 h-3.5 text-[#463D34] shrink-0" />
+                <span>+91 98765 43210</span>
               </div>
-              <div className="flex flex-col">
-                <span className="text-base font-bold tracking-wider uppercase text-stone-900">
-                  Flyora
-                </span>
-                <span className="text-[10px] text-stone-400 font-mono tracking-widest uppercase -mt-1">
-                  Tours & Travels
-                </span>
+              <div className="flex items-center gap-2">
+                <Mail className="w-3.5 h-3.5 text-[#463D34] shrink-0" />
+                <span>concierge@flyora.com</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <MapPin className="w-3.5 h-3.5 text-[#463D34] shrink-0 mt-0.5" />
+                <span>Flyora Travels Tower, Suite 402, High Street Plaza</span>
               </div>
             </div>
-            <p className="text-xs text-stone-500 leading-relaxed">
-              Curating luxury outbound travel experiences, bespoke honeymoon
-              escapes, and fast-track global visa concierge services.
-            </p>
           </div>
 
-          {/* Popular Destinations */}
+          {/* Top Destinations Column */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-stone-900 uppercase tracking-wider font-mono">
+            <p className="text-xs font-semibold text-[#1C1815] uppercase tracking-wider font-mono">
               Top Destinations
             </p>
-            <ul className="space-y-2 text-xs text-stone-600">
+            <ul className="space-y-2 text-xs text-[#6B6156]">
               <li>
                 <Link
                   href="/tours?destination=Dubai"
-                  className="hover:text-[#4A2E18] transition"
+                  className="hover:text-black transition"
                 >
-                  Dubai & Abu Dhabi
+                  Dubai &amp; Abu Dhabi
                 </Link>
               </li>
               <li>
                 <Link
                   href="/tours?destination=Maldives"
-                  className="hover:text-[#4A2E18] transition"
+                  className="hover:text-black transition"
                 >
                   Maldives Luxury Atolls
                 </Link>
@@ -118,97 +141,163 @@ export const Footer = () => {
               <li>
                 <Link
                   href="/tours?destination=Bali"
-                  className="hover:text-[#4A2E18] transition"
+                  className="hover:text-black transition"
                 >
-                  Bali Ubud & Seminyak
+                  Bali Ubud &amp; Seminyak
                 </Link>
               </li>
               <li>
                 <Link
                   href="/tours?destination=Switzerland"
-                  className="hover:text-[#4A2E18] transition"
+                  className="hover:text-black transition"
                 >
                   Scenic Switzerland Rail
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/explore?q=Amalfi"
+                  className="hover:text-black transition"
+                >
+                  Amalfi Coast &amp; Capri
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Travel Services */}
+          {/* Services Column */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-stone-900 uppercase tracking-wider font-mono">
+            <p className="text-xs font-semibold text-[#1C1815] uppercase tracking-wider font-mono">
               Our Services
             </p>
-            <ul className="space-y-2 text-xs text-stone-600">
+            <ul className="space-y-2 text-xs text-[#6B6156]">
               <li>
-                <Link href="/tours" className="hover:text-[#4A2E18] transition">
-                  Handcrafted Tour Packages
+                <Link href="/tours" className="hover:text-black transition">
+                  Tour Packages
                 </Link>
               </li>
               <li>
-                <Link
-                  href="/#services"
-                  className="hover:text-[#4A2E18] transition"
+                <button
+                  type="button"
+                  onClick={() =>
+                    onOpenEnquiry && onOpenEnquiry("Custom Holidays")
+                  }
+                  className="hover:text-black transition text-left cursor-pointer"
+                >
+                  Custom Holidays
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onOpenEnquiry && onOpenEnquiry("Visas")}
+                  className="hover:text-black transition text-left cursor-pointer"
                 >
                   International Visas
-                </Link>
+                </button>
               </li>
               <li>
-                <Link
-                  href="/#services"
-                  className="hover:text-[#4A2E18] transition"
+                <button
+                  type="button"
+                  onClick={() => onOpenEnquiry && onOpenEnquiry("Flights")}
+                  className="hover:text-black transition text-left cursor-pointer"
                 >
-                  Corporate Flights
-                </Link>
+                  Corporate &amp; Leisure Flights
+                </button>
               </li>
               <li>
-                <Link
-                  href="/#services"
-                  className="hover:text-[#4A2E18] transition"
+                <button
+                  type="button"
+                  onClick={() =>
+                    onOpenEnquiry && onOpenEnquiry("Umrah Packages")
+                  }
+                  className="hover:text-black transition text-left cursor-pointer"
                 >
-                  Umrah & Hajj Concierge
+                  Umrah &amp; Hajj Concierge
+                </button>
+              </li>
+              <li>
+                <Link href="/explore" className="hover:text-black transition">
+                  Explore Destinations &amp; Guides
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Contact Details */}
+          {/* Curators & Operations Column */}
           <div className="space-y-3">
-            <p className="text-xs font-semibold text-stone-900 uppercase tracking-wider font-mono">
-              Direct Contact
+            <p className="text-xs font-semibold text-[#1C1815] uppercase tracking-wider font-mono">
+              Curators &amp; Partners
             </p>
-            <div className="space-y-2.5 text-xs text-stone-600">
-              <div className="flex items-center gap-2">
-                <PhoneCall className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
-                <span>+91 98765 43210 / +91 98765 43211</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
-                <span>concierge@flyora.com</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <MapPin className="w-3.5 h-3.5 text-[#4A2E18] shrink-0 mt-0.5" />
-                <span>Flyora Travels Tower, Suite 402, High Street Plaza</span>
-              </div>
-            </div>
+            <ul className="space-y-2 text-xs text-[#6B6156]">
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onOpenEnquiry && onOpenEnquiry()}
+                  className="hover:text-black transition text-left cursor-pointer"
+                >
+                  Match with an Advisor
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  onClick={() => onBecomeAdvisor && onBecomeAdvisor()}
+                  className="hover:text-black transition text-left cursor-pointer font-medium text-[#463D34]"
+                >
+                  Become a Flyora Advisor ↗
+                </button>
+              </li>
+              <li>
+                <Link
+                  href="/#how-it-works"
+                  className="hover:text-black transition"
+                >
+                  How It Works
+                </Link>
+              </li>
+              <li>
+                <Link href="/#perks" className="hover:text-black transition">
+                  VIP Hotel Perks
+                </Link>
+              </li>
+              <li>
+                <Link href="/#faqs" className="hover:text-black transition">
+                  Advisor FAQs
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="http://localhost:3001"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-black transition"
+                >
+                  Staff &amp; Operations Portal ↗
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
 
-        {/* Bottom Copyright */}
-        <div className="pt-8 mt-4 border-t border-stone-100 flex flex-col sm:flex-row items-center justify-between text-[11px] text-stone-400 gap-4">
+        {/* Bottom Legal & Copyright Bar */}
+        <div className="pt-8 mt-4 border-t border-black/[0.06] flex flex-col sm:flex-row items-center justify-between text-[11px] text-[#7A7167] gap-4">
           <p>
-            © {new Date().getFullYear()} Flyora Tours & Travels LLP. All rights
-            reserved.
+            © {new Date().getFullYear()} Flyora Tours &amp; Travels LLP. All
+            rights reserved.
           </p>
           <div className="flex items-center gap-6">
-            <Link href="/" className="hover:text-stone-700 transition">
+            <Link href="/" className="hover:text-black transition">
               Privacy Policy
             </Link>
-            <Link href="/" className="hover:text-stone-700 transition">
+            <Link href="/" className="hover:text-black transition">
               Terms of Booking
             </Link>
-            <Link href="/" className="hover:text-stone-700 transition">
-              Refund & Cancellation
+            <Link href="/" className="hover:text-black transition">
+              Cookie Preferences
+            </Link>
+            <Link href="/" className="hover:text-black transition">
+              Refund &amp; Cancellation
             </Link>
           </div>
         </div>

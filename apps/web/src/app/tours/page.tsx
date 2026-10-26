@@ -112,8 +112,8 @@ export default function ToursPage() {
             setPackages(json.data.items);
           }
         }
-      } catch (err) {
-        console.warn("Using offline fallback tour packages:", err);
+      } catch {
+        // Fallback pre-bundled packages used cleanly when API is offline
       } finally {
         setLoading(false);
       }
@@ -210,18 +210,18 @@ export default function ToursPage() {
 
   return (
     <div className="min-h-screen bg-white text-stone-900 font-sans selection:bg-[#4A2E18] selection:text-white">
-      {/* Navbar with Coffee Brown theme */}
+      {/* Navbar with 5 Clean Links & Luxury Theme */}
       <Navbar
         activePath="/tours"
-        onOpenEnquiry={() => {
+        onOpenEnquiry={(service) => {
           setEnquiryPackageId(undefined);
-          setEnquiryPackageTitle(undefined);
+          setEnquiryPackageTitle(service ? `Enquiry: ${service}` : undefined);
           setIsEnquiryOpen(true);
         }}
       />
 
-      {/* Main Page Canvas */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
+      {/* Main Page Canvas (Wider than Navbar like Homepage Image Section: 1440px) */}
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-18">
         {/* Header with Title and Sorting */}
         <TourHeader
           totalResults={filteredPackages.length}
@@ -319,7 +319,13 @@ export default function ToursPage() {
       <FloatingWhatsApp />
 
       {/* Luxury Footer */}
-      <Footer />
+      <Footer
+        onOpenEnquiry={(service) => {
+          setEnquiryPackageId(undefined);
+          setEnquiryPackageTitle(service ? `Enquiry: ${service}` : undefined);
+          setIsEnquiryOpen(true);
+        }}
+      />
     </div>
   );
 }

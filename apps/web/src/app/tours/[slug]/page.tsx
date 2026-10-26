@@ -321,7 +321,13 @@ const FALLBACK_DETAILS: Record<string, Partial<PackageDetails>> = {
 };
 
 export default function TourDetailPage() {
-  const [slug, setSlug] = useState<string>("");
+  const params = useParams();
+  const currentSlug =
+    typeof params?.slug === "string"
+      ? params.slug
+      : Array.isArray(params?.slug)
+        ? params.slug[0] || ""
+        : "";
   const [pkg, setPkg] = useState<Partial<PackageDetails> | null>(null);
   const [loading, setLoading] = useState(true);
   const [openDays, setOpenDays] = useState<Record<number, boolean>>({
@@ -330,39 +336,38 @@ export default function TourDetailPage() {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
 
   useEffect(() => {
-    // Extract slug from URL pathname
-    if (typeof window !== "undefined") {
-      const parts = window.location.pathname.split("/");
-      const currentSlug = parts[parts.length - 1] || "";
-      setSlug(currentSlug);
+    const activeSlug =
+      currentSlug ||
+      (typeof window !== "undefined"
+        ? window.location.pathname.split("/").pop() || ""
+        : "");
 
-      // Check fallback or fetch from API
-      async function loadDetails() {
-        try {
-          const apiUrl =
-            process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
-          const res = await fetch(`${apiUrl}/packages/${currentSlug}`);
-          if (res.ok) {
-            const json = await res.json();
-            if (json.data) {
-              setPkg(json.data);
-              return;
-            }
+    // Check fallback or fetch from API
+    async function loadDetails() {
+      try {
+        const apiUrl =
+          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
+        const res = await fetch(`${apiUrl}/packages/${activeSlug}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.data) {
+            setPkg(json.data);
+            return;
           }
-        } catch {
-          // Ignore, fallback handles it
         }
-
-        // Use fallback if API is not reached
-        const fallback =
-          FALLBACK_DETAILS[currentSlug] ||
-          FALLBACK_DETAILS["5d-4n-dubai-family-luxury"];
-        setPkg(fallback);
-        setLoading(false);
+      } catch {
+        // Ignore, fallback handles it
       }
-      loadDetails();
+
+      // Use fallback if API is not reached
+      const fallback =
+        FALLBACK_DETAILS[activeSlug] ||
+        FALLBACK_DETAILS["5d-4n-dubai-family-luxury"];
+      setPkg(fallback);
+      setLoading(false);
     }
-  }, []);
+    loadDetails();
+  }, [currentSlug]);
 
   const toggleDay = (dayNum: number) => {
     setOpenDays((prev) => ({ ...prev, [dayNum]: !prev[dayNum] }));
@@ -405,8 +410,8 @@ export default function TourDetailPage() {
         onOpenEnquiry={() => setIsEnquiryOpen(true)}
       />
 
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
+      {/* Main Container (Wider than Navbar like Homepage Image Section: 1440px) */}
+      <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Back Link & Breadcrumb */}
         <div className="flex items-center justify-between pb-6 border-b border-stone-200/80">
           <Link
@@ -732,7 +737,7 @@ export default function TourDetailPage() {
       <FloatingWhatsApp />
 
       {/* Footer */}
-      <Footer />
+      <Footer onOpenEnquiry={() => setIsEnquiryOpen(true)} />
     </div>
   );
 }

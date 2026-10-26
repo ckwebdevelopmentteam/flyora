@@ -31,12 +31,12 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
 
       {/* Main Title & Subtitle */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div className="space-y-1.5 max-w-2xl">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBE6] text-[#4A2E18] text-[11px] font-semibold tracking-wider uppercase font-mono">
+        <div className="space-y-1.5 max-w-3xl">
+          {/* <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBE6] text-[#4A2E18] text-[11px] font-semibold tracking-wider uppercase font-mono">
             <Sparkles className="w-3 h-3 text-[#4A2E18]" />
             <span>Curated Luxury Catalog</span>
-          </div>
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-stone-900 tracking-tight">
+          </div> */}
+          <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold text-stone-900 tracking-tight">
             Handcrafted Tour Packages
           </h1>
           <p className="text-xs sm:text-sm text-stone-500 leading-relaxed">
@@ -84,7 +84,7 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
 
       {/* Result Count Status */}
       <div className="pt-2 text-xs font-mono text-stone-500 flex items-center gap-2">
-        <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+        {/* <span className="w-2 h-2 rounded-full bg-emerald-500"></span> */}
         <span>
           Showing <strong className="text-stone-900">{totalResults}</strong>{" "}
           handcrafted travel packages

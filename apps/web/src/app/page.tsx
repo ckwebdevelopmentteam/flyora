@@ -23,6 +23,7 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { Navbar } from "../components/Navbar";
+import { Footer } from "../components/layout/Footer";
 import { HeroSection } from "../components/HeroSection";
 import { EnquiryModal } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
@@ -217,10 +218,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#F9F3EC] text-[#1E1B18] font-sans selection:bg-[#463D34] selection:text-white">
-      {/* Top Floating White Navigation Pill (Preserved exact navbar) */}
+      {/* Top Floating White Navigation Pill with 5 Links */}
       <Navbar
-        alwaysShowSearch={true}
         isFixed={true}
+        onOpenEnquiry={(service) => openEnquiry(service)}
         onFindAdvisor={() => openEnquiry()}
         onBecomeAdvisor={() => setIsAdvisorModalOpen(true)}
       />
@@ -774,111 +775,12 @@ export default function Home() {
       </section>
 
       {/* =========================================================================
-          LUXURY EDITORIAL FOOTER
+          LUXURY EDITORIAL FOOTER (Shared Reusable Component)
           ========================================================================= */}
-      <footer className="border-t border-black/[0.06] py-12 bg-[#F5EFE8] text-[#5C534A] text-xs">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
-            <div className="md:col-span-2">
-              <span className="font-serif text-2xl font-normal tracking-[0.2em] text-[#1C1815] uppercase block mb-3">
-                FLYORA
-              </span>
-              <p className="text-xs text-[#7A7167] max-w-sm leading-relaxed mb-4">
-                Flyora is a modern luxury travel platform matching discerning
-                travelers with handpicked travel curators worldwide. Unlock VIP
-                upgrades and bespoke experiences.
-              </p>
-              <div className="flex items-center gap-2 text-[11px] text-[#7A7167]">
-                <Compass className="w-3.5 h-3.5 text-[#463D34]" />
-                <span>Preferred Partner at 4,500+ luxury properties</span>
-              </div>
-            </div>
-
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-black font-semibold mb-3">
-                DISCOVER
-              </p>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <Link href="/explore" className="hover:text-black transition">
-                    Explore Destinations
-                  </Link>
-                </li>
-                <li>
-                  <button
-                    onClick={() => openEnquiry()}
-                    className="hover:text-black transition cursor-pointer text-left"
-                  >
-                    Match with an Advisor
-                  </button>
-                </li>
-                <li>
-                  <a
-                    href="#how-it-works"
-                    className="hover:text-black transition"
-                  >
-                    How It Works
-                  </a>
-                </li>
-                <li>
-                  <a href="#perks" className="hover:text-black transition">
-                    VIP Hotel Perks
-                  </a>
-                </li>
-              </ul>
-            </div>
-
-            <div>
-              <p className="font-mono text-[10px] uppercase tracking-wider text-black font-semibold mb-3">
-                CAREERS &amp; PARTNERS
-              </p>
-              <ul className="space-y-2 text-xs">
-                <li>
-                  <button
-                    onClick={() => setIsAdvisorModalOpen(true)}
-                    className="hover:text-black transition cursor-pointer text-left font-medium text-[#463D34]"
-                  >
-                    Become a Flyora Advisor ↗
-                  </button>
-                </li>
-                <li>
-                  <a
-                    href="http://localhost:3001"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="hover:text-black transition"
-                  >
-                    Staff &amp; Operations Portal
-                  </a>
-                </li>
-                <li>
-                  <a href="#faqs" className="hover:text-black transition">
-                    Advisor FAQs
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="pt-8 border-t border-black/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] text-[#7A7167]">
-            <p>
-              © {new Date().getFullYear()} Flyora Travels Inc. All rights
-              reserved.
-            </p>
-            <div className="flex items-center gap-6">
-              <span className="hover:text-black cursor-pointer">
-                Privacy Policy
-              </span>
-              <span className="hover:text-black cursor-pointer">
-                Terms of Service
-              </span>
-              <span className="hover:text-black cursor-pointer">
-                Cookie Preferences
-              </span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <Footer
+        onOpenEnquiry={(service) => openEnquiry(service)}
+        onBecomeAdvisor={() => setIsAdvisorModalOpen(true)}
+      />
 
       {/* Modals & Floating WhatsApp */}
       <EnquiryModal
