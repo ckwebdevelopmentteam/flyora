@@ -80,11 +80,13 @@ describe("ConvertBookingModal Component", () => {
       />,
     );
 
-    expect(screen.getByText("Convert to Confirmed Booking")).toBeTruthy();
-    expect(screen.getByText("Aamir & Priya Sheikh")).toBeTruthy();
-    expect(screen.getByText("5D/4N Glitz of Dubai")).toBeTruthy();
+    expect(
+      screen.getByRole("heading", { name: "Confirm booking" }),
+    ).toBeTruthy();
+    expect(screen.getByText(/Aamir & Priya Sheikh/)).toBeTruthy();
+    expect(screen.getByText(/5D\/4N Glitz of Dubai/)).toBeTruthy();
     expect(screen.getByText("₹1,85,000")).toBeTruthy();
-    expect(screen.getByText("18.9% Margin")).toBeTruthy();
+    expect(screen.getByText("Booking total")).toBeTruthy();
     expect(screen.getByDisplayValue("2026-11-20")).toBeTruthy();
   });
 
@@ -117,7 +119,7 @@ describe("ConvertBookingModal Component", () => {
     );
 
     const submitBtn = screen.getByRole("button", {
-      name: /Confirm Booking \(Generate Reference\)/i,
+      name: /^Confirm booking$/i,
     });
     fireEvent.click(submitBtn);
 
@@ -131,11 +133,11 @@ describe("ConvertBookingModal Component", () => {
     expect(screen.getByText(/Booking Confirmed/i)).toBeTruthy();
     expect(screen.getByRole("button", { name: /Copy Link/i })).toBeTruthy();
     expect(
-      screen.getByRole("link", { name: /Send WhatsApp Trip Voucher/i }),
+      screen.getByRole("link", { name: /Open in WhatsApp/i }),
     ).toBeTruthy();
 
     const whatsappLink = screen.getByRole("link", {
-      name: /Send WhatsApp Trip Voucher/i,
+      name: /Open in WhatsApp/i,
     });
     expect(whatsappLink.getAttribute("href")).toContain("919820011223");
     expect(whatsappLink.getAttribute("href")).toContain("BK-2026-0099");

@@ -1,3 +1,4 @@
+import { userMessage } from "../../lib/userMessage";
 import { useRef, useState } from "react";
 import { bookingsApi } from "./bookingsApi";
 
@@ -35,9 +36,10 @@ export function ReplaceReceiptButton({
             onReplaced?.();
           } catch (error) {
             onError(
-              error instanceof Error
-                ? error.message
-                : "Receipt replacement failed. Please try again.",
+              userMessage(
+                error,
+                "Receipt replacement failed. Please try again.",
+              ),
             );
           } finally {
             uploading.current = false;

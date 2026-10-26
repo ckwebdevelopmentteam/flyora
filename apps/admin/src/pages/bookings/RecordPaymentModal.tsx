@@ -1,18 +1,17 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useId } from "react";
 import type { BookingRecord, PaymentMethod, PaymentRecord } from "./types";
 import { bookingsApi } from "./bookingsApi";
 import { receiptContentType } from "./receiptUpload";
 import { formatINR } from "./paymentCalculator";
 import {
-  Calendar,
-  CheckCircle2,
-  CreditCard,
-  FileUp,
+  ArrowRight,
   Loader2,
-  Trash2,
   UploadCloud,
-  X,
+  CheckCircle2,
+  Trash2,
 } from "lucide-react";
+import { Modal, Steps, FormError } from "../../components/ui/Modal";
+import { userMessage } from "../../lib/userMessage";
 
 interface RecordPaymentModalProps {
   isOpen: boolean;
@@ -27,6 +26,8 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
   booking,
   onPaymentRecorded,
 }) => {
+  const formId = useId();
+  const [step, setStep] = useState(0);
   const [amount, setAmount] = useState<string>(() =>
     booking.dueAmount > 0 ? String(booking.dueAmount) : "",
   );
@@ -50,6 +51,19 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
   const uploadInFlight = useRef(false);
   const submitInFlight = useRef(false);
 
+  useEffect(() => {
+    if (!isOpen) return;
+    setStep(0);
+    setAmount(booking.dueAmount > 0 ? String(booking.dueAmount) : "");
+    setMethod("UPI");
+    setTransactionRef("");
+    setNotes("");
+    setPaymentDate(new Date().toISOString().slice(0, 10));
+    setReceiptFileKey("");
+    setReceiptFileName("");
+    setUploadError(null);
+    setErrorMessage(null);
+  }, [isOpen, booking.id]);
   if (!isOpen) return null;
 
   const numAmount = Number(amount) || 0;
@@ -66,7 +80,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
     await processFileUpload(file);
   };
 
-  const handleDrop = async (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDrop = async (e: React.DragEvent<HTMLElement>) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
     if (!file) return;
@@ -93,9 +107,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
       setReceiptFileName(file.name);
     } catch (error) {
       setUploadError(
-        error instanceof Error
-          ? error.message
-          : "Failed to upload receipt slip. Please try again.",
+        userMessage(error, "We couldn't upload the receipt. Please try again."),
       );
     } finally {
       uploadInFlight.current = false;
@@ -116,8 +128,12 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
     e.preventDefault();
     if (submitInFlight.current || uploadInFlight.current) return;
     setErrorMessage(null);
+    if (step < 2) {
+      next();
+      return;
+    }
 
-    if (numAmount <= 0) {
+    if (!Number.isFinite(numAmount) || numAmount <= 0) {
       setErrorMessage("Payment amount must be greater than zero.");
       return;
     }
@@ -162,7 +178,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
       onClose();
     } catch (err: any) {
       setErrorMessage(
-        err.message || "Failed to record payment. Please try again.",
+        userMessage(err, "We couldn't record this payment. Please try again."),
       );
     } finally {
       submitInFlight.current = false;
@@ -170,326 +186,293 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
     }
   };
 
+  const detailsValid = () => {
+    if (!Number.isFinite(numAmount) || numAmount <= 0) {
+      setErrorMessage("Enter a payment amount greater than zero.");
+      return false;
+    }
+    if (transactionRef.trim().length < 3) {
+      setErrorMessage(
+        "Enter the payment reference or UTR number (at least 3 characters).",
+      );
+      return false;
+    }
+    if (!paymentDate || !Number.isFinite(Date.parse(paymentDate))) {
+      setErrorMessage("Choose a valid payment date.");
+      return false;
+    }
+    return true;
+  };
+  const next = () => {
+    setErrorMessage(null);
+    if (step === 0 && !detailsValid()) return;
+    if (step === 1 && !receiptFileKey) {
+      setErrorMessage("Please attach a payment receipt before continuing.");
+      return;
+    }
+    setStep((value) => Math.min(2, value + 1));
+  };
+  const methods: Record<PaymentMethod, string> = {
+    UPI: "UPI",
+    BANK_TRANSFER_NEFT_IMPS: "Bank transfer",
+    CASH: "Cash",
+    CREDIT_DEBIT_OFFLINE: "Card payment",
+  };
+  const busy = isSubmitting || isUploadingFile;
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        onClick={() => {
-          if (!isSubmitting) onClose();
-        }}
-        className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
-      />
-
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-zinc-200 overflow-hidden animate-in zoom-in-95 duration-150">
-          <form onSubmit={handleSubmit} noValidate>
-            {/* Header */}
-            <div className="px-6 py-5 bg-[#FAFAF9] border-b border-zinc-200 flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-black text-white flex items-center justify-center shadow-xs">
-                  <CreditCard className="w-5 h-5 stroke-[1.5]" />
-                </div>
-                <div>
-                  <h2 className="text-base font-semibold text-zinc-900">
-                    Record Offline Payment
-                  </h2>
-                  <p className="text-xs text-zinc-500 font-mono">
-                    {booking.bookingRef} • {booking.customerName}
-                  </p>
-                </div>
-              </div>
-
-              <button
-                type="button"
-                onClick={onClose}
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-black hover:bg-zinc-200/60 transition"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* Financial Overview Gauge */}
-            <div className="px-6 py-3.5 bg-[#F8F8F6] border-b border-zinc-200 grid grid-cols-3 gap-3 text-center text-xs font-mono">
-              <div>
-                <span className="text-[10px] text-zinc-400 block font-sans uppercase">
-                  Total Package
-                </span>
-                <span className="font-semibold text-zinc-900">
-                  {formatINR(booking.totalAmount)}
-                </span>
-              </div>
-              <div className="border-x border-zinc-200">
-                <span className="text-[10px] text-zinc-400 block font-sans uppercase">
-                  Verified Paid
-                </span>
-                <span className="font-semibold text-emerald-700">
-                  {formatINR(booking.paidAmount)}
-                </span>
-              </div>
-              <div>
-                <span className="text-[10px] text-zinc-400 block font-sans uppercase">
-                  Outstanding Due
-                </span>
-                <span className="font-bold text-amber-700">
-                  {formatINR(booking.dueAmount)}
-                </span>
-              </div>
-            </div>
-
-            {/* Form Fields */}
-            <div className="p-6 space-y-4">
-              {errorMessage && (
-                <div
-                  role="alert"
-                  className="p-3 rounded-lg bg-rose-50 border border-rose-200 text-rose-800 text-xs"
-                >
-                  {errorMessage}
-                </div>
+    <Modal
+      title="Record payment"
+      description={`${booking.bookingRef} · ${booking.customerName}`}
+      onClose={onClose}
+      busy={busy}
+      footer={
+        <>
+          <button
+            className="button-secondary"
+            type="button"
+            disabled={busy}
+            onClick={() => {
+              if (step) {
+                setStep(step - 1);
+                setErrorMessage(null);
+              } else onClose();
+            }}
+          >
+            {step ? "Back" : "Cancel"}
+          </button>
+          {step < 2 ? (
+            <button
+              className="button-primary"
+              type="button"
+              onClick={next}
+              disabled={busy}
+            >
+              Continue <ArrowRight size={16} />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              form={formId}
+              className="button-primary"
+              disabled={busy}
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Submitting…
+                </>
+              ) : (
+                "Submit for verification"
               )}
-
-              {/* Amount & Presets */}
-              <div>
-                <div className="flex items-center justify-between mb-1.5">
-                  <label className="text-xs font-semibold text-zinc-800">
-                    Payment Amount (₹) *
-                  </label>
-                  {booking.dueAmount > 0 && (
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => handleQuickPreset(booking.dueAmount)}
-                        className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition"
-                      >
-                        Full Due ({formatINR(booking.dueAmount)})
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() =>
-                          handleQuickPreset(booking.dueAmount * 0.5)
-                        }
-                        className="text-[10px] font-mono px-2 py-0.5 rounded bg-zinc-100 hover:bg-zinc-200 text-zinc-700 transition"
-                      >
-                        50% Due
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-xs font-mono text-zinc-400">
-                    ₹
-                  </span>
-                  <input
-                    type="number"
-                    required
-                    min={1}
-                    value={amount}
-                    onChange={(e) => setAmount(e.target.value)}
-                    placeholder="0"
-                    className="w-full text-xs font-mono pl-7 pr-3 py-2 rounded-lg border border-zinc-200 focus:outline-hidden focus:ring-1 focus:ring-black"
-                  />
-                </div>
-
-                {isOverDue && (
-                  <span className="text-[10px] text-amber-700 block mt-1 font-mono">
-                    ⚠️ Notice: Entered amount exceeds outstanding due balance (
-                    {formatINR(booking.dueAmount)}).
-                  </span>
-                )}
+            </button>
+          )}
+        </>
+      }
+    >
+      <Steps
+        labels={["Payment details", "Add receipt", "Review & submit"]}
+        current={step}
+      />
+      <FormError>{errorMessage}</FormError>
+      <form id={formId} onSubmit={handleSubmit} noValidate>
+        <fieldset disabled={busy} className="space-y-5 min-w-0">
+          {step === 0 && (
+            <>
+              <div className="notice flex justify-between gap-4">
+                <span>Balance due</span>
+                <strong>{formatINR(booking.dueAmount)}</strong>
               </div>
-
-              {/* Payment Method & Date */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs font-semibold text-zinc-800 block mb-1">
-                    Payment Method *
-                  </label>
-                  <select
-                    value={method}
-                    onChange={(e) => setMethod(e.target.value as PaymentMethod)}
-                    className="w-full text-xs p-2 rounded-lg border border-zinc-200 focus:outline-hidden focus:ring-1 focus:ring-black bg-white"
-                  >
-                    <option value="UPI">
-                      UPI Transfer (GPay / PhonePe / Paytm)
-                    </option>
-                    <option value="BANK_TRANSFER_NEFT_IMPS">
-                      Bank Transfer (NEFT / IMPS / RTGS)
-                    </option>
-                    <option value="CASH">Cash Deposit at Counter</option>
-                    <option value="CREDIT_DEBIT_OFFLINE">
-                      Credit / Debit Card (Offline Machine)
-                    </option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-xs font-semibold text-zinc-800 block mb-1 flex items-center gap-1">
-                    <Calendar className="w-3.5 h-3.5 text-zinc-400" />
-                    Payment Date *
-                  </label>
-                  <input
-                    type="date"
-                    required
-                    value={paymentDate}
-                    onChange={(e) => setPaymentDate(e.target.value)}
-                    className="w-full text-xs font-mono p-2 rounded-lg border border-zinc-200 focus:outline-hidden focus:ring-1 focus:ring-black"
-                  />
-                </div>
-              </div>
-
-              {/* Transaction Reference / Bank UTR */}
-              <div>
-                <label className="text-xs font-semibold text-zinc-800 block mb-1">
-                  Transaction Reference / UTR Number *
-                </label>
+              <div className="field">
+                <label htmlFor="payment-amount">Amount received (₹)</label>
                 <input
-                  type="text"
-                  required
-                  value={transactionRef}
-                  onChange={(e) => setTransactionRef(e.target.value)}
-                  placeholder="e.g. UPI/528391823901 or HDFC92849182"
-                  className="w-full text-xs font-mono p-2 rounded-lg border border-zinc-200 focus:outline-hidden focus:ring-1 focus:ring-black placeholder:text-zinc-400"
+                  id="payment-amount"
+                  type="number"
+                  inputMode="decimal"
+                  min="0.01"
+                  step="0.01"
+                  value={amount}
+                  onChange={(event) => setAmount(event.target.value)}
+                  placeholder="0"
                 />
-                <span className="text-[10px] text-zinc-400 block mt-1">
-                  Required for accounts reconciliation with the company bank
-                  statement
-                </span>
-              </div>
-
-              {/* Receipt File Dropzone (R2 Private Storage) */}
-              <div>
-                <label className="text-xs font-semibold text-zinc-800 block mb-1.5 flex items-center justify-between">
-                  <span>Payment Slip / Bank Receipt Proof *</span>
-                  <span className="text-[10px] font-mono text-zinc-400 font-normal">
-                    Cloudflare R2 Private Bucket
-                  </span>
-                </label>
-
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  aria-label="Payment receipt"
-                  accept="image/png,image/jpeg,image/jpg,application/pdf"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-
-                {!receiptFileKey ? (
-                  <div
-                    role="button"
-                    tabIndex={0}
-                    aria-disabled={isUploadingFile || isSubmitting}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ") {
-                        e.preventDefault();
-                        if (!uploadInFlight.current && !submitInFlight.current)
-                          fileInputRef.current?.click();
-                      }
-                    }}
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={handleDrop}
-                    onClick={() => {
-                      if (!uploadInFlight.current && !submitInFlight.current)
-                        fileInputRef.current?.click();
-                    }}
-                    className="border-2 border-dashed border-zinc-300 hover:border-zinc-500 rounded-xl p-4 text-center cursor-pointer bg-[#FAFAF9] hover:bg-zinc-50 transition space-y-1.5"
-                  >
-                    {isUploadingFile ? (
-                      <div className="py-2 flex items-center justify-center gap-2 text-xs text-zinc-600">
-                        <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />
-                        <span>
-                          Uploading receipt slip to private storage...
-                        </span>
-                      </div>
-                    ) : (
-                      <>
-                        <UploadCloud className="w-6 h-6 text-zinc-400 mx-auto stroke-[1.5]" />
-                        <p className="text-xs font-medium text-zinc-800">
-                          Click to upload or drag & drop slip proof
-                        </p>
-                        <p className="text-[10px] text-zinc-400 font-mono">
-                          PNG, JPG, or PDF up to 10MB
-                        </p>
-                      </>
-                    )}
-                  </div>
-                ) : (
-                  <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 flex items-center justify-between">
-                    <div className="flex items-center gap-2 text-xs text-emerald-900 truncate">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                      <span className="font-mono text-xs truncate">
-                        {receiptFileName || receiptFileKey}
-                      </span>
-                    </div>
-
+                {booking.dueAmount > 0 && (
+                  <div className="flex gap-2">
                     <button
                       type="button"
-                      onClick={handleRemoveFile}
-                      className="p-1 rounded text-emerald-700 hover:text-rose-700 hover:bg-emerald-100 transition"
-                      title="Remove slip"
+                      className="button-secondary text-xs"
+                      onClick={() => handleQuickPreset(booking.dueAmount)}
                     >
-                      <Trash2 className="w-3.5 h-3.5" />
+                      Full balance
+                    </button>
+                    <button
+                      type="button"
+                      className="button-secondary text-xs"
+                      onClick={() => handleQuickPreset(booking.dueAmount * 0.5)}
+                    >
+                      Half balance
                     </button>
                   </div>
                 )}
-
-                {uploadError && (
-                  <span
-                    role="alert"
-                    className="text-[10px] text-rose-600 block mt-1"
-                  >
-                    {uploadError}
-                  </span>
+                {isOverDue && (
+                  <small className="text-amber-700">
+                    This is more than the balance due. Check the amount before
+                    continuing.
+                  </small>
                 )}
               </div>
-
-              {/* Internal Notes */}
+              <div className="form-grid">
+                <div className="field">
+                  <label htmlFor="payment-method">Payment method</label>
+                  <select
+                    id="payment-method"
+                    value={method}
+                    onChange={(event) =>
+                      setMethod(event.target.value as PaymentMethod)
+                    }
+                  >
+                    {Object.entries(methods).map(([value, label]) => (
+                      <option key={value} value={value}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div className="field">
+                  <label htmlFor="payment-date">Payment date</label>
+                  <input
+                    id="payment-date"
+                    type="date"
+                    value={paymentDate}
+                    onChange={(event) => setPaymentDate(event.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="field">
+                <label htmlFor="payment-ref">
+                  Payment reference / UTR number
+                </label>
+                <input
+                  id="payment-ref"
+                  value={transactionRef}
+                  onChange={(event) => setTransactionRef(event.target.value)}
+                  placeholder="e.g. UPI/528391823901 or HDFC92849182"
+                />
+                <small>
+                  Find this on the payment confirmation or bank receipt.
+                </small>
+              </div>
+            </>
+          )}
+          {step === 1 && (
+            <>
               <div>
-                <label className="text-xs font-semibold text-zinc-800 block mb-1">
-                  Internal Notes (Optional)
+                <h3 className="font-semibold mb-1">
+                  Attach the payment receipt
+                </h3>
+                <p className="text-sm text-slate-500">
+                  Your accounts team will use this to check the payment.
+                </p>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                aria-label="Payment receipt"
+                accept="image/png,image/jpeg,application/pdf"
+                onChange={handleFileChange}
+                className="sr-only"
+              />
+              {!receiptFileKey ? (
+                <button
+                  type="button"
+                  className="w-full border-2 border-dashed rounded-lg p-8 text-center hover:border-indigo-400 bg-slate-50"
+                  onDragOver={(event) => event.preventDefault()}
+                  onDrop={handleDrop}
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={busy}
+                >
+                  {isUploadingFile ? (
+                    <>
+                      <Loader2
+                        size={24}
+                        className="animate-spin mx-auto mb-3"
+                      />
+                      Uploading receipt…
+                    </>
+                  ) : (
+                    <>
+                      <UploadCloud
+                        size={26}
+                        className="text-indigo-500 mx-auto mb-3"
+                      />
+                      <span className="block font-medium">
+                        Choose a file or drop it here
+                      </span>
+                      <span className="block text-xs text-slate-500 mt-2">
+                        PNG, JPG or PDF · Up to 10 MB
+                      </span>
+                    </>
+                  )}
+                </button>
+              ) : (
+                <div className="notice flex items-center justify-between gap-3">
+                  <CheckCircle2
+                    size={18}
+                    className="text-emerald-600 shrink-0"
+                  />
+                  <span className="truncate flex-1">{receiptFileName}</span>
+                  <button
+                    className="icon-button"
+                    type="button"
+                    aria-label="Remove receipt"
+                    onClick={handleRemoveFile}
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              )}
+              <FormError>{uploadError}</FormError>
+              <div className="field">
+                <label htmlFor="payment-notes">
+                  Staff notes <span className="text-slate-400">(optional)</span>
                 </label>
                 <textarea
-                  rows={2}
+                  id="payment-notes"
+                  rows={3}
                   value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="e.g. Customer sent screenshot via WhatsApp from Axis Bank account..."
-                  className="w-full text-xs p-2 rounded-lg border border-zinc-200 focus:outline-hidden focus:ring-1 focus:ring-black placeholder:text-zinc-400 resize-none"
+                  onChange={(event) => setNotes(event.target.value)}
+                  placeholder="Anything the accounts team should know"
                 />
               </div>
-            </div>
-
-            {/* Action Bar */}
-            <div className="px-6 py-4 bg-[#FAFAF9] border-t border-zinc-200 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={onClose}
-                disabled={isSubmitting}
-                className="px-4 py-2 rounded-lg text-xs font-medium text-zinc-600 hover:text-black hover:bg-zinc-200/60 transition"
-              >
-                Cancel
-              </button>
-
-              <button
-                type="submit"
-                disabled={isSubmitting || isUploadingFile}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-black hover:bg-zinc-800 text-white text-xs font-semibold shadow-xs transition disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Recording Payment...</span>
-                  </>
-                ) : (
-                  <>
-                    <FileUp className="w-3.5 h-3.5" />
-                    <span>Record & Submit for Verification</span>
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
+            </>
+          )}
+          {step === 2 && (
+            <>
+              <dl className="review-list">
+                {[
+                  ["Customer", booking.customerName],
+                  ["Amount received", formatINR(numAmount)],
+                  ["Payment method", methods[method]],
+                  [
+                    "Payment date",
+                    new Date(paymentDate).toLocaleDateString("en-GB"),
+                  ],
+                  ["Reference", transactionRef],
+                  ["Receipt", receiptFileName],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+              {notes && <div className="notice">{notes}</div>}
+              <div className="notice border-indigo-100 bg-indigo-50 text-indigo-900">
+                The payment will be marked as pending. The customer's balance
+                changes only after your accounts team verifies it.
+              </div>
+            </>
+          )}
+        </fieldset>
+      </form>
+    </Modal>
   );
 };

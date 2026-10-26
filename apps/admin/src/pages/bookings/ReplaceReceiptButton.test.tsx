@@ -59,7 +59,9 @@ it("does not replace proof or report success when uploading fails", async () => 
     "Replace receipt for UTR-123",
   ) as HTMLInputElement;
   fireEvent.change(input, { target: { files: [receipt()] } });
-  await waitFor(() => expect(error).toHaveBeenCalledWith("Upload failed"));
+  await waitFor(() =>
+    expect(error).toHaveBeenCalledWith(expect.stringContaining("try again")),
+  );
   expect(bookingsApi.replacePaymentReceipt).not.toHaveBeenCalled();
   expect(replaced).not.toHaveBeenCalled();
   expect(input.value).toBe("");
@@ -85,7 +87,9 @@ it("reports a status conflict without silently changing the payment", async () =
     target: { files: [receipt()] },
   });
   await waitFor(() =>
-    expect(error).toHaveBeenCalledWith("Payment is no longer pending"),
+    expect(error).toHaveBeenCalledWith(
+      "Receipt replacement failed. Please try again.",
+    ),
   );
   expect(replaced).not.toHaveBeenCalled();
 });

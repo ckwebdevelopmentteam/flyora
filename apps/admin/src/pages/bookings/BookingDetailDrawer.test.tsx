@@ -200,7 +200,7 @@ describe("BookingDetailDrawer Component", () => {
       screen.getAllByRole("button", { name: /View Receipt Slip/ })[0],
     );
     expect((await screen.findByRole("alert")).textContent).toContain(
-      "Receipt file is missing",
+      "upload it again",
     );
     expect(open).not.toHaveBeenCalled();
     open.mockRestore();
@@ -221,7 +221,7 @@ describe("BookingDetailDrawer Component", () => {
     );
     fireEvent.click(screen.getByRole("button", { name: "Verify" }));
     expect((await screen.findByRole("alert")).textContent).toContain(
-      "Upload the receipt",
+      "upload it again",
     );
     expect(verified).not.toHaveBeenCalled();
   });
