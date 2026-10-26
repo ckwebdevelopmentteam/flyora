@@ -1,11 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect, useId } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { createUserSchema, type CreateUserInput } from "@flyora/validators";
 import type { ServiceSummary, UserRole } from "@flyora/types";
 import { apiClient } from "../../lib/apiClient";
-import { X, Loader2, AlertCircle, Briefcase, Check } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
+import { Modal, Steps, FormError } from "../ui/Modal";
+import { userMessage } from "../../lib/userMessage";
 
 interface AddStaffModalProps {
   isOpen: boolean;
@@ -22,11 +24,16 @@ const ROLES: { value: UserRole; label: string }[] = [
 
 export const AddStaffModal = ({ isOpen, onClose }: AddStaffModalProps) => {
   const queryClient = useQueryClient();
+  const [step, setStep] = useState(0);
+  const formId = useId();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const { data: services = [], isLoading: isLoadingServices } = useQuery<
-    ServiceSummary[]
-  >({
+  const {
+    data: services = [],
+    isLoading: isLoadingServices,
+    isError: servicesError,
+    refetch: retryServices,
+  } = useQuery<ServiceSummary[]>({
     queryKey: ["services"],
     queryFn: () => apiClient.get("/services"),
     enabled: isOpen,
@@ -38,6 +45,8 @@ export const AddStaffModal = ({ isOpen, onClose }: AddStaffModalProps) => {
     watch,
     setValue,
     reset,
+    trigger,
+    getValues,
     formState: { errors },
   } = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema as any),
@@ -64,10 +73,22 @@ export const AddStaffModal = ({ isOpen, onClose }: AddStaffModalProps) => {
       onClose();
     },
     onError: (err: any) => {
-      setErrorMessage(err.message || "Failed to create staff member.");
+      setErrorMessage(
+        userMessage(
+          err,
+          "We couldn't create this staff account. Please try again.",
+        ),
+      );
     },
   });
 
+  useEffect(() => {
+    if (isOpen) {
+      reset();
+      setStep(0);
+      setErrorMessage(null);
+    }
+  }, [isOpen, reset]);
   if (!isOpen) return null;
 
   const handleServiceToggle = (serviceId: string) => {
@@ -88,235 +109,233 @@ export const AddStaffModal = ({ isOpen, onClose }: AddStaffModalProps) => {
 
   const onSubmit = (data: CreateUserInput) => {
     setErrorMessage(null);
-    createMutation.mutate(data);
+    if (createMutation.isPending || step !== 2) return;
+    createMutation.mutate(
+      data.role === "SERVICE_COORDINATOR"
+        ? data
+        : { ...data, serviceIds: [], primaryServiceId: undefined },
+    );
   };
 
+  const next = async () => {
+    setErrorMessage(null);
+    if (
+      step === 0 &&
+      !(await trigger(["fullName", "email", "phone", "password"]))
+    )
+      return;
+    if (
+      step === 1 &&
+      selectedRole === "SERVICE_COORDINATOR" &&
+      (!selectedServiceIds.length || !primaryServiceId)
+    ) {
+      setErrorMessage(
+        "Choose at least one travel service and a primary service.",
+      );
+      return;
+    }
+    setStep((value) => Math.min(2, value + 1));
+  };
+  const values = getValues();
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
-      />
-
-      {/* Modal Card */}
-      <div className="relative w-full max-w-lg bg-white border border-zinc-200/90 rounded-xl shadow-2xl p-6 z-10 my-8">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-3 border-b border-zinc-200">
-          <div>
-            <h2 className="text-base font-medium text-zinc-900 tracking-tight">
-              Add Staff Member
-            </h2>
-            <p className="text-xs text-zinc-500">
-              Create a staff account and assign service mappings.
-            </p>
-          </div>
+    <Modal
+      title="Add team member"
+      description="Set up their account and choose what they can work on."
+      onClose={onClose}
+      busy={createMutation.isPending}
+      footer={
+        <>
           <button
-            onClick={onClose}
-            className="p-1 rounded text-zinc-400 hover:text-black hover:bg-zinc-100 transition"
+            type="button"
+            className="button-secondary"
+            disabled={createMutation.isPending}
+            onClick={() => (step ? setStep(step - 1) : onClose())}
           >
-            <X className="w-4 h-4" />
+            {step ? "Back" : "Cancel"}
           </button>
-        </div>
-
-        {errorMessage && (
-          <div className="mt-3 p-2.5 rounded-lg bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 text-zinc-600 shrink-0" />
-            <span>{errorMessage}</span>
-          </div>
-        )}
-
-        {/* Form */}
-        <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-3.5">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {/* Full Name */}
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Full Name *
-              </label>
-              <input
-                type="text"
-                {...register("fullName")}
-                placeholder="Rashid Ahmed"
-                className="w-full px-3 py-1.5 bg-[#FBFBFA] border border-zinc-200 rounded-lg text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-black"
-              />
-              {errors.fullName && (
-                <p className="text-[11px] text-zinc-500 mt-1">
-                  {errors.fullName.message}
-                </p>
-              )}
-            </div>
-
-            {/* Email */}
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Email Address *
-              </label>
-              <input
-                type="email"
-                {...register("email")}
-                placeholder="staff@flyora.com"
-                className="w-full px-3 py-1.5 bg-[#FBFBFA] border border-zinc-200 rounded-lg text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-black"
-              />
-              {errors.email && (
-                <p className="text-[11px] text-zinc-500 mt-1">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-
-            {/* Phone */}
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Phone Number *
-              </label>
-              <input
-                type="tel"
-                {...register("phone")}
-                placeholder="+91 9876543210"
-                className="w-full px-3 py-1.5 bg-[#FBFBFA] border border-zinc-200 rounded-lg text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-black"
-              />
-              {errors.phone && (
-                <p className="text-[11px] text-zinc-500 mt-1">
-                  {errors.phone.message}
-                </p>
-              )}
-            </div>
-
-            {/* Password */}
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Temporary Password *
-              </label>
-              <input
-                type="password"
-                {...register("password")}
-                placeholder="Min 8 characters"
-                className="w-full px-3 py-1.5 bg-[#FBFBFA] border border-zinc-200 rounded-lg text-xs text-zinc-900 placeholder-zinc-400 focus:outline-none focus:border-black"
-              />
-              {errors.password && (
-                <p className="text-[11px] text-zinc-500 mt-1">
-                  {errors.password.message}
-                </p>
-              )}
-            </div>
-          </div>
-
-          {/* Role Selection */}
-          <div>
-            <label className="block text-xs font-medium text-zinc-700 mb-1">
-              Role *
-            </label>
-            <select
-              {...register("role")}
-              className="w-full px-3 py-1.5 bg-[#FBFBFA] border border-zinc-200 rounded-lg text-xs text-zinc-800 focus:outline-none focus:border-black"
+          {step < 2 ? (
+            <button
+              type="button"
+              className="button-primary"
+              onClick={() => void next()}
             >
-              {ROLES.map((r) => (
-                <option key={r.value} value={r.value} className="bg-white">
-                  {r.label}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Conditional Service Assignment */}
-          {selectedRole === "SERVICE_COORDINATOR" && (
-            <div className="p-3.5 rounded-lg bg-[#FBFBFA] border border-zinc-200 space-y-2.5">
-              <div className="flex items-center gap-1.5 text-xs text-zinc-800 font-medium">
-                <Briefcase className="w-3.5 h-3.5 text-zinc-500" />
-                <span>Service Assignments</span>
-              </div>
-              <p className="text-[11px] text-zinc-500">
-                Incoming leads for checked services will be routable to this
-                coordinator.
-              </p>
-
-              {isLoadingServices ? (
-                <div className="flex items-center gap-2 text-xs text-zinc-500 py-2">
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Loading services...</span>
-                </div>
+              Continue <ArrowRight size={16} />
+            </button>
+          ) : (
+            <button
+              type="submit"
+              form={formId}
+              className="button-primary"
+              disabled={createMutation.isPending}
+            >
+              {createMutation.isPending ? (
+                <>
+                  <Loader2 size={16} className="animate-spin" />
+                  Creating…
+                </>
               ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                  {services.map((svc) => {
-                    const isChecked = selectedServiceIds.includes(svc.id);
-                    const isPrimary = primaryServiceId === svc.id;
-
-                    return (
-                      <div
-                        key={svc.id}
-                        onClick={() => handleServiceToggle(svc.id)}
-                        className={`p-2 rounded-lg border text-xs cursor-pointer flex items-center justify-between transition ${
-                          isChecked
-                            ? "bg-zinc-100 border-zinc-400 text-zinc-900"
-                            : "bg-white border-zinc-200 text-zinc-700 hover:border-zinc-300"
-                        }`}
+                "Create account"
+              )}
+            </button>
+          )}
+        </>
+      }
+    >
+      <Steps
+        labels={["Account details", "Role & services", "Review"]}
+        current={step}
+      />
+      <FormError>{errorMessage}</FormError>
+      <form
+        id={formId}
+        onSubmit={(event) => {
+          if (step !== 2) {
+            event.preventDefault();
+            void next();
+          } else void handleSubmit(onSubmit)(event);
+        }}
+        noValidate
+      >
+        <fieldset disabled={createMutation.isPending} className="min-w-0">
+          {step === 0 && (
+            <div className="form-grid">
+              {(
+                [
+                  ["fullName", "Full name", "text", "e.g. Aisha Khan"],
+                  ["email", "Email address", "email", "e.g. aisha@flyora.com"],
+                  ["phone", "Phone number", "tel", "Include the country code"],
+                  ["password", "Password", "password", "At least 8 characters"],
+                ] as const
+              ).map(([name, label, type, placeholder]) => (
+                <div className="field" key={name}>
+                  <label htmlFor={`staff-${name}`}>{label}</label>
+                  <input
+                    id={`staff-${name}`}
+                    type={type}
+                    placeholder={placeholder}
+                    {...register(name)}
+                    autoComplete={name === "password" ? "new-password" : "off"}
+                    aria-invalid={!!errors[name]}
+                  />
+                  {errors[name] && (
+                    <p className="text-xs text-rose-700">
+                      {errors[name]?.message}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+          {step === 1 && (
+            <div className="space-y-5">
+              <div className="field">
+                <label htmlFor="staff-role">Role</label>
+                <select id="staff-role" {...register("role")}>
+                  {ROLES.map((role) => (
+                    <option key={role.value} value={role.value}>
+                      {role.label}
+                    </option>
+                  ))}
+                </select>
+                <small>Choose the access level this person needs.</small>
+              </div>
+              {selectedRole === "SERVICE_COORDINATOR" && (
+                <div className="space-y-3">
+                  <h3 className="font-medium">Travel services</h3>
+                  <p className="text-sm text-slate-500">
+                    They can pick up enquiries for these services.
+                  </p>
+                  {isLoadingServices ? (
+                    <p role="status">Loading services…</p>
+                  ) : servicesError ? (
+                    <div className="notice">
+                      We couldn't load the services.{" "}
+                      <button
+                        className="underline"
+                        type="button"
+                        onClick={() => void retryServices()}
                       >
-                        <div className="flex items-center gap-2">
-                          <div
-                            className={`w-3.5 h-3.5 rounded border flex items-center justify-center transition ${
-                              isChecked
-                                ? "bg-black border-black text-white"
-                                : "border-zinc-300 bg-white"
-                            }`}
-                          >
-                            {isChecked && (
-                              <Check className="w-2.5 h-2.5 stroke-[2.5]" />
-                            )}
-                          </div>
-                          <span>{svc.name}</span>
-                        </div>
-
-                        {isChecked && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setValue("primaryServiceId", svc.id);
-                            }}
-                            className={`text-[9px] px-1.5 py-0.2 rounded font-mono transition ${
-                              isPrimary
-                                ? "bg-black text-white font-semibold"
-                                : "text-zinc-500 hover:text-black"
-                            }`}
-                          >
-                            {isPrimary ? "Primary ★" : "Set Primary"}
-                          </button>
-                        )}
-                      </div>
-                    );
-                  })}
+                        Try again
+                      </button>
+                    </div>
+                  ) : (
+                    services.map((service) => (
+                      <label
+                        key={service.id}
+                        className="flex gap-3 items-center border rounded-lg p-3 cursor-pointer"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selectedServiceIds.includes(service.id)}
+                          onChange={() => handleServiceToggle(service.id)}
+                        />
+                        <span>{service.name}</span>
+                      </label>
+                    ))
+                  )}
+                  {!!selectedServiceIds.length && (
+                    <div className="field">
+                      <label htmlFor="staff-primary">Primary service</label>
+                      <select
+                        id="staff-primary"
+                        value={primaryServiceId || ""}
+                        onChange={(event) =>
+                          setValue("primaryServiceId", event.target.value)
+                        }
+                      >
+                        {services
+                          .filter((service) =>
+                            selectedServiceIds.includes(service.id),
+                          )
+                          .map((service) => (
+                            <option value={service.id} key={service.id}>
+                              {service.name}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           )}
-
-          {/* Action Buttons */}
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-zinc-200">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-3 py-1.5 rounded-lg text-xs text-zinc-500 hover:text-black transition"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={createMutation.isPending}
-              className="px-3.5 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 text-xs font-medium transition disabled:opacity-40 flex items-center gap-2 shadow-xs"
-            >
-              {createMutation.isPending ? (
-                <>
-                  <Loader2 className="w-3 h-3 animate-spin" />
-                  <span>Creating...</span>
-                </>
-              ) : (
-                <span>Save Staff</span>
-              )}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+          {step === 2 && (
+            <div className="space-y-5">
+              <dl className="review-list">
+                {[
+                  ["Name", values.fullName],
+                  ["Email", values.email],
+                  ["Phone", values.phone],
+                  [
+                    "Role",
+                    ROLES.find((role) => role.value === selectedRole)?.label,
+                  ],
+                  [
+                    "Services",
+                    selectedRole === "SERVICE_COORDINATOR"
+                      ? services
+                          .filter((service) =>
+                            selectedServiceIds.includes(service.id),
+                          )
+                          .map((service) => service.name)
+                          .join(", ")
+                      : "Based on role",
+                  ],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <dt>{label}</dt>
+                    <dd>{value}</dd>
+                  </div>
+                ))}
+              </dl>
+              <div className="notice">
+                The team member can sign in using the email and password you
+                entered. Share their details with them securely.
+              </div>
+            </div>
+          )}
+        </fieldset>
+      </form>
+    </Modal>
   );
 };

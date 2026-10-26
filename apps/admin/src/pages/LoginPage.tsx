@@ -5,14 +5,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@flyora/validators";
 import { loginDestination } from "../routes/GuestRoute";
 import { login } from "../lib/apiClient";
-import {
-  Eye,
-  EyeOff,
-  AlertCircle,
-  Loader2,
-  ArrowRight,
-  Compass,
-} from "lucide-react";
+import { userMessage } from "../lib/userMessage";
+import { FormError } from "../components/ui/Modal";
+import { Eye, EyeOff, Loader2, ArrowRight, Compass } from "lucide-react";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -35,6 +30,7 @@ export const LoginPage = () => {
   });
 
   const onSubmit = async (data: LoginInput) => {
+    if (isLoading) return;
     setIsLoading(true);
     setErrorMessage(null);
 
@@ -45,8 +41,9 @@ export const LoginPage = () => {
       navigate(from, { replace: true });
     } catch (err: any) {
       setErrorMessage(
-        err.message ||
-          "Invalid credentials. Please verify your email and password.",
+        err?.statusCode === 401
+          ? "Check your email and password, then try again."
+          : userMessage(err, "We couldn't sign you in. Please try again."),
       );
     } finally {
       setIsLoading(false);
@@ -54,130 +51,87 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F8F6] text-zinc-900 flex flex-col justify-center items-center px-4 py-12">
-      <div className="max-w-sm w-full space-y-6">
-        {/* Brand Header */}
-        <div className="text-left space-y-2">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-black text-white flex items-center justify-center">
-              <Compass className="w-4 h-4 stroke-[1.5]" />
-            </div>
-            <span className="text-sm font-semibold tracking-tight text-zinc-900">
-              Flyora
-            </span>
-          </div>
-          <div>
-            <h1 className="text-xl font-medium tracking-tight text-zinc-900">
-              Staff Portal
-            </h1>
-            <p className="text-xs text-zinc-500 mt-0.5">
-              Enter your credentials to access operations.
-            </p>
-          </div>
+    <main className="login-screen">
+      <div className="login-card">
+        <div className="login-brand">
+          <span className="brand-mark">
+            <Compass size={20} />
+          </span>
+          Flyora
         </div>
-
-        {/* Card */}
-        <div className="bg-white border border-zinc-200/90 rounded-xl p-6 sm:p-7 shadow-sm">
-          {errorMessage && (
-            <div className="mb-5 p-3 rounded-lg bg-zinc-50 border border-zinc-200 text-zinc-800 text-xs flex items-start gap-2.5">
-              <AlertCircle className="w-4 h-4 text-zinc-600 shrink-0 mt-0.5" />
-              <div className="flex-1 leading-relaxed text-zinc-700">
-                {errorMessage}
-              </div>
-            </div>
-          )}
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-            {/* Email Field */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="email"
-                className="block text-xs font-medium text-zinc-600"
-              >
-                Email
-              </label>
+        <h1>Welcome back</h1>
+        <p className="subtitle">Sign in to your staff workspace.</p>
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
+          {errorMessage && <FormError>{errorMessage}</FormError>}
+          <div className="field">
+            <label htmlFor="email">Email address</label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="username"
+              placeholder="you@flyora.com"
+              {...register("email")}
+              aria-invalid={!!errors.email}
+              aria-describedby={errors.email ? "email-error" : undefined}
+            />
+            {errors.email && (
+              <p id="email-error" className="text-xs text-rose-700">
+                Enter a valid email address.
+              </p>
+            )}
+          </div>
+          <div className="field">
+            <label htmlFor="password">Password</label>
+            <div className="relative">
               <input
-                id="email"
-                type="email"
-                {...register("email")}
-                placeholder="name@flyora.com"
-                autoComplete="email"
-                className={`w-full px-3 py-2 bg-[#FBFBFA] border rounded-lg text-xs text-zinc-900 placeholder-zinc-400 transition focus:outline-none focus:border-black focus:bg-white ${
-                  errors.email ? "border-zinc-500" : "border-zinc-200"
-                }`}
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                {...register("password")}
+                className="pr-12"
+                aria-invalid={!!errors.password}
+                aria-describedby={
+                  errors.password ? "password-error" : undefined
+                }
               />
-              {errors.email && (
-                <p className="text-[11px] text-zinc-600">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="password"
-                className="block text-xs font-medium text-zinc-600"
+              <button
+                type="button"
+                className="icon-button absolute right-1 top-1"
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                aria-pressed={showPassword}
+                onClick={() => setShowPassword(!showPassword)}
               >
-                Password
-              </label>
-              <div className="relative">
-                <input
-                  id="password"
-                  type={showPassword ? "text" : "password"}
-                  {...register("password")}
-                  placeholder="••••••••••••"
-                  autoComplete="current-password"
-                  className={`w-full pl-3 pr-9 py-2 bg-[#FBFBFA] border rounded-lg text-xs text-zinc-900 placeholder-zinc-400 transition focus:outline-none focus:border-black focus:bg-white ${
-                    errors.password ? "border-zinc-500" : "border-zinc-200"
-                  }`}
-                />
-                <button
-                  type="button"
-                  aria-label={showPassword ? "Hide password" : "Show password"}
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-2.5 flex items-center text-zinc-400 hover:text-zinc-700"
-                >
-                  {showPassword ? (
-                    <EyeOff className="w-3.5 h-3.5" />
-                  ) : (
-                    <Eye className="w-3.5 h-3.5" />
-                  )}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-[11px] text-zinc-600">
-                  {errors.password.message}
-                </p>
-              )}
+                {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
+              </button>
             </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full mt-3 py-2.5 px-4 bg-black text-white hover:bg-zinc-800 font-medium text-xs rounded-lg transition disabled:opacity-40 flex items-center justify-center gap-2 shadow-xs"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  <span>Signing in...</span>
-                </>
-              ) : (
-                <>
-                  <span>Sign In</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </>
-              )}
-            </button>
-          </form>
-        </div>
-
-        {/* Footer */}
-        <p className="text-center text-[11px] text-zinc-400">
-          Flyora Travels • Staff Operations
+            {errors.password && (
+              <p id="password-error" className="text-xs text-rose-700">
+                Enter your password.
+              </p>
+            )}
+          </div>
+          <button className="button-primary" type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <>
+                <Loader2 size={16} className="animate-spin" />
+                Signing in…
+              </>
+            ) : (
+              <>
+                Sign in <ArrowRight size={16} />
+              </>
+            )}
+          </button>
+        </form>
+        <p className="login-footnote">
+          Need access or help with your password?
+          <br />
+          Contact your Flyora manager.
         </p>
       </div>
-    </div>
+      <p className="text-xs text-slate-400 mt-16">
+        Flyora Travels · Staff workspace
+      </p>
+    </main>
   );
 };
