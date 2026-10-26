@@ -1,3 +1,10 @@
+import { enquiryStageFromUrl } from "../../lib/enquiryFilters";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { EnquiryCard } from "../../components/leads/EnquiryCard";
+import { useAuthStore } from "../../stores/authStore";
+import { isFollowUpDue } from "../../lib/followUps";
+import { EnquiryNavigation } from "../../components/leads/EnquiryNavigation";
+import { userMessage } from "../../lib/userMessage";
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -6,7 +13,6 @@ import { leadsApi } from "../../lib/leadsApi";
 import { apiClient } from "../../lib/apiClient";
 import { LeadDetailDrawer } from "./components/LeadDetailDrawer";
 import {
-  Layers,
   Inbox,
   Zap,
   Search,
@@ -27,7 +33,7 @@ import {
 } from "lucide-react";
 
 const STAGES: { key: string; label: string; dotClass: string }[] = [
-  { key: "ALL", label: "All Active", dotClass: "bg-zinc-400" },
+  { key: "ALL", label: "All", dotClass: "bg-zinc-400" },
   { key: "NEW", label: "New", dotClass: "bg-blue-500" },
   { key: "CONTACTED", label: "Contacted", dotClass: "bg-amber-500" },
   { key: "QUOTED", label: "Quoted", dotClass: "bg-purple-500" },
@@ -39,6 +45,10 @@ const STAGES: { key: string; label: string; dotClass: string }[] = [
 export const CoordinatorLeadsPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const queryClient = useQueryClient();
+  const mobile = useMediaQuery("(max-width: 767px)");
+  const user = useAuthStore((state) => state.user);
+  const manager =
+    user?.role === "SUPER_ADMIN" || user?.role === "OPERATIONS_MANAGER";
 
   // Active tab derived from URL query: "pool" | "my-leads"
   const currentTab =
@@ -48,11 +58,19 @@ export const CoordinatorLeadsPage = () => {
   };
 
   // Filter states for "My Leads"
-  const [selectedStage, setSelectedStage] = useState<string>("ALL");
+  const selectedStage =
+    enquiryStageFromUrl(searchParams.get("status")) || "ALL";
+  const setSelectedStage = (value: string) =>
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous);
+      if (value === "ALL") next.delete("status");
+      else next.set("status", value);
+      return next;
+    });
   const [searchQuery, setSearchQuery] = useState("");
   const [followUpTodayOnly, setFollowUpTodayOnly] = useState(false);
 
-  // Filter states for "Service Pool"
+  // Filter states for "Available enquiries"
   const [selectedServiceId, setSelectedServiceId] = useState<string>("");
 
   // Drawer state
@@ -79,6 +97,7 @@ export const CoordinatorLeadsPage = () => {
   const {
     data: poolLeads = [],
     isLoading: isLoadingPool,
+    error: poolError,
     refetch: refetchPool,
   } = useQuery<LeadItem[]>({
     queryKey: ["leads", "pool", selectedServiceId],
@@ -90,6 +109,7 @@ export const CoordinatorLeadsPage = () => {
   const {
     data: myLeads = [],
     isLoading: isLoadingMyLeads,
+    error: myLeadsError,
     refetch: refetchMyLeads,
   } = useQuery<LeadItem[]>({
     queryKey: ["leads", "my-leads", selectedStage, searchQuery],
@@ -101,7 +121,11 @@ export const CoordinatorLeadsPage = () => {
   });
 
   // Query: Selected Lead Activities for Drawer
-  const { data: leadActivities = [] } = useQuery({
+  const {
+    data: leadActivities = [],
+    error: activitiesError,
+    refetch: refetchActivities,
+  } = useQuery({
     queryKey: ["leads", selectedLeadId, "activities"],
     queryFn: () =>
       selectedLeadId
@@ -139,14 +163,17 @@ export const CoordinatorLeadsPage = () => {
       }
       showToast(
         "error",
-        err.message || "Another coordinator just claimed this lead.",
+        userMessage(
+          err,
+          "We couldn't take this enquiry. Please refresh and try again.",
+        ),
       );
       refetchPool();
     },
     onSuccess: (data) => {
       showToast(
         "success",
-        `⚡ Lead for ${data.lead.customer.fullName} claimed! Moved to My Leads.`,
+        `Enquiry for ${data.lead.customer.fullName} moved to My enquiries.`,
       );
       queryClient.invalidateQueries({ queryKey: ["leads"] });
     },
@@ -157,7 +184,10 @@ export const CoordinatorLeadsPage = () => {
     mutationFn: ({ leadId, status }: { leadId: string; status: LeadStatus }) =>
       leadsApi.updateLeadStatus(leadId, status),
     onSuccess: (updated) => {
-      showToast("success", `Stage updated to ${updated.status}.`);
+      showToast(
+        "success",
+        `Stage updated to ${STAGES.find((stage) => stage.key === updated.status)?.label || "the selected stage"}.`,
+      );
       queryClient.invalidateQueries({ queryKey: ["leads", "my-leads"] });
       queryClient.invalidateQueries({
         queryKey: ["leads", selectedLeadId, "activities"],
@@ -189,11 +219,7 @@ export const CoordinatorLeadsPage = () => {
   const filteredMyLeads = useMemo(() => {
     let list = myLeads;
     if (followUpTodayOnly) {
-      const todayStr = new Date().toDateString();
-      list = list.filter((l) => {
-        if (!l.followUpDate) return false;
-        return new Date(l.followUpDate).toDateString() === todayStr;
-      });
+      list = list.filter((lead) => isFollowUpDue(lead));
     }
     return list;
   }, [myLeads, followUpTodayOnly]);
@@ -208,18 +234,9 @@ export const CoordinatorLeadsPage = () => {
     );
   }, [selectedLeadId, myLeads, poolLeads]);
 
-  // Metrics
-  const poolCount = poolLeads.length;
-  const activeMyLeadsCount = myLeads.filter(
-    (l) => l.status !== "BOOKED" && l.status !== "LOST",
+  const followUpTodayCount = myLeads.filter((lead) =>
+    isFollowUpDue(lead),
   ).length;
-  const followUpTodayCount = myLeads.filter((l) => {
-    if (!l.followUpDate) return false;
-    return (
-      new Date(l.followUpDate).toDateString() === new Date().toDateString()
-    );
-  }).length;
-  const bookedCount = myLeads.filter((l) => l.status === "BOOKED").length;
 
   return (
     <div className="space-y-6">
@@ -252,191 +269,56 @@ export const CoordinatorLeadsPage = () => {
         </div>
       )}
 
-      {/* Header Banner */}
-      <div className="bg-white border border-zinc-200/90 rounded-xl p-6 sm:p-7 shadow-xs">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 text-zinc-400 font-mono text-[10px] uppercase tracking-wider mb-2">
-              <span>Coordinator</span>
-              <span>/</span>
-              <span>Leads Workspace</span>
-            </div>
-            <h1 className="text-xl sm:text-2xl font-medium tracking-tight text-zinc-900">
-              Leads Pipeline & Claim Pool
-            </h1>
-            <p className="text-xs text-zinc-600 mt-1.5 leading-relaxed">
-              Claim fresh customer enquiries for your assigned travel services,
-              manage follow-ups, and log client requirements.
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => {
-                refetchPool();
-                refetchMyLeads();
-              }}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-zinc-200 bg-[#F6F6F3] text-xs font-medium text-zinc-700 hover:border-zinc-300 transition"
-              title="Refresh leads data"
-            >
-              <RotateCcw className="w-3.5 h-3.5 text-zinc-500" />
-              <span>Refresh</span>
-            </button>
-          </div>
-        </div>
-
-        {/* 4 Key Metric Cards */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-6 pt-6 border-t border-zinc-100">
-          <div
-            onClick={() => setTab("pool")}
-            className="cursor-pointer p-4 rounded-xl bg-[#F8F8F6] border border-zinc-200/80 hover:border-zinc-300 transition"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-zinc-500">
-                Service Pool
-              </span>
-              <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-            </div>
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-2xl font-semibold font-mono text-zinc-900">
-                {poolCount}
-              </span>
-              <span className="text-[11px] font-mono text-zinc-500">
-                unclaimed
-              </span>
-            </div>
-          </div>
-
-          <div
-            onClick={() => setTab("my-leads")}
-            className="cursor-pointer p-4 rounded-xl bg-[#F8F8F6] border border-zinc-200/80 hover:border-zinc-300 transition"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-zinc-500">
-                My Active Leads
-              </span>
-              <Inbox className="w-3.5 h-3.5 text-zinc-400" />
-            </div>
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-2xl font-semibold font-mono text-zinc-900">
-                {activeMyLeadsCount}
-              </span>
-              <span className="text-[11px] font-mono text-zinc-500">
-                in progress
-              </span>
-            </div>
-          </div>
-
-          <div
-            onClick={() => {
-              setTab("my-leads");
-              setFollowUpTodayOnly(true);
-            }}
-            className="cursor-pointer p-4 rounded-xl bg-[#F8F8F6] border border-zinc-200/80 hover:border-zinc-300 transition"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-zinc-500">
-                Follow-Up Today
-              </span>
-              <Clock className="w-3.5 h-3.5 text-amber-500" />
-            </div>
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-2xl font-semibold font-mono text-amber-600">
-                {followUpTodayCount}
-              </span>
-              <span className="text-[11px] font-mono text-zinc-500">due</span>
-            </div>
-          </div>
-
-          <div
-            onClick={() => {
-              setTab("my-leads");
-              setSelectedStage("BOOKED");
-            }}
-            className="cursor-pointer p-4 rounded-xl bg-[#F8F8F6] border border-zinc-200/80 hover:border-zinc-300 transition"
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono text-zinc-500">
-                Won / Booked
-              </span>
-              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-            </div>
-            <div className="flex items-baseline gap-2 mt-2">
-              <span className="text-2xl font-semibold font-mono text-emerald-600">
-                {bookedCount}
-              </span>
-              <span className="text-[11px] font-mono text-zinc-500">
-                converted
-              </span>
-            </div>
-          </div>
-        </div>
+      <div className="page-heading flex items-center justify-between gap-4">
+        <h1>Enquiries</h1>
+        <button
+          className="icon-button"
+          aria-label="Refresh enquiries"
+          title="Refresh enquiries"
+          onClick={() => {
+            void refetchPool();
+            void refetchMyLeads();
+          }}
+        >
+          <RotateCcw size={17} aria-hidden="true" />
+        </button>
       </div>
+      <EnquiryNavigation />
 
-      {/* Primary Tab Navigation */}
-      <div className="flex items-center justify-between border-b border-zinc-200">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setTab("pool")}
-            className={`inline-flex items-center gap-2 px-4 py-3 text-xs font-medium border-b-2 transition ${
-              currentTab === "pool"
-                ? "border-black text-black font-semibold"
-                : "border-transparent text-zinc-500 hover:text-zinc-900"
-            }`}
-          >
-            <Layers className="w-4 h-4" />
-            <span>Service Pool (Available to Claim)</span>
-            {poolCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-blue-100 text-blue-700 text-[10px] font-mono font-semibold">
-                {poolCount}
-              </span>
-            )}
-          </button>
-
-          <button
-            onClick={() => setTab("my-leads")}
-            className={`inline-flex items-center gap-2 px-4 py-3 text-xs font-medium border-b-2 transition ${
-              currentTab === "my-leads"
-                ? "border-black text-black font-semibold"
-                : "border-transparent text-zinc-500 hover:text-zinc-900"
-            }`}
-          >
-            <Inbox className="w-4 h-4" />
-            <span>My Active Pipeline</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-zinc-100 text-zinc-700 text-[10px] font-mono font-medium">
-              {myLeads.length}
-            </span>
-          </button>
-        </div>
-      </div>
-
-      {/* TAB CONTENT 1: Service Pool */}
+      {/* TAB CONTENT 1: Available enquiries */}
       {currentTab === "pool" && (
         <div className="space-y-4">
           {/* Service Filter Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white p-3 rounded-xl border border-zinc-200/90 shadow-xs">
             <div className="flex items-center gap-2">
               <Filter className="w-3.5 h-3.5 text-zinc-400" />
-              <span className="text-xs font-medium text-zinc-700">
-                Filter by Service:
-              </span>
+              <span className="text-xs font-medium text-zinc-700">Service</span>
               <select
+                aria-label="Filter available enquiries by service"
                 value={selectedServiceId}
                 onChange={(e) => setSelectedServiceId(e.target.value)}
                 className="text-xs bg-[#F8F8F6] border border-zinc-200 rounded-lg px-2.5 py-1 text-zinc-800 font-medium focus:outline-hidden"
               >
-                <option value="">All My Services</option>
-                {services.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
+                <option value="">All services</option>
+                {services
+                  .filter(
+                    (service) =>
+                      manager ||
+                      user?.services?.some(
+                        (mapping) => mapping.serviceId === service.id,
+                      ),
+                  )
+                  .map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
               </select>
             </div>
 
             <div className="flex items-center gap-2 text-zinc-400 text-[11px] font-mono">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-              <span>Live Queue • Auto-updates</span>
+              <span>Updates automatically</span>
             </div>
           </div>
 
@@ -444,9 +326,22 @@ export const CoordinatorLeadsPage = () => {
           {isLoadingPool ? (
             <div className="bg-white border border-zinc-200 rounded-xl p-12 text-center">
               <Loader2 className="w-6 h-6 animate-spin text-zinc-400 mx-auto" />
-              <p className="text-xs text-zinc-500 mt-2">
-                Checking pool for fresh leads...
+              <p className="text-xs text-zinc-500 mt-2">Loading enquiries…</p>
+            </div>
+          ) : poolError ? (
+            <div className="notice notice-error" role="alert">
+              <p>
+                {userMessage(
+                  poolError,
+                  "We couldn't load the enquiries. Please try again.",
+                )}
               </p>
+              <button
+                className="button-secondary mt-3"
+                onClick={() => void refetchPool()}
+              >
+                Try again
+              </button>
             </div>
           ) : poolLeads.length === 0 ? (
             <div className="bg-white border border-zinc-200 rounded-xl p-12 text-center">
@@ -454,12 +349,10 @@ export const CoordinatorLeadsPage = () => {
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
               </div>
               <h3 className="text-sm font-medium text-zinc-900 mt-3">
-                All Caught Up!
+                No available enquiries
               </h3>
               <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
-                No unassigned leads in the pool right now. New customer
-                enquiries from the website or WhatsApp will appear here
-                automatically.
+                New enquiries will appear here.
               </p>
             </div>
           ) : (
@@ -551,10 +444,10 @@ export const CoordinatorLeadsPage = () => {
                       </div>
                     </div>
 
-                    {/* Bottom Action: "Take Lead" button */}
+                    {/* Bottom Action: "Take enquiry" button */}
                     <div className="mt-5 pt-3 border-t border-zinc-100 flex items-center justify-between">
                       <span className="text-[10px] font-mono text-zinc-400">
-                        First coordinator to claim gets it
+                        Available for your team
                       </span>
 
                       <button
@@ -567,7 +460,7 @@ export const CoordinatorLeadsPage = () => {
                         ) : (
                           <Zap className="w-3.5 h-3.5 text-amber-300" />
                         )}
-                        <span>Take Lead</span>
+                        <span>Take enquiry</span>
                       </button>
                     </div>
                   </div>
@@ -578,94 +471,67 @@ export const CoordinatorLeadsPage = () => {
         </div>
       )}
 
-      {/* TAB CONTENT 2: My Active Leads */}
+      {/* TAB CONTENT 2: My enquiries */}
       {currentTab === "my-leads" && (
         <div className="space-y-4">
-          {/* Stage Filter Bar */}
-          <div className="flex flex-wrap items-center gap-1.5 bg-white p-2 rounded-xl border border-zinc-200/90 shadow-xs">
-            {STAGES.map((s) => {
-              const count =
-                s.key === "ALL"
-                  ? myLeads.length
-                  : myLeads.filter((l) => l.status === s.key).length;
-              const isSelected = selectedStage === s.key;
-
-              return (
-                <button
-                  key={s.key}
-                  onClick={() => setSelectedStage(s.key)}
-                  className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs transition ${
-                    isSelected
-                      ? "bg-black text-white font-medium shadow-xs"
-                      : "text-zinc-600 hover:text-black hover:bg-zinc-100"
-                  }`}
-                >
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full ${s.dotClass} ${
-                      isSelected ? "bg-white" : ""
-                    }`}
-                  />
-                  <span>{s.label}</span>
-                  <span
-                    className={`text-[10px] font-mono px-1 rounded ${
-                      isSelected
-                        ? "bg-white/20 text-white"
-                        : "bg-zinc-100 text-zinc-500"
-                    }`}
-                  >
-                    {count}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Search & Quick Filter Controls */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <div className="relative flex-1 max-w-md">
-              <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <div className="enquiry-toolbar">
+            <div className="relative flex-1 min-w-0">
+              <Search
+                className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2"
+                aria-hidden="true"
+              />
               <input
-                type="text"
+                aria-label="Search enquiries"
+                type="search"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by customer name, phone, or destination..."
-                className="w-full text-xs pl-8 pr-3 py-2 bg-white border border-zinc-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-black placeholder:text-zinc-400 shadow-xs"
+                onChange={(event) => setSearchQuery(event.target.value)}
+                placeholder="Search name or phone"
+                className="w-full pl-10 pr-3 py-2 border rounded-lg bg-white"
               />
             </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setFollowUpTodayOnly(!followUpTodayOnly)}
-                className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-medium transition shadow-xs ${
-                  followUpTodayOnly
-                    ? "bg-amber-500 text-white border-amber-600"
-                    : "bg-white text-zinc-700 border-zinc-200 hover:bg-zinc-50"
-                }`}
-              >
-                <Clock className="w-3.5 h-3.5" />
-                <span>Follow-Up Due Today</span>
-                {followUpTodayCount > 0 && (
-                  <span
-                    className={`text-[10px] font-mono px-1 rounded ${
-                      followUpTodayOnly
-                        ? "bg-amber-700 text-white"
-                        : "bg-zinc-100 text-zinc-600"
-                    }`}
-                  >
-                    {followUpTodayCount}
-                  </span>
-                )}
-              </button>
-            </div>
+            <select
+              aria-label="Enquiry stage filter"
+              value={selectedStage}
+              onChange={(event) => setSelectedStage(event.target.value)}
+            >
+              {STAGES.map((stage) => (
+                <option key={stage.key} value={stage.key}>
+                  {stage.key === "ALL" ? "Any stage" : stage.label}
+                </option>
+              ))}
+            </select>
+            <button
+              className={`button-secondary ${followUpTodayOnly ? "due-filter-selected" : ""}`}
+              aria-pressed={followUpTodayOnly}
+              onClick={() => setFollowUpTodayOnly(!followUpTodayOnly)}
+            >
+              <Clock size={15} aria-hidden="true" />
+              Follow-ups due
+              {!isLoadingMyLeads && !myLeadsError && followUpTodayCount > 0
+                ? ` (${followUpTodayCount})`
+                : ""}
+            </button>
           </div>
 
-          {/* My Leads Table */}
           {isLoadingMyLeads ? (
             <div className="bg-white border border-zinc-200 rounded-xl p-12 text-center">
               <Loader2 className="w-6 h-6 animate-spin text-zinc-400 mx-auto" />
-              <p className="text-xs text-zinc-500 mt-2">
-                Loading your active leads...
+              <p className="text-xs text-zinc-500 mt-2">Loading enquiries…</p>
+            </div>
+          ) : myLeadsError ? (
+            <div className="notice notice-error" role="alert">
+              <p>
+                {userMessage(
+                  myLeadsError,
+                  "We couldn't load your enquiries. Please try again.",
+                )}
               </p>
+              <button
+                className="button-secondary mt-3"
+                onClick={() => void refetchMyLeads()}
+              >
+                Try again
+              </button>
             </div>
           ) : filteredMyLeads.length === 0 ? (
             <div className="bg-white border border-zinc-200 rounded-xl p-12 text-center">
@@ -673,166 +539,177 @@ export const CoordinatorLeadsPage = () => {
                 <Inbox className="w-5 h-5" />
               </div>
               <h3 className="text-sm font-medium text-zinc-900 mt-3">
-                No Leads Found
+                No matching enquiries
               </h3>
               <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
-                No claimed leads match your current filter. Switch to the
-                Service Pool to claim fresh enquiries.
+                Try another filter or choose an available enquiry.
               </p>
               <button
                 onClick={() => setTab("pool")}
                 className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 text-xs font-medium transition shadow-xs"
               >
-                <span>Check Service Pool</span>
+                <span>View available</span>
                 <ArrowRight className="w-3 h-3" />
               </button>
             </div>
           ) : (
             <div className="bg-white border border-zinc-200/90 rounded-xl overflow-hidden shadow-xs">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#F8F8F6] border-b border-zinc-200/90 text-zinc-500 font-mono text-[10px] uppercase tracking-wider">
-                    <tr>
-                      <th className="py-3 px-4">Customer</th>
-                      <th className="py-3 px-4">Service / Package</th>
-                      <th className="py-3 px-4">Stage</th>
-                      <th className="py-3 px-4">Follow-Up</th>
-                      <th className="py-3 px-4">Direct Contact</th>
-                      <th className="py-3 px-4 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-zinc-100">
-                    {filteredMyLeads.map((lead) => {
-                      const cleanPhone = lead.customer.phone.replace(
-                        /[^0-9]/g,
-                        "",
-                      );
-                      const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
-                        `Hello ${lead.customer.fullName}, this is Flyora Travels regarding your ${
-                          lead.packageTitle || lead.serviceName
-                        } enquiry.`,
-                      )}`;
+              {mobile ? (
+                <div className="mobile-enquiry-list">
+                  {filteredMyLeads.map((lead) => (
+                    <EnquiryCard
+                      key={lead.id}
+                      lead={lead}
+                      onOpen={() => setSelectedLeadId(lead.id)}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="enquiry-desktop-table overflow-x-auto">
+                  <table className="w-full text-left text-xs">
+                    <thead className="bg-[#F8F8F6] border-b border-zinc-200/90 text-zinc-500 font-mono text-[10px] uppercase tracking-wider">
+                      <tr>
+                        <th className="py-3 px-4">Customer</th>
+                        <th className="py-3 px-4">Service / Package</th>
+                        <th className="py-3 px-4">Stage</th>
+                        <th className="py-3 px-4">Follow-Up</th>
+                        <th className="py-3 px-4">Direct Contact</th>
+                        <th className="py-3 px-4 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-zinc-100">
+                      {filteredMyLeads.map((lead) => {
+                        const cleanPhone = lead.customer.phone.replace(
+                          /[^0-9]/g,
+                          "",
+                        );
+                        const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(
+                          `Hello ${lead.customer.fullName}, this is Flyora Travels regarding your ${
+                            lead.packageTitle || lead.serviceName
+                          } enquiry.`,
+                        )}`;
 
-                      const isFollowUpDueToday =
-                        lead.followUpDate &&
-                        new Date(lead.followUpDate).toDateString() ===
-                          new Date().toDateString();
+                        const isFollowUpDueToday =
+                          lead.followUpDate &&
+                          new Date(lead.followUpDate).toDateString() ===
+                            new Date().toDateString();
 
-                      return (
-                        <tr
-                          key={lead.id}
-                          className="hover:bg-[#FBFBFA] transition cursor-pointer"
-                          onClick={() => setSelectedLeadId(lead.id)}
-                        >
-                          {/* Customer */}
-                          <td className="py-3 px-4">
-                            <p className="font-medium text-zinc-900">
-                              {lead.customer.fullName}
-                            </p>
-                            <p className="text-[11px] font-mono text-zinc-400 mt-0.5">
-                              {lead.customer.phone}
-                            </p>
-                          </td>
-
-                          {/* Service */}
-                          <td className="py-3 px-4">
-                            <span className="font-medium text-zinc-800 block">
-                              {lead.serviceName}
-                            </span>
-                            {lead.packageTitle && (
-                              <span className="text-[11px] text-zinc-500 block truncate max-w-[200px]">
-                                {lead.packageTitle}
-                              </span>
-                            )}
-                          </td>
-
-                          {/* Stage */}
-                          <td className="py-3 px-4">
-                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-zinc-100 text-zinc-700">
-                              <span
-                                className={`w-1.5 h-1.5 rounded-full ${
-                                  lead.status === "BOOKED"
-                                    ? "bg-emerald-500"
-                                    : lead.status === "CONTACTED"
-                                      ? "bg-amber-500"
-                                      : lead.status === "QUOTED"
-                                        ? "bg-purple-500"
-                                        : lead.status === "NEGOTIATING"
-                                          ? "bg-indigo-500"
-                                          : lead.status === "NEW"
-                                            ? "bg-blue-500"
-                                            : "bg-zinc-400"
-                                }`}
-                              />
-                              {lead.status}
-                            </span>
-                          </td>
-
-                          {/* Follow-up */}
-                          <td className="py-3 px-4 font-mono text-[11px]">
-                            {lead.followUpDate ? (
-                              <span
-                                className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded ${
-                                  isFollowUpDueToday
-                                    ? "bg-amber-100 text-amber-800 font-semibold"
-                                    : "text-zinc-600"
-                                }`}
-                              >
-                                <Clock className="w-3 h-3 text-zinc-400" />
-                                {new Date(
-                                  lead.followUpDate,
-                                ).toLocaleDateString()}
-                                {isFollowUpDueToday && " (Today)"}
-                              </span>
-                            ) : (
-                              <span className="text-zinc-400">—</span>
-                            )}
-                          </td>
-
-                          {/* Direct Contact Buttons */}
-                          <td
-                            className="py-3 px-4"
-                            onClick={(e) => e.stopPropagation()}
+                        return (
+                          <tr
+                            key={lead.id}
+                            className="hover:bg-[#FBFBFA] transition cursor-pointer"
+                            onClick={() => setSelectedLeadId(lead.id)}
                           >
-                            <div className="flex items-center gap-1.5">
-                              <a
-                                href={`tel:${cleanPhone}`}
-                                title={`Call ${lead.customer.phone}`}
-                                className="p-1.5 rounded-md text-emerald-600 hover:bg-emerald-50 transition border border-emerald-200"
-                              >
-                                <Phone className="w-3.5 h-3.5" />
-                              </a>
-                              <a
-                                href={whatsappUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                title="Open WhatsApp chat"
-                                className="p-1.5 rounded-md text-zinc-700 hover:bg-zinc-100 transition border border-zinc-200"
-                              >
-                                <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-                              </a>
-                            </div>
-                          </td>
+                            {/* Customer */}
+                            <td className="py-3 px-4">
+                              <p className="font-medium text-zinc-900">
+                                {lead.customer.fullName}
+                              </p>
+                              <p className="text-[11px] font-mono text-zinc-400 mt-0.5">
+                                {lead.customer.phone}
+                              </p>
+                            </td>
 
-                          {/* Action Button */}
-                          <td className="py-3 px-4 text-right">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setSelectedLeadId(lead.id);
-                              }}
-                              className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium text-zinc-600 hover:text-black hover:bg-zinc-100 transition"
+                            {/* Service */}
+                            <td className="py-3 px-4">
+                              <span className="font-medium text-zinc-800 block">
+                                {lead.serviceName}
+                              </span>
+                              {lead.packageTitle && (
+                                <span className="text-[11px] text-zinc-500 block truncate max-w-[200px]">
+                                  {lead.packageTitle}
+                                </span>
+                              )}
+                            </td>
+
+                            {/* Stage */}
+                            <td className="py-3 px-4">
+                              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-mono font-medium bg-zinc-100 text-zinc-700">
+                                <span
+                                  className={`w-1.5 h-1.5 rounded-full ${
+                                    lead.status === "BOOKED"
+                                      ? "bg-emerald-500"
+                                      : lead.status === "CONTACTED"
+                                        ? "bg-amber-500"
+                                        : lead.status === "QUOTED"
+                                          ? "bg-purple-500"
+                                          : lead.status === "NEGOTIATING"
+                                            ? "bg-indigo-500"
+                                            : lead.status === "NEW"
+                                              ? "bg-blue-500"
+                                              : "bg-zinc-400"
+                                  }`}
+                                />
+                                {lead.status}
+                              </span>
+                            </td>
+
+                            {/* Follow-up */}
+                            <td className="py-3 px-4 font-mono text-[11px]">
+                              {lead.followUpDate ? (
+                                <span
+                                  className={`inline-flex items-center gap-1 px-1.5 py-0.5 rounded ${
+                                    isFollowUpDueToday
+                                      ? "bg-amber-100 text-amber-800 font-semibold"
+                                      : "text-zinc-600"
+                                  }`}
+                                >
+                                  <Clock className="w-3 h-3 text-zinc-400" />
+                                  {new Date(
+                                    lead.followUpDate,
+                                  ).toLocaleDateString()}
+                                  {isFollowUpDueToday && " (Today)"}
+                                </span>
+                              ) : (
+                                <span className="text-zinc-400">—</span>
+                              )}
+                            </td>
+
+                            {/* Direct Contact Buttons */}
+                            <td
+                              className="py-3 px-4"
+                              onClick={(e) => e.stopPropagation()}
                             >
-                              <span>Details</span>
-                              <ChevronRight className="w-3 h-3" />
-                            </button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
+                              <div className="flex items-center gap-1.5">
+                                <a
+                                  href={`tel:${cleanPhone}`}
+                                  title={`Call ${lead.customer.phone}`}
+                                  className="p-1.5 rounded-md text-emerald-600 hover:bg-emerald-50 transition border border-emerald-200"
+                                >
+                                  <Phone className="w-3.5 h-3.5" />
+                                </a>
+                                <a
+                                  href={whatsappUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  title="Open WhatsApp chat"
+                                  className="p-1.5 rounded-md text-zinc-700 hover:bg-zinc-100 transition border border-zinc-200"
+                                >
+                                  <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
+                                </a>
+                              </div>
+                            </td>
+
+                            {/* Action Button */}
+                            <td className="py-3 px-4 text-right">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setSelectedLeadId(lead.id);
+                                }}
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium text-zinc-600 hover:text-black hover:bg-zinc-100 transition"
+                              >
+                                <span>Details</span>
+                                <ChevronRight className="w-3 h-3" />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -842,8 +719,14 @@ export const CoordinatorLeadsPage = () => {
       <LeadDetailDrawer
         lead={selectedLead}
         activities={leadActivities}
+        activityUnavailable={!!activitiesError}
+        onRetryActivities={() => void refetchActivities()}
         isOpen={!!selectedLeadId}
         onClose={() => setSelectedLeadId(null)}
+        onChanged={() => {
+          void queryClient.invalidateQueries({ queryKey: ["leads"] });
+          void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+        }}
         onUpdateStatus={async (newStatus) => {
           if (!selectedLeadId) return;
           await statusMutation.mutateAsync({

@@ -121,7 +121,7 @@ it("does not close or show success when reassignment fails", async () => {
   );
   expect(await screen.findByRole("alert")).toHaveProperty(
     "textContent",
-    "Transfer failed",
+    "Failed to reassign lead",
   );
   expect(onClose).not.toHaveBeenCalled();
   expect(onSuccess).not.toHaveBeenCalled();

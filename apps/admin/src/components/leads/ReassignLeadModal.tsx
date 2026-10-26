@@ -1,3 +1,4 @@
+import { userMessage } from "../../lib/userMessage";
 import React, { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { X, UserCheck, Loader2, AlertCircle, ArrowRight } from "lucide-react";
@@ -67,7 +68,7 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
       onClose();
     },
     onError: (err: Error) => {
-      setErrorMsg(err.message || "Failed to reassign lead");
+      setErrorMsg(userMessage(err, "Failed to reassign lead"));
     },
     onSettled: () => {
       submitting.current = false;
