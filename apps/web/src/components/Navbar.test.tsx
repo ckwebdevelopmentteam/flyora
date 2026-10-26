@@ -12,7 +12,6 @@ describe("Navbar Component", () => {
     render(<Navbar />);
 
     expect(screen.getByRole("link", { name: /tour packages/i })).toBeDefined();
-    // Services is a dropdown toggle button
     expect(screen.getByRole("button", { name: /services/i })).toBeDefined();
   });
 
@@ -54,27 +53,29 @@ describe("Navbar Component", () => {
     expect(onFindAdvisor).toHaveBeenCalledTimes(1);
   });
 
-  it("opens services dropdown and shows cards on hover", () => {
-    const onOpenEnquiry = vi.fn();
-    render(<Navbar onOpenEnquiry={onOpenEnquiry} />);
+  it("opens services dropdown and shows service cards linking to /services on hover", () => {
+    render(<Navbar />);
 
     // Trigger hover on services
     const servicesTrigger = screen.getByTestId("services-trigger");
     fireEvent.mouseEnter(servicesTrigger);
 
-    // Initial page cards should be rendered
-    expect(
-      screen.getByRole("button", { name: /custom holidays/i }),
-    ).toBeDefined();
-    expect(
-      screen.getByRole("button", { name: /visa assistance/i }),
-    ).toBeDefined();
-    expect(
-      screen.getByRole("button", { name: /flight booking/i }),
-    ).toBeDefined();
-    expect(
-      screen.getByRole("button", { name: /train booking/i }),
-    ).toBeDefined();
+    // Initial page cards should be rendered as links to dedicated sections
+    const holidayLink = screen.getByRole("link", { name: /custom holidays/i });
+    expect(holidayLink).toBeDefined();
+    expect(holidayLink.getAttribute("href")).toBe("/services#custom-holidays");
+
+    const visaLink = screen.getByRole("link", { name: /visa assistance/i });
+    expect(visaLink).toBeDefined();
+    expect(visaLink.getAttribute("href")).toBe("/services#visa-assistance");
+
+    const flightLink = screen.getByRole("link", { name: /flight booking/i });
+    expect(flightLink).toBeDefined();
+    expect(flightLink.getAttribute("href")).toBe("/services#flight-booking");
+
+    const trainLink = screen.getByRole("link", { name: /train booking/i });
+    expect(trainLink).toBeDefined();
+    expect(trainLink.getAttribute("href")).toBe("/services#train-booking");
   });
 
   it("navigates slides using arrows and dots in services mega modal", () => {
@@ -100,14 +101,18 @@ describe("Navbar Component", () => {
     expect(nextArrow.getAttribute("disabled")).not.toBeNull();
     expect(prevArrow.getAttribute("disabled")).toBeNull();
 
-    // Cards in second slide should be present
-    expect(screen.getByRole("button", { name: /bus booking/i })).toBeDefined();
-    expect(
-      screen.getByRole("button", { name: /umrah packages/i }),
-    ).toBeDefined();
-    expect(
-      screen.getByRole("button", { name: /hajj packages/i }),
-    ).toBeDefined();
+    // Cards in second slide should be present as links
+    const busLink = screen.getByRole("link", { name: /bus booking/i });
+    expect(busLink).toBeDefined();
+    expect(busLink.getAttribute("href")).toBe("/services#bus-booking");
+
+    const umrahLink = screen.getByRole("link", { name: /umrah packages/i });
+    expect(umrahLink).toBeDefined();
+    expect(umrahLink.getAttribute("href")).toBe("/services#umrah-packages");
+
+    const hajjLink = screen.getByRole("link", { name: /hajj packages/i });
+    expect(hajjLink).toBeDefined();
+    expect(hajjLink.getAttribute("href")).toBe("/services#hajj-packages");
 
     // Click dot 0 to go back to page 0
     fireEvent.click(dot0);
@@ -119,19 +124,19 @@ describe("Navbar Component", () => {
     expect(nextArrow.getAttribute("disabled")).not.toBeNull();
   });
 
-  it("triggers onOpenEnquiry when clicking a service item in dropdown", () => {
-    const onOpenEnquiry = vi.fn();
-    render(<Navbar onOpenEnquiry={onOpenEnquiry} />);
+  it("closes dropdown when clicking a service link", () => {
+    render(<Navbar />);
 
     // Open dropdown
     const servicesButton = screen.getByRole("button", { name: /services/i });
     fireEvent.click(servicesButton);
 
-    // Click a service item
-    const visaButton = screen.getByRole("button", { name: /visa assistance/i });
-    fireEvent.click(visaButton);
+    const visaLink = screen.getByRole("link", { name: /visa assistance/i });
+    expect(visaLink).toBeDefined();
+    fireEvent.click(visaLink);
 
-    expect(onOpenEnquiry).toHaveBeenCalledWith("Visas");
+    // Dropdown closes after link is clicked
+    expect(screen.queryByTestId("services-prev-arrow")).toBeNull();
   });
 
   it("toggles mobile menu on hamburger button click", () => {

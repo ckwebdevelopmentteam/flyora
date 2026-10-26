@@ -48,6 +48,7 @@ export interface ServiceItem {
   serviceId: string;
   badge: string;
   imageSrc: string;
+  href: string;
   icon: React.ReactNode;
 }
 
@@ -56,7 +57,7 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Tour Packages", href: "/tours" },
 ];
 
-// All 7 Services with matched high-quality image backgrounds
+// All 7 Services with matched high-quality image backgrounds & direct dedicated page section links
 export const SERVICE_ITEMS: ServiceItem[] = [
   {
     label: "Custom Holidays",
@@ -64,6 +65,7 @@ export const SERVICE_ITEMS: ServiceItem[] = [
     serviceId: "Custom Holidays",
     badge: "Tailored Luxury",
     imageSrc: "/services/custom-holidays.jpg",
+    href: "/services#custom-holidays",
     icon: <Star className="w-3.5 h-3.5 text-amber-300" />,
   },
   {
@@ -73,6 +75,7 @@ export const SERVICE_ITEMS: ServiceItem[] = [
     serviceId: "Visas",
     badge: "Fast & Seamless",
     imageSrc: "/services/visa-assistance.jpg",
+    href: "/services#visa-assistance",
     icon: <Globe className="w-3.5 h-3.5 text-blue-300" />,
   },
   {
@@ -82,6 +85,7 @@ export const SERVICE_ITEMS: ServiceItem[] = [
     serviceId: "Flights",
     badge: "Best Fares",
     imageSrc: "/services/flight-booking.jpg",
+    href: "/services#flight-booking",
     icon: <Plane className="w-3.5 h-3.5 text-sky-300" />,
   },
   {
@@ -91,6 +95,7 @@ export const SERVICE_ITEMS: ServiceItem[] = [
     serviceId: "Trains",
     badge: "Scenic Rail",
     imageSrc: "/services/train-booking.jpg",
+    href: "/services#train-booking",
     icon: <Train className="w-3.5 h-3.5 text-emerald-300" />,
   },
   {
@@ -100,6 +105,7 @@ export const SERVICE_ITEMS: ServiceItem[] = [
     serviceId: "Buses",
     badge: "Highway Comfort",
     imageSrc: "/services/bus-booking.jpg",
+    href: "/services#bus-booking",
     icon: <Bus className="w-3.5 h-3.5 text-orange-300" />,
   },
   {
@@ -109,6 +115,7 @@ export const SERVICE_ITEMS: ServiceItem[] = [
     serviceId: "Umrah Packages",
     badge: "Spiritual Journey",
     imageSrc: "/services/umrah-packages.jpg",
+    href: "/services#umrah-packages",
     icon: <Compass className="w-3.5 h-3.5 text-teal-300" />,
   },
   {
@@ -118,6 +125,7 @@ export const SERVICE_ITEMS: ServiceItem[] = [
     serviceId: "Hajj Packages",
     badge: "Sacred Pilgrimage",
     imageSrc: "/services/hajj-packages.jpg",
+    href: "/services#hajj-packages",
     icon: <Sparkles className="w-3.5 h-3.5 text-amber-300" />,
   },
 ];
@@ -216,14 +224,6 @@ export const Navbar: React.FC<NavbarProps> = ({
     }
   };
 
-  const handleServiceClick = (serviceId: string) => {
-    setServicesOpen(false);
-    setMobileMenuOpen(false);
-    if (onOpenEnquiry) {
-      onOpenEnquiry(serviceId);
-    }
-  };
-
   const handleCtaClick = () => {
     if (onOpenEnquiry) {
       onOpenEnquiry();
@@ -239,13 +239,16 @@ export const Navbar: React.FC<NavbarProps> = ({
     activePath.startsWith("/services") ||
     activePath === "/#services";
 
-  // Reusable single service card component
+  // Reusable single service card component linking directly to dedicated section
   const renderServiceCard = (service: ServiceItem, isThreeCol = false) => (
-    <button
+    <Link
       key={service.serviceId}
-      type="button"
-      onClick={() => handleServiceClick(service.serviceId)}
-      className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-xl overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer"
+      href={service.href}
+      onClick={() => {
+        setServicesOpen(false);
+        setMobileMenuOpen(false);
+      }}
+      className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-xl overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer block"
     >
       {/* Background Image */}
       <Image
@@ -288,14 +291,14 @@ export const Navbar: React.FC<NavbarProps> = ({
             {service.description}
           </p>
           <div className="mt-2.5 flex items-center gap-1 text-[10.5px] font-sans font-semibold uppercase tracking-[0.12em] text-[#E6D5C7] group-hover:text-white transition-colors">
-            <span>Enquire Now</span>
+            <span>Explore Service</span>
             <span className="text-xs transition-transform duration-300 group-hover:translate-x-0.5">
               →
             </span>
           </div>
         </div>
       </div>
-    </button>
+    </Link>
   );
 
   return (
@@ -596,11 +599,14 @@ export const Navbar: React.FC<NavbarProps> = ({
               {mobileServicesOpen && (
                 <div className="mt-2.5 mb-2 grid grid-cols-1 sm:grid-cols-2 gap-2 animate-in slide-in-from-top-1 duration-150 max-h-[380px] overflow-y-auto pr-1">
                   {SERVICE_ITEMS.map((service) => (
-                    <button
+                    <Link
                       key={service.serviceId}
-                      type="button"
-                      onClick={() => handleServiceClick(service.serviceId)}
-                      className="relative h-24 rounded-xl overflow-hidden text-left p-3 flex flex-col justify-end group border border-black/10 cursor-pointer shadow-xs shrink-0"
+                      href={service.href}
+                      onClick={() => {
+                        setServicesOpen(false);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="relative h-24 rounded-xl overflow-hidden text-left p-3 flex flex-col justify-end group border border-black/10 cursor-pointer shadow-xs shrink-0 block"
                     >
                       <Image
                         src={service.imageSrc}
@@ -619,7 +625,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                           {service.description}
                         </div>
                       </div>
-                    </button>
+                    </Link>
                   ))}
                 </div>
               )}
