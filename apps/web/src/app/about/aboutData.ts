@@ -2,21 +2,51 @@ export interface StatItem {
   id: string;
   value: string;
   label: string;
-  /** Note for developers and client: illustrative placeholder data */
+  /** Illustrative placeholder data for client customization */
   isPlaceholder?: boolean;
 }
 
-export interface ValueItem {
+export interface CuratorItem {
+  id: string;
+  name: string;
+  role: string;
+  specialties: string[];
+  image: string;
+}
+
+export interface ApproachItem {
   id: string;
   number: string;
   title: string;
+  shortDesc: string;
+  fullDesc: string;
+}
+
+export interface TestimonialItem {
+  id: string;
+  quote: string;
+  author: string;
+  role: string;
+  location: string;
+  category: string;
+  avatar: string;
+}
+
+export interface JourneyTierItem {
+  id: string;
+  badge?: string;
+  title: string;
+  subtitle: string;
   description: string;
-  detail?: string;
-  highlight?: string;
+  priceEstimate: string;
+  unit: string;
+  highlights: string[];
+  isPopular?: boolean;
 }
 
 export interface AboutPageData {
   hero: {
+    badge: string;
     eyebrow: string;
     heading: string;
     description: string;
@@ -31,7 +61,6 @@ export interface AboutPageData {
     image: {
       src: string;
       alt: string;
-      caption?: string;
     };
     socialProof: {
       count: string;
@@ -57,49 +86,64 @@ export interface AboutPageData {
       href: string;
     };
   };
-  values: {
+  transitionStatement: {
+    eyebrow: string;
+    headingPart1: string;
+    headingPart2: string;
+    description: string;
+  };
+  curators: {
+    topAction: {
+      label: string;
+      href: string;
+    };
     eyebrow: string;
     heading: string;
-    supportingText: string;
-    items: ValueItem[];
+    items: CuratorItem[];
+  };
+  approach: {
+    eyebrow: string;
+    heading: string;
+    items: ApproachItem[];
     companionImage: {
       src: string;
       alt: string;
       caption: string;
     };
   };
-  inspiration: {
+  testimonials: {
     eyebrow: string;
     heading: string;
-    supportingText: string;
-    image: {
-      src: string;
-      alt: string;
-      locationTag: string;
-    };
-    tags: string[];
+    subtitle: string;
+    items: TestimonialItem[];
   };
-  cta: {
+  pricingAndCta: {
     eyebrow: string;
     heading: string;
     description: string;
-    primaryCta: {
+    tiers: JourneyTierItem[];
+    closingCta: {
       label: string;
       href: string;
-    };
-    secondaryCta: {
-      label: string;
     };
   };
 }
 
 /**
  * Centrally managed copy & media configuration for Flyora About Us.
- * Client content can be safely updated here without modifying page components or layouts.
+ * Directly inspired by the reference design's complete section hierarchy:
+ * 1. Big full-width photographic hero (airplane over clouds at sunset, no lady, clear About Us mention)
+ * 2. "Who We Are" story section with stats & consultant photo
+ * 3. Centered philosophy transition statement
+ * 4. "Care from the team who listens well" curators showcase
+ * 5. "How We Approach Travel" numbered accordion + companion visual
+ * 6. "Words from our Clients" testimonials row
+ * 7. "Simple and Transparent Planning" closing adventure tiers
  */
 export const ABOUT_DATA: AboutPageData = {
   hero: {
-    eyebrow: "YOUR JOURNEY, OUR PASSION",
+    badge: "ABOUT US",
+    eyebrow: "ABOUT US · YOUR JOURNEY, OUR PASSION",
     heading: "The world is closer than you think.",
     description:
       "At Flyora, we believe every journey opens the door to new places, meaningful experiences, and stories worth remembering.",
@@ -112,13 +156,12 @@ export const ABOUT_DATA: AboutPageData = {
       href: "#our-story",
     },
     image: {
-      src: "/about/hero-travel.jpg",
-      alt: "Traveler standing atop a scenic sunlit Mediterranean clifftop overlooking the turquoise coastline",
-      caption: "Amalfi Coastline, Italy",
+      src: "/about/hero-airplane-wide.jpg",
+      alt: "Luxury private airplane soaring gracefully above golden clouds and alpine peaks at sunset",
     },
     socialProof: {
       count: "1,200+",
-      label: "discerning travelers discovering extraordinary journeys",
+      label: "discerning travelers who found the right journey",
       avatars: [
         "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
         "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
@@ -133,7 +176,7 @@ export const ABOUT_DATA: AboutPageData = {
     heading: "Making every journey feel extraordinary.",
     paragraphs: [
       "Flyora was created around a simple idea: discovering the world should feel exciting, personal, and effortless. We want to make travel feel less complicated and help people focus on the experiences that matter.",
-      "From secluded ocean retreats and scenic rail expeditions to culturally enriching pilgrimages, our dedicated advisors craft journeys centered entirely around your distinct travel style.",
+      "Every itinerary is shaped around your pace, your comfort, and what feels inspiring right now.",
     ],
     // NOTE: Illustrative placeholder statistics only. Ready to replace with verified client figures.
     stats: [
@@ -159,7 +202,7 @@ export const ABOUT_DATA: AboutPageData = {
     image: {
       src: "/about/consultant-story.jpg",
       alt: "Flyora luxury travel advisor consulting with travelers in an editorial sunlit studio",
-      caption: "Tailored Consultation Desk",
+      caption: "Bespoke Travel Consultation",
     },
     primaryCta: {
       label: "Match With an Advisor",
@@ -170,80 +213,209 @@ export const ABOUT_DATA: AboutPageData = {
     },
   },
 
-  values: {
-    eyebrow: "WHAT GUIDES US",
-    heading: "More than a destination. An experience.",
-    supportingText:
-      "Every detail matters when creating a journey worth remembering.",
+  transitionStatement: {
+    eyebrow: "A GENTLE PLACE TO BEGIN",
+    headingPart1: "We create space for the moments, memories, and stories",
+    headingPart2: "you will carry for a lifetime.",
+    description:
+      "Every detail matters when creating a journey worth remembering. No rushed itineraries, no rigid templates — just thoughtful discovery.",
+  },
+
+  curators: {
+    topAction: {
+      label: "View All Curators",
+      href: "/tours",
+    },
+    eyebrow: "MEET OUR TRAVEL CURATORS",
+    heading: "Care from the team who listens well",
     items: [
       {
-        id: "value-1",
-        number: "01",
-        title: "Thoughtful Journeys",
-        description:
-          "We focus on the details that help make every trip feel considered and personal.",
-        detail:
-          "Every route, room tier, and private transfer is meticulously vetted to guarantee effortless flow and timeless comfort.",
-        highlight: "Personalized Itineraries",
+        id: "curator-1",
+        name: "Elena Vance",
+        role: "Senior Travel Curator",
+        specialties: ["Mediterranean Escapes", "Custom Itineraries"],
+        image:
+          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80",
       },
       {
-        id: "value-2",
-        number: "02",
-        title: "Meaningful Experiences",
-        description:
-          "We believe travel is about the places we discover and the memories we bring home.",
-        detail:
-          "Beyond standard tourist paths, we connect you with authentic local culture, heritage guides, and tranquil hidden gems.",
-        highlight: "Cultural Immersion",
+        id: "curator-2",
+        name: "Marcus Reed",
+        role: "Expeditions Specialist",
+        specialties: ["Alpine Rail & Hikes", "Nordic Escapes"],
+        image:
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=600&q=80",
       },
       {
-        id: "value-3",
-        number: "03",
-        title: "Simpler Planning",
-        description:
-          "We aim to make planning and discovering your next journey feel straightforward.",
-        detail:
-          "From visa document clearances to on-ground concierge support, our team handles logistics so you can enjoy every moment.",
-        highlight: "Frictionless Travel",
+        id: "curator-3",
+        name: "Aria Chen",
+        role: "Luxury Island Advisor",
+        specialties: ["Private Overwater Villas", "Wellness Retreats"],
+        image:
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=600&q=80",
+      },
+      {
+        id: "curator-4",
+        name: "Julian Ross",
+        role: "Cultural Heritage Concierge",
+        specialties: ["Sacred Pilgrimages", "Culinary Discoveries"],
+        image:
+          "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80",
+      },
+    ],
+  },
+
+  approach: {
+    eyebrow: "HOW WE PLAN OUR JOURNEYS",
+    heading:
+      "We prioritize thoughtful pacing, personal choice, and effortless flow",
+    items: [
+      {
+        id: "approach-1",
+        number: "001",
+        title: "Choice and pacing come first",
+        shortDesc:
+          "An approach to travel that feels right for you, unhurried, supportive, and free from pressure.",
+        fullDesc:
+          "An approach to travel that feels right for you, unhurried, supportive, and free from pressure. We design ample free time between signature excursions so you can explore naturally.",
+      },
+      {
+        id: "approach-2",
+        number: "002",
+        title: "Thoughtful journeys & handcrafted details",
+        shortDesc:
+          "We focus on the small details that help make every trip feel considered and personal.",
+        fullDesc:
+          "From room tier selections with optimal morning sunlight to seamless airport luggage handoffs, every detail is considered in advance.",
+      },
+      {
+        id: "approach-3",
+        number: "003",
+        title: "Respect for privacy and personal boundaries",
+        shortDesc:
+          "We believe travel is about personal discovery and the peaceful memories you bring home.",
+        fullDesc:
+          "Whether you prefer secluded private villas or boutique estate hotels, your personal space, dietary preferences, and quiet hours are always safeguarded.",
+      },
+      {
+        id: "approach-4",
+        number: "004",
+        title: "Simpler planning & dedicated concierge",
+        shortDesc:
+          "We aim to make planning and discovering your next journey feel completely straightforward.",
+        fullDesc:
+          "Direct WhatsApp contact with your advisor throughout your trip for on-ground restaurant bookings, route changes, or flight assistance.",
       },
     ],
     companionImage: {
-      src: "/destinations/bali.jpg",
-      alt: "Serene tropical travel escape representing mindful, peaceful discovery",
-      caption: "Ubud & Seminyak, Bali",
+      src: "/about/destination-story.jpg",
+      alt: "Serene alpine lake with tranquil pier reflecting peaceful travel discovery",
+      caption: "Oeschinensee, Swiss Alps",
     },
   },
 
-  inspiration: {
-    eyebrow: "TIMELESS INSPIRATION",
-    heading: "Every destination has a story.",
-    supportingText:
-      "Find inspiration in the places, people, and experiences waiting beyond the familiar.",
-    image: {
-      src: "/about/destination-story.jpg",
-      alt: "Panoramic Swiss Alps turquoise lake and alpine wooden pier in soft golden light",
-      locationTag: "Oeschinensee, Swiss Alps",
-    },
-    tags: [
-      "Alpine Sanctuaries",
-      "Coastal Escapes",
-      "Heritage Discoveries",
-      "Private Rail",
-      "Spiritual Journeys",
+  testimonials: {
+    eyebrow: "TESTIMONIALS",
+    heading: "Words from our Travelers",
+    subtitle:
+      "These reflections share what it feels like to travel safely, respectfully, and without pressure.",
+    items: [
+      {
+        id: "test-1",
+        category: "Bespoke Itinerary",
+        quote:
+          "The entire trip was incredibly soothing and respectful. I felt no pressure to rush anything; every transfer was seamless and deeply considered.",
+        author: "Sophia Martinez",
+        role: "Project Coordinator",
+        location: "London, UK",
+        avatar:
+          "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
+      },
+      {
+        id: "test-2",
+        category: "Mediterranean Escape",
+        quote:
+          "The setting was peaceful and respectful. I was never pushed beyond my comfort level, and I came away with memories that made everyday life lighter.",
+        author: "Olivia Brown",
+        role: "Strategy Director",
+        location: "New York, USA",
+        avatar:
+          "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
+      },
+      {
+        id: "test-3",
+        category: "Swiss Alps Rail",
+        quote:
+          "I found the atmosphere to be very calming and genuine. There was zero sales pressure to add tours, only valuable strategies to make our family trip effortless.",
+        author: "Emma Johnson",
+        role: "Lead Developer",
+        location: "Zurich, Switzerland",
+        avatar:
+          "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
+      },
     ],
   },
 
-  cta: {
-    eyebrow: "YOUR NEXT ADVENTURE",
-    heading: "Your next story starts here.",
+  pricingAndCta: {
+    eyebrow: "FLEXIBLE JOURNEY OPTIONS",
+    heading: "Simple and Transparent Planning",
     description:
-      "Discover a new destination and start imagining where your next journey could take you.",
-    primaryCta: {
+      "Choose the planning tier that suits your journey style. Transparent pricing with zero hidden fees.",
+    tiers: [
+      {
+        id: "tier-first-step",
+        badge: "First Step",
+        title: "Single Session Consultation",
+        subtitle:
+          "A single session to get clarity and expert guidance on your destination.",
+        description:
+          "Ideal for travelers who want itinerary review, hotel perks, and visa checklist verification.",
+        priceEstimate: "Complimentary",
+        unit: "Initial Match",
+        highlights: [
+          "30-min destination consultation",
+          "VIP hotel amenities eligibility",
+          "Curated neighborhood recommendations",
+        ],
+      },
+      {
+        id: "tier-bespoke",
+        badge: "Most Popular",
+        title: "Bespoke Full Itinerary",
+        subtitle:
+          "Deeper, consistent care for complex custom routes and family travel.",
+        description:
+          "Comprehensive day-by-day itinerary planning with private guides, rail, and reservations.",
+        priceEstimate: "Custom",
+        unit: "Per Journey",
+        highlights: [
+          "Complete door-to-door itinerary",
+          "Private transfers & vetted drivers",
+          "Dedicated on-trip WhatsApp desk",
+          "24/7 emergency rebooking care",
+        ],
+        isPopular: true,
+      },
+      {
+        id: "tier-ongoing",
+        badge: "Ongoing Care",
+        title: "Annual Travel Membership",
+        subtitle:
+          "Ongoing support for frequent business & leisure globe-trotters.",
+        description:
+          "Unlimited trip planning, priority flight upgrades, and personalized global concierge.",
+        priceEstimate: "Tailored",
+        unit: "Annual",
+        highlights: [
+          "Unlimited custom journeys",
+          "Direct senior curator access",
+          "Exclusive private villa portfolio",
+          "Complimentary visa processing desk",
+        ],
+      },
+    ],
+    closingCta: {
       label: "Explore Destinations",
       href: "/tours",
-    },
-    secondaryCta: {
-      label: "Speak with a Specialist",
     },
   },
 };

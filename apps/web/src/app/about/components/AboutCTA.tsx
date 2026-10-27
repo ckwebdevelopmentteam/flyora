@@ -1,67 +1,183 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, MessageCircle } from "lucide-react";
+import { ArrowUpRight, Check, Sparkles } from "lucide-react";
 import type { AboutPageData } from "../aboutData";
 
 interface AboutCTAProps {
-  data: AboutPageData["cta"];
-  onOpenEnquiry?: () => void;
+  data: AboutPageData["pricingAndCta"];
+  onOpenEnquiry?: (serviceId?: string) => void;
 }
 
 export const AboutCTA: React.FC<AboutCTAProps> = ({ data, onOpenEnquiry }) => {
+  const [billingPeriod, setBillingPeriod] = useState<"standard" | "vip">(
+    "standard",
+  );
+
   return (
-    <section className="py-20 sm:py-28 lg:py-32 bg-[#FDFCFB] relative overflow-hidden">
+    <section className="py-20 sm:py-28 lg:py-36 bg-[#FDFCFB] relative">
       <div className="container-standard">
-        {/* Subtle, restrained card frame with soft champagne backdrop */}
-        <div className="relative rounded-[28px] sm:rounded-[36px] bg-[#F7F2EC] border border-black/[0.06] p-8 sm:p-14 lg:p-20 text-center shadow-xs overflow-hidden">
-          {/* Subtle ambient light rings */}
-          <div
-            className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[500px] h-[300px] bg-gradient-to-b from-white/80 to-transparent rounded-full blur-2xl -z-10"
-            aria-hidden="true"
-          />
-
-          <div className="max-w-2xl mx-auto flex flex-col items-center">
-            {/* Minimal Eyebrow Tag */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white border border-black/[0.06] shadow-2xs mb-5">
-              <span className="w-1.5 h-1.5 rounded-full bg-[#463D34]" />
-              <span className="text-[10.5px] sm:text-[11px] font-sans font-medium uppercase tracking-[0.2em] text-[#5C534A]">
-                {data.eyebrow}
-              </span>
-              <span className="w-1.5 h-1.5 rounded-full bg-[#463D34]" />
-            </div>
-
-            {/* Serif Heading */}
-            <h2 className="font-serif text-[34px] sm:text-[46px] lg:text-[54px] font-normal tracking-tight text-[#1C1815] leading-[1.12]">
-              {data.heading}
-            </h2>
-
-            {/* Supporting Description */}
-            <p className="mt-4 sm:mt-5 text-[15px] sm:text-[17px] text-[#5C534A] font-light leading-relaxed max-w-xl">
-              {data.description}
-            </p>
-
-            {/* Action Buttons */}
-            <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
-              <Link
-                href={data.primaryCta.href}
-                className="inline-flex items-center gap-2 px-7 sm:px-8 py-3.5 sm:py-4 rounded-full bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-[12px] sm:text-[13px] font-sans font-medium uppercase tracking-[0.14em] transition-all duration-200 shadow-xs hover:shadow-md cursor-pointer group"
-              >
-                <span>{data.primaryCta.label}</span>
-                <ArrowUpRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-              </Link>
-
-              <button
-                type="button"
-                onClick={() => onOpenEnquiry && onOpenEnquiry()}
-                className="inline-flex items-center gap-2 px-6 sm:px-7 py-3.5 sm:py-4 rounded-full bg-white hover:bg-[#EFEAE2] border border-black/[0.1] text-[#38312B] text-[12px] sm:text-[13px] font-sans font-medium uppercase tracking-[0.14em] transition-all duration-200 cursor-pointer shadow-2xs"
-              >
-                <MessageCircle className="w-4 h-4 text-[#7A7167]" />
-                <span>{data.secondaryCta.label}</span>
-              </button>
-            </div>
+        {/* Section Header */}
+        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FAF7F2] border border-black/[0.06] text-[#6B6156] text-[10.5px] font-sans font-medium uppercase tracking-[0.2em] mb-4">
+            <span className="text-[9px] text-[#463D34]">♥</span>
+            <span>{data.eyebrow}</span>
+            <span className="text-[9px] text-[#463D34]">♥</span>
           </div>
+
+          <h2 className="font-serif text-[34px] sm:text-[44px] font-normal tracking-tight text-[#1C1815]">
+            {data.heading}
+          </h2>
+
+          <p className="mt-3 text-[15px] sm:text-[16px] text-[#5C534A] font-light leading-relaxed">
+            {data.description}
+          </p>
+
+          {/* Minimal Toggle matching reference pill selector */}
+          <div className="mt-6 inline-flex items-center p-1 rounded-full bg-[#FAF7F2] border border-black/[0.06]">
+            <button
+              type="button"
+              onClick={() => setBillingPeriod("standard")}
+              className={`px-4 py-1.5 rounded-full text-xs font-sans font-medium transition cursor-pointer ${
+                billingPeriod === "standard"
+                  ? "bg-white text-[#1C1815] shadow-2xs"
+                  : "text-[#7A7167] hover:text-black"
+              }`}
+            >
+              Custom Journeys
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingPeriod("vip")}
+              className={`px-4 py-1.5 rounded-full text-xs font-sans font-medium transition cursor-pointer ${
+                billingPeriod === "vip"
+                  ? "bg-[#1C1815] text-white shadow-2xs"
+                  : "text-[#7A7167] hover:text-black"
+              }`}
+            >
+              VIP Concierge
+            </button>
+          </div>
+        </div>
+
+        {/* 3 Transparent Planning Cards matching reference: First Step / Most Popular / Ongoing Care */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch">
+          {data.tiers.map((tier) => (
+            <div
+              key={tier.id}
+              className={`relative rounded-[28px] p-7 sm:p-9 flex flex-col justify-between transition-all duration-300 border ${
+                tier.isPopular
+                  ? "bg-[#181E24] text-white border-[#181E24] shadow-xl md:-translate-y-2"
+                  : "bg-white text-[#1C1815] border-black/[0.07] shadow-xs hover:shadow-md"
+              }`}
+            >
+              <div>
+                {/* Badge */}
+                {tier.badge && (
+                  <div className="inline-block mb-4">
+                    <span
+                      className={`text-[10px] font-sans font-semibold uppercase tracking-wider px-3 py-1 rounded-full ${
+                        tier.isPopular
+                          ? "bg-amber-300 text-[#1C1815]"
+                          : "bg-[#FAF7F2] text-[#6B6156] border border-black/[0.06]"
+                      }`}
+                    >
+                      {tier.badge}
+                    </span>
+                  </div>
+                )}
+
+                <h3
+                  className={`font-serif text-[24px] font-normal ${
+                    tier.isPopular ? "text-white" : "text-[#1C1815]"
+                  }`}
+                >
+                  {tier.title}
+                </h3>
+
+                <p
+                  className={`mt-2 text-xs leading-relaxed ${
+                    tier.isPopular ? "text-white/80" : "text-[#7A7167]"
+                  }`}
+                >
+                  {tier.subtitle}
+                </p>
+
+                {/* Price Display */}
+                <div className="mt-6 pb-6 border-b border-black/[0.08] dark:border-white/10">
+                  <div className="flex items-baseline gap-1.5">
+                    <span
+                      className={`text-3xl font-light font-serif tracking-tight ${
+                        tier.isPopular ? "text-white" : "text-[#1C1815]"
+                      }`}
+                    >
+                      {tier.priceEstimate}
+                    </span>
+                    <span
+                      className={`text-xs ${
+                        tier.isPopular ? "text-white/60" : "text-[#8C8276]"
+                      }`}
+                    >
+                      / {tier.unit}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Highlights List */}
+                <ul className="mt-6 space-y-3">
+                  {tier.highlights.map((highlight, idx) => (
+                    <li
+                      key={idx}
+                      className="flex items-center gap-2.5 text-xs font-light"
+                    >
+                      <Check
+                        className={`w-3.5 h-3.5 shrink-0 ${
+                          tier.isPopular ? "text-amber-300" : "text-[#463D34]"
+                        }`}
+                      />
+                      <span
+                        className={
+                          tier.isPopular ? "text-white/90" : "text-[#4A423B]"
+                        }
+                      >
+                        {highlight}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Card Action Button */}
+              <div className="mt-8 pt-4">
+                <button
+                  type="button"
+                  onClick={() => onOpenEnquiry && onOpenEnquiry(tier.title)}
+                  className={`w-full group py-3 px-5 rounded-full text-xs font-sans font-medium tracking-wide flex items-center justify-center gap-2 transition cursor-pointer ${
+                    tier.isPopular
+                      ? "bg-white text-[#1C1815] hover:bg-stone-100"
+                      : "bg-[#1C1815] text-white hover:bg-[#352E27]"
+                  }`}
+                >
+                  <span>Select {tier.title.split(" ")[0]}</span>
+                  <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Closing Action Link */}
+        <div className="mt-14 text-center">
+          <Link
+            href={data.closingCta.href}
+            className="group inline-flex items-center gap-2.5 pl-6 pr-2.5 py-2.5 rounded-full bg-[#1C1815] hover:bg-[#352E27] text-white text-xs font-sans font-medium tracking-wide shadow-md transition cursor-pointer"
+          >
+            <span>{data.closingCta.label}</span>
+            <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:scale-105">
+              <ArrowUpRight className="w-3.5 h-3.5 text-white" />
+            </span>
+          </Link>
         </div>
       </div>
     </section>
