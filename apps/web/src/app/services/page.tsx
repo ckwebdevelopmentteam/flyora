@@ -771,7 +771,7 @@ export default function ServicesPage() {
         </section>
 
         {/* 4. TOP PICKUPS FOR YOU GALLERY & COASTAL STATS STRIP */}
-        <section className="relative bg-[#FAF7F2] pt-16 sm:pt-20 pb-0 overflow-hidden border-t border-black/[0.06]">
+        <section className="relative bg-[#FDFCFB] pt-16 sm:pt-20 pb-0 overflow-hidden">
           {/* Subtle Sailboat Watermark on bottom left matching reference image */}
           <div className="absolute left-6 bottom-56 w-36 h-36 opacity-10 pointer-events-none select-none text-[#463D34]">
             <svg
@@ -806,10 +806,7 @@ export default function ServicesPage() {
             {/* Header: Top Pickups For You */}
             <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight text-[#1C1815]">
-                Top Pickups{" "}
-                <span className="text-[#463D34] italic font-serif">
-                  For You
-                </span>
+                Top Pickups For You
               </h2>
               <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto font-sans leading-relaxed">
                 Plan your perfect vacation with Flyora. Choose among
@@ -856,7 +853,7 @@ export default function ServicesPage() {
               <button
                 type="button"
                 onClick={() => handleCardEnquiry("Custom Holidays")}
-                className="inline-flex items-center justify-center px-6 py-2.5 rounded border border-[#463D34] bg-white text-[#463D34] text-xs sm:text-sm font-sans font-semibold hover:bg-[#463D34] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg border border-[#463D34] text-[#463D34] text-xs sm:text-sm font-sans font-semibold hover:bg-[#463D34] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
               >
                 View All
               </button>
