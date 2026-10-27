@@ -289,14 +289,14 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
               <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h4 className="text-lg font-bold text-zinc-900 mb-1">
-                Enquiry Submitted!
+              <h4 className="text-2xl font-sans font-bold text-zinc-900 mb-1">
+                Enquiry Done!
               </h4>
-              <p className="text-xs text-zinc-600 mb-4 max-w-sm mx-auto">
+              <p className="text-sm font-sans text-zinc-700 mb-4 max-w-sm mx-auto leading-relaxed">
                 {submissionSuccess.message}
               </p>
 
-              <div className="p-3 bg-zinc-50 rounded-xl border border-zinc-200 mb-6 inline-block">
+              <div className="p-3 bg-zinc-50 rounded-none border border-zinc-200 mb-6 inline-block">
                 <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block mb-1">
                   Enquiry Reference ID
                 </span>
@@ -311,7 +311,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-2.5 px-4 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition"
+                    className="w-full py-2.5 px-4 rounded-none bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition"
                   >
                     <MessageCircle className="w-4 h-4 fill-current" />
                     Chat Directly on WhatsApp
@@ -320,7 +320,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="w-full py-2.5 px-4 rounded-xl border border-zinc-300 text-zinc-700 hover:bg-zinc-100 text-xs font-medium transition"
+                  className="w-full py-2.5 px-4 rounded-none border border-zinc-800 bg-white text-zinc-800 hover:bg-zinc-900 hover:text-white text-xs font-semibold uppercase tracking-wider transition cursor-pointer"
                 >
                   Close Window
                 </button>

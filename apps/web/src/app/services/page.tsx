@@ -569,25 +569,34 @@ export default function ServicesPage() {
               {/* White Floating Enquiry Box (Embedded in Hero, matching reference image) */}
               <div className="bg-white rounded-b-2xl rounded-tr-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-black/[0.08] p-4 sm:p-6 transition-all duration-300">
                 {submitted ? (
-                  <div className="py-4 text-center space-y-2 animate-in fade-in duration-300">
-                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
-                      <CheckCircle2 className="w-6 h-6" />
+                  <div className="py-6 sm:py-8 text-center space-y-3.5 animate-in fade-in duration-300">
+                    <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+                      <CheckCircle2 className="w-7 h-7" />
                     </div>
-                    <h3 className="text-lg font-serif font-bold text-stone-900">
-                      Enquiry Sent to Flyora Desk!
+                    <h3 className="text-2xl sm:text-3xl font-sans font-bold text-[#1C1815] tracking-tight">
+                      Enquiry Done!
                     </h3>
-                    <p className="text-xs text-stone-600 max-w-md mx-auto">
-                      Thank you, {fullName}. Our dedicated coordinator for{" "}
-                      <strong>{activeService.name}</strong> will contact you via
-                      WhatsApp/phone shortly with customized pricing.
+                    <p className="text-sm sm:text-base font-sans font-medium text-stone-800 max-w-lg mx-auto leading-relaxed">
+                      Thank you,{" "}
+                      <span className="font-bold text-stone-900">
+                        {fullName || "Traveler"}
+                      </span>
+                      . Our dedicated coordinator for{" "}
+                      <strong className="font-bold text-[#463D34]">
+                        {activeService.name}
+                      </strong>{" "}
+                      will contact you via WhatsApp/phone shortly with
+                      customized pricing.
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setSubmitted(false)}
-                      className="mt-3 text-xs font-semibold text-[#463D34] underline cursor-pointer"
-                    >
-                      Submit another enquiry
-                    </button>
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setSubmitted(false)}
+                        className="inline-flex items-center justify-center px-6 py-2.5 rounded-none border border-[#463D34] bg-white text-[#463D34] text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider hover:bg-[#463D34] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
+                      >
+                        Submit Another Enquiry
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <form
