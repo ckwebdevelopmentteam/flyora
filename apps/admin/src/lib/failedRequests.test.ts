@@ -32,6 +32,7 @@ const payload: CreateQuotationPayload = {
 };
 const failures: Array<[string, keyof typeof client, () => Promise<unknown>]> = [
   ["available enquiries", "get", () => leadsApi.fetchPoolLeads()],
+  ["all service enquiries", "get", () => leadsApi.fetchServiceEnquiries()],
   ["my enquiries", "get", () => leadsApi.fetchMyLeads()],
   ["activity history", "get", () => leadsApi.fetchLeadActivities("lead-1")],
   ["claiming an enquiry", "post", () => leadsApi.takeLead("lead-1")],
@@ -105,4 +106,36 @@ it("loads activity from the existing lead-detail endpoint", async () => {
   client.get.mockResolvedValue({ id: "lead-1", activities });
   expect(await leadsApi.fetchLeadActivities("lead-1")).toEqual(activities);
   expect(client.get).toHaveBeenLastCalledWith("/leads/lead-1");
+});
+
+it("lists unassigned service enquiries newest first, with taken enquiries below", async () => {
+  client.get.mockResolvedValue([
+    {
+      id: "taken",
+      serviceId: "visa",
+      assignedToId: "other",
+      createdAt: "2026-10-28",
+    },
+    {
+      id: "older",
+      serviceId: "visa",
+      assignedToId: null,
+      createdAt: "2026-10-26",
+    },
+    {
+      id: "newest",
+      serviceId: "visa",
+      assignedToId: null,
+      createdAt: "2026-10-27",
+    },
+    {
+      id: "different-service",
+      serviceId: "hotel",
+      assignedToId: null,
+      createdAt: "2026-10-28",
+    },
+  ]);
+  expect(
+    (await leadsApi.fetchServiceEnquiries("visa")).map((lead) => lead.id),
+  ).toEqual(["newest", "older", "taken"]);
 });

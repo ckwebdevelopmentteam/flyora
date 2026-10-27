@@ -1,370 +1,304 @@
-import { userMessage } from "../../lib/userMessage";
-import { useState, useRef } from "react";
-import {
-  UploadCloud,
-  X,
-  Loader2,
-  Image as ImageIcon,
-  AlertCircle,
-} from "lucide-react";
+import { useRef, useState } from "react";
+import { UploadCloud, X, Loader2, ImageIcon } from "lucide-react";
 import { packagesApi } from "../../lib/packagesApi";
+import { PackageImage } from "./PackageImage";
+import { userMessage } from "../../lib/userMessage";
 
-interface R2ImageDropzoneProps {
+const formats = new Set(["image/png", "image/jpeg", "image/webp"]);
+export function validatePackageImages(files: File[]) {
+  if (files.some((file) => !formats.has(file.type)))
+    return "Choose JPG, PNG or WebP photos.";
+  if (files.some((file) => file.size > 10 * 1024 * 1024))
+    return "Each photo must be 10 MB or smaller.";
+  return null;
+}
+async function upload(
+  file: File,
+  folder: "packages" | "destinations",
+  progress?: (percent: number) => void,
+) {
+  const result = await packagesApi.getPresignedUploadUrl(
+    file.name,
+    file.type,
+    folder,
+  );
+  if (result.isMock || !result.publicUrl)
+    throw new Error("Photo storage is unavailable. Please try again later.");
+  await packagesApi.directUploadToR2(result.uploadUrl, file, progress);
+  return result.publicUrl;
+}
+type BusyProps = {
+  disabled?: boolean;
+  onUploadingChange?: (busy: boolean) => void;
+};
+interface CoverProps extends BusyProps {
   value?: string;
   onChange: (url: string) => void;
   folder?: "packages" | "destinations";
   label?: string;
   helperText?: string;
 }
-
-export const R2ImageDropzone = ({
+export function R2ImageDropzone({
   value,
   onChange,
   folder = "packages",
-  label = "Cover Image",
-  helperText = "PNG, JPG or WEBP · Up to 10 MB.",
-}: R2ImageDropzoneProps) => {
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const handleFileUpload = async (file: File) => {
-    // Basic validation
-    if (!file.type.startsWith("image/")) {
-      setErrorMessage("Please select a valid image file (PNG, JPG, WEBP)");
+  label = "Cover photo",
+  helperText = "JPG, PNG or WebP · Up to 10 MB",
+  disabled = false,
+  onUploadingChange,
+}: CoverProps) {
+  const input = useRef<HTMLInputElement>(null);
+  const lock = useRef(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState(0);
+  async function choose(files: File[]) {
+    if (!files.length || lock.current || disabled) return;
+    const problem = validatePackageImages(files);
+    if (problem) {
+      setError(problem);
       return;
     }
-
-    if (file.size > 10 * 1024 * 1024) {
-      setErrorMessage("Image file size must not exceed 10MB");
-      return;
-    }
-
-    setErrorMessage(null);
-    setIsUploading(true);
-    setUploadProgress(0);
-
+    lock.current = true;
+    setBusy(true);
+    onUploadingChange?.(true);
+    setError(null);
+    setProgress(0);
     try {
-      // Step 1: Request presigned upload URL from Fastify
-      const { uploadUrl, publicUrl } = await packagesApi.getPresignedUploadUrl(
-        file.name,
-        file.type,
-        folder,
+      onChange(await upload(files[0], folder, setProgress));
+    } catch (e) {
+      setError(
+        userMessage(e, "We couldn't upload this photo. Please try again."),
       );
-
-      // Step 2: Stream binary directly to Cloudflare R2 presigned PUT
-      await packagesApi.directUploadToR2(uploadUrl, file, (percent) => {
-        setUploadProgress(percent);
-      });
-
-      // Step 3: Emit public URL to parent form
-      onChange(publicUrl);
-    } catch (err: any) {
-      setErrorMessage(userMessage(err, "Failed to upload image to storage"));
     } finally {
-      setIsUploading(false);
+      lock.current = false;
+      setBusy(false);
+      onUploadingChange?.(false);
     }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      handleFileUpload(files[0]);
-    }
-  };
-
+  }
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block text-xs font-medium text-zinc-900 tracking-tight">
-          {label}
-        </label>
-        {value && !isUploading && (
+    <div className="package-cover-uploader" aria-busy={busy}>
+      <div className="flex justify-between items-center mb-3">
+        <h3 className="font-semibold text-sm">{label}</h3>
+        {value && (
           <button
             type="button"
+            disabled={busy || disabled}
             onClick={() => onChange("")}
-            className="text-[11px] text-zinc-500 hover:text-red-600 transition flex items-center gap-1 font-mono"
+            className="text-xs text-slate-500 inline-flex items-center gap-1"
           >
-            <X className="w-3 h-3" />
-            Remove
+            <X size={14} />
+            Remove cover
           </button>
         )}
       </div>
-
-      {value ? (
-        // Preview State
-        <div className="relative group rounded-lg overflow-hidden border border-zinc-200 bg-white p-2">
-          <div className="relative aspect-video w-full rounded-md overflow-hidden bg-zinc-100 flex items-center justify-center">
-            <img
-              src={value}
-              alt="Preview"
-              className="w-full h-full object-cover"
-              onError={(e) => {
-                // If direct R2 media domain doesn't load in dev, show placeholder
-                (e.target as HTMLImageElement).src =
-                  "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=1200&q=80";
-              }}
-            />
-            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                className="px-3 py-1.5 rounded-md bg-white text-black text-xs font-medium shadow-sm hover:bg-zinc-100 transition"
-              >
-                Replace Photo
-              </button>
-            </div>
-          </div>
-          <div className="mt-2 flex items-center justify-between px-1">
-            <span className="text-[10px] text-zinc-400 font-mono truncate max-w-[280px]">
-              Photo added
-            </span>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-600 font-mono">
-              Uploaded
-            </span>
-          </div>
-        </div>
-      ) : (
-        // Dropzone State
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label={`Upload ${label || "photo"}`}
-          aria-disabled={isUploading}
-          onKeyDown={(event) => {
-            if ((event.key === "Enter" || event.key === " ") && !isUploading) {
-              event.preventDefault();
-              fileInputRef.current?.click();
-            }
-          }}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => !isUploading && fileInputRef.current?.click()}
-          className={`relative rounded-lg border-2 border-dashed p-6 flex flex-col items-center justify-center text-center cursor-pointer transition ${
-            isDragging
-              ? "border-black bg-zinc-100/50"
-              : "border-zinc-200 bg-[#FAFAF9] hover:bg-zinc-100/40 hover:border-zinc-300"
-          } ${isUploading ? "pointer-events-none opacity-80" : ""}`}
-        >
-          {isUploading ? (
-            <div className="w-full max-w-xs space-y-3 py-2">
-              <Loader2 className="w-6 h-6 animate-spin text-black mx-auto" />
-              <div className="space-y-1">
-                <div className="flex justify-between text-[11px] font-mono text-zinc-500">
-                  <span>Uploading photo…</span>
-                  <span>{uploadProgress}%</span>
-                </div>
-                <div className="w-full h-1.5 rounded-full bg-zinc-200 overflow-hidden">
-                  <div
-                    className="h-full bg-black transition-all duration-150"
-                    style={{ width: `${uploadProgress}%` }}
-                  />
-                </div>
-              </div>
-            </div>
-          ) : (
-            <>
-              <div className="w-10 h-10 rounded-full bg-white border border-zinc-200 flex items-center justify-center mb-2 shadow-xs">
-                <UploadCloud className="w-5 h-5 text-zinc-600 stroke-[1.5]" />
-              </div>
-              <p className="text-xs font-medium text-zinc-900 mb-0.5">
-                Click to upload or drag & drop
-              </p>
-              <p className="text-[11px] text-zinc-500 font-mono">
-                {helperText}
-              </p>
-            </>
-          )}
-        </div>
-      )}
-
-      {/* Hidden File Input */}
       <input
-        ref={fileInputRef}
         type="file"
         accept="image/png,image/jpeg,image/webp"
-        aria-label="Package photo"
-        className="hidden"
+        aria-label="Package cover photo"
+        ref={input}
+        hidden
+        disabled={busy || disabled}
         onChange={(e) => {
-          const files = e.target.files;
-          if (files && files.length > 0) {
-            handleFileUpload(files[0]);
-          }
+          void choose(Array.from(e.target.files || []));
+          e.target.value = "";
         }}
       />
-
-      {/* Error Message */}
-      {errorMessage && (
-        <div className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50/80 p-2 rounded-md border border-red-200">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span role="alert">{errorMessage}</span>
+      <div className="package-cover-row">
+        {value ? (
+          <PackageImage
+            src={value}
+            alt="Package cover"
+            className="package-cover-thumbnail"
+          />
+        ) : (
+          <div className="package-cover-thumbnail package-image-empty">
+            <ImageIcon size={26} />
+            <span>No cover photo</span>
+          </div>
+        )}
+        <div className="space-y-3">
+          <p className="text-xs text-slate-500">{helperText}</p>
+          <button
+            type="button"
+            className="button-secondary"
+            disabled={busy || disabled}
+            onClick={() => input.current?.click()}
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              void choose(Array.from(e.dataTransfer.files));
+            }}
+          >
+            {busy ? (
+              <>
+                <Loader2 size={15} className="animate-spin" />
+                Uploading {progress}%
+              </>
+            ) : (
+              <>
+                <UploadCloud size={15} />
+                {value ? "Replace cover" : "Upload cover"}
+              </>
+            )}
+          </button>
         </div>
+      </div>
+      {error && (
+        <p role="alert" className="text-sm text-rose-700 mt-3">
+          {error}
+        </p>
       )}
     </div>
   );
-};
-
-interface R2GalleryUploaderProps {
+}
+interface GalleryProps extends BusyProps {
   urls: string[];
   onChange: (urls: string[]) => void;
   folder?: "packages" | "destinations";
+  onChooseCover?: (url: string) => void;
+  coverUrl?: string;
 }
-
-export const R2GalleryUploader = ({
+export function R2GalleryUploader({
   urls,
   onChange,
   folder = "packages",
-}: R2GalleryUploaderProps) => {
-  const [isUploading, setIsUploading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const handleMultiUpload = async (fileList: FileList) => {
-    setErrorMessage(null);
-    setIsUploading(true);
-    const newUrls: string[] = [];
-
+  onChooseCover,
+  coverUrl,
+  disabled = false,
+  onUploadingChange,
+}: GalleryProps) {
+  const input = useRef<HTMLInputElement>(null);
+  const lock = useRef(false);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState("");
+  async function choose(files: File[]) {
+    if (!files.length || lock.current || disabled) return;
+    const problem = validatePackageImages(files);
+    if (problem) {
+      setError(problem);
+      return;
+    }
+    lock.current = true;
+    setBusy(true);
+    onUploadingChange?.(true);
+    setError(null);
+    const added: string[] = [];
     try {
-      for (let i = 0; i < fileList.length; i++) {
-        const file = fileList[i];
-        if (!file.type.startsWith("image/")) continue;
-
-        const { uploadUrl, publicUrl } =
-          await packagesApi.getPresignedUploadUrl(file.name, file.type, folder);
-
-        await packagesApi.directUploadToR2(uploadUrl, file);
-        newUrls.push(publicUrl);
+      for (const [index, file] of files.entries()) {
+        setProgress(`Uploading ${index + 1} of ${files.length}…`);
+        added.push(
+          await upload(file, folder, (pct) =>
+            setProgress(`Uploading ${index + 1} of ${files.length} · ${pct}%`),
+          ),
+        );
       }
-
-      onChange([...urls, ...newUrls]);
-    } catch (err: any) {
-      setErrorMessage(
-        userMessage(err, "Failed uploading some images to storage"),
+    } catch (e) {
+      setError(
+        added.length
+          ? `${added.length} of ${files.length} photos uploaded. Please retry the remaining photos.`
+          : userMessage(
+              e,
+              "We couldn't upload these photos. Please try again.",
+            ),
       );
     } finally {
-      setIsUploading(false);
+      if (added.length) onChange([...new Set([...urls, ...added])]);
+      lock.current = false;
+      setBusy(false);
+      onUploadingChange?.(false);
     }
-  };
-
-  const handleRemove = (index: number) => {
-    const updated = [...urls];
-    updated.splice(index, 1);
-    onChange(updated);
-  };
-
+  }
   return (
-    <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <div>
-          <label className="block text-xs font-medium text-zinc-900 tracking-tight">
-            Photo Gallery
-          </label>
-          <p className="text-[11px] text-zinc-500 font-mono">
-            Add multiple destination or hotel photos for the public brochure (
-            {urls.length} uploaded).
-          </p>
-        </div>
+    <div className="package-gallery-uploader" aria-busy={busy}>
+      <div className="flex justify-between items-center gap-3 mb-3">
+        <h3 className="font-semibold text-sm">
+          Gallery{" "}
+          <span className="font-normal text-slate-400">({urls.length})</span>
+        </h3>
         <button
           type="button"
-          disabled={isUploading}
-          onClick={() => fileInputRef.current?.click()}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition"
+          className="button-secondary"
+          disabled={busy || disabled}
+          onClick={() => input.current?.click()}
         >
-          {isUploading ? (
-            <>
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              <span>Uploading...</span>
-            </>
-          ) : (
-            <>
-              <UploadCloud className="w-3.5 h-3.5" />
-              <span>Add Images</span>
-            </>
-          )}
+          <UploadCloud size={15} />
+          Add photos
         </button>
       </div>
-
       <input
-        ref={fileInputRef}
         type="file"
         multiple
         accept="image/png,image/jpeg,image/webp"
-        className="hidden"
+        aria-label="Package gallery photos"
+        ref={input}
+        hidden
+        disabled={busy || disabled}
         onChange={(e) => {
-          if (e.target.files && e.target.files.length > 0) {
-            handleMultiUpload(e.target.files);
-          }
+          void choose(Array.from(e.target.files || []));
+          e.target.value = "";
         }}
       />
-
-      {errorMessage && (
-        <div className="flex items-center gap-1.5 text-xs text-red-600 bg-red-50/80 p-2 rounded-md border border-red-200">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span role="alert">{errorMessage}</span>
-        </div>
+      <button
+        type="button"
+        className="package-photo-drop"
+        disabled={busy || disabled}
+        onClick={() => input.current?.click()}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={(e) => {
+          e.preventDefault();
+          void choose(Array.from(e.dataTransfer.files));
+        }}
+      >
+        {busy ? (
+          <>
+            <Loader2 size={17} className="animate-spin" />
+            <span role="status">{progress}</span>
+          </>
+        ) : (
+          <>
+            <UploadCloud size={18} />
+            <span>Drop photos here, or select multiple files</span>
+            <span className="text-xs text-slate-400">
+              JPG, PNG or WebP · Up to 10 MB each
+            </span>
+          </>
+        )}
+      </button>
+      {error && (
+        <p role="alert" className="text-sm text-rose-700 mt-3">
+          {error}
+        </p>
       )}
-
-      {urls.length === 0 ? (
-        <div
-          onClick={() => !isUploading && fileInputRef.current?.click()}
-          className="border border-dashed border-zinc-200 rounded-lg p-8 text-center bg-[#FAFAF9] hover:bg-zinc-100/50 cursor-pointer transition"
-        >
-          <ImageIcon className="w-8 h-8 text-zinc-300 mx-auto mb-2 stroke-[1.2]" />
-          <p className="text-xs text-zinc-600 font-medium">
-            No gallery images added yet
-          </p>
-          <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
-            Click "Add Images" above or click here to upload multiple photos
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-          {urls.map((url, idx) => (
-            <div
-              key={`${url}-${idx}`}
-              className="relative group rounded-lg overflow-hidden border border-zinc-200 bg-white aspect-video"
-            >
-              <img
-                src={url}
-                alt={`Gallery ${idx + 1}`}
-                className="w-full h-full object-cover"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80";
-                }}
-              />
-              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+      {!!urls.length && (
+        <div className="package-gallery-grid">
+          {urls.map((url, index) => (
+            <div key={url} className="package-gallery-tile">
+              <PackageImage src={url} alt={`Gallery photo ${index + 1}`} />
+              <button
+                type="button"
+                className="package-photo-remove"
+                aria-label={`Remove gallery photo ${index + 1}`}
+                disabled={busy || disabled}
+                onClick={() => onChange(urls.filter((_, i) => i !== index))}
+              >
+                <X size={14} />
+              </button>
+              {onChooseCover && (
                 <button
                   type="button"
-                  onClick={() => handleRemove(idx)}
-                  className="p-1.5 rounded-full bg-white/90 text-red-600 hover:bg-white shadow-sm transition"
-                  title="Delete image"
+                  className="package-use-cover"
+                  disabled={busy || disabled || coverUrl === url}
+                  onClick={() => onChooseCover(url)}
                 >
-                  <X className="w-3.5 h-3.5" />
+                  {coverUrl === url ? "Cover photo" : "Use as cover"}
                 </button>
-              </div>
-              <span className="absolute bottom-1 right-1 text-[9px] px-1 rounded bg-black/60 text-white font-mono">
-                #{idx + 1}
-              </span>
+              )}
             </div>
           ))}
         </div>
       )}
     </div>
   );
-};
+}

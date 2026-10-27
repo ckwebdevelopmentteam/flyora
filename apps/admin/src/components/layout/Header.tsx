@@ -5,6 +5,8 @@ import { useAuthStore } from "../../stores/authStore";
 import { apiClient, logout } from "../../lib/apiClient";
 import { LogOut, ChevronDown, Menu, Loader2, Check } from "lucide-react";
 
+import { Modal } from "../ui/Modal";
+
 interface HeaderProps {
   onToggleSidebar?: () => void;
 }
@@ -30,7 +32,7 @@ const AVAILABILITY_CONFIG: Record<
 const ROLE_LABELS: Record<UserRole, string> = {
   SUPER_ADMIN: "Admin",
   OPERATIONS_MANAGER: "Operations",
-  SERVICE_COORDINATOR: "Coordinator",
+  SERVICE_COORDINATOR: "Staff",
   ACCOUNTS: "Accounts",
   CONTENT_MANAGER: "Content",
 };
@@ -50,6 +52,7 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
             ? "Team"
             : "Overview";
   const { user, setAvailability } = useAuthStore();
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -194,13 +197,27 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
           <div className="w-7 h-7 rounded-md bg-black text-white flex items-center justify-center font-mono text-xs">
             {user?.fullName?.charAt(0).toUpperCase() || "U"}
           </div>
+          <span className="role-badge md:hidden">{roleLabel}</span>
           <div className="hidden md:block text-left leading-none">
             <p className="text-xs font-medium text-zinc-900">
               {user?.fullName || "Staff Member"}
             </p>
-            <p className="text-[10px] text-zinc-500 mt-0.5 font-mono">
-              {roleLabel}
-            </p>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="role-badge">{roleLabel}</span>
+              {user?.role === "SERVICE_COORDINATOR" && (
+                <span
+                  className="text-xs text-slate-500 truncate max-w-56"
+                  title={user.services
+                    ?.map((item) => item.service?.name)
+                    .join(", ")}
+                >
+                  {user.services
+                    ?.map((item) => item.service?.name)
+                    .filter(Boolean)
+                    .join(" · ") || "No services assigned"}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
@@ -211,7 +228,7 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
         )}
         {/* Logout */}
         <button
-          onClick={handleLogout}
+          onClick={() => setConfirmLogout(true)}
           disabled={loggingOut}
           aria-label="Sign out"
           title="Sign Out"
@@ -220,6 +237,36 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
           <LogOut className="w-3.5 h-3.5" />
         </button>
       </div>
+      {confirmLogout && (
+        <Modal
+          title="Sign out?"
+          onClose={() => setConfirmLogout(false)}
+          busy={loggingOut}
+          footer={
+            <>
+              <button
+                className="button-secondary"
+                onClick={() => setConfirmLogout(false)}
+                disabled={loggingOut}
+              >
+                Stay signed in
+              </button>
+              <button
+                className="button-primary"
+                onClick={() => void handleLogout()}
+                disabled={loggingOut}
+              >
+                {loggingOut ? "Signing out…" : "Sign out"}
+              </button>
+            </>
+          }
+        >
+          <p className="text-sm text-slate-600">
+            You can sign in again whenever you're ready.
+          </p>
+          {logoutError && <p role="alert">{logoutError}</p>}
+        </Modal>
+      )}
     </header>
   );
 };

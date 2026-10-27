@@ -69,11 +69,27 @@ export default function App() {
             <Route element={<AdminLayout />}>
               <Route index element={<DashboardPage />} />
 
-              {/* Tour Packages Catalog (All staff can view) */}
-              <Route path="packages" element={<PackagesListPage />} />
+              {/* Tour Packages Catalog (Management and Content) */}
+              <Route
+                element={
+                  <RoleGuard
+                    allowedRoles={[
+                      "SUPER_ADMIN",
+                      "OPERATIONS_MANAGER",
+                      "CONTENT_MANAGER",
+                    ]}
+                  />
+                }
+              >
+                <Route path="packages" element={<PackagesListPage />} />
+              </Route>
 
               {/* Coordinator Leads Workspace & Service Pool */}
-              <Route path="leads" element={<CoordinatorLeadsPage />} />
+              <Route
+                element={<RoleGuard allowedRoles={["SERVICE_COORDINATOR"]} />}
+              >
+                <Route path="leads" element={<CoordinatorLeadsPage />} />
+              </Route>
 
               {/* Bookings & Offline Payments Management */}
               <Route path="bookings" element={<BookingsPage />} />

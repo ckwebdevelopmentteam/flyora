@@ -38,6 +38,20 @@ export const leadsApi = {
       ? result.filter((lead) => lead.serviceId === serviceId)
       : result;
   },
+  async fetchServiceEnquiries(serviceId?: string): Promise<LeadItem[]> {
+    const result = await apiClient.get<LeadItem[]>(
+      "/leads/pool?includeAssigned=true",
+    );
+    if (!Array.isArray(result))
+      throw new Error("We couldn't load the enquiries.");
+    return result
+      .filter((lead) => !serviceId || lead.serviceId === serviceId)
+      .sort(
+        (a, b) =>
+          Number(!!a.assignedToId) - Number(!!b.assignedToId) ||
+          Date.parse(b.createdAt) - Date.parse(a.createdAt),
+      );
+  },
   async fetchMyLeads(params?: MyLeadsFilterParams): Promise<LeadItem[]> {
     const query = new URLSearchParams();
     if (params?.status && params.status !== "ALL")

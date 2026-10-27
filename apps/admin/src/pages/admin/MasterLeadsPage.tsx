@@ -2,7 +2,6 @@ import { useSearchParams } from "react-router-dom";
 import { enquiryStageFromUrl } from "../../lib/enquiryFilters";
 import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { EnquiryCard } from "../../components/leads/EnquiryCard";
-import { EnquiryNavigation } from "../../components/leads/EnquiryNavigation";
 import { userMessage } from "../../lib/userMessage";
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -36,8 +35,15 @@ export const MasterLeadsPage: React.FC = () => {
   // Filters & State
   const [search, setSearch] = useState("");
   const [selectedService, setSelectedService] = useState("");
-  const [selectedCoordinator, setSelectedCoordinator] = useState("");
   const [searchParams, setSearchParams] = useSearchParams();
+  const selectedCoordinator = searchParams.get("assignedToId") || "";
+  const setSelectedCoordinator = (value: string) =>
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous);
+      if (value) next.set("assignedToId", value);
+      else next.delete("assignedToId");
+      return next;
+    });
   const selectedStatus = enquiryStageFromUrl(searchParams.get("status")) || "";
   const setSelectedStatus = (value: string) =>
     setSearchParams((previous) => {
@@ -166,8 +172,6 @@ export const MasterLeadsPage: React.FC = () => {
           </button>
         </div>
       </div>
-
-      <EnquiryNavigation includeAll />
 
       {(servicesError || staffError) && (
         <div role="alert" className="text-sm text-rose-700">

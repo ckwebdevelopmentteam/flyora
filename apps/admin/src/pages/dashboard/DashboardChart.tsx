@@ -26,16 +26,31 @@ function BarChart({
   const total = complete
     ? rows.reduce((sum, row) => sum + row.value!, 0)
     : undefined;
-  const maximum = Math.max(1, ...rows.map((row) => row.value ?? 0));
+
   return (
     <section className="surface dashboard-chart" aria-label={title}>
       <header>
         <h2>{title}</h2>
         <span>
-          {total === undefined ? "—" : total.toLocaleString("en-IN")} {unit}
+          {total === undefined ? "—" : total.toLocaleString("en-IN")}{" "}
+          {total === 1 ? (unit === "enquiries" ? "enquiry" : "payment") : unit}
         </span>
       </header>
-      <ul className="chart-bars">
+
+      {complete && !!total && (
+        <div className="distribution-bar" aria-hidden="true">
+          {rows
+            .filter((row) => !!row.value)
+            .map((row) => (
+              <span
+                key={row.key}
+                className={`distribution-${row.key.toLowerCase()}`}
+                style={{ width: `${(row.value! / total) * 100}%` }}
+              />
+            ))}
+        </div>
+      )}
+      <ul className="distribution-legend">
         {rows.map((row) => {
           const text =
             row.value === undefined
@@ -43,18 +58,21 @@ function BarChart({
                 ? "Loading"
                 : "Unavailable"
               : row.value.toLocaleString("en-IN");
+          const percentage =
+            complete && total
+              ? `${Math.round((row.value! / total) * 1000) / 10}%`
+              : complete
+                ? "0%"
+                : "—";
           const content = (
             <>
-              <span className="chart-label">{row.label}</span>
-              <span className="chart-track" aria-hidden="true">
-                <span
-                  className={`chart-fill chart-${row.key.toLowerCase()}`}
-                  style={{ width: `${((row.value ?? 0) / maximum) * 100}%` }}
-                />
-              </span>
-              <strong>
-                {row.value === undefined ? (row.loading ? "…" : "—") : text}
-              </strong>
+              <span
+                className={`distribution-dot distribution-${row.key.toLowerCase()}`}
+                aria-hidden="true"
+              />
+              <span>{row.label}</span>
+              <strong>{row.value === undefined ? "—" : text}</strong>
+              <span className="distribution-percent">{percentage}</span>
             </>
           );
           return (
@@ -63,12 +81,15 @@ function BarChart({
                 <Link
                   to={row.to}
                   aria-label={`${row.label}: ${text}`}
-                  className="chart-row"
+                  className="distribution-item"
                 >
                   {content}
                 </Link>
               ) : (
-                <div className="chart-row" aria-label={`${row.label}: ${text}`}>
+                <div
+                  className="distribution-item"
+                  aria-label={`${row.label}: ${text}`}
+                >
                   {content}
                 </div>
               )}
@@ -133,7 +154,7 @@ function EnquiryChart({ role, userId }: { role: string; userId: string }) {
   }));
   return (
     <BarChart
-      title="Enquiry stages"
+      title="Enquiry breakdown"
       rows={rows}
       unit="enquiries"
       error={

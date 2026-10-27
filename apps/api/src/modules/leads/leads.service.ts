@@ -148,11 +148,21 @@ export class LeadsService {
    * Atomic "Take Lead" (First-come, first-served claim lock)
    */
   async takeLead(leadId: string, userId: string): Promise<LeadDetailItem> {
+    const actor = await this.fastify.prisma.user.findUnique({
+      where: { id: userId },
+      include: { services: true },
+    });
+    if (!actor?.isActive || actor.role !== "SERVICE_COORDINATOR")
+      throw {
+        statusCode: 403,
+        message: "Only assigned staff can take enquiries.",
+      };
     // Atomic update query to prevent race conditions
     const updateResult = await this.fastify.prisma.lead.updateMany({
       where: {
         id: leadId,
         assignedToId: null, // Only lock if still unclaimed!
+        serviceId: { in: actor.services.map((mapping) => mapping.serviceId) },
       },
       data: {
         assignedToId: userId,
@@ -202,6 +212,7 @@ export class LeadsService {
   async getCoordinatorLeadPool(
     userId: string,
     userRole: string,
+    includeAssigned = false,
   ): Promise<LeadItem[]> {
     let serviceFilter: any = {};
 
@@ -220,7 +231,7 @@ export class LeadsService {
 
     const leads = await this.fastify.prisma.lead.findMany({
       where: {
-        assignedToId: null,
+        ...(includeAssigned ? {} : { assignedToId: null }),
         ...serviceFilter,
       },
       include: {
@@ -232,7 +243,78 @@ export class LeadsService {
       orderBy: { createdAt: "desc" },
     });
 
-    return leads.map((l) => this.formatLeadItem(l));
+    return leads
+      .map((l) => this.formatLeadItem(l))
+      .sort(
+        (a, b) =>
+          Number(!!a.assignedToId) - Number(!!b.assignedToId) ||
+          Date.parse(b.createdAt) - Date.parse(a.createdAt),
+      );
+  }
+
+  async assertLeadAccess(
+    leadId: string,
+    userId: string,
+    role: string,
+    write = false,
+  ) {
+    const lead = await this.fastify.prisma.lead.findUnique({
+      where: { id: leadId },
+    });
+    if (!lead) throw { statusCode: 404, message: "Enquiry not found." };
+    if (!write && ["SUPER_ADMIN", "OPERATIONS_MANAGER"].includes(role)) return;
+    if (role !== "SERVICE_COORDINATOR" || lead.assignedToId !== userId)
+      throw {
+        statusCode: 403,
+        message: "This enquiry is not assigned to you.",
+      };
+  }
+
+  async staffWorkload() {
+    const [staff, grouped, due] = await Promise.all([
+      this.fastify.prisma.user.findMany({
+        where: { role: "SERVICE_COORDINATOR", isActive: true },
+        select: {
+          id: true,
+          fullName: true,
+          availability: true,
+          services: { select: { service: { select: { name: true } } } },
+        },
+        orderBy: { fullName: "asc" },
+      }),
+      this.fastify.prisma.lead.groupBy({
+        by: ["assignedToId", "status"],
+        _count: true,
+      }),
+      this.fastify.prisma.lead.groupBy({
+        by: ["assignedToId"],
+        where: {
+          followUpDate: { lt: new Date(new Date().setHours(24, 0, 0, 0)) },
+          status: { notIn: ["BOOKED", "LOST"] },
+        },
+        _count: true,
+      }),
+    ]);
+    return staff.map((person) => ({
+      id: person.id,
+      fullName: person.fullName,
+      availability: person.availability,
+      services: person.services.map((item) => item.service.name),
+      active: grouped
+        .filter(
+          (item) =>
+            item.assignedToId === person.id &&
+            !["BOOKED", "LOST"].includes(item.status),
+        )
+        .reduce((sum, item) => sum + item._count, 0),
+      booked: grouped
+        .filter(
+          (item) => item.assignedToId === person.id && item.status === "BOOKED",
+        )
+        .reduce((sum, item) => sum + item._count, 0),
+      followUpsDue:
+        due.find((item) => item.assignedToId === person.id)?._count || 0,
+    }));
   }
 
   /**
@@ -471,6 +553,7 @@ export class LeadsService {
   ): Promise<LeadDetailItem> {
     const targetUser = await this.fastify.prisma.user.findUnique({
       where: { id: targetUserId },
+      include: { services: true },
     });
 
     if (!targetUser) {
@@ -494,6 +577,17 @@ export class LeadsService {
       };
     }
 
+    if (
+      !targetUser.isActive ||
+      targetUser.role !== "SERVICE_COORDINATOR" ||
+      !targetUser.services.some(
+        (mapping) => mapping.serviceId === existing.serviceId,
+      )
+    )
+      throw {
+        statusCode: 400,
+        message: "Choose an active staff member assigned to this service.",
+      };
     const previousOwner = existing.assignedTo?.fullName || "Unassigned Pool";
 
     await this.fastify.prisma.lead.update({

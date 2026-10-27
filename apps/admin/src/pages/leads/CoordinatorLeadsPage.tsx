@@ -3,7 +3,6 @@ import { useMediaQuery } from "../../hooks/useMediaQuery";
 import { EnquiryCard } from "../../components/leads/EnquiryCard";
 import { useAuthStore } from "../../stores/authStore";
 import { isFollowUpDue } from "../../lib/followUps";
-import { EnquiryNavigation } from "../../components/leads/EnquiryNavigation";
 import { userMessage } from "../../lib/userMessage";
 import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -51,8 +50,7 @@ export const CoordinatorLeadsPage = () => {
     user?.role === "SUPER_ADMIN" || user?.role === "OPERATIONS_MANAGER";
 
   // Active tab derived from URL query: "pool" | "my-leads"
-  const currentTab =
-    searchParams.get("tab") === "my-leads" ? "my-leads" : "pool";
+  const currentTab = searchParams.get("tab") === "pool" ? "pool" : "my-leads";
   const setTab = (tab: "pool" | "my-leads") => {
     setSearchParams({ tab });
   };
@@ -101,7 +99,8 @@ export const CoordinatorLeadsPage = () => {
     refetch: refetchPool,
   } = useQuery<LeadItem[]>({
     queryKey: ["leads", "pool", selectedServiceId],
-    queryFn: () => leadsApi.fetchPoolLeads(selectedServiceId || undefined),
+    queryFn: () =>
+      leadsApi.fetchServiceEnquiries(selectedServiceId || undefined),
     refetchInterval: 15000,
   });
 
@@ -176,6 +175,7 @@ export const CoordinatorLeadsPage = () => {
         `Enquiry for ${data.lead.customer.fullName} moved to My enquiries.`,
       );
       queryClient.invalidateQueries({ queryKey: ["leads"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
     },
   });
 
@@ -270,7 +270,7 @@ export const CoordinatorLeadsPage = () => {
       )}
 
       <div className="page-heading flex items-center justify-between gap-4">
-        <h1>Enquiries</h1>
+        <h1>{currentTab === "my-leads" ? "My enquiries" : "All enquiries"}</h1>
         <button
           className="icon-button"
           aria-label="Refresh enquiries"
@@ -283,7 +283,6 @@ export const CoordinatorLeadsPage = () => {
           <RotateCcw size={17} aria-hidden="true" />
         </button>
       </div>
-      <EnquiryNavigation />
 
       {/* TAB CONTENT 1: Available enquiries */}
       {currentTab === "pool" && (
@@ -294,7 +293,7 @@ export const CoordinatorLeadsPage = () => {
               <Filter className="w-3.5 h-3.5 text-zinc-400" />
               <span className="text-xs font-medium text-zinc-700">Service</span>
               <select
-                aria-label="Filter available enquiries by service"
+                aria-label="Filter enquiries by service"
                 value={selectedServiceId}
                 onChange={(e) => setSelectedServiceId(e.target.value)}
                 className="text-xs bg-[#F8F8F6] border border-zinc-200 rounded-lg px-2.5 py-1 text-zinc-800 font-medium focus:outline-hidden"
@@ -349,10 +348,10 @@ export const CoordinatorLeadsPage = () => {
                 <CheckCircle2 className="w-5 h-5 text-emerald-500" />
               </div>
               <h3 className="text-sm font-medium text-zinc-900 mt-3">
-                No available enquiries
+                No enquiries yet
               </h3>
               <p className="text-xs text-zinc-500 mt-1 max-w-sm mx-auto">
-                New enquiries will appear here.
+                Enquiries for your assigned services will appear here.
               </p>
             </div>
           ) : (
@@ -365,7 +364,7 @@ export const CoordinatorLeadsPage = () => {
                 return (
                   <div
                     key={lead.id}
-                    className="bg-white border border-zinc-200/90 rounded-xl p-5 shadow-xs hover:border-zinc-300 transition flex flex-col justify-between"
+                    className={`border rounded-xl p-5 transition flex flex-col justify-between ${lead.assignedToId ? "bg-slate-100 border-slate-200 text-slate-500" : "bg-white border-zinc-200 shadow-xs hover:border-zinc-300"}`}
                   >
                     <div className="space-y-3">
                       {/* Top Bar: Service tag & timestamp */}
@@ -375,7 +374,9 @@ export const CoordinatorLeadsPage = () => {
                         </span>
                         <span className="text-[10px] font-mono text-zinc-400 flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {new Date(lead.createdAt).toLocaleTimeString([], {
+                          {new Date(lead.createdAt).toLocaleString("en-IN", {
+                            day: "numeric",
+                            month: "short",
                             hour: "2-digit",
                             minute: "2-digit",
                           })}
@@ -419,9 +420,9 @@ export const CoordinatorLeadsPage = () => {
                       <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-mono text-zinc-600">
                         <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-50 border border-zinc-200">
                           <Users className="w-3 h-3 text-zinc-400" />
-                          {lead.numberOfAdults} Ad
+                          {lead.numberOfAdults} adults
                           {lead.numberOfKids > 0
-                            ? `, ${lead.numberOfKids} Kd`
+                            ? `, ${lead.numberOfKids} children`
                             : ""}
                         </span>
 
@@ -439,7 +440,7 @@ export const CoordinatorLeadsPage = () => {
                         )}
 
                         <span className="text-[10px] text-zinc-400 ml-auto">
-                          via {lead.source.replace(/_/g, " ")}
+                          via {lead.source.toLowerCase().replace(/_/g, " ")}
                         </span>
                       </div>
                     </div>
@@ -447,12 +448,14 @@ export const CoordinatorLeadsPage = () => {
                     {/* Bottom Action: "Take enquiry" button */}
                     <div className="mt-5 pt-3 border-t border-zinc-100 flex items-center justify-between">
                       <span className="text-[10px] font-mono text-zinc-400">
-                        Available for your team
+                        {lead.assignedToId
+                          ? `Taken by ${lead.assignedToName || "a staff member"}`
+                          : "Not assigned"}
                       </span>
 
                       <button
                         onClick={() => claimMutation.mutate(lead.id)}
-                        disabled={isClaiming}
+                        disabled={isClaiming || !!lead.assignedToId}
                         className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 disabled:opacity-50 text-xs font-medium transition shadow-xs"
                       >
                         {isClaiming ? (
@@ -460,7 +463,13 @@ export const CoordinatorLeadsPage = () => {
                         ) : (
                           <Zap className="w-3.5 h-3.5 text-amber-300" />
                         )}
-                        <span>Take enquiry</span>
+                        <span>
+                          {lead.assignedToId
+                            ? lead.assignedToId === user?.id
+                              ? "Assigned to you"
+                              : "Already taken"
+                            : "Take enquiry"}
+                        </span>
                       </button>
                     </div>
                   </div>
@@ -658,7 +667,7 @@ export const CoordinatorLeadsPage = () => {
                                   {new Date(
                                     lead.followUpDate,
                                   ).toLocaleDateString()}
-                                  {isFollowUpDueToday && " (Today)"}
+                                  {isFollowUpDueToday && " (Due)"}
                                 </span>
                               ) : (
                                 <span className="text-zinc-400">—</span>

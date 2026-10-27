@@ -36,7 +36,7 @@ export const ItineraryBuilder = ({
       day: fields.length + 1,
       title: "",
       description: "",
-      meals: "Breakfast",
+      meals: "",
       stay: "",
     });
   };
@@ -46,11 +46,10 @@ export const ItineraryBuilder = ({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-900 font-mono">
-            Day-by-Day Itinerary Plan
+            Itinerary
           </h3>
           <p className="text-[11px] text-zinc-500 font-mono mt-0.5">
-            Define detailed schedules, meals, and accommodations for each day of
-            the tour.
+            Add the plan for each day.
           </p>
         </div>
         <button
@@ -88,7 +87,7 @@ export const ItineraryBuilder = ({
           </button>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="itinerary-editor-grid">
           {fields.map((field, index) => {
             const dayError = errors.itinerary?.[index];
 
@@ -104,7 +103,7 @@ export const ItineraryBuilder = ({
                       D{index + 1}
                     </span>
                     <span className="text-xs font-medium text-zinc-900">
-                      Day {index + 1} Schedule
+                      Day {index + 1}
                     </span>
                   </div>
 
@@ -116,6 +115,7 @@ export const ItineraryBuilder = ({
                       onClick={() => move(index, index - 1)}
                       className="p-1 rounded text-zinc-400 hover:text-black hover:bg-zinc-100 disabled:opacity-20 transition"
                       title="Move day up"
+                      aria-label={`Move day ${index + 1} up`}
                     >
                       <ArrowUp className="w-3.5 h-3.5" />
                     </button>
@@ -126,6 +126,7 @@ export const ItineraryBuilder = ({
                       onClick={() => move(index, index + 1)}
                       className="p-1 rounded text-zinc-400 hover:text-black hover:bg-zinc-100 disabled:opacity-20 transition"
                       title="Move day down"
+                      aria-label={`Move day ${index + 1} down`}
                     >
                       <ArrowDown className="w-3.5 h-3.5" />
                     </button>
@@ -135,6 +136,7 @@ export const ItineraryBuilder = ({
                       onClick={() => remove(index)}
                       className="p-1 rounded text-zinc-400 hover:text-red-600 hover:bg-red-50 transition ml-1"
                       title="Remove day"
+                      aria-label={`Remove day ${index + 1}`}
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
@@ -143,10 +145,14 @@ export const ItineraryBuilder = ({
 
                 {/* Day Title */}
                 <div>
-                  <label className="block text-[11px] font-medium text-zinc-700 mb-1">
-                    Day Title <span className="text-red-500">*</span>
+                  <label
+                    htmlFor={`day-${field.id}-title`}
+                    className="block text-[11px] font-medium text-zinc-700 mb-1"
+                  >
+                    Title <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id={`day-${field.id}-title`}
                     type="text"
                     placeholder="e.g. Arrival in Dubai, Hotel Check-in & Dhow Cruise Dinner"
                     {...register(`itinerary.${index}.title` as const)}
@@ -161,11 +167,14 @@ export const ItineraryBuilder = ({
 
                 {/* Day Description */}
                 <div>
-                  <label className="block text-[11px] font-medium text-zinc-700 mb-1">
-                    Activity Breakdown / Description{" "}
-                    <span className="text-red-500">*</span>
+                  <label
+                    htmlFor={`day-${field.id}-description`}
+                    className="block text-[11px] font-medium text-zinc-700 mb-1"
+                  >
+                    Plan for the day <span className="text-red-500">*</span>
                   </label>
                   <textarea
+                    id={`day-${field.id}-description`}
                     rows={3}
                     placeholder="Describe morning, afternoon, and evening sights, transfers, and activities..."
                     {...register(`itinerary.${index}.description` as const)}
@@ -181,11 +190,15 @@ export const ItineraryBuilder = ({
                 {/* Meals & Stay Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                   <div>
-                    <label className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-600 mb-1">
+                    <label
+                      htmlFor={`day-${field.id}-meals`}
+                      className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-600 mb-1"
+                    >
                       <Utensils className="w-3 h-3 text-zinc-400" />
-                      <span>Meals Included (Optional)</span>
+                      <span>Meals (optional)</span>
                     </label>
                     <input
+                      id={`day-${field.id}-meals`}
                       type="text"
                       placeholder="e.g. Breakfast & Dinner"
                       {...register(`itinerary.${index}.meals` as const)}
@@ -194,11 +207,15 @@ export const ItineraryBuilder = ({
                   </div>
 
                   <div>
-                    <label className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-600 mb-1">
+                    <label
+                      htmlFor={`day-${field.id}-stay`}
+                      className="flex items-center gap-1.5 text-[11px] font-medium text-zinc-600 mb-1"
+                    >
                       <Hotel className="w-3 h-3 text-zinc-400" />
-                      <span>Overnight Accommodation (Optional)</span>
+                      <span>Stay (optional)</span>
                     </label>
                     <input
+                      id={`day-${field.id}-stay`}
                       type="text"
                       placeholder="e.g. Radisson Blu Waterfront 5*"
                       {...register(`itinerary.${index}.stay` as const)}

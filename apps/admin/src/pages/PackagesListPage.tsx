@@ -1,3 +1,5 @@
+import { PackageImage } from "../components/packages/PackageImage";
+import { PackagePreview } from "../components/packages/PackagePreview";
 import { Modal, FormError } from "../components/ui/Modal";
 import { userMessage } from "../lib/userMessage";
 import { useState, useMemo } from "react";
@@ -126,14 +128,10 @@ export const PackagesListPage = () => {
           return (
             <div className="flex items-center gap-3 min-w-[240px]">
               <div className="w-12 h-10 rounded-md overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0">
-                <img
+                <PackageImage
                   src={pkg.coverImageUrl}
                   alt={pkg.title}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=120&q=80";
-                  }}
                 />
               </div>
               <div className="space-y-0.5 truncate">
@@ -575,6 +573,7 @@ const PackagePreviewModal = ({ slug, onClose }: PackagePreviewModalProps) => {
   return (
     <Modal
       title="Package preview"
+      panelClassName="package-preview-modal"
       description={pkg?.title || ""}
       onClose={onClose}
       wide
@@ -600,107 +599,7 @@ const PackagePreviewModal = ({ slug, onClose }: PackagePreviewModalProps) => {
             </button>
           </p>
         ) : (
-          <>
-            {/* Hero Banner */}
-            <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-100 border border-zinc-200">
-              <img
-                src={pkg.coverImageUrl}
-                alt={pkg.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
-                <div className="flex items-center gap-2 text-xs font-mono mb-1">
-                  <span className="px-2 py-0.5 rounded bg-white/20 backdrop-blur-xs">
-                    {pkg.destination}
-                  </span>
-                  <span>•</span>
-                  <span>
-                    {pkg.durationDays}D / {pkg.durationNights}N
-                  </span>
-                </div>
-                <h2 className="text-base font-semibold leading-tight">
-                  {pkg.title}
-                </h2>
-                <p className="text-xs font-mono text-zinc-200 mt-1">
-                  Starting from ₹
-                  {Number(pkg.startingPrice).toLocaleString("en-IN")}
-                </p>
-              </div>
-            </div>
-
-            {/* Overview */}
-            <div>
-              <h4 className="text-xs font-mono uppercase text-zinc-500 mb-1">
-                Overview
-              </h4>
-              <p className="text-xs text-zinc-700 leading-relaxed">
-                {pkg.overview}
-              </p>
-            </div>
-
-            {/* Itinerary */}
-            {pkg.itinerary && pkg.itinerary.length > 0 && (
-              <div className="space-y-2">
-                <h4 className="text-xs font-mono uppercase text-zinc-500">
-                  Itinerary ({pkg.itinerary.length} Days)
-                </h4>
-                <div className="space-y-2">
-                  {pkg.itinerary.map((day) => (
-                    <div
-                      key={day.day}
-                      className="p-3 rounded-md border border-zinc-200 bg-[#FAFAF9] text-xs space-y-1"
-                    >
-                      <div className="font-semibold text-zinc-900 flex items-center gap-2">
-                        <span className="w-5 h-5 rounded bg-black text-white text-[10px] font-mono flex items-center justify-center">
-                          D{day.day}
-                        </span>
-                        <span>{day.title}</span>
-                      </div>
-                      <p className="text-zinc-600 pl-7 text-[11px] leading-relaxed">
-                        {day.description}
-                      </p>
-                      {(day.meals || day.stay) && (
-                        <div className="pl-7 pt-1 flex flex-wrap gap-2 text-[10px] text-zinc-500 font-mono">
-                          {day.meals && <span>🍽 {day.meals}</span>}
-                          {day.stay && <span>🏨 {day.stay}</span>}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Inclusions & Exclusions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <h4 className="text-xs font-mono uppercase text-emerald-800 mb-1.5">
-                  Inclusions
-                </h4>
-                <ul className="space-y-1 text-xs text-zinc-700">
-                  {pkg.inclusions.map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-1.5">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h4 className="text-xs font-mono uppercase text-zinc-500 mb-1.5">
-                  Exclusions
-                </h4>
-                <ul className="space-y-1 text-xs text-zinc-700">
-                  {pkg.exclusions.map((item, idx) => (
-                    <li key={idx} className="flex items-center gap-1.5">
-                      <XCircle className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </>
+          <PackagePreview key={pkg.id} pkg={pkg} />
         )}
       </div>
     </Modal>

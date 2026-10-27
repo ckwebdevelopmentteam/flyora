@@ -139,6 +139,9 @@ export const packagesApi = {
     return new Promise((resolve, reject) => {
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", uploadUrl);
+      xhr.timeout = 120_000;
+      xhr.ontimeout = () =>
+        reject(new Error("Photo upload took too long. Please try again."));
       xhr.setRequestHeader(
         "Content-Type",
         file.type || "application/octet-stream",

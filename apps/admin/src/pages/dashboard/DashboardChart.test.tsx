@@ -113,3 +113,25 @@ it("does not fetch sales or payment charts for Content Managers", () => {
   expect(bookingsApi.fetchBookings).not.toHaveBeenCalled();
   expect(leadsApi.getAllLeads).not.toHaveBeenCalled();
 });
+
+it("uses each stage's share of the total rather than the largest stage", async () => {
+  show();
+  await screen.findByRole("link", { name: "Booked: 4" });
+  const segments = document.querySelectorAll(".distribution-bar > span");
+  const widths = Array.from(segments).map((segment) =>
+    parseFloat((segment as HTMLElement).style.width),
+  );
+  expect(widths.reduce((sum, width) => sum + width, 0)).toBeCloseTo(100);
+  expect(
+    parseFloat(
+      (
+        document.querySelector(
+          ".distribution-bar > .distribution-booked",
+        ) as HTMLElement
+      ).style.width,
+    ),
+  ).toBeCloseTo(100 / 3);
+  expect(screen.getByRole("link", { name: "Booked: 4" }).textContent).toContain(
+    "33.3%",
+  );
+});

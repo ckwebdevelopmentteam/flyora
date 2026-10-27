@@ -60,7 +60,7 @@ export const Sidebar = ({
     ...(user?.role !== "CONTENT_MANAGER"
       ? [{ name: "Bookings & payments", path: "/bookings", icon: CreditCard }]
       : []),
-    ...(user?.role !== "ACCOUNTS"
+    ...(manager || user?.role === "CONTENT_MANAGER"
       ? [{ name: "Tour packages", path: "/packages", icon: Palmtree }]
       : []),
     ...(manager ? [{ name: "Team", path: "/team", icon: Users }] : []),
@@ -163,19 +163,45 @@ export const Sidebar = ({
                   ? pathname === route
                   : pathname.startsWith(route);
             return (
-              <Link
-                key={path}
-                to={path}
-                onClick={() => {
-                  if (`${pathname}${search}` === path) onClose();
-                }}
-                className={`nav-link ${active ? "active" : ""}`}
-                aria-current={active ? "page" : undefined}
-                title={collapsed ? name : undefined}
-              >
-                <Icon size={18} aria-hidden="true" />
-                <span className={collapsed ? "lg:sr-only" : ""}>{name}</span>
-              </Link>
+              <div key={path}>
+                <Link
+                  to={path}
+                  onClick={() => {
+                    if (`${pathname}${search}` === path) onClose();
+                  }}
+                  className={`nav-link ${active ? "active" : ""}`}
+                  aria-current={active ? "page" : undefined}
+                  title={collapsed ? name : undefined}
+                >
+                  <Icon size={18} aria-hidden="true" />
+                  <span className={collapsed ? "lg:sr-only" : ""}>{name}</span>
+                </Link>
+                {name === "Enquiries" &&
+                  user?.role === "SERVICE_COORDINATOR" && (
+                    <div
+                      className={`enquiry-subnav ${collapsed ? "lg:sr-only" : ""}`}
+                    >
+                      {[
+                        { name: "Mine", tab: "my-leads" },
+                        { name: "All", tab: "pool" },
+                      ].map((view) => (
+                        <Link
+                          key={view.tab}
+                          to={`/leads?tab=${view.tab}`}
+                          aria-current={
+                            active &&
+                            (new URLSearchParams(search).get("tab") ||
+                              "my-leads") === view.tab
+                              ? "page"
+                              : undefined
+                          }
+                        >
+                          {view.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+              </div>
             );
           })}
         </nav>
@@ -185,7 +211,9 @@ export const Sidebar = ({
             <p className="text-sm font-medium truncate">
               {user?.fullName || "Flyora team"}
             </p>
-            <p className="text-xs text-slate-500">Staff workspace</p>
+            <p className="text-xs text-slate-500">
+              {manager ? "Admin" : "Staff workspace"}
+            </p>
           </div>
         </div>
       </aside>

@@ -35,6 +35,7 @@ export function Modal({
   children,
   footer,
   wide = false,
+  panelClassName = "",
   drawer = false,
   hideHeader = false,
 }: {
@@ -45,6 +46,7 @@ export function Modal({
   children: ReactNode;
   footer?: ReactNode;
   wide?: boolean;
+  panelClassName?: string;
   drawer?: boolean;
   hideHeader?: boolean;
 }) {
@@ -131,7 +133,7 @@ export function Modal({
       >
         <div
           ref={panel}
-          className={`modal-panel ${wide ? "modal-wide" : ""} ${drawer ? "drawer-panel" : ""}`}
+          className={`modal-panel ${panelClassName} ${wide ? "modal-wide" : ""} ${drawer ? "drawer-panel" : ""}`}
           role="dialog"
           aria-modal="true"
           aria-labelledby={`${id}-title`}

@@ -1,6 +1,5 @@
-import { useState, KeyboardEvent } from "react";
-import { X, Plus } from "lucide-react";
-
+import { useId, useState } from "react";
+import { X, Plus, Check, Minus } from "lucide-react";
 interface TagInputProps {
   label: string;
   helperText?: string;
@@ -10,118 +9,96 @@ interface TagInputProps {
   presets?: string[];
   variant?: "default" | "inclusion" | "exclusion";
 }
-
-export const TagInput = ({
+export function TagInput({
   label,
-  helperText,
   tags,
   onChange,
-  placeholder = "Type and press Enter...",
+  placeholder = "Add an item",
   presets = [],
   variant = "default",
-}: TagInputProps) => {
-  const [inputValue, setInputValue] = useState("");
-
-  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter" || e.key === ",") {
-      e.preventDefault();
-      addTag(inputValue);
-    } else if (e.key === "Backspace" && !inputValue && tags.length > 0) {
-      removeTag(tags.length - 1);
-    }
-  };
-
-  const addTag = (text: string) => {
-    const trimmed = text.trim().replace(/^,+|,+$/g, "");
+}: TagInputProps) {
+  const id = useId();
+  const [value, setValue] = useState("");
+  const add = (text: string) => {
+    const trimmed = text.trim();
     if (!trimmed) return;
-    if (!tags.includes(trimmed)) {
+    if (!tags.some((tag) => tag.toLowerCase() === trimmed.toLowerCase()))
       onChange([...tags, trimmed]);
-    }
-    setInputValue("");
+    setValue("");
   };
-
-  const removeTag = (indexToRemove: number) => {
-    onChange(tags.filter((_, idx) => idx !== indexToRemove));
-  };
-
-  const badgeStyles =
-    variant === "inclusion"
-      ? "bg-emerald-50/60 border-emerald-200 text-emerald-900"
-      : variant === "exclusion"
-        ? "bg-zinc-100 border-zinc-300 text-zinc-700"
-        : "bg-white border-zinc-200 text-zinc-800";
-
+  const Icon = variant === "inclusion" ? Check : Minus;
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <label className="block text-xs font-medium text-zinc-900 tracking-tight">
-          {label}
-        </label>
-        <span className="text-[10px] text-zinc-400 font-mono">
-          {tags.length} added
-        </span>
+    <section className={`package-tag-editor package-tag-${variant}`}>
+      <div className="flex justify-between items-center gap-3 mb-4">
+        <h3 className="font-semibold text-sm">{label}</h3>
+        <span className="text-xs text-slate-400">{tags.length} items</span>
       </div>
-
-      {helperText && (
-        <p className="text-[11px] text-zinc-500 font-mono">{helperText}</p>
-      )}
-
-      {/* Preset Suggestions */}
-      {presets.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 pt-1">
-          <span className="text-[10px] text-zinc-400 font-mono self-center mr-1">
-            Suggestions:
-          </span>
-          {presets.map((preset) => {
-            const isAdded = tags.includes(preset);
-            return (
-              <button
-                type="button"
-                key={preset}
-                disabled={isAdded}
-                onClick={() => addTag(preset)}
-                className={`text-[11px] px-2 py-0.5 rounded-full border transition flex items-center gap-1 font-mono ${
-                  isAdded
-                    ? "opacity-40 bg-zinc-100 border-zinc-200 text-zinc-400 cursor-not-allowed"
-                    : "bg-white border-zinc-200 text-zinc-700 hover:border-black hover:text-black cursor-pointer shadow-xs"
-                }`}
-              >
-                <Plus className="w-2.5 h-2.5" />
-                <span>{preset}</span>
-              </button>
-            );
-          })}
-        </div>
-      )}
-
-      {/* Active Tags & Input Container */}
-      <div className="min-h-[42px] p-2 rounded-lg border border-zinc-200 bg-[#FAFAF9] flex flex-wrap gap-1.5 items-center focus-within:border-black focus-within:bg-white transition shadow-xs">
-        {tags.map((tag, idx) => (
-          <span
-            key={`${tag}-${idx}`}
-            className={`inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-md border font-medium shadow-xs ${badgeStyles}`}
-          >
+      <ul className="package-tag-list">
+        {tags.map((tag, index) => (
+          <li key={`${tag}-${index}`}>
+            <Icon size={15} aria-hidden="true" />
             <span>{tag}</span>
             <button
               type="button"
-              onClick={() => removeTag(idx)}
-              className="text-zinc-400 hover:text-black transition"
+              aria-label={`Remove ${tag}`}
+              onClick={() => onChange(tags.filter((_, i) => i !== index))}
             >
-              <X className="w-3 h-3" />
+              <X size={14} />
             </button>
-          </span>
+          </li>
         ))}
-
+      </ul>
+      {!tags.length && (
+        <p className="text-sm text-slate-400 mb-4">No items added</p>
+      )}
+      <label htmlFor={id} className="sr-only">
+        Add to {label.toLowerCase()}
+      </label>
+      <div className="flex gap-2 mt-4">
         <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => setInputValue(e.target.value)}
-          onKeyDown={handleKeyDown}
-          onBlur={() => addTag(inputValue)}
-          placeholder={tags.length === 0 ? placeholder : "Add another..."}
-          className="flex-1 min-w-[140px] text-xs bg-transparent outline-none text-zinc-900 placeholder:text-zinc-400 px-1 py-1"
+          id={id}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              add(value);
+            }
+          }}
+          placeholder={placeholder}
+          className="min-w-0 flex-1 border rounded-md px-3 py-2 text-sm"
         />
+        <button
+          type="button"
+          aria-label={`Add to ${label.toLowerCase()}`}
+          className="button-secondary"
+          disabled={!value.trim()}
+          onClick={() => add(value)}
+        >
+          <Plus size={16} />
+          <span>Add</span>
+        </button>
       </div>
-    </div>
+      {!!presets.length && (
+        <details className="package-tag-presets">
+          <summary>Common items</summary>
+          <div>
+            {presets
+              .filter(
+                (preset) =>
+                  !tags.some(
+                    (tag) => tag.toLowerCase() === preset.toLowerCase(),
+                  ),
+              )
+              .map((preset) => (
+                <button type="button" key={preset} onClick={() => add(preset)}>
+                  <Plus size={12} />
+                  {preset}
+                </button>
+              ))}
+          </div>
+        </details>
+      )}
+    </section>
   );
-};
+}

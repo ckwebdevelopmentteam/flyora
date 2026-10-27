@@ -102,13 +102,7 @@ function MetricsHeader({
     <div className="metrics-heading">
       <div>
         <h2 className="sr-only">{title}</h2>
-        <span className="text-xs text-slate-500" title={description}>
-          {title === "Packages at a glance"
-            ? "Current packages"
-            : title === "Your work"
-              ? "Your work"
-              : "All time"}
-        </span>
+        <span className="sr-only">{description}</span>
       </div>
       <button
         className="icon-button"
