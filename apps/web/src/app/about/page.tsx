@@ -7,8 +7,7 @@ import { EnquiryModal } from "../../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../../components/FloatingWhatsApp";
 import { ABOUT_DATA } from "./aboutData";
-import { AboutHero } from "./components/AboutHero";
-import { AboutStory } from "./components/AboutStory";
+import { AboutEditorialStory } from "./components/AboutEditorialStory";
 import { AboutTransition } from "./components/AboutTransition";
 import { AboutCurators } from "./components/AboutCurators";
 import { AboutValues } from "./components/AboutValues";
@@ -36,11 +35,8 @@ export default function AboutPage() {
 
       {/* Main Editorial Flow matching reference UI/UX rhythm */}
       <main className="flex-1">
-        {/* Section 1: Signature Black Tomato Hero with Slate-Blue Header & Overlapping Mountain Card */}
-        <AboutHero data={ABOUT_DATA.hero} onOpenEnquiry={handleOpenEnquiry} />
-
-        {/* Section 2: "WHO WE ARE" with Stats & Rounded Consultation Photo */}
-        <AboutStory data={ABOUT_DATA.story} onOpenEnquiry={handleOpenEnquiry} />
+        {/* Editorial Story matching 4 reference screenshots: Hero, Overlapping Mountain, It Began With A Feeling, Unique Different & Daring, Regenerative Travel */}
+        <AboutEditorialStory onOpenEnquiry={handleOpenEnquiry} />
 
         {/* Section 3: "A GENTLE PLACE TO BEGIN" Centered Transition Statement */}
         <AboutTransition data={ABOUT_DATA.transitionStatement} />
