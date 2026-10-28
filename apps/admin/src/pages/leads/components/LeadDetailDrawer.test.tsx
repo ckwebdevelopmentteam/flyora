@@ -97,7 +97,7 @@ describe("LeadDetailDrawer Quotations Integration (Dev 2)", () => {
     // Verify Create Quotation button is visible in header
     expect(
       screen.getByRole("button", {
-        name: /Create Quotation \(Margin Guard\)/i,
+        name: /Create quotation/i,
       }),
     ).toBeTruthy();
 
@@ -124,7 +124,7 @@ describe("LeadDetailDrawer Quotations Integration (Dev 2)", () => {
 
     // Quote details should be displayed
     expect(await screen.findByText("FLY-2026-0088")).toBeTruthy();
-    expect(screen.getByText("SENT")).toBeTruthy();
+    expect(screen.getByText("Sent")).toBeTruthy();
     expect(screen.getByText("₹2,20,000")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Copy Link" })).toBeTruthy();
     expect(
@@ -147,13 +147,78 @@ describe("LeadDetailDrawer Quotations Integration (Dev 2)", () => {
     );
 
     const createQuoteBtn = screen.getByRole("button", {
-      name: /Create Quotation \(Margin Guard\)/i,
+      name: /Create quotation/i,
     });
     fireEvent.click(createQuoteBtn);
 
     // Modal title should appear
     expect(
-      await screen.findByText("Quotation Builder & Margin Guard"),
+      await screen.findByRole("dialog", { name: "Create quotation" }),
     ).toBeTruthy();
+  });
+});
+
+describe("Enquiry request failures", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(quotesApi.fetchQuotationsForLead).mockResolvedValue([]);
+  });
+  afterEach(cleanup);
+  const draw = (onAddNote = vi.fn(), onUpdateStatus = vi.fn()) =>
+    render(
+      <LeadDetailDrawer
+        lead={mockLead}
+        activities={[]}
+        isOpen
+        onClose={vi.fn()}
+        onAddNote={onAddNote}
+        onUpdateStatus={onUpdateStatus}
+      />,
+    );
+  it("keeps an unsaved note and displays a safe error", async () => {
+    draw(vi.fn().mockRejectedValue(new Error("Internal provider exception")));
+    fireEvent.change(screen.getByRole("textbox", { name: "Staff note" }), {
+      target: { value: "Call tomorrow" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /Save Note/i }));
+    expect(await screen.findByRole("alert")).toHaveProperty(
+      "textContent",
+      "We couldn't save the note. Please try again.",
+    );
+    expect(screen.getByRole("textbox", { name: "Staff note" })).toHaveProperty(
+      "value",
+      "Call tomorrow",
+    );
+  });
+  it("doesn't pretend a rejected stage change succeeded", async () => {
+    draw(
+      vi.fn(),
+      vi.fn().mockRejectedValue(new Error("Internal provider exception")),
+    );
+    fireEvent.change(screen.getByRole("combobox", { name: "Enquiry stage" }), {
+      target: { value: "CONTACTED" },
+    });
+    expect(await screen.findByRole("alert")).toHaveProperty(
+      "textContent",
+      "We couldn't change the stage. Please try again.",
+    );
+    expect(
+      screen.getByRole("combobox", { name: "Enquiry stage" }),
+    ).toHaveProperty("value", "QUOTED");
+  });
+  it("offers retry instead of saying there are no quotations when loading fails", async () => {
+    vi.mocked(quotesApi.fetchQuotationsForLead).mockRejectedValueOnce(
+      new Error("Internal provider exception"),
+    );
+    draw();
+    fireEvent.click(screen.getByRole("button", { name: /Quotations/ }));
+    expect(await screen.findByRole("alert")).toHaveProperty(
+      "textContent",
+      expect.stringContaining("We couldn't load the quotations"),
+    );
+    expect(screen.queryByText("No quotations created yet")).toBeNull();
+    vi.mocked(quotesApi.fetchQuotationsForLead).mockResolvedValue(mockQuotes);
+    fireEvent.click(screen.getByRole("button", { name: "Try again" }));
+    expect(await screen.findByText("FLY-2026-0088")).toBeTruthy();
   });
 });

@@ -1,5 +1,9 @@
 import { FastifyInstance } from "fastify";
-import { LeadFilterInput, PublicEnquiryInput } from "@flyora/validators";
+import {
+  CreateLeadInput,
+  LeadFilterInput,
+  PublicEnquiryInput,
+} from "@flyora/validators";
 import {
   LeadDetailItem,
   LeadItem,
@@ -148,11 +152,21 @@ export class LeadsService {
    * Atomic "Take Lead" (First-come, first-served claim lock)
    */
   async takeLead(leadId: string, userId: string): Promise<LeadDetailItem> {
+    const actor = await this.fastify.prisma.user.findUnique({
+      where: { id: userId },
+      include: { services: true },
+    });
+    if (!actor?.isActive || actor.role !== "SERVICE_COORDINATOR")
+      throw {
+        statusCode: 403,
+        message: "Only assigned staff can take enquiries.",
+      };
     // Atomic update query to prevent race conditions
     const updateResult = await this.fastify.prisma.lead.updateMany({
       where: {
         id: leadId,
         assignedToId: null, // Only lock if still unclaimed!
+        serviceId: { in: actor.services.map((mapping) => mapping.serviceId) },
       },
       data: {
         assignedToId: userId,
@@ -202,6 +216,7 @@ export class LeadsService {
   async getCoordinatorLeadPool(
     userId: string,
     userRole: string,
+    includeAssigned = false,
   ): Promise<LeadItem[]> {
     let serviceFilter: any = {};
 
@@ -220,7 +235,7 @@ export class LeadsService {
 
     const leads = await this.fastify.prisma.lead.findMany({
       where: {
-        assignedToId: null,
+        ...(includeAssigned ? {} : { assignedToId: null }),
         ...serviceFilter,
       },
       include: {
@@ -232,7 +247,78 @@ export class LeadsService {
       orderBy: { createdAt: "desc" },
     });
 
-    return leads.map((l) => this.formatLeadItem(l));
+    return leads
+      .map((l) => this.formatLeadItem(l))
+      .sort(
+        (a, b) =>
+          Number(!!a.assignedToId) - Number(!!b.assignedToId) ||
+          Date.parse(b.createdAt) - Date.parse(a.createdAt),
+      );
+  }
+
+  async assertLeadAccess(
+    leadId: string,
+    userId: string,
+    role: string,
+    write = false,
+  ) {
+    const lead = await this.fastify.prisma.lead.findUnique({
+      where: { id: leadId },
+    });
+    if (!lead) throw { statusCode: 404, message: "Enquiry not found." };
+    if (!write && ["SUPER_ADMIN", "OPERATIONS_MANAGER"].includes(role)) return;
+    if (role !== "SERVICE_COORDINATOR" || lead.assignedToId !== userId)
+      throw {
+        statusCode: 403,
+        message: "This enquiry is not assigned to you.",
+      };
+  }
+
+  async staffWorkload() {
+    const [staff, grouped, due] = await Promise.all([
+      this.fastify.prisma.user.findMany({
+        where: { role: "SERVICE_COORDINATOR", isActive: true },
+        select: {
+          id: true,
+          fullName: true,
+          availability: true,
+          services: { select: { service: { select: { name: true } } } },
+        },
+        orderBy: { fullName: "asc" },
+      }),
+      this.fastify.prisma.lead.groupBy({
+        by: ["assignedToId", "status"],
+        _count: true,
+      }),
+      this.fastify.prisma.lead.groupBy({
+        by: ["assignedToId"],
+        where: {
+          followUpDate: { lt: new Date(new Date().setHours(24, 0, 0, 0)) },
+          status: { notIn: ["BOOKED", "LOST"] },
+        },
+        _count: true,
+      }),
+    ]);
+    return staff.map((person) => ({
+      id: person.id,
+      fullName: person.fullName,
+      availability: person.availability,
+      services: person.services.map((item) => item.service.name),
+      active: grouped
+        .filter(
+          (item) =>
+            item.assignedToId === person.id &&
+            !["BOOKED", "LOST"].includes(item.status),
+        )
+        .reduce((sum, item) => sum + item._count, 0),
+      booked: grouped
+        .filter(
+          (item) => item.assignedToId === person.id && item.status === "BOOKED",
+        )
+        .reduce((sum, item) => sum + item._count, 0),
+      followUpsDue:
+        due.find((item) => item.assignedToId === person.id)?._count || 0,
+    }));
   }
 
   /**
@@ -471,6 +557,7 @@ export class LeadsService {
   ): Promise<LeadDetailItem> {
     const targetUser = await this.fastify.prisma.user.findUnique({
       where: { id: targetUserId },
+      include: { services: true },
     });
 
     if (!targetUser) {
@@ -494,6 +581,17 @@ export class LeadsService {
       };
     }
 
+    if (
+      !targetUser.isActive ||
+      targetUser.role !== "SERVICE_COORDINATOR" ||
+      !targetUser.services.some(
+        (mapping) => mapping.serviceId === existing.serviceId,
+      )
+    )
+      throw {
+        statusCode: 400,
+        message: "Choose an active staff member assigned to this service.",
+      };
     const previousOwner = existing.assignedTo?.fullName || "Unassigned Pool";
 
     await this.fastify.prisma.lead.update({
@@ -514,5 +612,120 @@ export class LeadsService {
     });
 
     return this.getLeadById(leadId);
+  }
+
+  /**
+   * Manual Lead Creation by Staff (Auto-assigned to staff member)
+   */
+  async createStaffLead(
+    data: CreateLeadInput,
+    userId: string,
+    userRole: string,
+  ): Promise<LeadItem> {
+    // 1. Verify service exists
+    const service = await this.fastify.prisma.service.findUnique({
+      where: { id: data.serviceId },
+    });
+
+    if (!service) {
+      throw {
+        statusCode: 400,
+        error: "Bad Request",
+        message: "Selected service does not exist",
+      };
+    }
+
+    // 2. Validate service assignment if coordinator
+    if (userRole === "SERVICE_COORDINATOR") {
+      const coordinatorMapping =
+        await this.fastify.prisma.userService.findUnique({
+          where: {
+            userId_serviceId: {
+              userId,
+              serviceId: data.serviceId,
+            },
+          },
+        });
+
+      if (!coordinatorMapping) {
+        const userServices = await this.fastify.prisma.userService.findMany({
+          where: { userId },
+        });
+        if (userServices.length > 0) {
+          throw {
+            statusCode: 403,
+            error: "Forbidden",
+            message: `You are not assigned to the "${service.name}" service.`,
+          };
+        }
+      }
+    }
+
+    // 3. Validate package if selected
+    if (data.packageId) {
+      const pkg = await this.fastify.prisma.package.findUnique({
+        where: { id: data.packageId },
+      });
+      if (!pkg) {
+        throw {
+          statusCode: 400,
+          error: "Bad Request",
+          message: "Selected tour package does not exist",
+        };
+      }
+    }
+
+    // 4. Upsert Customer by unique phone number
+    const customer = await this.fastify.prisma.customer.upsert({
+      where: { phone: data.phone },
+      update: {
+        fullName: data.fullName,
+        ...(data.email ? { email: data.email } : {}),
+        ...(data.city ? { city: data.city } : {}),
+      },
+      create: {
+        fullName: data.fullName,
+        phone: data.phone,
+        email: data.email || null,
+        city: data.city || null,
+      },
+    });
+
+    // 5. Create lead with auto-assignment to staff user
+    const lead = await this.fastify.prisma.lead.create({
+      data: {
+        customerId: customer.id,
+        serviceId: data.serviceId,
+        packageId: data.packageId || null,
+        assignedToId: userId,
+        claimedAt: new Date(),
+        status: data.status || "NEW",
+        source: data.source || "PHONE_CALL",
+        travelDate: data.travelDate ? new Date(data.travelDate) : null,
+        numberOfAdults: data.numberOfAdults ?? 1,
+        numberOfKids: data.numberOfKids ?? 0,
+        estimatedBudget: data.estimatedBudget ?? null,
+      },
+      include: {
+        customer: true,
+        service: true,
+        package: true,
+        assignedTo: true,
+      },
+    });
+
+    // 6. Record audit activity
+    await this.fastify.prisma.leadActivity.create({
+      data: {
+        leadId: lead.id,
+        userId,
+        action: "CLAIMED_LEAD",
+        details: data.note
+          ? `Lead added manually and auto-assigned. Note: ${data.note}`
+          : `Lead added manually and auto-assigned.`,
+      },
+    });
+
+    return this.formatLeadItem(lead);
   }
 }

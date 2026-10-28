@@ -1,3 +1,5 @@
+import { useSearchParams } from "react-router-dom";
+import { userMessage } from "../../lib/userMessage";
 import React, { useState, useEffect } from "react";
 import type {
   BookingRecord,
@@ -31,9 +33,24 @@ export const BookingsPage: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState<BookingStatus | "ALL">(
     "ALL",
   );
-  const [paymentFilter, setPaymentFilter] = useState<
-    PaymentCalculatedStatus | "ALL"
-  >("ALL");
+  const [searchParams, setSearchParams] = useSearchParams();
+  type PaymentFilter = PaymentCalculatedStatus | "ALL" | "NEEDS_REVIEW";
+  const requestedFilter = searchParams.get("payment");
+  const paymentFilter: PaymentFilter =
+    requestedFilter === "review"
+      ? "NEEDS_REVIEW"
+      : ["FULLY_PAID", "PARTIALLY_PAID", "UNPAID"].includes(
+            requestedFilter || "",
+          )
+        ? (requestedFilter as PaymentFilter)
+        : "ALL";
+  const setPaymentFilter = (value: PaymentFilter) =>
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous);
+      if (value === "ALL") next.delete("payment");
+      else next.set("payment", value === "NEEDS_REVIEW" ? "review" : value);
+      return next;
+    });
 
   // Drawers & Modals
   const [selectedBookingForDrawer, setSelectedBookingForDrawer] =
@@ -52,9 +69,7 @@ export const BookingsPage: React.FC = () => {
       setBookings(data);
     } catch (error) {
       setLoadError(
-        error instanceof Error
-          ? error.message
-          : "Bookings could not be loaded. Please try again.",
+        userMessage(error, "Bookings could not be loaded. Please try again."),
       );
     } finally {
       setIsLoading(false);
@@ -72,9 +87,14 @@ export const BookingsPage: React.FC = () => {
       payments: b.payments,
     });
 
-    if (paymentFilter !== "ALL" && financials.paymentStatus !== paymentFilter) {
+    if (paymentFilter === "NEEDS_REVIEW") {
+      if (!b.payments?.some((payment) => payment.status === "PENDING"))
+        return false;
+    } else if (
+      paymentFilter !== "ALL" &&
+      financials.paymentStatus !== paymentFilter
+    )
       return false;
-    }
 
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase().trim();
@@ -119,9 +139,7 @@ export const BookingsPage: React.FC = () => {
         if (refreshed) setSelectedBookingForDrawer(refreshed);
       } catch (error) {
         setLoadError(
-          error instanceof Error
-            ? error.message
-            : "Booking details could not be refreshed.",
+          userMessage(error, "Booking details could not be refreshed."),
         );
       }
     }
@@ -133,11 +151,7 @@ export const BookingsPage: React.FC = () => {
       const details = await bookingsApi.fetchBookingById(booking.id);
       if (details) setSelectedBookingForDrawer(details);
     } catch (error) {
-      setLoadError(
-        error instanceof Error
-          ? error.message
-          : "Booking details could not be loaded.",
-      );
+      setLoadError(userMessage(error, "Booking details could not be loaded."));
     }
   };
 
@@ -156,15 +170,11 @@ export const BookingsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2.5">
             <h1 className="text-xl font-bold text-zinc-900 tracking-tight">
-              Bookings & Offline Payments
+              Bookings & payments
             </h1>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-700 font-medium">
-              Module 6
-            </span>
           </div>
           <p className="text-xs text-zinc-500 mt-0.5">
-            1-Click quote conversions, manual payment logging, R2 receipts &
-            accounts verification
+            Manage confirmed trips, receipts and customer payments.
           </p>
         </div>
 
@@ -194,10 +204,10 @@ export const BookingsPage: React.FC = () => {
             <Compass className="w-4 h-4 text-zinc-400" />
           </div>
           <p className="text-2xl font-bold font-mono text-zinc-900">
-            {totalBookingsCount}
+            {isLoading || loadError ? "—" : totalBookingsCount}
           </p>
           <span className="text-[10px] text-zinc-500 mt-1 block">
-            Confirmed WhatsApp packages
+            Customer trips
           </span>
         </div>
 
@@ -210,10 +220,10 @@ export const BookingsPage: React.FC = () => {
             <TrendingUp className="w-4 h-4 text-zinc-400" />
           </div>
           <p className="text-2xl font-bold font-mono text-zinc-900">
-            {formatINR(totalRevenueBooked)}
+            {isLoading || loadError ? "—" : formatINR(totalRevenueBooked)}
           </p>
           <span className="text-[10px] text-zinc-500 mt-1 block">
-            Gross quoted booking value
+            Total booking value
           </span>
         </div>
 
@@ -226,12 +236,14 @@ export const BookingsPage: React.FC = () => {
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
           </div>
           <p className="text-2xl font-bold font-mono text-emerald-700">
-            {formatINR(totalVerifiedCollected)}
+            {isLoading || loadError ? "—" : formatINR(totalVerifiedCollected)}
           </p>
           <span className="text-[10px] text-emerald-600 mt-1 block font-mono">
-            {totalRevenueBooked > 0
-              ? `${Math.round((totalVerifiedCollected / totalRevenueBooked) * 100)}% collected`
-              : "0% collected"}
+            {isLoading || loadError
+              ? "Not available yet"
+              : totalRevenueBooked > 0
+                ? `${Math.round((totalVerifiedCollected / totalRevenueBooked) * 100)}% collected`
+                : "0% collected"}
           </span>
         </div>
 
@@ -244,10 +256,10 @@ export const BookingsPage: React.FC = () => {
             <Clock className="w-4 h-4 text-amber-600" />
           </div>
           <p className="text-2xl font-bold font-mono text-amber-700">
-            {formatINR(totalBalanceDue)}
+            {isLoading || loadError ? "—" : formatINR(totalBalanceDue)}
           </p>
           <span className="text-[10px] text-amber-700 mt-1 block">
-            Pending collection from clients
+            Awaiting customer payment
           </span>
         </div>
       </div>
@@ -295,11 +307,11 @@ export const BookingsPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Row 2: Payment Health Filter Pills */}
+        {/* Row 2: Payment status Filter Pills */}
         <div className="pt-2 border-t border-zinc-100 flex flex-wrap items-center gap-1.5 text-xs">
           <span className="text-[10px] font-mono uppercase text-zinc-400 mr-1 flex items-center gap-1">
             <Filter className="w-3 h-3" />
-            Payment Health:
+            Payment status:
           </span>
 
           {(
@@ -307,7 +319,7 @@ export const BookingsPage: React.FC = () => {
               { label: "All Payments", val: "ALL" },
               { label: "Fully Paid", val: "FULLY_PAID" },
               { label: "Partially Paid", val: "PARTIALLY_PAID" },
-              { label: "Review Needed", val: "PENDING_VERIFICATION" },
+              { label: "Needs verification", val: "NEEDS_REVIEW" },
               { label: "Unpaid", val: "UNPAID" },
             ] as const
           ).map((p) => (
@@ -334,6 +346,13 @@ export const BookingsPage: React.FC = () => {
             <Loader2 className="w-4 h-4 animate-spin text-zinc-500" />
             <span>Loading confirmed bookings...</span>
           </div>
+        ) : loadError && !bookings.length ? (
+          <div className="p-8 text-center text-slate-500">
+            Bookings are unavailable.{" "}
+            <button className="underline" onClick={() => void handleRefresh()}>
+              Try again
+            </button>
+          </div>
         ) : filteredBookings.length === 0 ? (
           <div className="py-16 text-center space-y-2">
             <Compass className="w-8 h-8 text-zinc-300 mx-auto" />
@@ -341,8 +360,8 @@ export const BookingsPage: React.FC = () => {
               No matching bookings found
             </p>
             <p className="text-xs text-zinc-500">
-              Convert an accepted quotation from the Coordinator Drawer to
-              create a booking.
+              Open a customer enquiry and confirm their quotation to create a
+              booking.
             </p>
           </div>
         ) : (
@@ -355,7 +374,7 @@ export const BookingsPage: React.FC = () => {
                   <th className="px-4 py-3.5">Service / Tour</th>
                   <th className="px-4 py-3.5">Travel Date</th>
                   <th className="px-4 py-3.5">Collection Progress</th>
-                  <th className="px-4 py-3.5">Payment Health</th>
+                  <th className="px-4 py-3.5">Payment status</th>
                   <th className="px-5 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
@@ -409,7 +428,9 @@ export const BookingsPage: React.FC = () => {
                         </p>
                         <span className="text-[11px] text-zinc-400 font-mono flex items-center gap-1 mt-0.5">
                           <Users className="w-3 h-3" />
-                          {booking.paxCount || 2} Pax
+                          {booking.paxCount
+                            ? `${booking.paxCount} travellers`
+                            : "Travellers not specified"}
                         </span>
                       </td>
 
@@ -460,7 +481,7 @@ export const BookingsPage: React.FC = () => {
                         </div>
                       </td>
 
-                      {/* Payment Health Badge */}
+                      {/* Payment status Badge */}
                       <td className="px-4 py-3.5">
                         <span
                           className={`inline-block text-[10px] font-mono px-2 py-0.5 rounded-full font-medium ${

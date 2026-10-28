@@ -1,3 +1,7 @@
+import { PackageImage } from "../components/packages/PackageImage";
+import { PackagePreview } from "../components/packages/PackagePreview";
+import { Modal, FormError } from "../components/ui/Modal";
+import { userMessage } from "../lib/userMessage";
 import { useState, useMemo } from "react";
 import { Link } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
@@ -24,8 +28,6 @@ import {
   Palmtree,
   CheckCircle2,
   XCircle,
-  X,
-  AlertTriangle,
   RotateCcw,
 } from "lucide-react";
 
@@ -35,6 +37,12 @@ export const PackagesListPage = () => {
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
   const isSuperAdmin = user?.role === "SUPER_ADMIN";
+  const canManagePackages =
+    !!user &&
+    ["SUPER_ADMIN", "OPERATIONS_MANAGER", "CONTENT_MANAGER"].includes(
+      user.role,
+    );
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // Filter & pagination states
   const [search, setSearch] = useState("");
@@ -75,6 +83,8 @@ export const PackagesListPage = () => {
     data: packagesData,
     isLoading,
     isFetching,
+    error: packagesError,
+    refetch: retryPackages,
   } = useQuery({
     queryKey: ["packages", filterParams],
     queryFn: () => packagesApi.listPackages(filterParams),
@@ -90,7 +100,9 @@ export const PackagesListPage = () => {
       setTimeout(() => setSuccessToast(null), 3000);
     },
     onError: (err: any) => {
-      alert(err.message || "Failed to delete package");
+      setDeleteError(
+        userMessage(err, "We couldn't delete this package. Please try again."),
+      );
     },
   });
 
@@ -116,14 +128,10 @@ export const PackagesListPage = () => {
           return (
             <div className="flex items-center gap-3 min-w-[240px]">
               <div className="w-12 h-10 rounded-md overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0">
-                <img
+                <PackageImage
                   src={pkg.coverImageUrl}
                   alt={pkg.title}
                   className="w-full h-full object-cover"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src =
-                      "https://images.unsplash.com/photo-1512453979798-5ea266f8880c?auto=format&fit=crop&w=120&q=80";
-                  }}
                 />
               </div>
               <div className="space-y-0.5 truncate">
@@ -226,19 +234,24 @@ export const PackagesListPage = () => {
               </button>
 
               {/* Edit Button */}
-              <Link
-                to={`/packages/edit/${pkg.slug}`}
-                className="p-1.5 rounded-md text-zinc-500 hover:text-black hover:bg-zinc-100 transition"
-                title="Edit package"
-              >
-                <Edit2 className="w-3.5 h-3.5" />
-              </Link>
+              {canManagePackages && (
+                <Link
+                  to={`/packages/edit/${pkg.slug}`}
+                  className="p-1.5 rounded-md text-zinc-500 hover:text-black hover:bg-zinc-100 transition"
+                  title="Edit package"
+                >
+                  <Edit2 className="w-3.5 h-3.5" />
+                </Link>
+              )}
 
               {/* Delete Button (Super Admin only) */}
               {isSuperAdmin && (
                 <button
                   type="button"
-                  onClick={() => setPackageToDelete(pkg)}
+                  onClick={() => {
+                    setDeleteError(null);
+                    setPackageToDelete(pkg);
+                  }}
                   className="p-1.5 rounded-md text-zinc-400 hover:text-red-600 hover:bg-red-50 transition"
                   title="Delete package"
                 >
@@ -250,7 +263,7 @@ export const PackagesListPage = () => {
         },
       }),
     ],
-    [isSuperAdmin],
+    [isSuperAdmin, canManagePackages],
   );
 
   const tableData = packagesData?.items || [];
@@ -268,25 +281,26 @@ export const PackagesListPage = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-semibold tracking-tight text-zinc-900">
-              Tour Packages Catalog
+              Tour packages
             </h1>
             <span className="text-xs px-2 py-0.5 rounded bg-zinc-100 text-zinc-600 font-mono">
               {packagesData?.total || 0} total
             </span>
           </div>
           <p className="text-xs text-zinc-500 font-mono mt-0.5">
-            Curated destination packages, Cloudflare R2 photos, and day-by-day
-            itineraries.
+            Manage your itineraries, photos and package prices.
           </p>
         </div>
 
-        <Link
-          to="/packages/new"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition shadow-xs self-start sm:self-auto"
-        >
-          <Plus className="w-3.5 h-3.5" />
-          <span>New Tour Package</span>
-        </Link>
+        {canManagePackages && (
+          <Link
+            to="/packages/new"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition shadow-xs self-start sm:self-auto"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>New Tour Package</span>
+          </Link>
+        )}
       </div>
 
       {/* Success Notification */}
@@ -366,6 +380,14 @@ export const PackagesListPage = () => {
         )}
       </div>
 
+      {packagesError && (
+        <div role="alert" className="form-error">
+          We couldn't load the packages.{" "}
+          <button className="underline" onClick={() => void retryPackages()}>
+            Try again
+          </button>
+        </div>
+      )}
       {/* Table Card */}
       <div className="rounded-lg border border-zinc-200 bg-white shadow-xs overflow-hidden">
         <div className="overflow-x-auto">
@@ -398,6 +420,15 @@ export const PackagesListPage = () => {
                     </p>
                   </td>
                 </tr>
+              ) : packagesError ? (
+                <tr>
+                  <td
+                    colSpan={columns.length}
+                    className="py-10 text-center text-slate-500"
+                  >
+                    Packages are unavailable. Try refreshing the list.
+                  </td>
+                </tr>
               ) : tableData.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length} className="py-12 text-center">
@@ -418,7 +449,7 @@ export const PackagesListPage = () => {
                       >
                         Clear Filters
                       </button>
-                    ) : (
+                    ) : canManagePackages ? (
                       <Link
                         to="/packages/new"
                         className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
@@ -426,7 +457,7 @@ export const PackagesListPage = () => {
                         <Plus className="w-3.5 h-3.5" />
                         <span>Create Package</span>
                       </Link>
-                    )}
+                    ) : null}
                   </td>
                 </tr>
               ) : (
@@ -480,56 +511,37 @@ export const PackagesListPage = () => {
         )}
       </div>
 
-      {/* Delete Confirmation Modal */}
       {packageToDelete && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="w-full max-w-sm rounded-lg bg-white border border-zinc-200 shadow-xl p-5 space-y-4">
-            <div className="flex items-start gap-3">
-              <div className="w-9 h-9 rounded-full bg-red-50 border border-red-200 text-red-600 flex items-center justify-center shrink-0">
-                <AlertTriangle className="w-4 h-4" />
-              </div>
-              <div className="space-y-1">
-                <h3 className="text-xs font-semibold text-zinc-900">
-                  Delete Tour Package?
-                </h3>
-                <p className="text-[11px] text-zinc-500">
-                  Are you sure you want to delete{" "}
-                  <strong className="text-zinc-800">
-                    "{packageToDelete.title}"
-                  </strong>
-                  ? This will permanently remove its itineraries and media
-                  associations.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-zinc-100">
+        <Modal
+          title="Delete package?"
+          description={packageToDelete.title}
+          onClose={() => setPackageToDelete(null)}
+          busy={deleteMutation.isPending}
+          footer={
+            <>
               <button
-                type="button"
-                disabled={deleteMutation.isPending}
+                className="button-secondary"
                 onClick={() => setPackageToDelete(null)}
-                className="px-3 py-1.5 rounded-md border border-zinc-200 text-zinc-700 text-xs font-medium hover:bg-zinc-100 transition"
+                disabled={deleteMutation.isPending}
               >
                 Cancel
               </button>
               <button
-                type="button"
+                className="button-primary button-danger"
                 disabled={deleteMutation.isPending}
                 onClick={() => deleteMutation.mutate(packageToDelete.id)}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-red-600 text-white text-xs font-medium hover:bg-red-700 disabled:opacity-50 transition shadow-xs"
               >
-                {deleteMutation.isPending ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Deleting...</span>
-                  </>
-                ) : (
-                  <span>Confirm Delete</span>
-                )}
+                {deleteMutation.isPending ? "Deleting…" : "Delete package"}
               </button>
-            </div>
-          </div>
-        </div>
+            </>
+          }
+        >
+          <FormError>{deleteError}</FormError>
+          <p>
+            This permanently deletes the package and its itinerary. You cannot
+            undo this.
+          </p>
+        </Modal>
       )}
 
       {/* Quick Preview Modal */}
@@ -549,160 +561,47 @@ interface PackagePreviewModalProps {
 }
 
 const PackagePreviewModal = ({ slug, onClose }: PackagePreviewModalProps) => {
-  const { data: pkg, isLoading } = useQuery({
+  const {
+    data: pkg,
+    isLoading,
+    refetch: retryPreview,
+  } = useQuery({
     queryKey: ["package", slug],
     queryFn: () => packagesApi.getPackageBySlug(slug),
   });
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl max-h-[85vh] rounded-lg bg-white border border-zinc-200 shadow-xl overflow-hidden flex flex-col">
-        {/* Modal Header */}
-        <div className="h-12 px-5 flex items-center justify-between border-b border-zinc-200 bg-[#FAFAF9]">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-zinc-900 font-mono uppercase tracking-wider">
-              Package Preview
-            </span>
-            <span className="text-[10px] text-zinc-400 font-mono">
-              /packages/{slug}
-            </span>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-1 rounded text-zinc-400 hover:text-black hover:bg-zinc-100"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-5 space-y-5">
-          {isLoading ? (
-            <div className="py-12 text-center">
-              <Loader2 className="w-6 h-6 animate-spin text-black mx-auto mb-2" />
-              <p className="text-xs font-mono text-zinc-500">
-                Loading package...
-              </p>
-            </div>
-          ) : !pkg ? (
-            <p className="text-xs text-red-500">
-              Failed to load package details.
+    <Modal
+      title="Package preview"
+      panelClassName="package-preview-modal"
+      description={pkg?.title || ""}
+      onClose={onClose}
+      wide
+      footer={
+        <button className="button-primary ml-auto" onClick={onClose}>
+          Close preview
+        </button>
+      }
+    >
+      <div className="space-y-5">
+        {isLoading ? (
+          <div className="py-12 text-center">
+            <Loader2 className="w-6 h-6 animate-spin text-black mx-auto mb-2" />
+            <p className="text-xs font-mono text-zinc-500">
+              Loading package...
             </p>
-          ) : (
-            <>
-              {/* Hero Banner */}
-              <div className="relative aspect-video rounded-lg overflow-hidden bg-zinc-100 border border-zinc-200">
-                <img
-                  src={pkg.coverImageUrl}
-                  alt={pkg.title}
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex flex-col justify-end p-4 text-white">
-                  <div className="flex items-center gap-2 text-xs font-mono mb-1">
-                    <span className="px-2 py-0.5 rounded bg-white/20 backdrop-blur-xs">
-                      {pkg.destination}
-                    </span>
-                    <span>•</span>
-                    <span>
-                      {pkg.durationDays}D / {pkg.durationNights}N
-                    </span>
-                  </div>
-                  <h2 className="text-base font-semibold leading-tight">
-                    {pkg.title}
-                  </h2>
-                  <p className="text-xs font-mono text-zinc-200 mt-1">
-                    Starting from ₹
-                    {Number(pkg.startingPrice).toLocaleString("en-IN")}
-                  </p>
-                </div>
-              </div>
-
-              {/* Overview */}
-              <div>
-                <h4 className="text-xs font-mono uppercase text-zinc-500 mb-1">
-                  Overview
-                </h4>
-                <p className="text-xs text-zinc-700 leading-relaxed">
-                  {pkg.overview}
-                </p>
-              </div>
-
-              {/* Itinerary */}
-              {pkg.itinerary && pkg.itinerary.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="text-xs font-mono uppercase text-zinc-500">
-                    Itinerary ({pkg.itinerary.length} Days)
-                  </h4>
-                  <div className="space-y-2">
-                    {pkg.itinerary.map((day) => (
-                      <div
-                        key={day.day}
-                        className="p-3 rounded-md border border-zinc-200 bg-[#FAFAF9] text-xs space-y-1"
-                      >
-                        <div className="font-semibold text-zinc-900 flex items-center gap-2">
-                          <span className="w-5 h-5 rounded bg-black text-white text-[10px] font-mono flex items-center justify-center">
-                            D{day.day}
-                          </span>
-                          <span>{day.title}</span>
-                        </div>
-                        <p className="text-zinc-600 pl-7 text-[11px] leading-relaxed">
-                          {day.description}
-                        </p>
-                        {(day.meals || day.stay) && (
-                          <div className="pl-7 pt-1 flex flex-wrap gap-2 text-[10px] text-zinc-500 font-mono">
-                            {day.meals && <span>🍽 {day.meals}</span>}
-                            {day.stay && <span>🏨 {day.stay}</span>}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Inclusions & Exclusions */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <h4 className="text-xs font-mono uppercase text-emerald-800 mb-1.5">
-                    Inclusions
-                  </h4>
-                  <ul className="space-y-1 text-xs text-zinc-700">
-                    {pkg.inclusions.map((item, idx) => (
-                      <li key={idx} className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <div>
-                  <h4 className="text-xs font-mono uppercase text-zinc-500 mb-1.5">
-                    Exclusions
-                  </h4>
-                  <ul className="space-y-1 text-xs text-zinc-700">
-                    {pkg.exclusions.map((item, idx) => (
-                      <li key={idx} className="flex items-center gap-1.5">
-                        <XCircle className="w-3.5 h-3.5 text-zinc-400 shrink-0" />
-                        <span>{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </div>
-            </>
-          )}
-        </div>
-
-        {/* Modal Footer */}
-        <div className="h-12 px-5 flex items-center justify-end border-t border-zinc-200 bg-[#FAFAF9]">
-          <button
-            onClick={onClose}
-            className="px-3 py-1.5 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
-          >
-            Close Preview
-          </button>
-        </div>
+          </div>
+        ) : !pkg ? (
+          <p className="text-xs text-red-500">
+            We couldn't load the package details.{" "}
+            <button className="underline" onClick={() => void retryPreview()}>
+              Try again
+            </button>
+          </p>
+        ) : (
+          <PackagePreview key={pkg.id} pkg={pkg} />
+        )}
       </div>
-    </div>
+    </Modal>
   );
 };

@@ -1,3 +1,4 @@
+import { MemoryRouter } from "react-router-dom";
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
@@ -139,6 +140,7 @@ describe("Dev 2 Module 6 End-to-End Workflow Verification", () => {
       createdBooking,
     );
     const onUpdateStatus = vi.fn().mockResolvedValue(undefined);
+    const onChanged = vi.fn();
 
     // 1. Coordinator opens Lead Detail Drawer
     const { unmount: unmountDrawer } = render(
@@ -148,6 +150,7 @@ describe("Dev 2 Module 6 End-to-End Workflow Verification", () => {
         isOpen={true}
         onClose={vi.fn()}
         onUpdateStatus={onUpdateStatus}
+        onChanged={onChanged}
         onAddNote={vi.fn()}
       />,
     );
@@ -159,28 +162,29 @@ describe("Dev 2 Module 6 End-to-End Workflow Verification", () => {
     // Verify Quote Card is visible
     expect(await screen.findByText("FLY-2026-0088")).toBeTruthy();
 
-    // 2. Click "Convert to Booking"
+    // 2. Click "Confirm booking"
     const convertBtn = screen.getByRole("button", {
-      name: /Convert to Booking/i,
+      name: /Confirm booking/i,
     });
     fireEvent.click(convertBtn);
 
     // 3. ConvertBookingModal opens
     expect(
-      await screen.findByText("Convert to Confirmed Booking"),
+      await screen.findByRole("heading", { name: "Confirm booking" }),
     ).toBeTruthy();
     expect(screen.getAllByText("₹1,40,000").length).toBeGreaterThanOrEqual(1);
 
     // Confirm conversion
     const confirmConversionBtn = screen.getByRole("button", {
-      name: /Confirm Booking \(Generate Reference\)/i,
+      name: /^Confirm booking$/i,
     });
     fireEvent.click(confirmConversionBtn);
 
     // 4. Celebration modal appears with BK-2026-0088 and WhatsApp voucher link
     await waitFor(() => {
       expect(bookingsApi.convertQuoteToBooking).toHaveBeenCalledOnce();
-      expect(onUpdateStatus).toHaveBeenCalledWith("BOOKED");
+      expect(onChanged).toHaveBeenCalledOnce();
+      expect(onUpdateStatus).not.toHaveBeenCalled();
     });
 
     expect(await screen.findByText("BK-2026-0088")).toBeTruthy();
@@ -197,7 +201,11 @@ describe("Dev 2 Module 6 End-to-End Workflow Verification", () => {
       Promise.resolve([currentBookingInStore]),
     );
 
-    const { unmount: unmountDashboard } = render(<BookingsPage />);
+    const { unmount: unmountDashboard } = render(
+      <MemoryRouter>
+        <BookingsPage />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText("BK-2026-0088")).toBeTruthy();
     expect(screen.getByText("Tariq & Zoya Merchant")).toBeTruthy();
@@ -209,7 +217,7 @@ describe("Dev 2 Module 6 End-to-End Workflow Verification", () => {
     const paymentBtn = screen.getByRole("button", { name: "Payment" });
     fireEvent.click(paymentBtn);
 
-    expect(await screen.findByText("Record Offline Payment")).toBeTruthy();
+    expect(await screen.findByText("Record payment")).toBeTruthy();
 
     // Upload receipt slip
     vi.mocked(bookingsApi.uploadReceiptSlip).mockResolvedValue({
@@ -246,13 +254,12 @@ describe("Dev 2 Module 6 End-to-End Workflow Verification", () => {
     const utrInput = screen.getByPlaceholderText(/e.g. UPI\/528391823901/i);
     fireEvent.change(utrInput, { target: { value: "UPI/592840192841" } });
 
+    fireEvent.click(screen.getByRole("button", { name: /Continue/ }));
     // Simulate drop file
     const file = new File(["test receipt"], "kashmir_upi.png", {
       type: "image/png",
     });
-    const dropzone = screen.getByText(
-      /Click to upload or drag & drop slip proof/i,
-    );
+    const dropzone = screen.getByText(/Choose a file or drop it here/i);
     fireEvent.drop(dropzone, {
       dataTransfer: { files: [file] },
     });
@@ -262,8 +269,9 @@ describe("Dev 2 Module 6 End-to-End Workflow Verification", () => {
     });
 
     // Submit payment
+    fireEvent.click(screen.getByRole("button", { name: /Continue/ }));
     const recordSubmitBtn = screen.getByRole("button", {
-      name: /Record & Submit for Verification/i,
+      name: /Submit for verification/i,
     });
     fireEvent.click(recordSubmitBtn);
 
@@ -294,7 +302,11 @@ describe("Dev 2 Module 6 End-to-End Workflow Verification", () => {
       currentBookingInStore,
     );
 
-    render(<BookingsPage />);
+    render(
+      <MemoryRouter>
+        <BookingsPage />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText("BK-2026-0088")).toBeTruthy();
 

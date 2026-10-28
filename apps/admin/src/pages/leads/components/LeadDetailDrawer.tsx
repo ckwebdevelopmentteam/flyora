@@ -1,3 +1,7 @@
+import { QuotationCard } from "./QuotationCard";
+import { quotePublicUrl } from "../../quotes/quotePresentation";
+import { userMessage } from "../../../lib/userMessage";
+import { Modal } from "../../../components/ui/Modal";
 import { useState, useEffect } from "react";
 import type { LeadItem, LeadStatus, LeadActivityItem } from "@flyora/types";
 import {
@@ -12,11 +16,6 @@ import {
   Loader2,
   FileText,
   DollarSign,
-  Plus,
-  Copy,
-  Check,
-  ExternalLink,
-  Sparkles,
 } from "lucide-react";
 import { QuotationBuilderModal } from "../../quotes/QuotationBuilderModal";
 import { quotesApi } from "../../quotes/quotesApi";
@@ -26,8 +25,11 @@ import { ConvertBookingModal } from "../../bookings/ConvertBookingModal";
 interface LeadDetailDrawerProps {
   lead: LeadItem | null;
   activities: LeadActivityItem[];
+  activityUnavailable?: boolean;
+  onRetryActivities?: () => void;
   isOpen: boolean;
   onClose: () => void;
+  onChanged?: () => void;
   onUpdateStatus: (status: LeadStatus) => Promise<void>;
   onAddNote: (note: string, followUpDate?: string) => Promise<void>;
 }
@@ -77,11 +79,16 @@ const STATUS_CONFIG: Record<
 export const LeadDetailDrawer = ({
   lead,
   activities,
+  activityUnavailable,
+  onRetryActivities,
   isOpen,
   onClose,
+  onChanged,
   onUpdateStatus,
   onAddNote,
 }: LeadDetailDrawerProps) => {
+  const [actionError, setActionError] = useState("");
+  const [quotesError, setQuotesError] = useState("");
   const [noteText, setNoteText] = useState("");
   const [followUpDateInput, setFollowUpDateInput] = useState(
     lead?.followUpDate ? lead.followUpDate.slice(0, 10) : "",
@@ -104,11 +111,17 @@ export const LeadDetailDrawer = ({
   // Load quotes for this lead
   const loadQuotes = async (leadId: string) => {
     setIsLoadingQuotes(true);
+    setQuotesError("");
     try {
       const data = await quotesApi.fetchQuotationsForLead(leadId);
       setQuotes(Array.isArray(data) ? data : []);
-    } catch {
-      setQuotes([]);
+    } catch (error) {
+      setQuotesError(
+        userMessage(
+          error,
+          "We couldn't load the quotations. Please try again.",
+        ),
+      );
     } finally {
       setIsLoadingQuotes(false);
     }
@@ -133,18 +146,14 @@ export const LeadDetailDrawer = ({
   )}`;
 
   const handleCopyQuoteLink = async (quote: QuotationRecord) => {
-    const webBaseUrl =
-      typeof window !== "undefined" && window.location.hostname === "localhost"
-        ? "http://localhost:3000"
-        : "https://flyora.com";
-    const publicUrl = `${webBaseUrl}/quote/${quote.shareToken}`;
+    const publicUrl = quotePublicUrl(quote.shareToken);
 
     try {
       await navigator.clipboard.writeText(publicUrl);
       setCopiedQuoteId(quote.id);
       setTimeout(() => setCopiedQuoteId(null), 2500);
     } catch {
-      // Fallback
+      setActionError("We couldn't copy the link. Please try again.");
     }
   };
 
@@ -154,9 +163,14 @@ export const LeadDetailDrawer = ({
     const newStatus = e.target.value as LeadStatus;
     if (newStatus === lead.status) return;
 
+    setActionError("");
     setIsUpdatingStatus(true);
     try {
       await onUpdateStatus(newStatus);
+    } catch (error) {
+      setActionError(
+        userMessage(error, "We couldn't change the stage. Please try again."),
+      );
     } finally {
       setIsUpdatingStatus(false);
     }
@@ -166,10 +180,15 @@ export const LeadDetailDrawer = ({
     e.preventDefault();
     if (!noteText.trim()) return;
 
+    setActionError("");
     setIsSubmittingNote(true);
     try {
       await onAddNote(noteText.trim(), followUpDateInput || undefined);
       setNoteText("");
+    } catch (error) {
+      setActionError(
+        userMessage(error, "We couldn't save the note. Please try again."),
+      );
     } finally {
       setIsSubmittingNote(false);
     }
@@ -194,570 +213,413 @@ export const LeadDetailDrawer = ({
     !isFollowUpDueToday;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 bg-black/40 backdrop-blur-xs transition-opacity"
-      />
-
-      {/* Drawer Container */}
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-white border-l border-zinc-200 shadow-2xl flex flex-col">
-          {/* Drawer Header */}
-          <div className="px-6 py-5 border-b border-zinc-200 bg-[#FAFAF9]">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-2">
+    <Modal
+      title="Enquiry details"
+      description={lead.customer.fullName}
+      onClose={onClose}
+      drawer
+      hideHeader
+    >
+      <div className="w-full h-full min-h-0 bg-white flex flex-col">
+        {/* Drawer Header */}
+        <div className="enquiry-drawer-header">
+          <div className="flex items-start justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <span
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium font-mono ${currentStatusConfig.bgClass} ${currentStatusConfig.textClass}`}
+                >
                   <span
-                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium font-mono ${currentStatusConfig.bgClass} ${currentStatusConfig.textClass}`}
-                  >
-                    <span
-                      className={`w-1.5 h-1.5 rounded-full ${currentStatusConfig.dotClass}`}
-                    />
-                    {currentStatusConfig.label}
+                    className={`w-1.5 h-1.5 rounded-full ${currentStatusConfig.dotClass}`}
+                  />
+                  {currentStatusConfig.label}
+                </span>
+              </div>
+              <h2 className="text-lg font-medium text-zinc-900 mt-1.5">
+                {lead.customer.fullName}
+              </h2>
+              <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
+                {lead.customer.city && (
+                  <span className="inline-flex items-center gap-1">
+                    <MapPin className="w-3 h-3 text-zinc-400" />
+                    {lead.customer.city}
                   </span>
-                  <span className="text-[11px] font-mono text-zinc-400">
-                    #{lead.id.slice(-6)}
-                  </span>
-                </div>
-                <h2 className="text-lg font-medium text-zinc-900 mt-1.5">
-                  {lead.customer.fullName}
-                </h2>
-                <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
-                  {lead.customer.city && (
-                    <span className="inline-flex items-center gap-1">
-                      <MapPin className="w-3 h-3 text-zinc-400" />
-                      {lead.customer.city}
-                    </span>
+                )}
+                <span className="inline-flex items-center gap-1 font-mono text-[11px]">
+                  <Clock className="w-3 h-3 text-zinc-400" />
+                  {new Date(lead.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+            </div>
+
+            <button
+              aria-label="Close enquiry details"
+              onClick={onClose}
+              className="icon-button"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Direct One-Click Actions: Call & WhatsApp */}
+          <div className="grid grid-cols-2 gap-2 mt-4">
+            <a href={`tel:${cleanPhone}`} className="button-secondary">
+              <Phone className="w-3.5 h-3.5" />
+              <span>Call ({lead.customer.phone})</span>
+            </a>
+
+            <a
+              href={whatsappUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="button-secondary"
+            >
+              <MessageSquare className="w-3.5 h-3.5" />
+              <span>WhatsApp</span>
+            </a>
+          </div>
+
+          {/* Prominent Create Quotation Action */}
+          <button
+            type="button"
+            onClick={() => setIsQuoteBuilderOpen(true)}
+            className="button-primary w-full mt-3"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            <span>Create quotation</span>
+          </button>
+        </div>
+
+        {/* Tab Switcher */}
+        <div className="flex border-b border-zinc-200 px-6 bg-white">
+          <button
+            onClick={() => setActiveTab("details")}
+            className={`py-3 text-xs font-medium border-b-2 transition mr-6 ${
+              activeTab === "details"
+                ? "border-black text-black font-semibold"
+                : "border-transparent text-zinc-500 hover:text-zinc-800"
+            }`}
+          >
+            Details
+          </button>
+          <button
+            onClick={() => setActiveTab("quotes")}
+            className={`py-3 text-xs font-medium border-b-2 transition mr-6 flex items-center gap-1.5 ${
+              activeTab === "quotes"
+                ? "border-black text-black font-semibold"
+                : "border-transparent text-zinc-500 hover:text-zinc-800"
+            }`}
+          >
+            <span>Quotations</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-[10px] font-mono text-emerald-800 font-semibold">
+              {isLoadingQuotes ? "…" : quotesError ? "—" : quotes.length}
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("timeline")}
+            className={`py-3 text-xs font-medium border-b-2 transition flex items-center gap-1.5 ${
+              activeTab === "timeline"
+                ? "border-black text-black font-semibold"
+                : "border-transparent text-zinc-500 hover:text-zinc-800"
+            }`}
+          >
+            <span>Activity</span>
+            <span className="px-1.5 py-0.2 rounded-full bg-zinc-100 text-[10px] font-mono text-zinc-600">
+              {activityUnavailable ? "—" : activities.length}
+            </span>
+          </button>
+        </div>
+
+        {/* Drawer Body */}
+        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+          {actionError && (
+            <p className="notice notice-error" role="alert">
+              {actionError}
+            </p>
+          )}
+          {activeTab === "details" ? (
+            <>
+              {/* Stage Selector */}
+              <div className="bg-[#F8F8F6] p-4 rounded-xl border border-zinc-200/80">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-medium text-zinc-800 flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-black" />
+                    Enquiry stage
+                  </label>
+                  {isUpdatingStatus && (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-500" />
                   )}
-                  <span className="inline-flex items-center gap-1 font-mono text-[11px]">
-                    <Clock className="w-3 h-3 text-zinc-400" />
-                    {new Date(lead.createdAt).toLocaleDateString()}
-                  </span>
                 </div>
+                <select
+                  aria-label="Enquiry stage"
+                  value={lead.status}
+                  onChange={handleStatusChange}
+                  disabled={isUpdatingStatus || lead.status === "BOOKED"}
+                  className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-medium text-zinc-900 focus:outline-hidden focus:ring-1 focus:ring-black"
+                >
+                  <option value="NEW">New (Uncontacted)</option>
+                  <option value="CONTACTED">Contacted (In Discussion)</option>
+                  <option value="QUOTED">Quoted (Sent Rates)</option>
+                  <option value="NEGOTIATING">Negotiating (Closing)</option>
+                  {lead.status === "BOOKED" && (
+                    <option value="BOOKED">Booked</option>
+                  )}
+                  <option value="LOST">Lost (Declined / Unresponsive)</option>
+                </select>
               </div>
 
-              <button
-                onClick={onClose}
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-black hover:bg-zinc-200/60 transition"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+              {/* Travel & Enquiry Information Card */}
+              <div className="space-y-3">
+                <h3 className="text-xs font-mono uppercase text-zinc-400 tracking-wider">
+                  Trip details
+                </h3>
 
-            {/* Direct One-Click Actions: Call & WhatsApp */}
-            <div className="grid grid-cols-2 gap-2 mt-4">
-              <a
-                href={`tel:${cleanPhone}`}
-                className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 text-xs font-medium transition shadow-xs"
-              >
-                <Phone className="w-3.5 h-3.5" />
-                <span>Call ({lead.customer.phone})</span>
-              </a>
-
-              <a
-                href={whatsappUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-black text-white hover:bg-zinc-800 text-xs font-medium transition shadow-xs"
-              >
-                <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
-                <span>WhatsApp</span>
-              </a>
-            </div>
-
-            {/* Prominent Create Quotation Action */}
-            <button
-              type="button"
-              onClick={() => setIsQuoteBuilderOpen(true)}
-              className="w-full mt-2 inline-flex items-center justify-center gap-2 px-3 py-2.5 rounded-lg bg-gradient-to-r from-zinc-900 to-black hover:from-black hover:to-zinc-800 text-white text-xs font-semibold shadow-xs transition group"
-            >
-              <FileText className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Create Quotation (Margin Guard)</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded bg-white/20 text-white font-mono ml-1">
-                P4
-              </span>
-            </button>
-          </div>
-
-          {/* Tab Switcher */}
-          <div className="flex border-b border-zinc-200 px-6 bg-white">
-            <button
-              onClick={() => setActiveTab("details")}
-              className={`py-3 text-xs font-medium border-b-2 transition mr-6 ${
-                activeTab === "details"
-                  ? "border-black text-black font-semibold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800"
-              }`}
-            >
-              Enquiry Details
-            </button>
-            <button
-              onClick={() => setActiveTab("quotes")}
-              className={`py-3 text-xs font-medium border-b-2 transition mr-6 flex items-center gap-1.5 ${
-                activeTab === "quotes"
-                  ? "border-black text-black font-semibold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800"
-              }`}
-            >
-              <span>Quotations</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-[10px] font-mono text-emerald-800 font-semibold">
-                {quotes?.length || 0}
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab("timeline")}
-              className={`py-3 text-xs font-medium border-b-2 transition flex items-center gap-1.5 ${
-                activeTab === "timeline"
-                  ? "border-black text-black font-semibold"
-                  : "border-transparent text-zinc-500 hover:text-zinc-800"
-              }`}
-            >
-              <span>Activity Timeline</span>
-              <span className="px-1.5 py-0.2 rounded-full bg-zinc-100 text-[10px] font-mono text-zinc-600">
-                {activities.length}
-              </span>
-            </button>
-          </div>
-
-          {/* Drawer Body */}
-          <div className="flex-1 overflow-y-auto p-6 space-y-6">
-            {activeTab === "details" ? (
-              <>
-                {/* Stage Selector */}
-                <div className="bg-[#F8F8F6] p-4 rounded-xl border border-zinc-200/80">
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-medium text-zinc-800 flex items-center gap-1.5">
-                      <span className="w-1.5 h-1.5 rounded-full bg-black" />
-                      Sales Pipeline Stage
-                    </label>
-                    {isUpdatingStatus && (
-                      <Loader2 className="w-3.5 h-3.5 animate-spin text-zinc-500" />
-                    )}
+                <div className="bg-white border border-zinc-200 rounded-xl p-4 space-y-3 text-xs">
+                  <div>
+                    <span className="text-zinc-400 text-[11px] block">
+                      Requested Service
+                    </span>
+                    <p className="font-medium text-zinc-900 mt-0.5">
+                      {lead.serviceName}
+                    </p>
                   </div>
-                  <select
-                    value={lead.status}
-                    onChange={handleStatusChange}
-                    disabled={isUpdatingStatus}
-                    className="w-full bg-white border border-zinc-200 rounded-lg px-3 py-2 text-xs font-medium text-zinc-900 focus:outline-hidden focus:ring-1 focus:ring-black"
-                  >
-                    <option value="NEW">New (Uncontacted)</option>
-                    <option value="CONTACTED">Contacted (In Discussion)</option>
-                    <option value="QUOTED">Quoted (Sent Rates)</option>
-                    <option value="NEGOTIATING">Negotiating (Closing)</option>
-                    <option value="BOOKED">Booked (Won)</option>
-                    <option value="LOST">Lost (Declined / Unresponsive)</option>
-                  </select>
-                </div>
 
-                {/* Travel & Enquiry Information Card */}
-                <div className="space-y-3">
-                  <h3 className="text-xs font-mono uppercase text-zinc-400 tracking-wider">
-                    Customer Requirements
-                  </h3>
-
-                  <div className="bg-white border border-zinc-200 rounded-xl p-4 space-y-3 text-xs">
+                  {lead.packageTitle && (
                     <div>
                       <span className="text-zinc-400 text-[11px] block">
-                        Requested Service
+                        Tour Package
                       </span>
-                      <p className="font-medium text-zinc-900 mt-0.5">
-                        {lead.serviceName}
+                      <p className="font-medium text-zinc-900 mt-0.5 flex items-center gap-1.5">
+                        <FileText className="w-3.5 h-3.5 text-zinc-400" />
+                        {lead.packageTitle}
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-100">
+                    <div>
+                      <span className="text-zinc-400 text-[11px] block">
+                        Travel Date
+                      </span>
+                      <p className="font-medium text-zinc-900 mt-0.5 flex items-center gap-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-zinc-400" />
+                        {lead.travelDate
+                          ? new Date(lead.travelDate).toLocaleDateString()
+                          : "Flexible"}
                       </p>
                     </div>
 
-                    {lead.packageTitle && (
-                      <div>
-                        <span className="text-zinc-400 text-[11px] block">
-                          Tour Package
-                        </span>
-                        <p className="font-medium text-zinc-900 mt-0.5 flex items-center gap-1.5">
-                          <FileText className="w-3.5 h-3.5 text-zinc-400" />
-                          {lead.packageTitle}
-                        </p>
-                      </div>
-                    )}
+                    <div>
+                      <span className="text-zinc-400 text-[11px] block">
+                        Travellers
+                      </span>
+                      <p className="font-medium text-zinc-900 mt-0.5 flex items-center gap-1.5">
+                        <Users className="w-3.5 h-3.5 text-zinc-400" />
+                        {lead.numberOfAdults} Adults
+                        {lead.numberOfKids > 0
+                          ? `, ${lead.numberOfKids} Kids`
+                          : ""}
+                      </p>
+                    </div>
+                  </div>
 
-                    <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-100">
-                      <div>
-                        <span className="text-zinc-400 text-[11px] block">
-                          Travel Date
-                        </span>
-                        <p className="font-medium text-zinc-900 mt-0.5 flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-zinc-400" />
-                          {lead.travelDate
-                            ? new Date(lead.travelDate).toLocaleDateString()
-                            : "Flexible"}
-                        </p>
-                      </div>
-
-                      <div>
-                        <span className="text-zinc-400 text-[11px] block">
-                          Guests / Pax
-                        </span>
-                        <p className="font-medium text-zinc-900 mt-0.5 flex items-center gap-1.5">
-                          <Users className="w-3.5 h-3.5 text-zinc-400" />
-                          {lead.numberOfAdults} Adults
-                          {lead.numberOfKids > 0
-                            ? `, ${lead.numberOfKids} Kids`
-                            : ""}
-                        </p>
-                      </div>
+                  <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-100">
+                    <div>
+                      <span className="text-zinc-400 text-[11px] block">
+                        Estimated Budget
+                      </span>
+                      <p className="font-medium text-zinc-900 mt-0.5 flex items-center gap-1.5 font-mono">
+                        <DollarSign className="w-3.5 h-3.5 text-zinc-400" />
+                        {formattedBudget}
+                      </p>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-3 pt-2 border-t border-zinc-100">
-                      <div>
-                        <span className="text-zinc-400 text-[11px] block">
-                          Estimated Budget
-                        </span>
-                        <p className="font-medium text-zinc-900 mt-0.5 flex items-center gap-1.5 font-mono">
-                          <DollarSign className="w-3.5 h-3.5 text-zinc-400" />
-                          {formattedBudget}
-                        </p>
-                      </div>
-
-                      <div>
-                        <span className="text-zinc-400 text-[11px] block">
-                          Enquiry Source
-                        </span>
-                        <p className="font-medium text-zinc-900 mt-0.5 font-mono text-[11px]">
-                          {lead.source.replace(/_/g, " ")}
-                        </p>
-                      </div>
+                    <div>
+                      <span className="text-zinc-400 text-[11px] block">
+                        Enquiry Source
+                      </span>
+                      <p className="font-medium text-zinc-900 mt-0.5 font-mono text-[11px]">
+                        {lead.source.replace(/_/g, " ")}
+                      </p>
                     </div>
                   </div>
                 </div>
-
-                {/* Follow-up Reminder Badge */}
-                {lead.followUpDate && (
-                  <div
-                    className={`p-3 rounded-lg border flex items-center justify-between text-xs ${
-                      isFollowUpOverdue
-                        ? "bg-rose-50 border-rose-200 text-rose-800"
-                        : isFollowUpDueToday
-                          ? "bg-amber-50 border-amber-200 text-amber-800"
-                          : "bg-zinc-50 border-zinc-200 text-zinc-700"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Clock className="w-3.5 h-3.5" />
-                      <span>
-                        Follow-up:{" "}
-                        {new Date(lead.followUpDate).toLocaleDateString()}
-                      </span>
-                    </div>
-                    {isFollowUpDueToday && (
-                      <span className="px-2 py-0.5 rounded bg-amber-200 text-amber-900 font-mono text-[10px] font-semibold">
-                        TODAY
-                      </span>
-                    )}
-                    {isFollowUpOverdue && (
-                      <span className="px-2 py-0.5 rounded bg-rose-200 text-rose-900 font-mono text-[10px] font-semibold">
-                        OVERDUE
-                      </span>
-                    )}
-                  </div>
-                )}
-
-                {/* Add Internal Note & Schedule Follow-Up Form */}
-                <form
-                  onSubmit={handleNoteSubmit}
-                  className="bg-white border border-zinc-200 rounded-xl p-4 space-y-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <label className="text-xs font-medium text-zinc-900 flex items-center gap-1.5">
-                      <FileText className="w-3.5 h-3.5 text-zinc-500" />
-                      Add Call Note / Requirement
-                    </label>
-                  </div>
-
-                  <textarea
-                    rows={3}
-                    value={noteText}
-                    onChange={(e) => setNoteText(e.target.value)}
-                    placeholder="Log customer response, hotel preference, price negotiation notes..."
-                    className="w-full text-xs p-2.5 rounded-lg border border-zinc-200 focus:outline-hidden focus:ring-1 focus:ring-black placeholder:text-zinc-400 resize-none"
-                  />
-
-                  <div className="flex items-center gap-3">
-                    <div className="flex-1">
-                      <label className="text-[10px] font-mono text-zinc-400 block mb-1">
-                        Next Follow-Up Date
-                      </label>
-                      <input
-                        type="date"
-                        value={followUpDateInput}
-                        onChange={(e) => setFollowUpDateInput(e.target.value)}
-                        className="w-full text-xs p-1.5 border border-zinc-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-black"
-                      />
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isSubmittingNote || !noteText.trim()}
-                      className="self-end px-3 py-2 rounded-lg bg-black text-white hover:bg-zinc-800 disabled:opacity-50 text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
-                    >
-                      {isSubmittingNote ? (
-                        <Loader2 className="w-3 h-3 animate-spin" />
-                      ) : (
-                        <Send className="w-3 h-3" />
-                      )}
-                      <span>Save Note</span>
-                    </button>
-                  </div>
-                </form>
-              </>
-            ) : activeTab === "timeline" ? (
-              /* Timeline Feed */
-              <div className="space-y-4">
-                {activities.length === 0 ? (
-                  <div className="text-center py-10 text-zinc-400 text-xs">
-                    No activity logs recorded yet.
-                  </div>
-                ) : (
-                  <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-zinc-200">
-                    {activities.map((act) => (
-                      <div key={act.id} className="relative group">
-                        {/* Dot indicator */}
-                        <div className="absolute -left-6 top-0.5 w-3 h-3 rounded-full border-2 border-white bg-black shadow-xs" />
-
-                        <div className="space-y-1">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-zinc-900">
-                              {act.userName}
-                            </span>
-                            <span className="text-[10px] font-mono text-zinc-400">
-                              {new Date(act.createdAt).toLocaleTimeString([], {
-                                hour: "2-digit",
-                                minute: "2-digit",
-                              })}
-                            </span>
-                          </div>
-
-                          <div className="inline-block px-1.5 py-0.2 rounded bg-zinc-100 text-[10px] font-mono text-zinc-600">
-                            {act.action.replace(/_/g, " ")}
-                          </div>
-
-                          <p className="text-xs text-zinc-600 bg-[#F8F8F6] p-2.5 rounded-lg border border-zinc-100 mt-1 leading-relaxed">
-                            {act.details}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
-            ) : (
-              /* Quotations Tab Feed */
-              <div className="space-y-4">
-                <div className="flex items-center justify-between pb-1 border-b border-zinc-100">
-                  <span className="text-xs font-semibold text-zinc-800 uppercase tracking-wider">
-                    Generated Proposals ({quotes?.length || 0})
-                  </span>
+
+              {/* Follow-up Reminder Badge */}
+              {lead.followUpDate && (
+                <div
+                  className={`p-3 rounded-lg border flex items-center justify-between text-xs ${
+                    isFollowUpOverdue
+                      ? "bg-rose-50 border-rose-200 text-rose-800"
+                      : isFollowUpDueToday
+                        ? "bg-amber-50 border-amber-200 text-amber-800"
+                        : "bg-zinc-50 border-zinc-200 text-zinc-700"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Clock className="w-3.5 h-3.5" />
+                    <span>
+                      Follow-up:{" "}
+                      {new Date(lead.followUpDate).toLocaleDateString()}
+                    </span>
+                  </div>
+                  {isFollowUpDueToday && (
+                    <span className="px-2 py-0.5 rounded bg-amber-200 text-amber-900 font-mono text-[10px] font-semibold">
+                      TODAY
+                    </span>
+                  )}
+                  {isFollowUpOverdue && (
+                    <span className="px-2 py-0.5 rounded bg-rose-200 text-rose-900 font-mono text-[10px] font-semibold">
+                      OVERDUE
+                    </span>
+                  )}
+                </div>
+              )}
+
+              {/* Add Internal Note & Schedule Follow-Up Form */}
+              <form
+                onSubmit={handleNoteSubmit}
+                className="bg-white border border-zinc-200 rounded-xl p-4 space-y-3"
+              >
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-medium text-zinc-900 flex items-center gap-1.5">
+                    <FileText className="w-3.5 h-3.5 text-zinc-500" />
+                    Customer notes
+                  </label>
+                </div>
+
+                <textarea
+                  rows={3}
+                  aria-label="Staff note"
+                  value={noteText}
+                  onChange={(e) => setNoteText(e.target.value)}
+                  placeholder="Log customer response, hotel preference, price negotiation notes..."
+                  className="w-full text-xs p-2.5 rounded-lg border border-zinc-200 focus:outline-hidden focus:ring-1 focus:ring-black placeholder:text-zinc-400 resize-none"
+                />
+
+                <div className="flex items-center gap-3">
+                  <div className="flex-1">
+                    <label className="text-[10px] font-mono text-zinc-400 block mb-1">
+                      Next Follow-Up Date
+                    </label>
+                    <input
+                      type="date"
+                      aria-label="Next follow-up date"
+                      value={followUpDateInput}
+                      onChange={(e) => setFollowUpDateInput(e.target.value)}
+                      className="w-full text-xs p-1.5 border border-zinc-200 rounded-lg focus:outline-hidden focus:ring-1 focus:ring-black"
+                    />
+                  </div>
+
                   <button
-                    type="button"
-                    onClick={() => setIsQuoteBuilderOpen(true)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-black text-white hover:bg-zinc-800 text-[11px] font-medium transition shadow-xs"
+                    type="submit"
+                    disabled={isSubmittingNote || !noteText.trim()}
+                    className="self-end px-3 py-2 rounded-lg bg-black text-white hover:bg-zinc-800 disabled:opacity-50 text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
                   >
-                    <Plus className="w-3 h-3" />
-                    <span>Create New Quote</span>
+                    {isSubmittingNote ? (
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                    ) : (
+                      <Send className="w-3 h-3" />
+                    )}
+                    <span>Save Note</span>
                   </button>
                 </div>
-
-                {isLoadingQuotes ? (
-                  <div className="text-center py-8 text-xs text-zinc-400 flex items-center justify-center gap-2">
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Loading quotations...</span>
+              </form>
+            </>
+          ) : activeTab === "timeline" ? (
+            <div className="space-y-4">
+              {activityUnavailable ? (
+                <div className="notice notice-error" role="alert">
+                  <p>We couldn't load the activity. Please try again.</p>
+                  <button
+                    className="button-secondary mt-3"
+                    onClick={onRetryActivities}
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : activities.length === 0 ? (
+                <p className="text-sm text-slate-500 py-8 text-center">
+                  No activity recorded yet.
+                </p>
+              ) : (
+                <ol className="enquiry-activity">
+                  {activities.map((activity) => (
+                    <li key={activity.id}>
+                      <div>
+                        <strong>{activity.userName || "Team member"}</strong>
+                        <span>
+                          {activity.action.replace(/_/g, " ").toLowerCase()}
+                        </span>
+                      </div>
+                      <p>{activity.details}</p>
+                      <time dateTime={activity.createdAt}>
+                        {new Date(activity.createdAt).toLocaleString("en-IN", {
+                          day: "numeric",
+                          month: "short",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </time>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <h3 className="text-sm font-semibold text-slate-900">
+                Saved quotations
+              </h3>
+              {isLoadingQuotes ? (
+                <div className="text-center py-8 text-xs text-zinc-400 flex items-center justify-center gap-2">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <span>Loading quotations...</span>
+                </div>
+              ) : quotesError ? (
+                <div className="notice notice-error" role="alert">
+                  <p>{quotesError}</p>
+                  <button
+                    className="button-secondary mt-3"
+                    onClick={() => void loadQuotes(lead.id)}
+                  >
+                    Try again
+                  </button>
+                </div>
+              ) : !quotes || quotes.length === 0 ? (
+                <div className="text-center py-10 px-4 rounded-xl border border-dashed border-zinc-300 bg-[#FAFAF9] space-y-3">
+                  <div className="w-10 h-10 rounded-full bg-zinc-100 text-zinc-400 flex items-center justify-center mx-auto">
+                    <FileText className="w-5 h-5 stroke-[1.5]" />
                   </div>
-                ) : !quotes || quotes.length === 0 ? (
-                  <div className="text-center py-10 px-4 rounded-xl border border-dashed border-zinc-300 bg-[#FAFAF9] space-y-3">
-                    <div className="w-10 h-10 rounded-full bg-zinc-100 text-zinc-400 flex items-center justify-center mx-auto">
-                      <FileText className="w-5 h-5 stroke-[1.5]" />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-xs font-medium text-zinc-800">
-                        No quotations created yet
-                      </p>
-                      <p className="text-[11px] text-zinc-500 max-w-xs mx-auto">
-                        Use the offline rates builder to assemble flights,
-                        hotels, and custom transfers with live margin checking.
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setIsQuoteBuilderOpen(true)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 text-xs font-medium transition shadow-xs"
-                    >
-                      <Plus className="w-3.5 h-3.5" />
-                      <span>Launch Quotation Builder</span>
-                    </button>
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-zinc-800">
+                      No quotations created yet
+                    </p>
+                    <p className="text-[11px] text-zinc-500 max-w-xs mx-auto">
+                      Add the services and prices you want to offer this
+                      customer.
+                    </p>
                   </div>
-                ) : (
-                  <div className="space-y-3">
-                    {(quotes || [])
-                      .filter((q): q is QuotationRecord =>
-                        Boolean(q && q.id && q.shareToken),
-                      )
-                      .map((quote) => {
-                        const webBaseUrl =
-                          typeof window !== "undefined" &&
-                          window.location.hostname === "localhost"
-                            ? "http://localhost:3000"
-                            : "https://flyora.com";
-                        const publicQuoteUrl = `${webBaseUrl}/quote/${quote.shareToken}`;
-
-                        const cleanPhoneNum = lead.customer.phone.replace(
-                          /[^0-9]/g,
-                          "",
-                        );
-                        const formattedPrice =
-                          "₹" +
-                          Math.round(quote.sellingPrice).toLocaleString(
-                            "en-IN",
-                          );
-                        const formattedValidUntil = new Date(
-                          quote.validUntil,
-                        ).toLocaleDateString();
-
-                        const quickWhatsAppText = `Hello ${lead.customer.fullName}! Here is your customized travel quote from Flyora Travels:\nTotal: ${formattedPrice} (All Inclusive)\nValid Until: ${formattedValidUntil}\nProposal Link: ${publicQuoteUrl}`;
-                        const directWhatsAppUrl = `https://wa.me/${cleanPhoneNum}?text=${encodeURIComponent(
-                          quickWhatsAppText,
-                        )}`;
-
-                        return (
-                          <div
-                            key={quote.id}
-                            className="p-3.5 rounded-xl border border-zinc-200 bg-white shadow-2xs space-y-3 hover:border-zinc-300 transition"
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <span className="font-mono text-xs font-bold text-zinc-900">
-                                  {quote.quoteNumber}
-                                </span>
-                                <span
-                                  className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-medium ${
-                                    quote.status === "SENT" ||
-                                    quote.status === "ACCEPTED"
-                                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
-                                      : quote.status === "EXPIRED"
-                                        ? "bg-amber-50 text-amber-700 border border-amber-200"
-                                        : quote.status === "REJECTED"
-                                          ? "bg-rose-50 text-rose-700 border border-rose-200"
-                                          : "bg-zinc-100 text-zinc-700"
-                                  }`}
-                                >
-                                  {quote.status}
-                                </span>
-                              </div>
-
-                              <span className="text-[10px] font-mono text-zinc-400">
-                                {new Date(quote.createdAt).toLocaleDateString()}
-                              </span>
-                            </div>
-
-                            {/* Financials Row */}
-                            <div className="grid grid-cols-2 gap-2 p-2 rounded-lg bg-[#F8F8F6] border border-zinc-200/60 text-xs font-mono">
-                              <div>
-                                <span className="text-[10px] text-zinc-400 block font-sans">
-                                  Quoted Price
-                                </span>
-                                <span className="font-bold text-zinc-900">
-                                  {formattedPrice}
-                                </span>
-                              </div>
-                              <div className="text-right">
-                                <span className="text-[10px] text-zinc-400 block font-sans">
-                                  Gross Margin
-                                </span>
-                                <span
-                                  className={`font-semibold ${
-                                    quote.marginPercent >= 12
-                                      ? "text-emerald-700"
-                                      : "text-amber-700"
-                                  }`}
-                                >
-                                  {quote.marginPercent.toFixed(1)}% (+₹
-                                  {Math.round(
-                                    quote.marginAmount,
-                                  ).toLocaleString("en-IN")}
-                                  )
-                                </span>
-                              </div>
-                            </div>
-
-                            {/* Line items count & Validity */}
-                            <div className="flex items-center justify-between text-[11px] text-zinc-500">
-                              <span>
-                                {quote.items?.length || 0} line item(s)
-                              </span>
-                              <span className="font-mono text-[10px]">
-                                Valid until: {formattedValidUntil}
-                              </span>
-                            </div>
-
-                            {/* One-Click Action Buttons */}
-                            <div className="pt-2 border-t border-zinc-100 flex items-center justify-between gap-2">
-                              <button
-                                type="button"
-                                onClick={() => handleCopyQuoteLink(quote)}
-                                className="flex-1 inline-flex items-center justify-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-700 text-xs font-medium transition"
-                              >
-                                {copiedQuoteId === quote.id ? (
-                                  <>
-                                    <Check className="w-3 h-3 text-emerald-600" />
-                                    <span className="text-emerald-700">
-                                      Copied!
-                                    </span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <Copy className="w-3 h-3 text-zinc-400" />
-                                    <span>Copy Link</span>
-                                  </>
-                                )}
-                              </button>
-
-                              {cleanPhoneNum && (
-                                <a
-                                  href={directWhatsAppUrl}
-                                  target="_blank"
-                                  rel="noreferrer"
-                                  className="inline-flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition"
-                                >
-                                  <MessageSquare className="w-3 h-3" />
-                                  <span>WhatsApp</span>
-                                </a>
-                              )}
-
-                              <a
-                                href={publicQuoteUrl}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="p-1.5 rounded-lg text-zinc-400 hover:text-black hover:bg-zinc-100 transition"
-                                title="Preview Customer Proposal"
-                              >
-                                <ExternalLink className="w-3.5 h-3.5" />
-                              </a>
-                            </div>
-
-                            {/* 1-Click Convert to Booking Action */}
-                            <button
-                              type="button"
-                              onClick={() => setQuoteToConvert(quote)}
-                              className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition"
-                            >
-                              <Sparkles className="w-3.5 h-3.5" />
-                              <span>Convert to Booking</span>
-                            </button>
-                          </div>
-                        );
-                      })}
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {quotes
+                    .filter((quote) => Boolean(quote?.id && quote.shareToken))
+                    .map((quote) => (
+                      <QuotationCard
+                        key={quote.id}
+                        quote={quote}
+                        lead={lead}
+                        copied={copiedQuoteId === quote.id}
+                        onCopy={() => void handleCopyQuoteLink(quote)}
+                        onBook={() => setQuoteToConvert(quote)}
+                      />
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
@@ -777,9 +639,7 @@ export const LeadDetailDrawer = ({
               ]);
             }
             setActiveTab("quotes");
-            if (lead.status !== "QUOTED") {
-              void onUpdateStatus("QUOTED");
-            }
+            onChanged?.();
           }}
         />
       )}
@@ -792,9 +652,7 @@ export const LeadDetailDrawer = ({
           quotation={quoteToConvert}
           lead={lead}
           onBookingConverted={() => {
-            if (lead.status !== "BOOKED") {
-              void onUpdateStatus("BOOKED");
-            }
+            onChanged?.();
             setQuotes((prev) =>
               prev.map((q) =>
                 q.id === quoteToConvert.id ? { ...q, status: "ACCEPTED" } : q,
@@ -803,6 +661,6 @@ export const LeadDetailDrawer = ({
           }}
         />
       )}
-    </div>
+    </Modal>
   );
 };

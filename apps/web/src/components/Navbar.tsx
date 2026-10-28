@@ -385,12 +385,19 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             </div>
 
-            {/* About — link to homepage section */}
+            {/* About — link to dedicated /about page */}
             <Link
-              href="/#about"
-              className="text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 relative select-none text-[#4A423B] hover:text-black"
+              href="/about"
+              className={`text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 relative select-none ${
+                activePath === "/about"
+                  ? "text-[#1C1815] font-semibold"
+                  : "text-[#4A423B] hover:text-black"
+              }`}
             >
               About
+              {activePath === "/about" && (
+                <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#463D34] rounded-full" />
+              )}
             </Link>
 
             {/* Contact — link to homepage section */}
@@ -633,9 +640,13 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* About */}
             <Link
-              href="/#about"
+              href="/about"
               onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 text-[#38312B] hover:text-black transition-colors border-b border-black/[0.04]"
+              className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 transition-colors border-b border-black/[0.04] ${
+                activePath === "/about"
+                  ? "text-[#1C1815] font-semibold"
+                  : "text-[#38312B] hover:text-black"
+              }`}
             >
               <Info className="w-3.5 h-3.5 text-stone-400" />
               About

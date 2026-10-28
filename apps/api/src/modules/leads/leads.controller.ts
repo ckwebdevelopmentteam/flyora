@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from "fastify";
 import { LeadsService } from "./leads.service";
 import {
   addLeadNoteSchema,
+  createLeadSchema,
   leadFilterSchema,
   leadIdParamSchema,
   publicEnquirySchema,
@@ -44,13 +45,15 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
     "/pool",
     {
-      preHandler: [fastify.authenticate],
+      preHandler: [fastify.authenticate, requireRole(["SERVICE_COORDINATOR"])],
     },
     async (request, reply) => {
       try {
         const pool = await leadsService.getCoordinatorLeadPool(
           request.user.id,
           request.user.role,
+          (request.query as { includeAssigned?: string }).includeAssigned ===
+            "true",
         );
         return reply.send({
           statusCode: 200,
@@ -70,7 +73,7 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
     "/my-leads",
     {
-      preHandler: [fastify.authenticate],
+      preHandler: [fastify.authenticate, requireRole(["SERVICE_COORDINATOR"])],
     },
     async (request, reply) => {
       const { status, search } = request.query as {
@@ -134,6 +137,18 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
     },
   );
 
+  fastify.get(
+    "/staff-workload",
+    {
+      preHandler: [
+        fastify.authenticate,
+        requireRole(["SUPER_ADMIN", "OPERATIONS_MANAGER"]),
+      ],
+    },
+    async (_request, reply) =>
+      reply.send({ statusCode: 200, data: await leadsService.staffWorkload() }),
+  );
+
   // 5. GET /:id (Single Lead Detail with activity feed)
   fastify.get(
     "/:id",
@@ -151,6 +166,11 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       try {
+        await leadsService.assertLeadAccess(
+          paramResult.data.id,
+          request.user.id,
+          request.user.role,
+        );
         const lead = await leadsService.getLeadById(paramResult.data.id);
         return reply.send({
           statusCode: 200,
@@ -170,14 +190,7 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     "/:id/take",
     {
-      preHandler: [
-        fastify.authenticate,
-        requireRole([
-          "SERVICE_COORDINATOR",
-          "OPERATIONS_MANAGER",
-          "SUPER_ADMIN",
-        ]),
-      ],
+      preHandler: [fastify.authenticate, requireRole(["SERVICE_COORDINATOR"])],
     },
     async (request, reply) => {
       const paramResult = leadIdParamSchema.safeParse(request.params);
@@ -239,6 +252,12 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       try {
+        await leadsService.assertLeadAccess(
+          paramResult.data.id,
+          request.user.id,
+          request.user.role,
+          true,
+        );
         const lead = await leadsService.updateLeadStatus(
           paramResult.data.id,
           bodyResult.data.status,
@@ -285,6 +304,12 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
       }
 
       try {
+        await leadsService.assertLeadAccess(
+          paramResult.data.id,
+          request.user.id,
+          request.user.role,
+          true,
+        );
         const lead = await leadsService.addLeadNote(
           paramResult.data.id,
           bodyResult.data.note,
@@ -343,6 +368,43 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
         );
         return reply.send({
           statusCode: 200,
+          data: lead,
+        });
+      } catch (err: any) {
+        return reply.status(err.statusCode || 500).send({
+          statusCode: err.statusCode || 500,
+          error: err.error || "InternalServerError",
+          message: err.message,
+        });
+      }
+    },
+  );
+
+  // 10. POST / (Manual Lead Creation by Staff - Auto-assigned)
+  fastify.post(
+    "/",
+    {
+      preHandler: [fastify.authenticate],
+    },
+    async (request, reply) => {
+      const parseResult = createLeadSchema.safeParse(request.body);
+      if (!parseResult.success) {
+        return reply.status(400).send({
+          statusCode: 400,
+          error: "Bad Request",
+          message:
+            parseResult.error.errors[0]?.message || "Invalid lead submission",
+        });
+      }
+
+      try {
+        const lead = await leadsService.createStaffLead(
+          parseResult.data,
+          request.user.id,
+          request.user.role,
+        );
+        return reply.status(201).send({
+          statusCode: 201,
           data: lead,
         });
       } catch (err: any) {

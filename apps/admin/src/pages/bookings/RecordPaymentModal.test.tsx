@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   render,
   screen,
@@ -34,213 +34,183 @@ const mockBooking: BookingRecord = {
   serviceName: "Dubai Luxury Holidays",
 };
 
-describe("RecordPaymentModal Component", () => {
-  beforeEach(() => {
-    vi.resetAllMocks();
+const next = () =>
+  fireEvent.click(screen.getByRole("button", { name: /Continue/ }));
+const enterDetails = () => {
+  fireEvent.change(screen.getByLabelText("Amount received (₹)"), {
+    target: { value: "40000" },
   });
-
-  afterEach(cleanup);
-
-  it("renders booking financials, due balance, and preset buttons", () => {
-    render(
-      <RecordPaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        booking={mockBooking}
-      />,
-    );
-
-    expect(screen.getByText("Record Offline Payment")).toBeTruthy();
-    expect(screen.getByText(/BK-2026-0042/i)).toBeTruthy();
-    expect(screen.getByText(/₹1,80,000/i)).toBeTruthy();
-    expect(screen.getByText(/₹60,000/i)).toBeTruthy();
-    expect(screen.getAllByText(/₹1,20,000/i).length).toBeGreaterThanOrEqual(1);
-
-    // Default amount set to full due
-    const amountInput = screen.getByPlaceholderText("0") as HTMLInputElement;
-    expect(amountInput.value).toBe("120000");
-
-    // Click 50% preset
-    const halfBtn = screen.getByRole("button", { name: "50% Due" });
-    fireEvent.click(halfBtn);
-    expect(amountInput.value).toBe("60000");
+  fireEvent.change(screen.getByLabelText("Payment reference / UTR number"), {
+    target: { value: "UTR-123" },
   });
-
-  it("validates required fields: transaction ref and receipt proof", async () => {
-    render(
-      <RecordPaymentModal
-        isOpen={true}
-        onClose={vi.fn()}
-        booking={mockBooking}
-      />,
-    );
-
-    const submitBtn = screen.getByRole("button", {
-      name: /Record & Submit for Verification/i,
-    });
-    fireEvent.click(submitBtn);
-
-    // Should require transaction reference
-    expect(
-      await screen.findByText(/Transaction reference or Bank UTR is required/i),
-    ).toBeTruthy();
+  next();
+};
+const receipt = () => new File(["proof"], "slip.png", { type: "image/png" });
+const upload = async () => {
+  fireEvent.change(screen.getByLabelText("Payment receipt"), {
+    target: { files: [receipt()] },
   });
+  await screen.findByText("slip.png");
+};
+beforeEach(() => vi.resetAllMocks());
+afterEach(cleanup);
+const show = (onClose = vi.fn(), onPaymentRecorded = vi.fn()) =>
+  render(
+    <RecordPaymentModal
+      isOpen
+      booking={mockBooking}
+      onClose={onClose}
+      onPaymentRecorded={onPaymentRecorded}
+    />,
+  );
 
-  it("records payment successfully with transaction ref and uploaded receipt proof", async () => {
-    vi.mocked(bookingsApi.uploadReceiptSlip).mockResolvedValue({
-      fileKey: "receipts/slip-2026.png",
-      publicUrl: "https://r2.flyora.com/slip.png",
-    });
-
-    vi.mocked(bookingsApi.recordPayment).mockResolvedValue({
-      id: "pay-new-01",
-      bookingId: mockBooking.id,
-      recordedById: "coord-01",
-      amount: 60000,
-      method: "UPI",
-      transactionRef: "UPI/528391823901",
-      receiptFileKey: "receipts/slip-2026.png",
-      status: "PENDING",
-      paymentDate: "2026-10-23",
-      createdAt: new Date().toISOString(),
-    });
-
-    const onPaymentRecorded = vi.fn();
-    const onClose = vi.fn();
-
-    render(
-      <RecordPaymentModal
-        isOpen={true}
-        onClose={onClose}
-        booking={mockBooking}
-        onPaymentRecorded={onPaymentRecorded}
-      />,
-    );
-
-    // Fill UTR
-    const utrInput = screen.getByPlaceholderText(/e.g. UPI\/528391823901/i);
-    fireEvent.change(utrInput, { target: { value: "UPI/528391823901" } });
-
-    // Simulate file upload
-    const file = new File(["dummy content"], "payment_slip.png", {
-      type: "image/png",
-    });
-    const fileDropzone = screen.getByText(
-      /Click to upload or drag & drop slip proof/i,
-    );
-    fireEvent.drop(fileDropzone, {
-      dataTransfer: {
-        files: [file],
-      },
-    });
-
-    await waitFor(() => {
-      expect(bookingsApi.uploadReceiptSlip).toHaveBeenCalledOnce();
-    });
-
-    // Submit form
-    const submitBtn = screen.getByRole("button", {
-      name: /Record & Submit for Verification/i,
-    });
-    fireEvent.click(submitBtn);
-
-    await waitFor(() => {
-      expect(bookingsApi.recordPayment).toHaveBeenCalledWith(mockBooking.id, {
-        amount: 120000,
-        method: "UPI",
-        transactionRef: "UPI/528391823901",
-        receiptFileKey: "receipts/slip-2026.png",
-        paymentDate: expect.any(String),
-        notes: undefined,
-      });
-      expect(onPaymentRecorded).toHaveBeenCalledOnce();
-      expect(onClose).toHaveBeenCalledOnce();
-    });
+it("starts with the balance and allows a half-balance preset", () => {
+  show();
+  expect(screen.getByRole("dialog", { name: "Record payment" })).toBeTruthy();
+  expect(screen.getByText("₹1,20,000")).toBeTruthy();
+  fireEvent.click(screen.getByRole("button", { name: "Half balance" }));
+  expect(
+    (screen.getByLabelText("Amount received (₹)") as HTMLInputElement).value,
+  ).toBe("60000");
+  expect(screen.queryByLabelText("Payment receipt")).toBeNull();
+});
+it("blocks invalid details and requires a receipt before review", async () => {
+  show();
+  next();
+  expect(await screen.findByRole("alert")).toHaveProperty(
+    "textContent",
+    expect.stringContaining("reference"),
+  );
+  expect(bookingsApi.recordPayment).not.toHaveBeenCalled();
+  enterDetails();
+  next();
+  expect(await screen.findByRole("alert")).toHaveProperty(
+    "textContent",
+    expect.stringContaining("attach a payment receipt"),
+  );
+  expect(
+    screen.queryByRole("button", { name: "Submit for verification" }),
+  ).toBeNull();
+});
+it("keeps the entered details when navigating back", () => {
+  show();
+  enterDetails();
+  fireEvent.click(screen.getByRole("button", { name: "Back" }));
+  expect(
+    (screen.getByLabelText("Amount received (₹)") as HTMLInputElement).value,
+  ).toBe("40000");
+  expect(
+    (
+      screen.getByLabelText(
+        "Payment reference / UTR number",
+      ) as HTMLInputElement
+    ).value,
+  ).toBe("UTR-123");
+});
+it("uploads proof, reviews the exact details and records one pending payment", async () => {
+  vi.mocked(bookingsApi.uploadReceiptSlip).mockResolvedValue({
+    fileKey: "receipts/slip.png",
   });
-
-  it("keeps failed uploads unsubmitted and allows retrying the same file", async () => {
-    vi.mocked(bookingsApi.uploadReceiptSlip)
-      .mockRejectedValueOnce(
-        new Error(
-          "Private storage rejected the receipt upload. Please try again.",
-        ),
-      )
-      .mockResolvedValueOnce({ fileKey: "receipts/retry.png" });
-    render(
-      <RecordPaymentModal isOpen booking={mockBooking} onClose={vi.fn()} />,
-    );
-    const input = screen.getByLabelText("Payment receipt") as HTMLInputElement;
-    const file = new File(["proof"], "slip.png", { type: "image/png" });
-    fireEvent.change(input, { target: { files: [file] } });
-    expect(await screen.findByRole("alert")).toBeTruthy();
-    expect(input.value).toBe("");
-    fireEvent.change(screen.getByPlaceholderText(/e.g. UPI/), {
-      target: { value: "UTR-123" },
-    });
-    fireEvent.click(screen.getByRole("button", { name: /Record & Submit/ }));
-    expect(bookingsApi.recordPayment).not.toHaveBeenCalled();
-    expect(
-      await screen.findByText(/Please attach a payment receipt/),
-    ).toBeTruthy();
-    fireEvent.change(input, { target: { files: [file] } });
-    expect(await screen.findByText("slip.png")).toBeTruthy();
-    expect(bookingsApi.uploadReceiptSlip).toHaveBeenCalledTimes(2);
+  vi.mocked(bookingsApi.recordPayment).mockResolvedValue({
+    id: "pay-1",
+    status: "PENDING",
+  } as any);
+  const close = vi.fn(),
+    recorded = vi.fn();
+  show(close, recorded);
+  enterDetails();
+  await upload();
+  expect(bookingsApi.recordPayment).not.toHaveBeenCalled();
+  next();
+  expect(screen.getByText("₹40,000")).toBeTruthy();
+  expect(screen.getByText(/balance changes only after/)).toBeTruthy();
+  fireEvent.click(
+    screen.getByRole("button", { name: "Submit for verification" }),
+  );
+  await waitFor(() => expect(recorded).toHaveBeenCalledOnce());
+  expect(bookingsApi.recordPayment).toHaveBeenCalledExactlyOnceWith(
+    mockBooking.id,
+    expect.objectContaining({
+      amount: 40000,
+      transactionRef: "UTR-123",
+      receiptFileKey: "receipts/slip.png",
+    }),
+  );
+  expect(close).toHaveBeenCalledOnce();
+});
+it("does not bypass review on Enter", () => {
+  show();
+  enterDetails();
+  fireEvent.submit(screen.getByRole("dialog").querySelector("form")!);
+  expect(bookingsApi.recordPayment).not.toHaveBeenCalled();
+});
+it("does not submit after upload failure, and allows the same file to be retried", async () => {
+  vi.mocked(bookingsApi.uploadReceiptSlip)
+    .mockRejectedValueOnce(new Error("R2 access denied: PRIVATE_CANARY"))
+    .mockResolvedValueOnce({ fileKey: "receipts/slip.png" });
+  show();
+  enterDetails();
+  const input = screen.getByLabelText("Payment receipt") as HTMLInputElement;
+  fireEvent.change(input, { target: { files: [receipt()] } });
+  const error = await screen.findByRole("alert");
+  expect(error.textContent).not.toContain("PRIVATE_CANARY");
+  next();
+  expect(bookingsApi.recordPayment).not.toHaveBeenCalled();
+  expect(input.value).toBe("");
+  await upload();
+  expect(bookingsApi.uploadReceiptSlip).toHaveBeenCalledTimes(2);
+});
+it("rejects unsupported receipt files before making an upload request", async () => {
+  show();
+  enterDetails();
+  fireEvent.change(screen.getByLabelText("Payment receipt"), {
+    target: { files: [new File(["html"], "bad.html", { type: "text/html" })] },
   });
-
-  it("rejects unsupported receipt files before upload", async () => {
-    render(
-      <RecordPaymentModal isOpen booking={mockBooking} onClose={vi.fn()} />,
-    );
-    fireEvent.change(screen.getByLabelText("Payment receipt"), {
-      target: {
-        files: [new File(["html"], "bad.html", { type: "text/html" })],
-      },
-    });
-    expect(await screen.findByRole("alert")).toHaveProperty(
-      "textContent",
-      "Choose a PNG, JPG or PDF receipt.",
-    );
-    expect(bookingsApi.uploadReceiptSlip).not.toHaveBeenCalled();
+  expect((await screen.findByRole("alert")).textContent).toContain("PNG");
+  expect(bookingsApi.uploadReceiptSlip).not.toHaveBeenCalled();
+});
+it("prevents double submission and preserves the form after a server failure", async () => {
+  vi.mocked(bookingsApi.uploadReceiptSlip).mockResolvedValue({
+    fileKey: "receipts/slip.png",
   });
-
-  it("prevents duplicate submission and retains the form on a server failure", async () => {
-    let rejectRequest!: (reason: Error) => void;
-    vi.mocked(bookingsApi.uploadReceiptSlip).mockResolvedValue({
-      fileKey: "receipts/slip.png",
-    });
-    vi.mocked(bookingsApi.recordPayment).mockImplementation(
-      () =>
-        new Promise((_resolve, reject) => {
-          rejectRequest = reject;
-        }),
-    );
-    const close = vi.fn(),
-      recorded = vi.fn();
-    const { container } = render(
-      <RecordPaymentModal
-        isOpen
-        booking={mockBooking}
-        onClose={close}
-        onPaymentRecorded={recorded}
-      />,
-    );
-    fireEvent.change(screen.getByPlaceholderText(/e.g. UPI/), {
-      target: { value: "UTR-123" },
-    });
-    fireEvent.change(screen.getByLabelText("Payment receipt"), {
-      target: {
-        files: [new File(["proof"], "slip.png", { type: "image/png" })],
-      },
-    });
-    await screen.findByText("slip.png");
-    fireEvent.submit(container.querySelector("form")!);
-    fireEvent.submit(container.querySelector("form")!);
-    expect(bookingsApi.recordPayment).toHaveBeenCalledOnce();
-    rejectRequest(new Error("Receipt is missing from storage"));
-    expect(
-      await screen.findByText("Receipt is missing from storage"),
-    ).toBeTruthy();
-    expect(close).not.toHaveBeenCalled();
-    expect(recorded).not.toHaveBeenCalled();
+  let reject!: (error: Error) => void;
+  vi.mocked(bookingsApi.recordPayment).mockImplementation(
+    () =>
+      new Promise((_resolve, fail) => {
+        reject = fail;
+      }),
+  );
+  const close = vi.fn();
+  show(close);
+  enterDetails();
+  await upload();
+  next();
+  const form = screen.getByRole("dialog").querySelector("form")!;
+  fireEvent.submit(form);
+  fireEvent.submit(form);
+  expect(bookingsApi.recordPayment).toHaveBeenCalledOnce();
+  reject(new Error("Receipt is missing from storage"));
+  expect((await screen.findByRole("alert")).textContent).toContain(
+    "upload it again",
+  );
+  expect(close).not.toHaveBeenCalled();
+});
+it("prevents closing while a receipt is uploading", async () => {
+  let resolve!: (value: { fileKey: string }) => void;
+  vi.mocked(bookingsApi.uploadReceiptSlip).mockImplementation(
+    () =>
+      new Promise((done) => {
+        resolve = done;
+      }),
+  );
+  const close = vi.fn();
+  show(close);
+  enterDetails();
+  fireEvent.change(screen.getByLabelText("Payment receipt"), {
+    target: { files: [receipt()] },
   });
+  fireEvent.keyDown(document, { key: "Escape" });
+  expect(close).not.toHaveBeenCalled();
+  resolve({ fileKey: "receipts/slip.png" });
+  await screen.findByText("slip.png");
 });

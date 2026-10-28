@@ -1,3 +1,4 @@
+import { MemoryRouter } from "react-router-dom";
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, cleanup, fireEvent } from "@testing-library/react";
@@ -99,7 +100,11 @@ describe("BookingsPage Component", () => {
   it("renders financial aggregate cards and bookings list", async () => {
     vi.mocked(bookingsApi.fetchBookings).mockResolvedValue(mockBookingsList);
 
-    render(<BookingsPage />);
+    render(
+      <MemoryRouter>
+        <BookingsPage />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText("BK-2026-0001")).toBeTruthy();
     expect(screen.getByText("BK-2026-0002")).toBeTruthy();
@@ -116,7 +121,11 @@ describe("BookingsPage Component", () => {
   it("filters bookings by payment status", async () => {
     vi.mocked(bookingsApi.fetchBookings).mockResolvedValue(mockBookingsList);
 
-    render(<BookingsPage />);
+    render(
+      <MemoryRouter>
+        <BookingsPage />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText("BK-2026-0001")).toBeTruthy();
     expect(screen.getByText("BK-2026-0002")).toBeTruthy();
@@ -136,7 +145,11 @@ describe("BookingsPage Component", () => {
       mockBookingsList[0],
     );
 
-    render(<BookingsPage />);
+    render(
+      <MemoryRouter>
+        <BookingsPage />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText("BK-2026-0001")).toBeTruthy();
 
@@ -151,30 +164,67 @@ describe("BookingsPage Component", () => {
   it("opens RecordPaymentModal when Payment button is clicked", async () => {
     vi.mocked(bookingsApi.fetchBookings).mockResolvedValue(mockBookingsList);
 
-    render(<BookingsPage />);
+    render(
+      <MemoryRouter>
+        <BookingsPage />
+      </MemoryRouter>,
+    );
 
     expect(await screen.findByText("BK-2026-0001")).toBeTruthy();
 
     const paymentButtons = screen.getAllByRole("button", { name: "Payment" });
     fireEvent.click(paymentButtons[0]);
 
-    expect(await screen.findByText("Record Offline Payment")).toBeTruthy();
-    expect(
-      screen.getByRole("button", { name: /Record & Submit for Verification/i }),
-    ).toBeTruthy();
+    expect(await screen.findByText("Record payment")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Continue/ })).toBeTruthy();
   });
 
   it("reports a failed live booking load and recovers on refresh without demo records", async () => {
     vi.mocked(bookingsApi.fetchBookings)
       .mockRejectedValueOnce(new Error("Booking API unavailable"))
       .mockResolvedValueOnce(mockBookingsList);
-    render(<BookingsPage />);
+    render(
+      <MemoryRouter>
+        <BookingsPage />
+      </MemoryRouter>,
+    );
     expect((await screen.findByRole("alert")).textContent).toContain(
-      "Booking API unavailable",
+      "Bookings could not be loaded",
     );
     expect(screen.queryByText("BK-2026-0001")).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: "Refresh" }));
     expect(await screen.findByText("BK-2026-0001")).toBeTruthy();
     expect(screen.queryByRole("alert")).toBeNull();
+  });
+});
+
+describe("Payment review from the dashboard", () => {
+  afterEach(cleanup);
+  it("includes pending receipts on partially paid bookings", async () => {
+    const partial = {
+      ...mockBookingsList[0],
+      payments: [
+        ...mockBookingsList[0].payments!,
+        {
+          ...mockBookingsList[0].payments![0],
+          id: "pending-new",
+          amount: 10000,
+          status: "PENDING" as const,
+        },
+      ],
+    };
+    vi.mocked(bookingsApi.fetchBookings).mockResolvedValue([
+      partial,
+      mockBookingsList[1],
+    ]);
+    render(
+      <MemoryRouter initialEntries={["/bookings?payment=review"]}>
+        <BookingsPage />
+      </MemoryRouter>,
+    );
+    expect(await screen.findByText("Aamir Sheikh")).toBeTruthy();
+    expect(screen.queryByText("Fatima Zahra")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: "All Payments" }));
+    expect(await screen.findByText("Fatima Zahra")).toBeTruthy();
   });
 });

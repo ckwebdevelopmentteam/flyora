@@ -1,3 +1,4 @@
+import { MemoryRouter } from "react-router-dom";
 // @vitest-environment jsdom
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
@@ -117,6 +118,7 @@ describe("Dev 2 End-to-End Workflow Verification", () => {
     vi.mocked(quotesApi.createQuotation).mockResolvedValue(createdMockQuote);
 
     const onUpdateStatus = vi.fn().mockResolvedValue(undefined);
+    const onChanged = vi.fn();
     const onAddNote = vi.fn().mockResolvedValue(undefined);
 
     // 1. Coordinator opens Lead Detail Drawer
@@ -127,6 +129,7 @@ describe("Dev 2 End-to-End Workflow Verification", () => {
         isOpen={true}
         onClose={vi.fn()}
         onUpdateStatus={onUpdateStatus}
+        onChanged={onChanged}
         onAddNote={onAddNote}
       />,
     );
@@ -137,44 +140,38 @@ describe("Dev 2 End-to-End Workflow Verification", () => {
 
     // 2. Click "Create Quotation (Margin Guard)"
     const launchBtn = screen.getByRole("button", {
-      name: /Create Quotation \(Margin Guard\)/i,
+      name: /Create quotation/i,
     });
     fireEvent.click(launchBtn);
 
     // 3. Modal opens with pre-filled lead context and initial items
     expect(
-      await screen.findByText("Quotation Builder & Margin Guard"),
-    ).toBeTruthy();
-    expect(
-      screen.getByText(/Enforcing floor rule for Dubai Luxury Holidays/i),
+      await screen.findByRole("dialog", { name: "Create quotation" }),
     ).toBeTruthy();
 
     // 4. Test Line-Item shortcuts: Add a Flight
-    const addFlightBtn = screen.getByRole("button", { name: "+ Flight" });
-    fireEvent.click(addFlightBtn);
-    expect(screen.getByDisplayValue("Round-trip Flights")).toBeTruthy();
+    fireEvent.change(screen.getByRole("combobox", { name: "Add service" }), {
+      target: { value: "FLIGHT" },
+    });
+    expect(screen.getByDisplayValue("Flight tickets")).toBeTruthy();
 
     // 5. Enter pricing to test Sub-Target Margin Guard
     // Cost = 100,000, Price = 105,000 (~4.7% < 12%)
-    const costInputs = screen.getAllByPlaceholderText("0");
+    const costInputs = screen.getAllByPlaceholderText("0.00");
     fireEvent.change(costInputs[0], { target: { value: "100000" } });
     fireEvent.change(costInputs[1], { target: { value: "105000" } });
 
-    // Warning alert should trigger
-    expect(await screen.findByRole("alert")).toBeTruthy();
-    expect(screen.getByText(/Margin Below Target/i)).toBeTruthy();
+    expect(quotesApi.createQuotation).not.toHaveBeenCalled();
 
     // 6. Adjust pricing to Healthy Margin (Cost = 75,000, Price = 100,000 -> 25%)
     fireEvent.change(costInputs[0], { target: { value: "75000" } });
     fireEvent.change(costInputs[1], { target: { value: "100000" } });
 
     // Healthy badge should be displayed
-    expect(await screen.findByText(/Healthy Margin/i)).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Continue/ }));
 
     // 7. Add custom inclusion
-    const incInput = screen.getByPlaceholderText(
-      /Type custom inclusion & Enter/i,
-    );
+    const incInput = screen.getByPlaceholderText(/Add something included/i);
     fireEvent.change(incInput, {
       target: { value: "Complimentary Burj Khalifa At The Top Tickets" },
     });
@@ -183,9 +180,11 @@ describe("Dev 2 End-to-End Workflow Verification", () => {
       screen.getByText("Complimentary Burj Khalifa At The Top Tickets"),
     ).toBeTruthy();
 
+    fireEvent.click(screen.getByRole("button", { name: /Continue/ }));
+    expect(screen.getByText("Target met")).toBeTruthy();
     // 8. Submit Quotation
     const submitBtn = screen.getByRole("button", {
-      name: "Generate & Finalize Quotation",
+      name: "Save quotation",
     });
     fireEvent.click(submitBtn);
 
@@ -195,18 +194,19 @@ describe("Dev 2 End-to-End Workflow Verification", () => {
     });
 
     expect(
-      await screen.findByRole("heading", { name: "FLY-2026-0099" }),
+      await screen.findByRole("dialog", { name: "Quotation saved" }),
     ).toBeTruthy();
-    expect(screen.getByText(/Quotation Ready for Dispatch/i)).toBeTruthy();
+    expect(screen.getByText(/Quotation saved/i)).toBeTruthy();
     expect(
       screen.getAllByRole("button", { name: /Copy Link/i }).length,
     ).toBeGreaterThanOrEqual(1);
-    expect(
-      screen.getByRole("button", { name: /Copy Pitch Text/i }),
-    ).toBeTruthy();
+    fireEvent.click(screen.getByText("Message to customer"));
+    expect(screen.getByRole("button", { name: /Copy message/i })).toBeTruthy();
 
     // Verify WhatsApp direct link has encoded customer phone and share token
-    const whatsappLink = screen.getByRole("link", { name: /Send WhatsApp/i });
+    const whatsappLink = screen.getByRole("link", {
+      name: /Open in WhatsApp/i,
+    });
     expect(whatsappLink.getAttribute("href")).toContain("919820011223");
     expect(whatsappLink.getAttribute("href")).toContain("token-e2e-xyz");
 
@@ -215,11 +215,66 @@ describe("Dev 2 End-to-End Workflow Verification", () => {
     fireEvent.click(doneBtn);
 
     // 11. Verify lead status automatically updated to QUOTED
-    expect(onUpdateStatus).toHaveBeenCalledWith("QUOTED");
+    expect(onChanged).toHaveBeenCalledOnce();
+    expect(onUpdateStatus).not.toHaveBeenCalled();
 
     // 12. Verify quote appears in the drawer's Quotations tab
     await waitFor(() => {
       expect(screen.getByText("FLY-2026-0099")).toBeTruthy();
     });
   });
+});
+
+it("keeps an existing booking intact when a revised quotation is saved", async () => {
+  vi.mocked(quotesApi.fetchQuotationsForLead).mockResolvedValue([]);
+  vi.mocked(quotesApi.createQuotation).mockResolvedValue({
+    id: "revised-quote",
+    quoteNumber: "FLY-2026-0100",
+    leadId: mockLead.id,
+    createdById: "staff-1",
+    status: "DRAFT",
+    shareToken: "revised-link",
+    supplierCost: 100,
+    sellingPrice: 150,
+    marginAmount: 50,
+    marginPercent: 33.3,
+    items: [],
+    inclusions: [],
+    exclusions: [],
+    validUntil: "2030-01-01",
+    createdAt: new Date().toISOString(),
+  });
+  const update = vi.fn().mockResolvedValue(undefined);
+  const view = render(
+    <MemoryRouter>
+      <LeadDetailDrawer
+        lead={{ ...mockLead, status: "BOOKED" }}
+        activities={[]}
+        isOpen
+        onClose={vi.fn()}
+        onUpdateStatus={update}
+        onAddNote={vi.fn()}
+      />
+    </MemoryRouter>,
+  );
+  fireEvent.click(screen.getByRole("button", { name: "Create quotation" }));
+  fireEvent.change(
+    screen.getByRole("spinbutton", { name: "Supplier cost per unit 1" }),
+    { target: { value: "100" } },
+  );
+  fireEvent.change(
+    screen.getByRole("spinbutton", { name: "Customer price per unit 1" }),
+    { target: { value: "150" } },
+  );
+  fireEvent.click(screen.getByRole("button", { name: /Continue/ }));
+  fireEvent.click(screen.getByRole("button", { name: /Continue/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Save quotation" }));
+  expect(
+    await screen.findByRole("dialog", { name: "Quotation saved" }),
+  ).toBeTruthy();
+  expect(update).not.toHaveBeenCalled();
+  fireEvent.click(screen.getByRole("button", { name: "Done" }));
+  expect(screen.queryByRole("button", { name: "Confirm booking" })).toBeNull();
+  expect(screen.getByRole("link", { name: "View bookings" })).toBeTruthy();
+  view.unmount();
 });

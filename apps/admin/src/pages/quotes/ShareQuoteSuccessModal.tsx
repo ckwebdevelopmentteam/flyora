@@ -1,13 +1,7 @@
 import React, { useState } from "react";
 import type { QuotationRecord } from "./types";
-import {
-  Check,
-  Copy,
-  ExternalLink,
-  MessageSquare,
-  Sparkles,
-  X,
-} from "lucide-react";
+import { Check, Copy, ExternalLink, MessageSquare } from "lucide-react";
+import { Modal, FormError } from "../../components/ui/Modal";
 
 interface ShareQuoteSuccessModalProps {
   quote: QuotationRecord;
@@ -30,6 +24,7 @@ export const ShareQuoteSuccessModal: React.FC<ShareQuoteSuccessModalProps> = ({
   isOpen,
   onClose,
 }) => {
+  const [copyError, setCopyError] = useState<string | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedPitch, setCopiedPitch] = useState(false);
 
@@ -78,7 +73,9 @@ Feel free to reply here if you'd like any customizations!`;
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2500);
     } catch {
-      // Fallback
+      setCopyError(
+        "We couldn't copy this. Select the link or message and copy it manually.",
+      );
     }
   };
 
@@ -88,187 +85,98 @@ Feel free to reply here if you'd like any customizations!`;
       setCopiedPitch(true);
       setTimeout(() => setCopiedPitch(false), 2500);
     } catch {
-      // Fallback
+      setCopyError(
+        "We couldn't copy this. Select the link or message and copy it manually.",
+      );
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
-      {/* Backdrop */}
-      <div
-        onClick={onClose}
-        className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
-      />
-
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative w-full max-w-lg bg-white rounded-2xl shadow-2xl border border-zinc-200 overflow-hidden animate-in zoom-in-95 duration-200">
-          {/* Header Banner */}
-          <div className="bg-gradient-to-r from-emerald-600 to-teal-700 px-6 py-6 text-white relative">
-            <button
-              onClick={onClose}
-              className="absolute right-4 top-4 p-1.5 rounded-lg text-white/80 hover:text-white hover:bg-white/10 transition"
-            >
-              <X className="w-4 h-4" />
-            </button>
-
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-xs flex items-center justify-center text-white">
-                <Sparkles className="w-4 h-4" />
-              </span>
-              <span className="text-xs uppercase tracking-wider font-semibold text-emerald-100">
-                Quotation Ready for Dispatch
-              </span>
-            </div>
-
-            <h2 className="text-xl font-bold tracking-tight">
-              {quote.quoteNumber}
-            </h2>
-            <p className="text-xs text-emerald-100/90 mt-1">
-              Custom proposal generated for {customerName} (
-              {destinationOrService})
-            </p>
+    <Modal
+      title="Quotation saved"
+      description={`${quote.quoteNumber} · ${customerName}`}
+      onClose={onClose}
+      footer={
+        <>
+          <a
+            href={publicQuoteUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="button-secondary"
+          >
+            Preview quotation <ExternalLink size={15} />
+          </a>
+          <button className="button-primary" onClick={onClose}>
+            Done
+          </button>
+        </>
+      }
+    >
+      <div className="space-y-5">
+        <div className="notice flex justify-between gap-4">
+          <div>
+            <p className="text-xs text-slate-500">Customer total</p>
+            <strong className="text-lg">{formattedPrice}</strong>
           </div>
-
-          {/* Body Content */}
-          <div className="p-6 space-y-5">
-            {/* Quick Metrics Bar */}
-            <div className="grid grid-cols-3 gap-2.5 p-3 rounded-xl bg-[#F8F8F6] border border-zinc-200/80 text-center">
-              <div>
-                <span className="text-[10px] font-mono uppercase text-zinc-400 block">
-                  Package Total
-                </span>
-                <span className="text-sm font-bold font-mono text-zinc-900">
-                  {formattedPrice}
-                </span>
-              </div>
-              <div className="border-x border-zinc-200">
-                <span className="text-[10px] font-mono uppercase text-zinc-400 block">
-                  Margin %
-                </span>
-                <span className="text-sm font-bold font-mono text-emerald-700">
-                  {quote.marginPercent.toFixed(1)}%
-                </span>
-              </div>
-              <div>
-                <span className="text-[10px] font-mono uppercase text-zinc-400 block">
-                  Valid Until
-                </span>
-                <span className="text-xs font-semibold text-zinc-800">
-                  {formattedDate}
-                </span>
-              </div>
-            </div>
-
-            {/* Shareable Link Box */}
-            <div className="space-y-1.5">
-              <label className="text-xs font-semibold text-zinc-800 flex items-center justify-between">
-                <span>Customer Shareable Link</span>
-                <span className="text-[10px] font-mono text-emerald-600 font-normal">
-                  Zero cost fields exposed
-                </span>
-              </label>
-
-              <div className="flex items-center gap-2 p-2 rounded-xl bg-[#FAFAF9] border border-zinc-200">
-                <input
-                  type="text"
-                  readOnly
-                  value={publicQuoteUrl}
-                  className="flex-1 bg-transparent text-xs font-mono text-zinc-600 select-all focus:outline-hidden truncate"
-                />
-
-                <button
-                  type="button"
-                  onClick={handleCopyLink}
-                  className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition shadow-xs ${
-                    copiedLink
-                      ? "bg-emerald-600 text-white"
-                      : "bg-black text-white hover:bg-zinc-800"
-                  }`}
-                >
-                  {copiedLink ? (
-                    <>
-                      <Check className="w-3.5 h-3.5" />
-                      <span>Copied!</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>Copy Link</span>
-                    </>
-                  )}
-                </button>
-              </div>
-            </div>
-
-            {/* WhatsApp Pitch Preview Box */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="text-xs font-semibold text-zinc-800 flex items-center gap-1.5">
-                  <MessageSquare className="w-3.5 h-3.5 text-emerald-600" />
-                  Pre-Formatted WhatsApp Pitch
-                </label>
-
-                <button
-                  type="button"
-                  onClick={handleCopyPitch}
-                  className="text-xs text-zinc-600 hover:text-black font-medium inline-flex items-center gap-1 transition"
-                >
-                  {copiedPitch ? (
-                    <>
-                      <Check className="w-3 h-3 text-emerald-600" />
-                      <span className="text-emerald-700 font-semibold">
-                        Copied message!
-                      </span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3 h-3" />
-                      <span>Copy Pitch Text</span>
-                    </>
-                  )}
-                </button>
-              </div>
-
-              <div className="p-3 rounded-xl bg-[#F0FDF4] border border-emerald-200/80 text-[11px] text-zinc-800 font-sans whitespace-pre-line leading-relaxed max-h-36 overflow-y-auto">
-                {whatsAppPitchText}
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="pt-2 flex flex-col sm:flex-row items-center gap-2.5">
-              {cleanPhone && (
-                <a
-                  href={directWhatsAppUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition"
-                >
-                  <MessageSquare className="w-4 h-4" />
-                  <span>Send WhatsApp ({customerPhone})</span>
-                </a>
-              )}
-
-              <a
-                href={publicQuoteUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl border border-zinc-200 hover:bg-zinc-100 text-zinc-800 text-xs font-medium transition"
-              >
-                <span>Preview Proposal</span>
-                <ExternalLink className="w-3.5 h-3.5 text-zinc-500" />
-              </a>
-
-              <button
-                type="button"
-                onClick={onClose}
-                className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 text-zinc-700 text-xs font-medium transition"
-              >
-                Done
-              </button>
-            </div>
+          <div className="text-right">
+            <p className="text-xs text-slate-500">Valid until</p>
+            <strong>{formattedDate}</strong>
           </div>
         </div>
+        <FormError>{copyError}</FormError>
+        <div className="field">
+          <label htmlFor="quote-customer-link">Customer link</label>
+          <div className="flex gap-2">
+            <input
+              id="quote-customer-link"
+              readOnly
+              value={publicQuoteUrl}
+              className="min-w-0"
+              onFocus={(event) => event.currentTarget.select()}
+            />
+            <button
+              type="button"
+              className="button-secondary shrink-0"
+              onClick={handleCopyLink}
+            >
+              {copiedLink ? <Check size={15} /> : <Copy size={15} />}{" "}
+              {copiedLink ? "Copied" : "Copy link"}
+            </button>
+          </div>
+          <small>
+            Share this link so the customer can view their quotation.
+          </small>
+        </div>
+        <details className="surface p-4">
+          <summary className="cursor-pointer text-sm font-medium">
+            Message to customer
+          </summary>
+          <textarea
+            aria-label="Message to customer"
+            readOnly
+            value={whatsAppPitchText}
+            rows={7}
+            className="w-full mt-3 p-3 text-sm border rounded-lg"
+          />
+          <button className="button-secondary mt-3" onClick={handleCopyPitch}>
+            {copiedPitch ? "Copied" : "Copy message"}
+          </button>
+        </details>
+        {cleanPhone && (
+          <a
+            className="button-primary w-full"
+            href={directWhatsAppUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageSquare size={17} />
+            Open in WhatsApp
+          </a>
+        )}
+        <p className="text-xs text-slate-500">
+          Opening WhatsApp prepares the message. You choose when to send it.
+        </p>
       </div>
-    </div>
+    </Modal>
   );
 };

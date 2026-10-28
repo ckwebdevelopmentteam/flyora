@@ -1,3 +1,4 @@
+import { userMessage } from "../lib/userMessage";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
@@ -58,6 +59,7 @@ export const PackageBuilderPage = () => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
+  const [uploadingImages, setUploadingImages] = useState(false);
   const [activeTab, setActiveTab] = useState<TabKey>("basic");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [successToast, setSuccessToast] = useState<string | null>(null);
@@ -84,6 +86,7 @@ export const PackageBuilderPage = () => {
     watch,
     setValue,
     reset,
+    trigger,
     formState: { errors, isSubmitting },
   } = useForm<CreatePackageInput>({
     resolver: zodResolver(createPackageSchema as any),
@@ -94,22 +97,21 @@ export const PackageBuilderPage = () => {
       durationDays: 5,
       durationNights: 4,
       destination: "",
-      startingPrice: 45000,
+      startingPrice: 0,
       coverImageUrl: "",
       galleryImageUrls: [],
       overview: "",
       itinerary: [
         {
           day: 1,
-          title: "Arrival & Welcome Transfer",
-          description:
-            "Arrive at the destination. Meet and greet with our local representative, followed by private transfer to your hotel.",
-          meals: "Dinner",
-          stay: "Luxury City Hotel",
+          title: "",
+          description: "",
+          meals: "",
+          stay: "",
         },
       ],
-      inclusions: ["Airport Transfers (Private)", "Daily Buffet Breakfast"],
-      exclusions: ["Personal Expenses", "Tips & Gratuities"],
+      inclusions: [],
+      exclusions: [],
       isFeatured: false,
       isPublished: true,
       metaTitle: "",
@@ -180,6 +182,8 @@ export const PackageBuilderPage = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["packages"] });
+      queryClient.invalidateQueries({ queryKey: ["package"] });
+      queryClient.invalidateQueries({ queryKey: ["dashboard"] });
       setSuccessToast(
         isEditMode
           ? "Package updated successfully"
@@ -191,14 +195,48 @@ export const PackageBuilderPage = () => {
     },
     onError: (err: any) => {
       setSubmitError(
-        err.message || "Failed to save package. Please check inputs.",
+        userMessage(err, "Failed to save package. Please check inputs."),
       );
     },
   });
 
   const onSubmit = (formData: CreatePackageInput) => {
     setSubmitError(null);
-    saveMutation.mutate(formData);
+    if (uploadingImages) {
+      setSubmitError("Please wait for the photos to finish uploading.");
+      return;
+    }
+    saveMutation.mutate({
+      ...formData,
+      itinerary: formData.itinerary.map((day, index) => ({
+        ...day,
+        day: index + 1,
+      })),
+    });
+  };
+  const onInvalid = (fields: typeof errors) => {
+    const basic = [
+      "title",
+      "slug",
+      "destination",
+      "serviceId",
+      "durationDays",
+      "durationNights",
+      "startingPrice",
+      "overview",
+    ] as const;
+    setActiveTab(
+      basic.some((key) => fields[key])
+        ? "basic"
+        : fields.coverImageUrl || fields.galleryImageUrls
+          ? "media"
+          : fields.itinerary
+            ? "itinerary"
+            : fields.inclusions || fields.exclusions
+              ? "inclusions"
+              : "seo",
+    );
+    setSubmitError("Please check the highlighted fields before saving.");
   };
 
   // Identify which tabs have validation errors
@@ -258,14 +296,15 @@ export const PackageBuilderPage = () => {
           <button
             type="button"
             onClick={() => navigate("/packages")}
+            disabled={uploadingImages}
             className="px-3.5 py-2 rounded-md border border-zinc-200 bg-white text-zinc-700 text-xs font-medium hover:bg-zinc-100 transition shadow-xs"
           >
             Cancel
           </button>
           <button
             type="button"
-            disabled={saveMutation.isPending || isSubmitting}
-            onClick={handleSubmit(onSubmit)}
+            disabled={saveMutation.isPending || isSubmitting || uploadingImages}
+            onClick={handleSubmit(onSubmit, onInvalid)}
             className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition shadow-xs"
           >
             {saveMutation.isPending ? (
@@ -310,13 +349,13 @@ export const PackageBuilderPage = () => {
           },
           {
             key: "media",
-            label: "2. Photos & R2 Storage",
+            label: "2. Photos",
             icon: ImageIcon,
             hasError: hasMediaErrors,
           },
           {
             key: "itinerary",
-            label: "3. Day-by-Day Itinerary",
+            label: "3. Itinerary",
             icon: Calendar,
             hasError: hasItineraryErrors,
           },
@@ -328,7 +367,7 @@ export const PackageBuilderPage = () => {
           },
           {
             key: "seo",
-            label: "5. SEO & Google SERP",
+            label: "5. Website listing",
             icon: Globe,
             hasError: false,
           },
@@ -339,6 +378,7 @@ export const PackageBuilderPage = () => {
             <button
               key={tab.key}
               type="button"
+              disabled={uploadingImages}
               onClick={() => setActiveTab(tab.key as TabKey)}
               className={`flex items-center gap-2 px-4 py-2.5 text-xs font-medium whitespace-nowrap transition border-b-2 -mb-px ${
                 isActive
@@ -357,26 +397,30 @@ export const PackageBuilderPage = () => {
       </div>
 
       {/* Tab Contents */}
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={handleSubmit(onSubmit, onInvalid)} className="space-y-6">
         {/* ================= TAB 1: BASIC INFORMATION ================= */}
         {activeTab === "basic" && (
           <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-xs space-y-5">
             <div>
               <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-900 font-mono">
-                Tour Package Identification
+                Package details
               </h2>
               <p className="text-[11px] text-zinc-500 font-mono mt-0.5">
-                Core descriptive properties, operational category, and pricing.
+                Add the trip details and starting price.
               </p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Package Title */}
-              <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+              <div>
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-title"
+                >
                   Package Title <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="package-title"
                   type="text"
                   placeholder="e.g. 5D/4N Dubai Family Luxury & Desert Safari"
                   {...register("title")}
@@ -389,11 +433,14 @@ export const PackageBuilderPage = () => {
                 )}
               </div>
 
-              {/* Unique Slug with generator */}
-              <div className="md:col-span-2">
+              {/* Unique Website address with generator */}
+              <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="block text-xs font-medium text-zinc-900">
-                    URL Slug
+                  <label
+                    className="block text-xs font-medium text-zinc-900"
+                    htmlFor="package-slug"
+                  >
+                    Website address
                   </label>
                   <button
                     type="button"
@@ -401,7 +448,7 @@ export const PackageBuilderPage = () => {
                     className="text-[11px] text-zinc-600 hover:text-black font-mono flex items-center gap-1"
                   >
                     <Sparkles className="w-3 h-3 text-amber-500" />
-                    <span>Auto-generate from Title</span>
+                    <span>Generate</span>
                   </button>
                 </div>
                 <div className="flex items-center rounded-md border border-zinc-200 bg-[#FAFAF9] focus-within:border-black focus-within:bg-white transition overflow-hidden">
@@ -409,10 +456,11 @@ export const PackageBuilderPage = () => {
                     /packages/
                   </span>
                   <input
+                    id="package-slug"
                     type="text"
                     placeholder="5d-4n-dubai-family-luxury"
                     {...register("slug")}
-                    className="flex-1 text-xs px-3 py-2 bg-transparent outline-none text-zinc-900 font-mono"
+                    className="min-w-0 flex-1 text-xs px-3 py-2 bg-transparent outline-none text-zinc-900 font-mono"
                   />
                 </div>
                 {errors.slug && (
@@ -424,10 +472,14 @@ export const PackageBuilderPage = () => {
 
               {/* Destination */}
               <div>
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-destination"
+                >
                   Destination / Country <span className="text-red-500">*</span>
                 </label>
                 <input
+                  id="package-destination"
                   type="text"
                   placeholder="e.g. Dubai, United Arab Emirates"
                   {...register("destination")}
@@ -442,11 +494,15 @@ export const PackageBuilderPage = () => {
 
               {/* Service Category */}
               <div>
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-serviceId"
+                >
                   Operating Service Category{" "}
                   <span className="text-red-500">*</span>
                 </label>
                 <select
+                  id="package-serviceId"
                   disabled={isLoadingServices}
                   {...register("serviceId")}
                   className="w-full text-xs px-3.5 py-2 rounded-md border border-zinc-200 bg-[#FAFAF9] text-zinc-900 focus:bg-white focus:border-black outline-none transition"
@@ -468,10 +524,14 @@ export const PackageBuilderPage = () => {
               {/* Duration Days & Nights */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-zinc-900 mb-1">
+                  <label
+                    className="block text-xs font-medium text-zinc-900 mb-1"
+                    htmlFor="package-durationDays"
+                  >
                     Days <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="package-durationDays"
                     type="number"
                     min={1}
                     {...register("durationDays", { valueAsNumber: true })}
@@ -485,10 +545,14 @@ export const PackageBuilderPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-zinc-900 mb-1">
+                  <label
+                    className="block text-xs font-medium text-zinc-900 mb-1"
+                    htmlFor="package-durationNights"
+                  >
                     Nights <span className="text-red-500">*</span>
                   </label>
                   <input
+                    id="package-durationNights"
                     type="number"
                     min={0}
                     {...register("durationNights", { valueAsNumber: true })}
@@ -504,7 +568,10 @@ export const PackageBuilderPage = () => {
 
               {/* Starting Price */}
               <div>
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-startingPrice"
+                >
                   Starting Price (₹ INR) <span className="text-red-500">*</span>
                 </label>
                 <div className="flex items-center rounded-md border border-zinc-200 bg-[#FAFAF9] focus-within:border-black focus-within:bg-white transition overflow-hidden">
@@ -512,12 +579,13 @@ export const PackageBuilderPage = () => {
                     ₹
                   </span>
                   <input
+                    id="package-startingPrice"
                     type="number"
                     min={1}
                     step={100}
                     placeholder="49999"
                     {...register("startingPrice", { valueAsNumber: true })}
-                    className="flex-1 text-xs px-3 py-2 bg-transparent outline-none text-zinc-900 font-mono"
+                    className="min-w-0 flex-1 text-xs px-3 py-2 bg-transparent outline-none text-zinc-900 font-mono"
                   />
                 </div>
                 {errors.startingPrice && (
@@ -529,11 +597,15 @@ export const PackageBuilderPage = () => {
 
               {/* Overview / Tour Description */}
               <div className="md:col-span-2">
-                <label className="block text-xs font-medium text-zinc-900 mb-1">
+                <label
+                  className="block text-xs font-medium text-zinc-900 mb-1"
+                  htmlFor="package-overview"
+                >
                   Overview / Tour Summary{" "}
                   <span className="text-red-500">*</span>
                 </label>
                 <textarea
+                  id="package-overview"
                   rows={4}
                   placeholder="Provide an enticing summary of this tour package, key highlights, target traveler profile, and signature inclusions..."
                   {...register("overview")}
@@ -593,10 +665,24 @@ export const PackageBuilderPage = () => {
             <div className="pt-3 border-t border-zinc-100 flex justify-end">
               <button
                 type="button"
-                onClick={() => setActiveTab("media")}
+                onClick={async () => {
+                  if (
+                    await trigger([
+                      "title",
+                      "slug",
+                      "destination",
+                      "serviceId",
+                      "durationDays",
+                      "durationNights",
+                      "startingPrice",
+                      "overview",
+                    ])
+                  )
+                    setActiveTab("media");
+                }}
                 className="px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
               >
-                Proceed to Photos & R2 Storage →
+                Continue to photos →
               </button>
             </div>
           </div>
@@ -607,11 +693,10 @@ export const PackageBuilderPage = () => {
           <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-xs space-y-6">
             <div>
               <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-900 font-mono">
-                Visual Media & Cloudflare R2 Uploads
+                Package photos
               </h2>
               <p className="text-[11px] text-zinc-500 font-mono mt-0.5">
-                Direct browser-to-R2 uploads without passing through Fastify
-                server memory ($0 egress cost).
+                Choose clear photos to help customers explore the trip.
               </p>
             </div>
 
@@ -624,8 +709,10 @@ export const PackageBuilderPage = () => {
                   <R2ImageDropzone
                     value={field.value}
                     onChange={field.onChange}
-                    label="Primary Cover Photo *"
-                    helperText="High-resolution landscape hero photo (minimum 1200x630 recommended)."
+                    label="Cover photo *"
+                    disabled={uploadingImages}
+                    onUploadingChange={setUploadingImages}
+                    helperText="JPG, PNG or WebP · Up to 10 MB"
                   />
                 )}
               />
@@ -645,6 +732,15 @@ export const PackageBuilderPage = () => {
                   <R2GalleryUploader
                     urls={field.value || []}
                     onChange={field.onChange}
+                    disabled={uploadingImages}
+                    onUploadingChange={setUploadingImages}
+                    coverUrl={watch("coverImageUrl")}
+                    onChooseCover={(url) =>
+                      setValue("coverImageUrl", url, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      })
+                    }
                   />
                 )}
               />
@@ -653,6 +749,7 @@ export const PackageBuilderPage = () => {
             <div className="pt-3 border-t border-zinc-100 flex justify-between">
               <button
                 type="button"
+                disabled={uploadingImages}
                 onClick={() => setActiveTab("basic")}
                 className="px-3.5 py-1.5 rounded-md border border-zinc-200 text-zinc-700 text-xs font-medium hover:bg-zinc-100 transition"
               >
@@ -660,6 +757,7 @@ export const PackageBuilderPage = () => {
               </button>
               <button
                 type="button"
+                disabled={uploadingImages}
                 onClick={() => setActiveTab("itinerary")}
                 className="px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
               >
@@ -702,51 +800,54 @@ export const PackageBuilderPage = () => {
           <div className="rounded-lg border border-zinc-200 bg-white p-6 shadow-xs space-y-6">
             <div>
               <h2 className="text-xs font-semibold uppercase tracking-wider text-zinc-900 font-mono">
-                Package Inclusions & Exclusions
+                Included & not included
               </h2>
               <p className="text-[11px] text-zinc-500 font-mono mt-0.5">
-                Clearly state what is included in the fare and what travelers
-                must pay separately.
+                Choose what the price covers and what the customer pays
+                separately.
               </p>
             </div>
 
-            {/* Inclusions */}
-            <Controller
-              control={control}
-              name="inclusions"
-              render={({ field }) => (
-                <TagInput
-                  label="Inclusions (What's included in the price)"
-                  helperText="Press Enter after typing or click suggested preset badges below."
-                  tags={field.value || []}
-                  onChange={field.onChange}
-                  presets={INCLUSION_PRESETS}
-                  variant="inclusion"
-                />
-              )}
-            />
-
-            {/* Exclusions */}
-            <div className="pt-4 border-t border-zinc-100">
+            <div className="package-extras-editors">
+              {/* Inclusions */}
               <Controller
                 control={control}
-                name="exclusions"
+                name="inclusions"
                 render={({ field }) => (
                   <TagInput
-                    label="Exclusions (What's NOT included)"
-                    helperText="Specify exclusions to avoid customer misunderstandings."
+                    label="Included"
+                    helperText="Press Enter after typing or click suggested preset badges below."
                     tags={field.value || []}
                     onChange={field.onChange}
-                    presets={EXCLUSION_PRESETS}
-                    variant="exclusion"
+                    presets={INCLUSION_PRESETS}
+                    variant="inclusion"
                   />
                 )}
               />
+
+              {/* Exclusions */}
+              <div>
+                <Controller
+                  control={control}
+                  name="exclusions"
+                  render={({ field }) => (
+                    <TagInput
+                      label="Not included"
+                      helperText="Specify exclusions to avoid customer misunderstandings."
+                      tags={field.value || []}
+                      onChange={field.onChange}
+                      presets={EXCLUSION_PRESETS}
+                      variant="exclusion"
+                    />
+                  )}
+                />
+              </div>
             </div>
 
             <div className="pt-3 border-t border-zinc-100 flex justify-between">
               <button
                 type="button"
+                disabled={uploadingImages}
                 onClick={() => setActiveTab("itinerary")}
                 className="px-3.5 py-1.5 rounded-md border border-zinc-200 text-zinc-700 text-xs font-medium hover:bg-zinc-100 transition"
               >
@@ -786,7 +887,10 @@ export const PackageBuilderPage = () => {
             {/* Meta Title */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-medium text-zinc-900">
+                <label
+                  className="block text-xs font-medium text-zinc-900"
+                  htmlFor="package-metaTitle"
+                >
                   Meta Title
                 </label>
                 <span
@@ -800,6 +904,7 @@ export const PackageBuilderPage = () => {
                 </span>
               </div>
               <input
+                id="package-metaTitle"
                 type="text"
                 placeholder="e.g. 5D/4N Dubai Luxury Family Tour Package | Flyora Travels"
                 {...register("metaTitle")}
@@ -810,7 +915,10 @@ export const PackageBuilderPage = () => {
             {/* Meta Description */}
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="block text-xs font-medium text-zinc-900">
+                <label
+                  className="block text-xs font-medium text-zinc-900"
+                  htmlFor="package-metaDescription"
+                >
                   Meta Description
                 </label>
                 <span
@@ -824,6 +932,7 @@ export const PackageBuilderPage = () => {
                 </span>
               </div>
               <textarea
+                id="package-metaDescription"
                 rows={3}
                 placeholder="Book the ultimate 5-day luxury Dubai vacation with Flyora. Includes Desert Safari, Burj Khalifa VIP access, private transfers, and 5-star hotel accommodations."
                 {...register("metaDescription")}
@@ -855,8 +964,10 @@ export const PackageBuilderPage = () => {
               </button>
               <button
                 type="button"
-                disabled={saveMutation.isPending || isSubmitting}
-                onClick={handleSubmit(onSubmit)}
+                disabled={
+                  saveMutation.isPending || isSubmitting || uploadingImages
+                }
+                onClick={handleSubmit(onSubmit, onInvalid)}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition shadow-xs"
               >
                 {saveMutation.isPending ? (

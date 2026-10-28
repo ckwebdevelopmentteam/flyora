@@ -1,3 +1,8 @@
+import { useSearchParams } from "react-router-dom";
+import { enquiryStageFromUrl } from "../../lib/enquiryFilters";
+import { useMediaQuery } from "../../hooks/useMediaQuery";
+import { EnquiryCard } from "../../components/leads/EnquiryCard";
+import { userMessage } from "../../lib/userMessage";
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -25,12 +30,28 @@ import type {
 
 export const MasterLeadsPage: React.FC = () => {
   const queryClient = useQueryClient();
+  const mobile = useMediaQuery("(max-width: 767px)");
 
   // Filters & State
   const [search, setSearch] = useState("");
   const [selectedService, setSelectedService] = useState("");
-  const [selectedCoordinator, setSelectedCoordinator] = useState("");
-  const [selectedStatus, setSelectedStatus] = useState<string>("");
+  const [searchParams, setSearchParams] = useSearchParams();
+  const selectedCoordinator = searchParams.get("assignedToId") || "";
+  const setSelectedCoordinator = (value: string) =>
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous);
+      if (value) next.set("assignedToId", value);
+      else next.delete("assignedToId");
+      return next;
+    });
+  const selectedStatus = enquiryStageFromUrl(searchParams.get("status")) || "";
+  const setSelectedStatus = (value: string) =>
+    setSearchParams((previous) => {
+      const next = new URLSearchParams(previous);
+      if (!value) next.delete("status");
+      else next.set("status", value);
+      return next;
+    });
   const [unassignedOnly, setUnassignedOnly] = useState(false);
   const [createdFrom, setCreatedFrom] = useState("");
   const [createdTo, setCreatedTo] = useState("");
@@ -129,16 +150,12 @@ export const MasterLeadsPage: React.FC = () => {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold tracking-tight text-zinc-900">
-              Master Lead Control Center
+              Enquiries
             </h1>
             <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-zinc-200 text-zinc-700">
-              {total} Total
+              {isLoading || error ? "—" : total} total
             </span>
           </div>
-          <p className="text-xs text-zinc-500 mt-1">
-            Real-time oversight of all incoming enquiries, coordinator claims,
-            and reassignments.
-          </p>
         </div>
 
         <div className="flex items-center gap-2">
@@ -286,7 +303,7 @@ export const MasterLeadsPage: React.FC = () => {
           }`}
         >
           <Layers className="w-3.5 h-3.5" />
-          <span>Unassigned Pool Only</span>
+          <span>Unassigned only</span>
         </button>
       </div>
 
@@ -295,7 +312,7 @@ export const MasterLeadsPage: React.FC = () => {
           role="alert"
           className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-700"
         >
-          {error instanceof Error ? error.message : "Failed to load leads."}{" "}
+          {userMessage(error, "We couldn't load enquiries. Please try again.")}{" "}
           <button onClick={() => refetch()} className="underline">
             Try again
           </button>
@@ -303,165 +320,193 @@ export const MasterLeadsPage: React.FC = () => {
       )}
       {/* Table Container */}
       <div className="bg-white rounded-2xl border border-zinc-200 overflow-hidden shadow-2xs">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs border-collapse">
-            <thead>
-              <tr className="border-b border-zinc-200 bg-[#FAFAF9] text-zinc-500 font-mono text-[11px] uppercase tracking-wider">
-                <th className="py-3 px-4">Customer</th>
-                <th className="py-3 px-4">Service</th>
-                <th className="py-3 px-4">Trip Specs</th>
-                <th className="py-3 px-4">Coordinator</th>
-                <th className="py-3 px-4">Stage</th>
-                <th className="py-3 px-4">Created At</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-zinc-100">
-              {isLoading ? (
-                <tr>
-                  <td colSpan={7} className="py-16 text-center text-zinc-400">
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-zinc-900" />
-                    <span>Loading master leads...</span>
-                  </td>
+        {mobile ? (
+          <div className="mobile-enquiry-list">
+            {isLoading ? (
+              <p role="status" className="p-6 text-sm text-slate-500">
+                Loading enquiries…
+              </p>
+            ) : error ? null : leads.length ? (
+              leads.map((lead) => (
+                <EnquiryCard
+                  key={lead.id}
+                  lead={lead}
+                  showOwner
+                  onOpen={() => setReassigningLead(lead)}
+                  action={lead.assignedToId ? "Reassign" : "Assign"}
+                  secondary={{
+                    label: "Activity",
+                    onClick: () => setViewingLeadId(lead.id),
+                  }}
+                />
+              ))
+            ) : (
+              <p className="p-6 text-sm text-slate-500">No enquiries found</p>
+            )}
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs border-collapse">
+              <thead>
+                <tr className="border-b border-zinc-200 bg-[#FAFAF9] text-zinc-500 font-mono text-[11px] uppercase tracking-wider">
+                  <th className="py-3 px-4">Customer</th>
+                  <th className="py-3 px-4">Service</th>
+                  <th className="py-3 px-4">Trip Specs</th>
+                  <th className="py-3 px-4">Coordinator</th>
+                  <th className="py-3 px-4">Stage</th>
+                  <th className="py-3 px-4">Created At</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
                 </tr>
-              ) : error ? (
-                <tr>
-                  <td colSpan={7} className="p-8 text-center">
-                    Leads could not be loaded. Try again above.
-                  </td>
-                </tr>
-              ) : leads.length === 0 ? (
-                <tr>
-                  <td colSpan={7} className="py-16 text-center text-zinc-500">
-                    <Inbox className="w-8 h-8 mx-auto mb-2 text-zinc-300 stroke-[1.5]" />
-                    <p className="font-medium text-zinc-700">No leads found</p>
-                    <p className="text-[11px] text-zinc-400 mt-0.5">
-                      Try resetting your filters or search query.
-                    </p>
-                  </td>
-                </tr>
-              ) : (
-                leads.map((lead) => {
-                  const isUnassigned = !lead.assignedToId;
-                  return (
-                    <tr
-                      key={lead.id}
-                      className="hover:bg-zinc-50/70 transition group"
-                    >
-                      {/* Customer Info */}
-                      <td className="py-3.5 px-4">
-                        <div className="font-semibold text-zinc-900">
-                          {lead.customer.fullName}
-                        </div>
-                        <div className="text-[11px] font-mono text-zinc-500 flex items-center gap-1.5 mt-0.5">
-                          <span>{lead.customer.phone}</span>
-                          {lead.customer.email && (
-                            <span className="text-zinc-400 truncate max-w-[120px]">
-                              • {lead.customer.email}
-                            </span>
-                          )}
-                        </div>
-                      </td>
-
-                      {/* Service */}
-                      <td className="py-3.5 px-4">
-                        <span className="inline-block px-2 py-0.5 rounded-md bg-[#F4F4F5] border border-zinc-200/80 font-mono text-[11px] text-zinc-800 font-medium">
-                          {lead.serviceName}
-                        </span>
-                        {lead.packageTitle && (
-                          <div className="text-[10px] text-zinc-400 truncate max-w-[140px] mt-0.5">
-                            {lead.packageTitle}
+              </thead>
+              <tbody className="divide-y divide-zinc-100">
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={7} className="py-16 text-center text-zinc-400">
+                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-zinc-900" />
+                      <span>Loading master leads...</span>
+                    </td>
+                  </tr>
+                ) : error ? (
+                  <tr>
+                    <td colSpan={7} className="p-8 text-center">
+                      Leads could not be loaded. Try again above.
+                    </td>
+                  </tr>
+                ) : leads.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-16 text-center text-zinc-500">
+                      <Inbox className="w-8 h-8 mx-auto mb-2 text-zinc-300 stroke-[1.5]" />
+                      <p className="font-medium text-zinc-700">
+                        No enquiries found
+                      </p>
+                      <p className="text-[11px] text-zinc-400 mt-0.5">
+                        Try resetting your filters or search query.
+                      </p>
+                    </td>
+                  </tr>
+                ) : (
+                  leads.map((lead) => {
+                    const isUnassigned = !lead.assignedToId;
+                    return (
+                      <tr
+                        key={lead.id}
+                        className="hover:bg-zinc-50/70 transition group"
+                      >
+                        {/* Customer Info */}
+                        <td className="py-3.5 px-4">
+                          <div className="font-semibold text-zinc-900">
+                            {lead.customer.fullName}
                           </div>
-                        )}
-                      </td>
+                          <div className="text-[11px] font-mono text-zinc-500 flex items-center gap-1.5 mt-0.5">
+                            <span>{lead.customer.phone}</span>
+                            {lead.customer.email && (
+                              <span className="text-zinc-400 truncate max-w-[120px]">
+                                • {lead.customer.email}
+                              </span>
+                            )}
+                          </div>
+                        </td>
 
-                      {/* Trip Specs */}
-                      <td className="py-3.5 px-4">
-                        <div className="text-zinc-800 font-medium">
-                          {lead.numberOfAdults} Adults
-                          {lead.numberOfKids > 0 &&
-                            `, ${lead.numberOfKids} Kids`}
-                        </div>
-                        <div className="text-[11px] text-zinc-400 font-mono">
-                          {lead.travelDate
-                            ? new Date(lead.travelDate).toLocaleDateString()
-                            : "Flexible Date"}
-                        </div>
-                      </td>
-
-                      {/* Assigned Coordinator */}
-                      <td className="py-3.5 px-4">
-                        {isUnassigned ? (
-                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold font-mono text-[10px] animate-pulse">
-                            Unassigned Pool
+                        {/* Service */}
+                        <td className="py-3.5 px-4">
+                          <span className="inline-block px-2 py-0.5 rounded-md bg-[#F4F4F5] border border-zinc-200/80 font-mono text-[11px] text-zinc-800 font-medium">
+                            {lead.serviceName}
                           </span>
-                        ) : (
-                          <div className="flex items-center gap-1.5">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
-                            <span className="font-medium text-zinc-900">
-                              {lead.assignedToName}
-                            </span>
+                          {lead.packageTitle && (
+                            <div className="text-[10px] text-zinc-400 truncate max-w-[140px] mt-0.5">
+                              {lead.packageTitle}
+                            </div>
+                          )}
+                        </td>
+
+                        {/* Trip Specs */}
+                        <td className="py-3.5 px-4">
+                          <div className="text-zinc-800 font-medium">
+                            {lead.numberOfAdults} Adults
+                            {lead.numberOfKids > 0 &&
+                              `, ${lead.numberOfKids} Kids`}
                           </div>
-                        )}
-                      </td>
+                          <div className="text-[11px] text-zinc-400 font-mono">
+                            {lead.travelDate
+                              ? new Date(lead.travelDate).toLocaleDateString()
+                              : "Flexible Date"}
+                          </div>
+                        </td>
 
-                      {/* Stage Badge */}
-                      <td className="py-3.5 px-4">
-                        <span
-                          className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full ${
-                            lead.status === "BOOKED"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : lead.status === "QUOTED"
-                                ? "bg-blue-100 text-blue-800"
-                                : lead.status === "CONTACTED"
-                                  ? "bg-amber-100 text-amber-800"
-                                  : lead.status === "LOST"
-                                    ? "bg-rose-100 text-rose-800"
-                                    : "bg-zinc-200 text-zinc-800"
-                          }`}
-                        >
-                          {lead.status}
-                        </span>
-                      </td>
+                        {/* Assigned Coordinator */}
+                        <td className="py-3.5 px-4">
+                          {isUnassigned ? (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-100 text-amber-800 font-bold font-mono text-[10px] animate-pulse">
+                              Unassigned Pool
+                            </span>
+                          ) : (
+                            <div className="flex items-center gap-1.5">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                              <span className="font-medium text-zinc-900">
+                                {lead.assignedToName}
+                              </span>
+                            </div>
+                          )}
+                        </td>
 
-                      {/* Date */}
-                      <td className="py-3.5 px-4 text-zinc-500 font-mono text-[11px]">
-                        {new Date(lead.createdAt).toLocaleDateString()}{" "}
-                        <span className="text-zinc-400">
-                          {new Date(lead.createdAt).toLocaleTimeString([], {
-                            hour: "2-digit",
-                            minute: "2-digit",
-                          })}
-                        </span>
-                      </td>
-
-                      {/* Actions */}
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            onClick={() => setViewingLeadId(lead.id)}
-                            className="p-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-600 hover:text-black transition"
-                            title="View Activity History"
+                        {/* Stage Badge */}
+                        <td className="py-3.5 px-4">
+                          <span
+                            className={`text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full ${
+                              lead.status === "BOOKED"
+                                ? "bg-emerald-100 text-emerald-800"
+                                : lead.status === "QUOTED"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : lead.status === "CONTACTED"
+                                    ? "bg-amber-100 text-amber-800"
+                                    : lead.status === "LOST"
+                                      ? "bg-rose-100 text-rose-800"
+                                      : "bg-zinc-200 text-zinc-800"
+                            }`}
                           >
-                            <History className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            onClick={() => setReassigningLead(lead)}
-                            className="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-700 text-[11px] font-medium transition flex items-center gap-1"
-                            title="Reassign Coordinator"
-                          >
-                            <UserCheck className="w-3 h-3" />
-                            <span>Reassign</span>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
+                            {lead.status}
+                          </span>
+                        </td>
+
+                        {/* Date */}
+                        <td className="py-3.5 px-4 text-zinc-500 font-mono text-[11px]">
+                          {new Date(lead.createdAt).toLocaleDateString()}{" "}
+                          <span className="text-zinc-400">
+                            {new Date(lead.createdAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                            })}
+                          </span>
+                        </td>
+
+                        {/* Actions */}
+                        <td className="py-3.5 px-4 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              onClick={() => setViewingLeadId(lead.id)}
+                              className="p-1.5 rounded-lg border border-zinc-200 hover:bg-zinc-100 text-zinc-600 hover:text-black transition"
+                              title="View Activity History"
+                            >
+                              <History className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() => setReassigningLead(lead)}
+                              className="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-700 text-[11px] font-medium transition flex items-center gap-1"
+                              title="Reassign Coordinator"
+                            >
+                              <UserCheck className="w-3 h-3" />
+                              <span>Reassign</span>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
 
         {/* Pagination Bar */}
         <div className="px-4 py-3 border-t border-zinc-200 flex items-center justify-between text-xs text-zinc-500">

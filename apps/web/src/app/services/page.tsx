@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
@@ -304,7 +304,31 @@ const FAQS = [
 
 export default function ServicesPage() {
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
+  const [prevIndex, setPrevIndex] = useState(0);
+  const [slideDirection, setSlideDirection] = useState<"next" | "prev">("next");
   const activeService = HERO_SERVICES[activeServiceIndex];
+
+  // Motion parallax refs for coastal stats banner & Creed banner
+  const statsSectionRef = useRef<HTMLDivElement>(null);
+  const parallaxImageRef = useRef<HTMLDivElement>(null);
+  const creedSectionRef = useRef<HTMLDivElement>(null);
+  const creedImageRef = useRef<HTMLDivElement>(null);
+
+  const handleSelectService = (idx: number) => {
+    if (idx === activeServiceIndex) return;
+    setSlideDirection(idx > activeServiceIndex ? "next" : "prev");
+    setPrevIndex(activeServiceIndex);
+    setActiveServiceIndex(idx);
+    setSubmitted(false);
+
+    // Keep URL hash in sync with user's selection without causing page jump or reload
+    if (typeof window !== "undefined") {
+      const targetHash = `#${HERO_SERVICES[idx].id}`;
+      if (window.location.hash !== targetHash) {
+        window.history.replaceState(null, "", targetHash);
+      }
+    }
+  };
 
   // Inline Hero Enquiry Bar state
   const [travelDate, setTravelDate] = useState("");
@@ -320,20 +344,79 @@ export default function ServicesPage() {
   );
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Listen to hash changes when navigating via anchor links
+  // Listen to hash changes on initial mount and external navigation (back/forward or navbar links)
   useEffect(() => {
-    const handleHash = () => {
-      if (window.location.hash) {
-        const hash = window.location.hash.replace("#", "");
-        const index = HERO_SERVICES.findIndex((s) => s.id === hash);
-        if (index !== -1) {
-          setActiveServiceIndex(index);
+    const syncFromHash = () => {
+      if (typeof window === "undefined") return;
+      const hash = window.location.hash.replace("#", "");
+      if (!hash) return;
+      const index = HERO_SERVICES.findIndex((s) => s.id === hash);
+      if (index !== -1) {
+        setActiveServiceIndex((curr) => {
+          if (curr !== index) {
+            setSlideDirection(index > curr ? "next" : "prev");
+            setPrevIndex(curr);
+            return index;
+          }
+          return curr;
+        });
+      }
+    };
+
+    // Run once on initial page load
+    syncFromHash();
+
+    // Listen to external hash changes (e.g. from navbar anchor clicks or browser back/forward)
+    window.addEventListener("hashchange", syncFromHash);
+    return () => window.removeEventListener("hashchange", syncFromHash);
+  }, []);
+
+  // Motion effect: Parallax scroll for the coastal counter strip image
+  useEffect(() => {
+    let animationFrameId: number;
+
+    const handleScroll = () => {
+      const windowHeight = window.innerHeight;
+
+      // Parallax 1: Coastal counter strip
+      if (statsSectionRef.current && parallaxImageRef.current) {
+        const rect = statsSectionRef.current.getBoundingClientRect();
+        if (rect.bottom >= -120 && rect.top <= windowHeight + 120) {
+          const totalDistance = windowHeight + rect.height;
+          const currentProgress = (windowHeight - rect.top) / totalDistance;
+          const clampedProgress = Math.max(0, Math.min(1, currentProgress));
+          const yOffset = (clampedProgress - 0.5) * 90;
+          parallaxImageRef.current.style.transform = `translate3d(0, ${yOffset}px, 0) scale(1.18)`;
+        }
+      }
+
+      // Parallax 2: Flyora Creed quote banner
+      if (creedSectionRef.current && creedImageRef.current) {
+        const cRect = creedSectionRef.current.getBoundingClientRect();
+        if (cRect.bottom >= -150 && cRect.top <= windowHeight + 150) {
+          const totalDistance = windowHeight + cRect.height;
+          const currentProgress = (windowHeight - cRect.top) / totalDistance;
+          const clampedProgress = Math.max(0, Math.min(1, currentProgress));
+          const yOffset = (clampedProgress - 0.5) * 110;
+          creedImageRef.current.style.transform = `translate3d(0, ${yOffset}px, 0) scale(1.18)`;
         }
       }
     };
-    handleHash();
-    window.addEventListener("hashchange", handleHash);
-    return () => window.removeEventListener("hashchange", handleHash);
+
+    const onScroll = () => {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(handleScroll);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll, { passive: true });
+    handleScroll();
+
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      cancelAnimationFrame(animationFrameId);
+    };
   }, []);
 
   const handleHeroSubmit = (e: React.FormEvent) => {
@@ -370,31 +453,95 @@ export default function ServicesPage() {
       <main>
         {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & ENQUIRY BAR */}
         <section className="relative w-full min-h-[760px] sm:min-h-[800px] lg:h-[830px] lg:min-h-[830px] flex flex-col justify-between overflow-hidden -mt-20 pt-44 sm:pt-48 lg:pt-52 xl:pt-56 pb-12 sm:pb-16">
-          {/* Dynamic Full-Width Background Image */}
-          <div className="absolute inset-0 z-0">
-            <Image
-              key={activeService.imageSrc}
-              src={activeService.imageSrc}
-              alt={activeService.name}
-              fill
-              priority
-              sizes="100vw"
-              className="object-cover transition-opacity duration-700 ease-in-out brightness-[0.78]"
-            />
+          {/* Dynamic Full-Width Background Sliding Images */}
+          <div className="absolute inset-0 z-0 overflow-hidden">
+            {HERO_SERVICES.map((s, idx) => {
+              const isActive = idx === activeServiceIndex;
+              const isPrev = idx === prevIndex;
+
+              let transformStyle = "";
+              let opacityStyle = 0;
+              let zIndex = 0;
+
+              if (isActive) {
+                opacityStyle = 1;
+                zIndex = 10;
+                transformStyle = "translate3d(0, 0, 0) scale(1)";
+              } else if (isPrev) {
+                opacityStyle = 0;
+                zIndex = 5;
+                transformStyle =
+                  slideDirection === "next"
+                    ? "translate3d(-10%, 0, 0) scale(1.05)"
+                    : "translate3d(10%, 0, 0) scale(1.05)";
+              } else {
+                opacityStyle = 0;
+                zIndex = 0;
+                transformStyle =
+                  idx > activeServiceIndex
+                    ? "translate3d(14%, 0, 0) scale(1.05)"
+                    : "translate3d(-14%, 0, 0) scale(1.05)";
+              }
+
+              return (
+                <div
+                  key={s.id}
+                  className="absolute inset-0 transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] will-change-transform"
+                  style={{
+                    opacity: opacityStyle,
+                    zIndex: zIndex,
+                    transform: transformStyle,
+                    pointerEvents: "none",
+                  }}
+                >
+                  <Image
+                    src={s.imageSrc}
+                    alt={s.name}
+                    fill
+                    priority
+                    sizes="100vw"
+                    className="object-cover brightness-[0.78]"
+                  />
+                </div>
+              );
+            })}
             {/* Rich gradient overlay for crystal clear contrast */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/40 to-black/35" />
+            <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/85 via-black/40 to-black/35 pointer-events-none" />
           </div>
 
           {/* Hero Content Container */}
           <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center">
-            {/* Main Hero Headline */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-white tracking-tight leading-[1.12] max-w-4xl animate-in fade-in slide-in-from-bottom-2 duration-400">
-              {activeService.heroHeadline}
-            </h1>
+            {/* Main Hero Headline - staggered entrance 1 */}
+            <div
+              key={`headline-wrap-${activeService.id}`}
+              className="overflow-hidden"
+            >
+              <h1
+                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-white tracking-tight leading-[1.12] max-w-4xl"
+                style={{
+                  animation:
+                    "heroTextHeadingIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both",
+                }}
+              >
+                {activeService.heroHeadline}
+              </h1>
+            </div>
 
-            <p className="mt-3 text-sm sm:text-base md:text-lg font-sans text-white/85 max-w-2xl leading-relaxed animate-in fade-in slide-in-from-bottom-3 duration-500">
-              {activeService.heroSubheadline}
-            </p>
+            {/* Subheadline Description - staggered entrance 2 */}
+            <div
+              key={`subheadline-wrap-${activeService.id}`}
+              className="overflow-hidden"
+            >
+              <p
+                className="mt-3 text-sm sm:text-base md:text-lg font-sans text-white/85 max-w-2xl leading-relaxed"
+                style={{
+                  animation:
+                    "heroTextDescIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both",
+                }}
+              >
+                {activeService.heroSubheadline}
+              </p>
+            </div>
 
             {/* Service Selection Tabs (Above the white enquiry box, exactly like reference image) */}
             <div className="mt-8 sm:mt-10">
@@ -405,10 +552,7 @@ export default function ServicesPage() {
                     <button
                       key={s.id}
                       type="button"
-                      onClick={() => {
-                        setActiveServiceIndex(idx);
-                        setSubmitted(false);
-                      }}
+                      onClick={() => handleSelectService(idx)}
                       className={`px-3.5 sm:px-4 py-2 rounded-t-xl text-xs sm:text-[13px] font-sans font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
                         isActive
                           ? "bg-white text-stone-900 shadow-md font-semibold"
@@ -425,25 +569,34 @@ export default function ServicesPage() {
               {/* White Floating Enquiry Box (Embedded in Hero, matching reference image) */}
               <div className="bg-white rounded-b-2xl rounded-tr-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-black/[0.08] p-4 sm:p-6 transition-all duration-300">
                 {submitted ? (
-                  <div className="py-4 text-center space-y-2 animate-in fade-in duration-300">
-                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center mx-auto">
-                      <CheckCircle2 className="w-6 h-6" />
+                  <div className="py-6 sm:py-8 text-center space-y-3.5 animate-in fade-in duration-300">
+                    <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
+                      <CheckCircle2 className="w-7 h-7" />
                     </div>
-                    <h3 className="text-lg font-serif font-bold text-stone-900">
-                      Enquiry Sent to Flyora Desk!
+                    <h3 className="text-2xl sm:text-3xl font-sans font-bold text-[#1C1815] tracking-tight">
+                      Enquiry Done!
                     </h3>
-                    <p className="text-xs text-stone-600 max-w-md mx-auto">
-                      Thank you, {fullName}. Our dedicated coordinator for{" "}
-                      <strong>{activeService.name}</strong> will contact you via
-                      WhatsApp/phone shortly with customized pricing.
+                    <p className="text-sm sm:text-base font-sans font-medium text-stone-800 max-w-lg mx-auto leading-relaxed">
+                      Thank you,{" "}
+                      <span className="font-bold text-stone-900">
+                        {fullName || "Traveler"}
+                      </span>
+                      . Our dedicated coordinator for{" "}
+                      <strong className="font-bold text-[#463D34]">
+                        {activeService.name}
+                      </strong>{" "}
+                      will contact you via WhatsApp/phone shortly with
+                      customized pricing.
                     </p>
-                    <button
-                      type="button"
-                      onClick={() => setSubmitted(false)}
-                      className="mt-3 text-xs font-semibold text-[#463D34] underline cursor-pointer"
-                    >
-                      Submit another enquiry
-                    </button>
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setSubmitted(false)}
+                        className="inline-flex items-center justify-center px-6 py-2.5 rounded-none border border-[#463D34] bg-white text-[#463D34] text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider hover:bg-[#463D34] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
+                      >
+                        Submit Another Enquiry
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <form
@@ -549,10 +702,10 @@ export default function ServicesPage() {
         {/* 3. DISCOUNTS & OFFERS SECTION (Matching Reference Image Row 2) */}
         <section className="py-14 sm:py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-10 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
               Exclusive Discounts &amp; Deals
             </h2>
-            <p className="text-base sm:text-lg text-stone-600 mt-3 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto leading-relaxed font-sans">
               Limited-time benefits and promotional upgrades curated for early
               bookers and family travelers.
             </p>
@@ -617,10 +770,10 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        {/* 4. TOP PICKUPS FOR YOU GALLERY & COASTAL STATS STRIP (Replacing Trusted Excellence) */}
-        <section className="relative bg-[#F4F9FD] pt-16 sm:pt-20 pb-0 overflow-hidden border-t border-black/[0.04]">
+        {/* 4. TOP PICKUPS FOR YOU GALLERY & COASTAL STATS STRIP */}
+        <section className="relative bg-[#FDFCFB] pt-16 sm:pt-20 pb-0 overflow-hidden">
           {/* Subtle Sailboat Watermark on bottom left matching reference image */}
-          <div className="absolute left-6 bottom-56 w-36 h-36 opacity-10 pointer-events-none select-none text-sky-800">
+          <div className="absolute left-6 bottom-56 w-36 h-36 opacity-10 pointer-events-none select-none text-[#463D34]">
             <svg
               viewBox="0 0 100 100"
               fill="none"
@@ -649,15 +802,15 @@ export default function ServicesPage() {
             </svg>
           </div>
 
-          <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
             {/* Header: Top Pickups For You */}
             <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans font-bold tracking-tight text-[#16253b]">
-                Top Pickups <span className="text-[#0284c7]">For You</span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight text-[#1C1815]">
+                Top Pickups For You
               </h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-2.5 font-sans leading-relaxed">
-                Plan your perfect vacation with our travel agency. Choose among
-                hundreds of all-inclusive offers!
+              <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto font-sans leading-relaxed">
+                Plan your perfect vacation with Flyora. Choose among
+                hand-curated, all-inclusive luxury offers!
               </p>
             </div>
 
@@ -667,7 +820,7 @@ export default function ServicesPage() {
                 <div
                   key={pickup.id}
                   onClick={() => handleCardEnquiry(pickup.serviceId)}
-                  className={`relative ${pickup.colSpan} h-[260px] sm:h-[300px] lg:h-[340px] rounded-2xl overflow-hidden group shadow-sm hover:shadow-xl transition-all duration-300 cursor-pointer`}
+                  className={`relative ${pickup.colSpan} h-[260px] sm:h-[300px] lg:h-[340px] rounded-2xl overflow-hidden group shadow-sm hover:shadow-2xl border border-black/[0.08] hover:border-amber-400/40 transition-all duration-300 cursor-pointer`}
                 >
                   {/* Background Image */}
                   <Image
@@ -679,81 +832,189 @@ export default function ServicesPage() {
                   />
 
                   {/* High contrast gradient at bottom for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent group-hover:from-black/85 transition-colors" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent group-hover:from-black/90 transition-colors" />
 
                   {/* Card Content Overlay */}
                   <div className="absolute inset-0 p-5 sm:p-6 flex flex-col justify-end text-white z-10">
-                    <h3 className="text-lg sm:text-xl md:text-2xl font-sans font-bold tracking-wider text-white drop-shadow-md">
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold tracking-wider text-white drop-shadow-md">
                       {pickup.title}
                     </h3>
-                    <div className="flex items-center gap-1.5 mt-1 text-xs font-sans text-white/90 drop-shadow-sm group-hover:text-sky-300 transition-colors">
+                    <div className="flex items-center gap-1.5 mt-1 text-xs font-sans text-white/90 drop-shadow-sm group-hover:text-amber-300 transition-colors">
                       <span>{pickup.toursCount}</span>
-                      <Play className="w-2.5 h-2.5 fill-current" />
+                      <Play className="w-2.5 h-2.5 fill-current text-amber-400" />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* View More Button */}
+            {/* View All Button */}
             <div className="mt-8 sm:mt-10 mb-12 sm:mb-16 text-center">
               <button
                 type="button"
                 onClick={() => handleCardEnquiry("Custom Holidays")}
-                className="inline-flex items-center justify-center px-6 py-2.5 rounded border border-[#0284c7] text-[#0284c7] text-xs sm:text-sm font-sans font-semibold hover:bg-[#0284c7] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg border border-[#463D34] text-[#463D34] text-xs sm:text-sm font-sans font-semibold hover:bg-[#463D34] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
               >
-                View More
+                View All
               </button>
             </div>
           </div>
 
-          {/* Coastal Panoramic Counter Strip (Matching Reference Image) */}
-          <div className="relative w-full h-[180px] sm:h-[210px] lg:h-[230px] overflow-hidden flex items-center justify-center">
-            {/* Panoramic Background Image */}
-            <Image
-              src="/gallery/stats-coastal-bg.jpg"
-              alt="Coastal travel statistics"
-              fill
-              sizes="100vw"
-              className="object-cover object-center brightness-[0.88]"
-            />
-
-            {/* Cyan/blue gradient tint overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-sky-950/45 via-sky-900/30 to-sky-950/45" />
-
-            {/* Decorative dashed flight curve line overlay */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none"
-              preserveAspectRatio="none"
-              viewBox="0 0 1200 200"
+          {/* Coastal Panoramic Counter Strip with Parallax Motion & Full Width Spacing */}
+          <div
+            ref={statsSectionRef}
+            className="relative w-full h-[210px] sm:h-[240px] lg:h-[270px] overflow-hidden flex items-center justify-center"
+          >
+            {/* Panoramic Background Image with Dynamic Parallax Motion */}
+            <div
+              ref={parallaxImageRef}
+              className="absolute -top-[20%] -bottom-[20%] inset-x-0 h-[140%] w-full will-change-transform"
+              style={{
+                transform: "translate3d(0, 0px, 0) scale(1.18)",
+              }}
             >
+              <Image
+                src="/gallery/stats-coastal-bg.jpg"
+                alt="Coastal travel statistics"
+                fill
+                sizes="100vw"
+                className="object-cover object-center brightness-[0.82]"
+              />
+            </div>
+
+            {/* Rich espresso/black gradient tint overlay (eliminates cold blue cast) */}
+            <div className="absolute inset-0 bg-gradient-to-r from-[#1C1815]/80 via-[#1C1815]/55 to-[#1C1815]/80 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none" />
+
+            {/* Decorative dashed flight curve line overlay with airplane animation */}
+            <svg
+              className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
+              preserveAspectRatio="none"
+              viewBox="0 0 1360 220"
+            >
+              <defs>
+                <path
+                  id="flightCurve"
+                  d="M -160 160 Q 340 30 680 120 T 1520 80"
+                />
+                <radialGradient id="propellerBlur" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stopColor="#FEF08A" stopOpacity="0.45" />
+                  <stop offset="35%" stopColor="#FFFFFF" stopOpacity="0.32" />
+                  <stop offset="75%" stopColor="#FFFFFF" stopOpacity="0.18" />
+                  <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+                </radialGradient>
+              </defs>
+
+              {/* Yellow dotted flight line */}
               <path
-                d="M 50 150 Q 300 40 600 110 T 1150 70"
+                d="M -160 160 Q 340 30 680 120 T 1520 80"
                 fill="none"
-                stroke="white"
-                strokeWidth="1.5"
+                stroke="#FDE68A"
+                strokeWidth="1.75"
                 strokeDasharray="6 6"
-                strokeOpacity="0.45"
+                strokeOpacity="0.55"
+                className="animate-flight-dash"
               />
-              <path
-                d="M 100 80 Q 400 180 800 60 T 1100 140"
-                fill="none"
-                stroke="white"
-                strokeWidth="1"
-                strokeDasharray="4 6"
-                strokeOpacity="0.3"
-              />
+
+              {/* Flying Airplane with trailing banner and spinning front fan */}
+              <g>
+                <animateMotion dur="16s" repeatCount="indefinite" rotate="auto">
+                  <mpath href="#flightCurve" />
+                </animateMotion>
+
+                {/* Airplane Body & Banner (Pristine no-fan image) */}
+                <image
+                  href="/services/airplanenewnofan_clean.png"
+                  x="-118"
+                  y="-28"
+                  width="165"
+                  height="55"
+                />
+
+                {/* Spinning Front Fan / Propeller (Adjusted to slightly smaller, balanced scale) */}
+                <g transform="translate(33.8, -3.0) scale(0.50)">
+                  {/* Shimmering Circular Wind Blur Disk */}
+                  <ellipse
+                    cx="0"
+                    cy="0"
+                    rx="15"
+                    ry="15"
+                    fill="url(#propellerBlur)"
+                  />
+
+                  {/* Fast Rotating Fan Blades & Speed Streaks */}
+                  <g>
+                    <animateTransform
+                      attributeName="transform"
+                      type="rotate"
+                      from="0 0 0"
+                      to="360 0 0"
+                      dur="0.10s"
+                      repeatCount="indefinite"
+                    />
+
+                    {/* 3 Aerodynamic Blades */}
+                    <path
+                      d="M 0 0 C -2.5 -5 -3 -10 0 -15 C 3 -10 2.5 -5 0 0 Z"
+                      fill="rgba(255, 255, 255, 0.95)"
+                      stroke="#1C1815"
+                      strokeWidth="1.3"
+                    />
+                    <path
+                      d="M 0 0 C -2.5 -5 -3 -10 0 -15 C 3 -10 2.5 -5 0 0 Z"
+                      fill="rgba(255, 255, 255, 0.95)"
+                      stroke="#1C1815"
+                      strokeWidth="1.3"
+                      transform="rotate(120)"
+                    />
+                    <path
+                      d="M 0 0 C -2.5 -5 -3 -10 0 -15 C 3 -10 2.5 -5 0 0 Z"
+                      fill="rgba(255, 255, 255, 0.95)"
+                      stroke="#1C1815"
+                      strokeWidth="1.3"
+                      transform="rotate(240)"
+                    />
+
+                    {/* Air Speed Wind Rings */}
+                    <circle
+                      r="14"
+                      fill="none"
+                      stroke="rgba(255, 255, 255, 0.8)"
+                      strokeWidth="1.4"
+                      strokeDasharray="4 6"
+                    />
+                    <circle
+                      r="10.5"
+                      fill="none"
+                      stroke="rgba(255, 255, 255, 0.55)"
+                      strokeWidth="1.1"
+                      strokeDasharray="5 5"
+                    />
+                  </g>
+
+                  {/* Front Nose Hub Cone in Center */}
+                  <circle
+                    cx="0"
+                    cy="0"
+                    r="3.8"
+                    fill="#F59E0B"
+                    stroke="#1C1815"
+                    strokeWidth="1.3"
+                  />
+                  <circle cx="-1" cy="-1" r="1.4" fill="#FEF08A" />
+                </g>
+              </g>
             </svg>
 
-            {/* 4 Stats Grid */}
-            <div className="relative z-10 w-full max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 text-center">
+            {/* 4 Stats Grid: Same width as other sections (max-w-[1360px]) with 4 equal gaps */}
+            <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 lg:gap-14 text-center">
               {PICKUP_STATS.map((stat) => (
                 <div
                   key={stat.label}
-                  className="flex flex-col items-center justify-center"
+                  className="flex flex-col items-center justify-center w-full px-2"
                 >
                   <span
-                    className="font-sans text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-[0_4px_12px_rgba(0,0,0,0.5)]"
+                    className="font-sans text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)] transition-transform duration-300 hover:scale-105"
                     style={{
                       WebkitTextStroke: "2px rgba(255, 255, 255, 0.95)",
                       color: "transparent",
@@ -761,7 +1022,7 @@ export default function ServicesPage() {
                   >
                     {stat.value}
                   </span>
-                  <span className="mt-1 sm:mt-2 text-[11px] sm:text-xs md:text-sm font-sans font-bold uppercase tracking-[0.15em] text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                  <span className="mt-2 text-xs sm:text-sm lg:text-[15px] font-sans font-bold uppercase tracking-[0.18em] text-amber-100/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
                     {stat.label}
                   </span>
                 </div>
@@ -774,14 +1035,11 @@ export default function ServicesPage() {
         <section className="py-14 sm:py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12">
             <div>
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#8C7A6B] font-semibold">
-                Curated Recommendations
-              </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1C1815] mt-1">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
                 Popular Services &amp; Packages
               </h2>
             </div>
-            <p className="text-xs sm:text-sm text-stone-500 max-w-md mt-2 sm:mt-0">
+            <p className="text-sm sm:text-base text-stone-600 max-w-md mt-2 sm:mt-0 font-sans leading-relaxed">
               Select any package below to inspect inclusions or request an
               instant tailored quote.
             </p>
@@ -868,36 +1126,46 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        {/* 6. MID-PAGE CINEMATIC QUOTE BANNER (Matching Reference Image "Travel isn't a luxury, it's a way of life!") */}
-        <section className="relative w-full py-20 sm:py-28 overflow-hidden">
-          <div className="absolute inset-0 z-0">
+        {/* 6. MID-PAGE CINEMATIC QUOTE BANNER WITH PARALLAX MOTION EFFECT */}
+        <section
+          ref={creedSectionRef}
+          className="relative w-full py-24 sm:py-32 lg:py-36 overflow-hidden flex items-center justify-center"
+        >
+          {/* Parallax Background Image with Scroll Motion */}
+          <div
+            ref={creedImageRef}
+            className="absolute -top-[20%] -bottom-[20%] inset-x-0 h-[140%] w-full will-change-transform"
+            style={{
+              transform: "translate3d(0, 0px, 0) scale(1.18)",
+            }}
+          >
             <Image
               src="/services/custom-holidays.jpg"
-              alt="Travel Banner"
+              alt="Luxury Overwater Bungalow Retreat"
               fill
               sizes="100vw"
-              className="object-cover brightness-[0.55]"
+              className="object-cover object-center brightness-[0.58]"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-black/70" />
           </div>
 
+          {/* Cinematic dark gradient overlays for rich contrast and text readability */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/45 to-black/75 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/35 pointer-events-none" />
+
           <div className="relative z-10 max-w-3xl mx-auto px-4 sm:px-6 text-center text-white">
-            <span className="text-[11px] font-mono uppercase tracking-[0.25em] text-[#E6D5C7] font-semibold">
-              The Flyora Creed
-            </span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-normal mt-3 leading-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold leading-tight tracking-tight drop-shadow-md">
               &ldquo;Travel isn&rsquo;t a luxury, it&rsquo;s a way of
               life!&rdquo;
             </h2>
-            <p className="mt-4 text-xs sm:text-sm text-white/85 max-w-xl mx-auto leading-relaxed">
+            <p className="mt-3.5 text-sm sm:text-base text-white/90 max-w-xl mx-auto leading-relaxed drop-shadow-sm font-sans">
               Explore the globe with tailored itineraries, verified visas, and
               first-class care on every departure.
             </p>
-            <div className="mt-8 flex items-center justify-center gap-3">
+            <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <button
                 type="button"
                 onClick={() => handleCardEnquiry("Custom Holidays")}
-                className="px-6 py-3 rounded-lg bg-white text-stone-900 text-xs font-semibold uppercase tracking-wider hover:bg-stone-100 transition shadow-lg cursor-pointer"
+                className="px-7 py-3.5 rounded-xl bg-white text-stone-900 text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider hover:bg-[#FAF7F2] transition-all duration-200 shadow-xl cursor-pointer active:scale-95"
               >
                 Plan Your Vacation
               </button>
@@ -905,7 +1173,7 @@ export default function ServicesPage() {
                 href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20am%20ready%20to%20plan%20my%20trip."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-5 py-3 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold uppercase tracking-wider transition flex items-center gap-2 cursor-pointer"
+                className="px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-xl active:scale-95"
               >
                 <MessageCircle className="w-4 h-4" />
                 <span>Chat on WhatsApp</span>
@@ -917,14 +1185,11 @@ export default function ServicesPage() {
         {/* 7. VERIFIED REVIEWS / TESTIMONIALS (Matching Reference Image "Hear From Travelers") */}
         <section className="py-14 sm:py-20 bg-stone-50 border-b border-black/[0.05]">
           <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#8C7A6B] font-semibold">
-                Client Testimonials
-              </span>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-serif font-bold text-[#1C1815] mt-1">
+            <div className="text-center mb-10 sm:mb-12">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
                 Hear From Our Travelers
               </h2>
-              <p className="text-xs sm:text-sm text-stone-600 mt-2 max-w-md mx-auto">
+              <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto font-sans leading-relaxed">
                 Real stories from travelers who explored the world with Flyora.
               </p>
             </div>
@@ -1015,14 +1280,11 @@ export default function ServicesPage() {
 
         {/* 8. GENERAL QUESTIONS (FAQ ACCORDION) */}
         <section className="py-14 sm:py-20 max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10">
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#8C7A6B] font-semibold">
-              Travel Help Desk
-            </span>
-            <h2 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] mt-1">
+          <div className="text-center mb-10 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
               General Questions
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500 mt-1">
+            <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto font-sans leading-relaxed">
               Common questions on booking, documentation, and on-trip
               assistance.
             </p>
@@ -1058,44 +1320,6 @@ export default function ServicesPage() {
                 </div>
               );
             })}
-          </div>
-        </section>
-
-        {/* 9. BOTTOM TRUST STATS STRIP (Matching Reference Image bottom row) */}
-        <section className="py-8 bg-white border-t border-black/[0.07]">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-            <div>
-              <div className="text-2xl sm:text-3xl font-serif font-bold text-[#463D34]">
-                50,000+
-              </div>
-              <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider mt-0.5">
-                Happy Travelers
-              </div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-serif font-bold text-[#463D34]">
-                100+
-              </div>
-              <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider mt-0.5">
-                Global Destinations
-              </div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-serif font-bold text-[#463D34]">
-                99.2%
-              </div>
-              <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider mt-0.5">
-                Visa Approval Rate
-              </div>
-            </div>
-            <div>
-              <div className="text-2xl sm:text-3xl font-serif font-bold text-[#463D34]">
-                24/7
-              </div>
-              <div className="text-[11px] font-mono text-stone-500 uppercase tracking-wider mt-0.5">
-                Dedicated Concierge
-              </div>
-            </div>
           </div>
         </section>
       </main>

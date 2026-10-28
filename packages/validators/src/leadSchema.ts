@@ -52,3 +52,52 @@ export const leadIdParamSchema = z.object({
 });
 
 export type LeadIdParam = z.infer<typeof leadIdParamSchema>;
+
+export const createLeadSchema = z.object({
+  fullName: z.string().min(2, "Customer name must be at least 2 characters"),
+  phone: z.string().min(8, "Valid phone number is required"),
+  email: z
+    .string()
+    .email("Valid email is required")
+    .optional()
+    .or(z.literal("")),
+  city: z.string().optional().or(z.literal("")),
+  serviceId: z.string().uuid("Please select a service"),
+  packageId: z
+    .preprocess(
+      (val) =>
+        val === "" || val === null || val === undefined ? undefined : val,
+      z.string().uuid("Invalid package ID").optional().nullable(),
+    )
+    .optional(),
+  source: leadSourceEnum.default("PHONE_CALL"),
+  status: leadStatusEnum.default("NEW"),
+  travelDate: z
+    .preprocess(
+      (val) =>
+        val === "" || val === null || val === undefined ? undefined : val,
+      z.string().optional().nullable(),
+    )
+    .optional(),
+  numberOfAdults: z.coerce.number().int().min(1).default(1),
+  numberOfKids: z.coerce.number().int().min(0).default(0),
+  estimatedBudget: z
+    .preprocess(
+      (val) =>
+        val === "" ||
+        val === null ||
+        val === undefined ||
+        Number.isNaN(Number(val))
+          ? undefined
+          : Number(val),
+      z
+        .number()
+        .positive("Budget must be greater than 0")
+        .optional()
+        .nullable(),
+    )
+    .optional(),
+  note: z.string().max(2000).optional().or(z.literal("")),
+});
+
+export type CreateLeadInput = z.infer<typeof createLeadSchema>;
