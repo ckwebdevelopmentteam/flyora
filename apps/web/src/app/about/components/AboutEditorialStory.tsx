@@ -16,7 +16,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
           SECTION 1: SIGNATURE DEEP SLATE-BLUE HEADER BANNER
           (Reference Screenshot 1)
           ========================================================================= */}
-      <section className="relative w-full bg-[#144A72] text-white pt-28 sm:pt-36 lg:pt-44 pb-36 sm:pb-48 lg:pb-64 overflow-hidden">
+      <section className="relative w-full bg-[#144A72] text-white pt-28 sm:pt-36 lg:pt-44 pb-44 sm:pb-56 lg:pb-72 overflow-hidden">
         {/* Topographical Elevation Contour Lines SVG Background */}
         <div
           className="absolute inset-0 pointer-events-none select-none opacity-25"
@@ -24,7 +24,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
         >
           <svg
             className="w-full h-full object-cover"
-            viewBox="0 0 1440 600"
+            viewBox="0 0 1440 700"
             fill="none"
             preserveAspectRatio="none"
             xmlns="http://www.w3.org/2000/svg"
@@ -79,22 +79,23 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
           aria-hidden="true"
         />
 
-        {/* Header Grid */}
+        {/* ABOUT US — full-width single-line display heading */}
         <div className="container-standard relative z-10 w-full">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            {/* Left: Giant Display Typography matching brand serif */}
-            <div className="lg:col-span-6 xl:col-span-5">
-              <h1 className="font-serif font-bold text-[56px] sm:text-[80px] lg:text-[104px] xl:text-[120px] text-[#6BA396] leading-none tracking-tight uppercase select-none">
-                ABOUT US
-              </h1>
-            </div>
+          <h1 className="font-serif font-bold text-[64px] sm:text-[96px] lg:text-[130px] xl:text-[160px] text-[#6BA396] leading-none tracking-tight uppercase select-none whitespace-nowrap mb-12 sm:mb-16 lg:mb-20">
+            ABOUT US
+          </h1>
 
-            {/* Right: Small Category Tag + Condensed Heading */}
-            <div className="lg:col-span-6 xl:col-span-7 lg:pt-3">
+          {/* Below heading: Image (left, wide) + Right text (aligned to bottom) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-end">
+            {/* Left: Wide placeholder area — mountain image overlaps here from section below */}
+            <div className="lg:col-span-7 xl:col-span-7" />
+
+            {/* Right: Small Category Tag + Condensed Heading — pushed to bottom of banner */}
+            <div className="lg:col-span-5 xl:col-span-5">
               <span className="block text-[#6BA396] text-xs sm:text-[13px] font-sans font-medium tracking-[0.25em] uppercase mb-3">
                 ABOUT US
               </span>
-              <h2 className="font-serif font-bold text-2xl sm:text-3xl lg:text-[38px] xl:text-[44px] text-white tracking-tight leading-[1.14] uppercase">
+              <h2 className="font-serif font-bold text-xl sm:text-2xl lg:text-[30px] xl:text-[36px] text-white tracking-tight leading-[1.18] uppercase">
                 AWARD-WINNING CREATORS OF REMARKABLE TRAVEL EXPERIENCES
               </h2>
             </div>
@@ -112,10 +113,10 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
         <div className="container-standard relative z-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-start">
             {/* Left Column: Mountain Photo overlapping + IT BEGAN WITH A FEELING */}
-            <div className="lg:col-span-5 xl:col-span-5">
-              {/* Mountain Photo overlapping across the Blue & White boundary */}
-              <div className="-mt-32 sm:-mt-44 lg:-mt-56 xl:-mt-64">
-                <div className="relative w-full max-w-[490px] mx-auto lg:mx-0 aspect-[3/4] bg-[#0E3553] shadow-[0_25px_60px_-15px_rgba(20,74,114,0.35)] overflow-hidden">
+            <div className="lg:col-span-7 xl:col-span-7">
+              {/* Mountain Photo overlapping across the Blue & White boundary — wider than before */}
+              <div className="-mt-40 sm:-mt-52 lg:-mt-64 xl:-mt-80">
+                <div className="relative w-full max-w-[640px] mx-auto lg:mx-0 aspect-[4/3] bg-[#0E3553] shadow-[0_25px_60px_-15px_rgba(20,74,114,0.35)] overflow-hidden">
                   <Image
                     src="/about/mountain-ridge.jpg"
                     alt="Dramatic mountain ridge rising above the ocean coastline"
@@ -155,7 +156,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
             </div>
 
             {/* Right Column: WHAT WE'RE ABOUT + Landscape Vestrahorn Peaks Photo */}
-            <div className="lg:col-span-7 xl:col-span-7 pt-6 sm:pt-10 lg:pt-14">
+            <div className="lg:col-span-5 xl:col-span-5 pt-6 sm:pt-10 lg:pt-14">
               {/* WHAT WE'RE ABOUT Heading & Statement */}
               <span className="block text-xs sm:text-[13px] font-sans font-medium tracking-[0.25em] text-[#111111] uppercase mb-3">
                 WHAT WE&apos;RE ABOUT
