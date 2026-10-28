@@ -191,95 +191,98 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
 
       {/* =========================================================================
           SECTION 3: "UNIQUE, DIFFERENT, AND DARING" & "WE'LL SHOW YOU THE WORLD"
-          (Reference Screenshot 3 - 2 Offset Images on Left, 2 Stories on Right)
+          (Reference Screenshot 3 - Exact Pair Positioning)
+          Pair 1: Coastal Kayak (Shifted Right) <-> "UNIQUE, DIFFERENT, AND DARING"
+          Pair 2: Architecture Puddle Reflection (Bleeding Left) <-> "WE'LL SHOW YOU THE WORLD"
           ========================================================================= */}
-      <section className="relative w-full bg-white py-12 sm:py-20 lg:py-28">
+      <section className="relative w-full bg-white py-14 sm:py-20 lg:py-28 overflow-hidden">
         <div className="container-standard">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-start">
-            {/* Left Column: Two Offset Images */}
-            <div className="lg:col-span-5 xl:col-span-5 space-y-12 sm:space-y-16">
-              {/* Image 1: Coastal Kayaking Portrait */}
-              <div className="relative w-full max-w-[460px] aspect-[3/4] bg-[#0E3553] overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.12)]">
+          {/* Pair 1: Kayak Photo (Right-aligned in left col) + UNIQUE, DIFFERENT, AND DARING */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-center">
+            {/* Left: Image 3 (Coastal Kayak) indented to the right */}
+            <div className="lg:col-span-5 xl:col-span-5 flex justify-center lg:justify-end">
+              <div className="relative w-full max-w-[390px] xl:max-w-[420px] aspect-[3/4] bg-[#0E3553] overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.12)]">
                 <Image
                   src="/about/coastal-kayak.jpg"
                   alt="Solo traveler kayaking in vibrant turquoise Mediterranean coastal waters below dramatic cliffs"
                   fill
-                  sizes="(max-width: 1024px) 100vw, 42vw"
-                  className="object-cover object-center"
-                />
-              </div>
-
-              {/* Image 2: Ornate Architecture Puddle Reflection */}
-              <div className="relative w-full max-w-[490px] aspect-[4/3] bg-[#222222] overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.12)]">
-                <Image
-                  src="/about/arch-reflection.jpg"
-                  alt="Golden reflection of classical baroque European architecture in a cobblestone street puddle"
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  sizes="(max-width: 1024px) 100vw, 35vw"
                   className="object-cover object-center"
                 />
               </div>
             </div>
 
-            {/* Right Column: Two Editorial Story Blocks */}
+            {/* Right: Story Block 1 - UNIQUE, DIFFERENT, AND DARING */}
             <div className="lg:col-span-7 xl:col-span-7 pt-2 sm:pt-4">
-              {/* Story Block 1: UNIQUE, DIFFERENT, AND DARING */}
-              <div className="mb-20 sm:mb-28 lg:mb-36">
-                <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-[42px] text-[#111111] leading-[1.12] tracking-tight uppercase mb-3">
-                  UNIQUE, DIFFERENT, AND DARING
-                </h2>
+              <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-[42px] text-[#111111] leading-[1.12] tracking-tight uppercase mb-3">
+                UNIQUE, DIFFERENT, AND DARING
+              </h2>
 
-                <span className="block text-[11px] sm:text-xs font-sans font-medium tracking-[0.2em] text-[#777777] uppercase mb-5">
-                  AND WE WANT TO MAKE THE REMARKABLE HAPPEN
-                </span>
+              <span className="block text-[11px] sm:text-xs font-sans font-medium tracking-[0.2em] text-[#777777] uppercase mb-5">
+                AND WE WANT TO MAKE THE REMARKABLE HAPPEN
+              </span>
 
-                <div className="space-y-4 text-[14.5px] sm:text-[15.5px] text-[#444444] font-sans font-light leading-relaxed max-w-xl">
-                  <p>
-                    The journeys we make, make us. We learnt this from legendary
-                    travel writer Bruce Chatwin, speaking about the importance
-                    of living a &apos;restless&apos; life. When we plan trips
-                    for our clients, we want to strip away the barriers that can
-                    get between them and the world. They – you – are searching
-                    for the unexpected, the unfamiliar, the unknown.
-                    Restlessness helps.
-                  </p>
-                  <p>
-                    But so does expertise. Over the years, we&apos;ve assembled
-                    a team of travel fanatics – people who live and breathe the
-                    world and everything in it. They&apos;re starry-eyed
-                    wanderers with the organisational nous of precision
-                    engineers. These are the people who&apos;ll help you find
-                    your way. Even if that means getting &apos;lost&apos;.
-                  </p>
-                </div>
+              <div className="space-y-4 text-[14.5px] sm:text-[15.5px] text-[#444444] font-sans font-light leading-relaxed max-w-xl">
+                <p>
+                  The journeys we make, make us. We learnt this from legendary
+                  travel writer Bruce Chatwin, speaking about the importance of
+                  living a &apos;restless&apos; life. When we plan trips for our
+                  clients, we want to strip away the barriers that can get
+                  between them and the world. They – you – are searching for the
+                  unexpected, the unfamiliar, the unknown. Restlessness helps.
+                </p>
+                <p>
+                  But so does expertise. Over the years, we&apos;ve assembled a
+                  team of travel fanatics – people who live and breathe the
+                  world and everything in it. They&apos;re starry-eyed wanderers
+                  with the organisational nous of precision engineers. These are
+                  the people who&apos;ll help you find your way. Even if that
+                  means getting &apos;lost&apos;.
+                </p>
               </div>
+            </div>
+          </div>
 
-              {/* Story Block 2: WE'LL SHOW YOU THE WORLD */}
-              <div>
-                <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-[42px] text-[#111111] leading-[1.12] tracking-tight uppercase mb-3">
-                  WE&apos;LL SHOW YOU THE WORLD
-                </h2>
+          {/* Pair 2: Architecture Reflection (Shifted Left) + WE'LL SHOW YOU THE WORLD */}
+          <div className="mt-14 sm:mt-20 lg:mt-24 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-center">
+            {/* Left: Image 4 (Architecture Puddle Reflection) pulled out to the left */}
+            <div className="lg:col-span-6 xl:col-span-6">
+              <div className="relative w-full max-w-[540px] xl:max-w-[580px] lg:-ml-6 xl:-ml-12 aspect-[16/10] sm:aspect-[4/3] bg-[#222222] overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.12)]">
+                <Image
+                  src="/about/arch-reflection.jpg"
+                  alt="Golden reflection of classical baroque European architecture in a cobblestone street puddle"
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 48vw"
+                  className="object-cover object-center"
+                />
+              </div>
+            </div>
 
-                <span className="block text-[11px] sm:text-xs font-sans font-medium tracking-[0.2em] text-[#777777] uppercase mb-5">
-                  AND IN AN ENTIRELY NEW LIGHT
-                </span>
+            {/* Right: Story Block 2 - WE'LL SHOW YOU THE WORLD */}
+            <div className="lg:col-span-6 xl:col-span-6 pt-2 sm:pt-4">
+              <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-[42px] text-[#111111] leading-[1.12] tracking-tight uppercase mb-3">
+                WE&apos;LL SHOW YOU THE WORLD
+              </h2>
 
-                <div className="space-y-4 text-[14.5px] sm:text-[15.5px] text-[#444444] font-sans font-light leading-relaxed max-w-xl">
-                  <p>
-                    We curate trips for travellers who want to see the world up
-                    close — foregoing &apos;tick lists&apos; and tourist traps
-                    in favour of deeper and more intimate connections with the
-                    world and its cultures.
-                  </p>
-                  <p>
-                    Today, we take people to all seven continents, designing all
-                    of our trips from the ground up. This way, no two journeys
-                    are ever quite alike. Trekking with the tribes of Borneo;
-                    learning the trade of tanning in Morocco; joining the
-                    jostling crowds of Sienna&apos;s palio. It&apos;s a wide,
-                    wild world. And your travels should be the same.
-                  </p>
-                </div>
+              <span className="block text-[11px] sm:text-xs font-sans font-medium tracking-[0.2em] text-[#777777] uppercase mb-5">
+                AND IN AN ENTIRELY NEW LIGHT
+              </span>
+
+              <div className="space-y-4 text-[14.5px] sm:text-[15.5px] text-[#444444] font-sans font-light leading-relaxed max-w-xl">
+                <p>
+                  We curate trips for travellers who want to see the world up
+                  close — foregoing &apos;tick lists&apos; and tourist traps in
+                  favour of deeper and more intimate connections with the world
+                  and its cultures.
+                </p>
+                <p>
+                  Today, we take people to all seven continents, designing all
+                  of our trips from the ground up. This way, no two journeys are
+                  ever quite alike. Trekking with the tribes of Borneo; learning
+                  the trade of tanning in Morocco; joining the jostling crowds
+                  of Sienna&apos;s palio. It&apos;s a wide, wild world. And your
+                  travels should be the same.
+                </p>
               </div>
             </div>
           </div>
