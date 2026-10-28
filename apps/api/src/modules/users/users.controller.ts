@@ -1,6 +1,6 @@
 import { FastifyPluginAsync } from "fastify";
 import { UsersService } from "./users.service";
-import { createUserSchema } from "@flyora/validators";
+import { createUserSchema, updateProfileSchema } from "@flyora/validators";
 import { requireRole } from "../../middleware/rbac";
 import { StaffAvailability } from "@flyora/types";
 
@@ -117,6 +117,40 @@ export const usersRoutes: FastifyPluginAsync = async (fastify) => {
 
       try {
         const updated = await usersService.updateAvailability(id, availability);
+        return reply.send({
+          statusCode: 200,
+          data: updated,
+        });
+      } catch (err: any) {
+        return reply.status(400).send({
+          statusCode: 400,
+          error: "Bad Request",
+          message: err.message,
+        });
+      }
+    },
+  );
+
+  // PATCH /api/v1/users/profile (Update self profile: phone, avatarUrl)
+  fastify.patch(
+    "/profile",
+    { preHandler: [fastify.authenticate] },
+    async (request, reply) => {
+      const parseResult = updateProfileSchema.safeParse(request.body);
+      if (!parseResult.success) {
+        return reply.status(400).send({
+          statusCode: 400,
+          error: "Bad Request",
+          message:
+            parseResult.error.errors[0]?.message || "Invalid profile payload",
+        });
+      }
+
+      try {
+        const updated = await usersService.updateProfile(
+          request.user.id,
+          parseResult.data,
+        );
         return reply.send({
           statusCode: 200,
           data: updated,

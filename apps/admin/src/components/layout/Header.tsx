@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import type { StaffAvailability, UserRole } from "@flyora/types";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import type { StaffAvailability } from "@flyora/types";
 import { useAuthStore } from "../../stores/authStore";
 import { apiClient, logout } from "../../lib/apiClient";
 import { LogOut, ChevronDown, Menu, Loader2, Check } from "lucide-react";
@@ -29,14 +29,6 @@ const AVAILABILITY_CONFIG: Record<
   },
 };
 
-const ROLE_LABELS: Record<UserRole, string> = {
-  SUPER_ADMIN: "Admin",
-  OPERATIONS_MANAGER: "Operations",
-  SERVICE_COORDINATOR: "Staff",
-  ACCOUNTS: "Accounts",
-  CONTENT_MANAGER: "Content",
-};
-
 export const Header = ({ onToggleSidebar }: HeaderProps) => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -50,7 +42,9 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
           ? "Tour packages"
           : pathname.startsWith("/team")
             ? "Team"
-            : "Overview";
+            : pathname.startsWith("/account")
+              ? "Account settings"
+              : "Overview";
   const { user, setAvailability } = useAuthStore();
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);
@@ -109,7 +103,6 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
 
   const currentAvailability = user?.availability || "AVAILABLE";
   const config = AVAILABILITY_CONFIG[currentAvailability];
-  const roleLabel = user?.role ? ROLE_LABELS[user.role] || user.role : "Staff";
 
   return (
     <header className="workspace-header">
@@ -193,33 +186,26 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
           </p>
         )}
         {/* User Badge */}
-        <div className="flex items-center gap-2.5 pl-2 border-l border-zinc-200">
-          <div className="w-7 h-7 rounded-md bg-black text-white flex items-center justify-center font-mono text-xs">
-            {user?.fullName?.charAt(0).toUpperCase() || "U"}
-          </div>
-          <span className="role-badge md:hidden">{roleLabel}</span>
-          <div className="hidden md:block text-left leading-none">
-            <p className="text-xs font-medium text-zinc-900">
-              {user?.fullName || "Staff Member"}
-            </p>
-            <div className="flex items-center gap-2 mt-1">
-              <span className="role-badge">{roleLabel}</span>
-              {user?.role === "SERVICE_COORDINATOR" && (
-                <span
-                  className="text-xs text-slate-500 truncate max-w-56"
-                  title={user.services
-                    ?.map((item) => item.service?.name)
-                    .join(", ")}
-                >
-                  {user.services
-                    ?.map((item) => item.service?.name)
-                    .filter(Boolean)
-                    .join(" · ") || "No services assigned"}
-                </span>
-              )}
+        <Link
+          to="/account"
+          className="flex items-center gap-2.5 pl-2 border-l border-zinc-200 hover:opacity-85 transition group"
+          title="Account settings"
+        >
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user.fullName || "User"}
+              className="w-7 h-7 rounded-md object-cover object-[center_20%] [image-rendering:-webkit-optimize-contrast] border border-zinc-200"
+            />
+          ) : (
+            <div className="w-7 h-7 rounded-md bg-black text-white flex items-center justify-center font-mono text-xs">
+              {user?.fullName?.charAt(0).toUpperCase() || "U"}
             </div>
-          </div>
-        </div>
+          )}
+          <p className="text-xs font-medium text-zinc-900 group-hover:text-black">
+            {user?.fullName || "Staff Member"}
+          </p>
+        </Link>
 
         {logoutError && (
           <p role="alert" className="text-xs text-red-700">

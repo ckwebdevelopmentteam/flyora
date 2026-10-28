@@ -48,3 +48,10 @@ export const createUserSchema = z.object({
 });
 
 export type CreateUserInput = z.infer<typeof createUserSchema>;
+
+export const updateProfileSchema = z.object({
+  phone: z.string().optional().nullable().or(z.literal("")),
+  avatarUrl: z.string().url().optional().nullable().or(z.literal("")),
+});
+
+export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;
