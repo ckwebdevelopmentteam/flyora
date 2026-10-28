@@ -167,16 +167,27 @@ export const AboutCTA: React.FC<AboutCTAProps> = ({ data, onOpenEnquiry }) => {
           ))}
         </div>
 
-        {/* Closing Action Link */}
-        <div className="mt-14 text-center">
-          <Link
-            href={data.closingCta.href}
-            className="group inline-flex items-center gap-2.5 pl-6 pr-2.5 py-2.5 rounded-full bg-[#1C1815] hover:bg-[#352E27] text-white text-xs font-sans font-medium tracking-wide shadow-md transition cursor-pointer"
+        {/* Closing Action Links (Signature Black Tomato Hot Pink & Secondary Link) */}
+        <div className="mt-14 flex flex-wrap items-center justify-center gap-4 text-center">
+          <button
+            type="button"
+            onClick={() =>
+              onOpenEnquiry && onOpenEnquiry("Custom Travel Inquiry")
+            }
+            className="group inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#EC1C54] hover:bg-[#d6174a] text-white text-xs font-spartan font-bold uppercase tracking-[0.18em] shadow-[0_10px_25px_-5px_rgba(236,28,84,0.4)] transition-all cursor-pointer transform hover:-translate-y-0.5"
           >
-            <span>{data.closingCta.label}</span>
-            <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:scale-105">
+            <span>ENQUIRE NOW</span>
+            <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:scale-110">
               <ArrowUpRight className="w-3.5 h-3.5 text-white" />
             </span>
+          </button>
+
+          <Link
+            href={data.closingCta.href}
+            className="group inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-white hover:bg-stone-50 border border-black/15 text-[#1C1815] text-xs font-spartan font-bold uppercase tracking-[0.16em] shadow-xs transition cursor-pointer"
+          >
+            <span>{data.closingCta.label}</span>
+            <ArrowUpRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
           </Link>
         </div>
       </div>

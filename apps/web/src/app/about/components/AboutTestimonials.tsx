@@ -111,6 +111,55 @@ export const AboutTestimonials: React.FC<AboutTestimonialsProps> = ({
             </div>
           ))}
         </div>
+
+        {/* Global Press Accolades & Accreditations Strip (Black Tomato Style) */}
+        <div className="mt-16 sm:mt-20 pt-12 border-t border-black/[0.08]">
+          <div className="text-center mb-8">
+            <span className="text-[11px] font-spartan font-bold uppercase tracking-[0.25em] text-[#888888]">
+              ACCLAIM & WORLD RECOGNITION
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 lg:gap-8 items-center text-center">
+            <div className="flex flex-col items-center p-4">
+              <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#1C1815]">
+                Condé Nast Traveller
+              </span>
+              <p className="mt-1 text-xs text-[#777777] italic">
+                &ldquo;The pinnacle of bespoke, emotion-led experiential
+                travel.&rdquo;
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center p-4">
+              <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#1C1815]">
+                The New York Times
+              </span>
+              <p className="mt-1 text-xs text-[#777777] italic">
+                &ldquo;Redefining modern exploration through rare access.&rdquo;
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center p-4">
+              <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#1C1815]">
+                VOGUE
+              </span>
+              <p className="mt-1 text-xs text-[#777777] italic">
+                &ldquo;Itineraries crafted with the precision of high
+                art.&rdquo;
+              </p>
+            </div>
+
+            <div className="flex flex-col items-center p-4">
+              <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#1C1815]">
+                Forbes
+              </span>
+              <p className="mt-1 text-xs text-[#777777] italic">
+                &ldquo;The gold standard for personalized luxury travel.&rdquo;
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

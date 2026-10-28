@@ -36,8 +36,12 @@ export default function AboutPage() {
 
       {/* Main Editorial Flow matching reference UI/UX rhythm */}
       <main className="flex-1">
-        {/* Section 1: Hero with Big Full-Width Airplane Sky Visual & About Us Pill */}
-        <AboutHero data={ABOUT_DATA.hero} />
+        {/* Section 1: Signature Black Tomato Hero with Slate-Blue Header & Overlapping Mountain Card */}
+        <AboutHero
+          data={ABOUT_DATA.hero}
+          storyData={ABOUT_DATA.story}
+          onOpenEnquiry={handleOpenEnquiry}
+        />
 
         {/* Section 2: "WHO WE ARE" with Stats & Rounded Consultation Photo */}
         <AboutStory data={ABOUT_DATA.story} onOpenEnquiry={handleOpenEnquiry} />
