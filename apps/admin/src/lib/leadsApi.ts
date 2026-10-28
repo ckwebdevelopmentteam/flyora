@@ -5,7 +5,7 @@ import type {
   LeadActivityItem,
   LeadStatus,
 } from "@flyora/types";
-import type { LeadFilterInput } from "@flyora/validators";
+import type { CreateLeadInput, LeadFilterInput } from "@flyora/validators";
 
 export interface MyLeadsFilterParams {
   status?: string;
@@ -23,6 +23,13 @@ export const leadsApi = {
   // =========================================================================
   // Developer 2: Coordinator Leads Workspace & Service Pool Actions
   // =========================================================================
+
+  /**
+   * Create a new lead manually (auto-assigned to the current staff member)
+   */
+  async createLead(payload: CreateLeadInput): Promise<LeadItem> {
+    return apiClient.post<LeadItem>("/leads", payload);
+  },
 
   /**
    * Fetch unassigned leads in the coordinator's service pool

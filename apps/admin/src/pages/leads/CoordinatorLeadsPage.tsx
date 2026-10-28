@@ -11,6 +11,7 @@ import type { LeadItem, LeadStatus, ServiceSummary } from "@flyora/types";
 import { leadsApi } from "../../lib/leadsApi";
 import { apiClient } from "../../lib/apiClient";
 import { LeadDetailDrawer } from "./components/LeadDetailDrawer";
+import { AddLeadModal } from "./components/AddLeadModal";
 import {
   Inbox,
   Zap,
@@ -28,6 +29,7 @@ import {
   Loader2,
   ChevronRight,
   RotateCcw,
+  Plus,
   X,
 } from "lucide-react";
 
@@ -73,6 +75,9 @@ export const CoordinatorLeadsPage = () => {
 
   // Drawer state
   const [selectedLeadId, setSelectedLeadId] = useState<string | null>(null);
+
+  // Add lead modal state
+  const [isAddLeadModalOpen, setIsAddLeadModalOpen] = useState(false);
 
   // Toast feedback state
   const [toast, setToast] = useState<{
@@ -271,17 +276,27 @@ export const CoordinatorLeadsPage = () => {
 
       <div className="page-heading flex items-center justify-between gap-4">
         <h1>{currentTab === "my-leads" ? "My enquiries" : "All enquiries"}</h1>
-        <button
-          className="icon-button"
-          aria-label="Refresh enquiries"
-          title="Refresh enquiries"
-          onClick={() => {
-            void refetchPool();
-            void refetchMyLeads();
-          }}
-        >
-          <RotateCcw size={17} aria-hidden="true" />
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="button-primary flex items-center gap-1.5"
+            onClick={() => setIsAddLeadModalOpen(true)}
+          >
+            <Plus size={16} aria-hidden="true" />
+            <span>Add lead</span>
+          </button>
+          <button
+            className="icon-button"
+            aria-label="Refresh enquiries"
+            title="Refresh enquiries"
+            onClick={() => {
+              void refetchPool();
+              void refetchMyLeads();
+            }}
+          >
+            <RotateCcw size={17} aria-hidden="true" />
+          </button>
+        </div>
       </div>
 
       {/* TAB CONTENT 1: Available enquiries */}
@@ -751,6 +766,23 @@ export const CoordinatorLeadsPage = () => {
             followUpDate,
           });
         }}
+      />
+
+      {/* Manual Lead Creation Modal */}
+      <AddLeadModal
+        isOpen={isAddLeadModalOpen}
+        onClose={() => setIsAddLeadModalOpen(false)}
+        onSuccess={(lead) => {
+          showToast(
+            "success",
+            `Enquiry for ${lead.customer.fullName} added and assigned to you.`,
+          );
+          setTab("my-leads");
+          void queryClient.invalidateQueries({ queryKey: ["leads"] });
+          void queryClient.invalidateQueries({ queryKey: ["dashboard"] });
+        }}
+        services={services}
+        defaultServiceId={selectedServiceId || undefined}
       />
     </div>
   );

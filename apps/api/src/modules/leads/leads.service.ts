@@ -1,5 +1,9 @@
 import { FastifyInstance } from "fastify";
-import { LeadFilterInput, PublicEnquiryInput } from "@flyora/validators";
+import {
+  CreateLeadInput,
+  LeadFilterInput,
+  PublicEnquiryInput,
+} from "@flyora/validators";
 import {
   LeadDetailItem,
   LeadItem,
@@ -608,5 +612,120 @@ export class LeadsService {
     });
 
     return this.getLeadById(leadId);
+  }
+
+  /**
+   * Manual Lead Creation by Staff (Auto-assigned to staff member)
+   */
+  async createStaffLead(
+    data: CreateLeadInput,
+    userId: string,
+    userRole: string,
+  ): Promise<LeadItem> {
+    // 1. Verify service exists
+    const service = await this.fastify.prisma.service.findUnique({
+      where: { id: data.serviceId },
+    });
+
+    if (!service) {
+      throw {
+        statusCode: 400,
+        error: "Bad Request",
+        message: "Selected service does not exist",
+      };
+    }
+
+    // 2. Validate service assignment if coordinator
+    if (userRole === "SERVICE_COORDINATOR") {
+      const coordinatorMapping =
+        await this.fastify.prisma.userService.findUnique({
+          where: {
+            userId_serviceId: {
+              userId,
+              serviceId: data.serviceId,
+            },
+          },
+        });
+
+      if (!coordinatorMapping) {
+        const userServices = await this.fastify.prisma.userService.findMany({
+          where: { userId },
+        });
+        if (userServices.length > 0) {
+          throw {
+            statusCode: 403,
+            error: "Forbidden",
+            message: `You are not assigned to the "${service.name}" service.`,
+          };
+        }
+      }
+    }
+
+    // 3. Validate package if selected
+    if (data.packageId) {
+      const pkg = await this.fastify.prisma.package.findUnique({
+        where: { id: data.packageId },
+      });
+      if (!pkg) {
+        throw {
+          statusCode: 400,
+          error: "Bad Request",
+          message: "Selected tour package does not exist",
+        };
+      }
+    }
+
+    // 4. Upsert Customer by unique phone number
+    const customer = await this.fastify.prisma.customer.upsert({
+      where: { phone: data.phone },
+      update: {
+        fullName: data.fullName,
+        ...(data.email ? { email: data.email } : {}),
+        ...(data.city ? { city: data.city } : {}),
+      },
+      create: {
+        fullName: data.fullName,
+        phone: data.phone,
+        email: data.email || null,
+        city: data.city || null,
+      },
+    });
+
+    // 5. Create lead with auto-assignment to staff user
+    const lead = await this.fastify.prisma.lead.create({
+      data: {
+        customerId: customer.id,
+        serviceId: data.serviceId,
+        packageId: data.packageId || null,
+        assignedToId: userId,
+        claimedAt: new Date(),
+        status: data.status || "NEW",
+        source: data.source || "PHONE_CALL",
+        travelDate: data.travelDate ? new Date(data.travelDate) : null,
+        numberOfAdults: data.numberOfAdults ?? 1,
+        numberOfKids: data.numberOfKids ?? 0,
+        estimatedBudget: data.estimatedBudget ?? null,
+      },
+      include: {
+        customer: true,
+        service: true,
+        package: true,
+        assignedTo: true,
+      },
+    });
+
+    // 6. Record audit activity
+    await this.fastify.prisma.leadActivity.create({
+      data: {
+        leadId: lead.id,
+        userId,
+        action: "CLAIMED_LEAD",
+        details: data.note
+          ? `Lead added manually and auto-assigned. Note: ${data.note}`
+          : `Lead added manually and auto-assigned.`,
+      },
+    });
+
+    return this.formatLeadItem(lead);
   }
 }

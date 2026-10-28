@@ -2,6 +2,7 @@ import { FastifyPluginAsync } from "fastify";
 import { LeadsService } from "./leads.service";
 import {
   addLeadNoteSchema,
+  createLeadSchema,
   leadFilterSchema,
   leadIdParamSchema,
   publicEnquirySchema,
@@ -367,6 +368,43 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
         );
         return reply.send({
           statusCode: 200,
+          data: lead,
+        });
+      } catch (err: any) {
+        return reply.status(err.statusCode || 500).send({
+          statusCode: err.statusCode || 500,
+          error: err.error || "InternalServerError",
+          message: err.message,
+        });
+      }
+    },
+  );
+
+  // 10. POST / (Manual Lead Creation by Staff - Auto-assigned)
+  fastify.post(
+    "/",
+    {
+      preHandler: [fastify.authenticate],
+    },
+    async (request, reply) => {
+      const parseResult = createLeadSchema.safeParse(request.body);
+      if (!parseResult.success) {
+        return reply.status(400).send({
+          statusCode: 400,
+          error: "Bad Request",
+          message:
+            parseResult.error.errors[0]?.message || "Invalid lead submission",
+        });
+      }
+
+      try {
+        const lead = await leadsService.createStaffLead(
+          parseResult.data,
+          request.user.id,
+          request.user.role,
+        );
+        return reply.status(201).send({
+          statusCode: 201,
           data: lead,
         });
       } catch (err: any) {
