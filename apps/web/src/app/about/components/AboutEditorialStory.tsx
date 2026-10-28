@@ -291,9 +291,9 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
 
       {/* =========================================================================
           SECTION 4: "REGENERATIVE TRAVEL" + DESERT EXPLORER & CORAL INSET
-          (Reference Screenshot 4)
+          (Reference Screenshot 4 - Exact image sizing and placing)
           ========================================================================= */}
-      <section className="relative w-full bg-white py-12 sm:py-20 lg:py-28">
+      <section className="relative w-full bg-white py-14 sm:py-20 lg:pt-24 lg:pb-36 overflow-hidden">
         <div className="container-standard">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-center">
             {/* Left Column: Regenerative Travel Text & FIND OUT MORE Button */}
@@ -329,9 +329,9 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
 
             {/* Right Column: Large Field Photograph with Overlapping Coral Reef Inset */}
             <div className="lg:col-span-7 xl:col-span-7">
-              <div className="relative w-full max-w-[620px] ml-auto">
+              <div className="relative w-full max-w-[640px] xl:max-w-[680px] ml-auto">
                 {/* Main Landscape Photo: Conservationist in Desert Canyon */}
-                <div className="relative w-full aspect-[16/10] sm:aspect-[16/10] bg-[#1a1a1a] overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.12)]">
+                <div className="relative w-full aspect-[16/11] bg-[#1a1a1a] overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.12)]">
                   <Image
                     src="/about/regenerative-field.jpg"
                     alt="Female conservationist traveler holding an archaeological specimen in sunny canyon landscape"
@@ -341,13 +341,13 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
                   />
                 </div>
 
-                {/* Overlapping Bottom-Right Inset: Underwater Coral Reef */}
-                <div className="absolute -bottom-8 -right-4 sm:-bottom-10 sm:-right-8 lg:-bottom-12 lg:-right-8 w-44 h-44 sm:w-56 sm:h-56 lg:w-64 lg:h-64 aspect-square bg-[#082032] border-4 border-white shadow-[0_20px_45px_-10px_rgba(0,0,0,0.35)] overflow-hidden z-10">
+                {/* Overlapping Coral Reef Inset (Matching exact reference: borderless, inset from right edge, hanging over bottom edge) */}
+                <div className="absolute -bottom-10 sm:-bottom-14 lg:-bottom-16 right-8 sm:right-12 lg:right-16 xl:right-20 w-[42%] max-w-[260px] aspect-[4/5] bg-[#082032] overflow-hidden z-10 shadow-[0_20px_45px_-10px_rgba(0,0,0,0.3)]">
                   <Image
                     src="/about/coral-reef.jpg"
                     alt="Vibrant tropical branching coral reef in crystal-clear turquoise ocean water"
                     fill
-                    sizes="(max-width: 640px) 176px, 256px"
+                    sizes="(max-width: 640px) 180px, 260px"
                     className="object-cover object-center"
                   />
                 </div>
