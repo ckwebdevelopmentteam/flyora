@@ -25,16 +25,17 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] text-[#1C1815] flex flex-col font-sans selection:bg-[#463D34] selection:text-white antialiased">
+    <div className="min-h-screen bg-[#144A72] text-[#1C1815] flex flex-col font-sans selection:bg-[#463D34] selection:text-white antialiased">
       {/* Floating Glassmorphic Navbar */}
       <Navbar
+        isFixed={true}
         activePath="/about"
         onOpenEnquiry={handleOpenEnquiry}
         onBecomeAdvisor={() => setIsAdvisorModalOpen(true)}
       />
 
       {/* Main Editorial Flow matching reference UI/UX rhythm */}
-      <main className="flex-1">
+      <main className="flex-1 bg-white">
         {/* Editorial Story matching 4 reference screenshots: Hero, Overlapping Mountain, It Began With A Feeling, Unique Different & Daring, Regenerative Travel */}
         <AboutEditorialStory onOpenEnquiry={handleOpenEnquiry} />
 

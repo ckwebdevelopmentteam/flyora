@@ -11,12 +11,12 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
   onOpenEnquiry,
 }) => {
   return (
-    <article className="w-full bg-white overflow-hidden">
+    <article className="w-full bg-[#144A72] overflow-hidden">
       {/* =========================================================================
           SECTION 1: SIGNATURE DEEP SLATE-BLUE HEADER BANNER WITH OVERLAPPING MOUNTAIN
           (Screenshot 1 Reference)
           ========================================================================= */}
-      <section className="relative w-full bg-[#144A72] text-white pt-24 sm:pt-32 lg:pt-40 pb-36 sm:pb-48 lg:pb-64 overflow-hidden">
+      <section className="relative w-full bg-[#144A72] text-white pt-28 sm:pt-36 lg:pt-44 pb-36 sm:pb-48 lg:pb-64 overflow-hidden">
         {/* Topographical Elevation Contour Lines SVG Background */}
         <div
           className="absolute inset-0 pointer-events-none select-none opacity-25"
