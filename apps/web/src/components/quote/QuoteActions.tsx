@@ -9,7 +9,7 @@ import {
   quoteExpired,
   type PublicQuote,
 } from "./publicQuote";
-import styles from "./QuoteProposal.module.css";
+import styles from "./ProposalDocument.module.css";
 
 type Validity = Pick<PublicQuote, "validUntil" | "isExpired" | "status"> & {
   initialNow: number;
@@ -44,44 +44,32 @@ export function QuoteValidity(props: Validity) {
     return (
       <div className={styles.expired} role="status">
         {Date.parse(props.validUntil) <= now
-          ? `This quotation expired on ${formatQuoteDate(props.validUntil)}.`
-          : "This quotation has expired."}{" "}
-        Please contact your coordinator for an updated quote.
+          ? `Expired on ${formatQuoteDate(props.validUntil)}.`
+          : "This quote has expired."}{" "}
+        Request an updated quote.
       </div>
     );
   if (props.status === "DRAFT")
     return (
       <div className={styles.notice}>
-        Draft proposal — please ask your coordinator for the final quotation
-        before confirming.
+        Draft · Ask for the final quote before booking.
       </div>
     );
   if (props.status === "REJECTED")
     return (
       <div className={styles.notice}>
-        This quotation is closed. Your coordinator can prepare a revised
-        proposal.
+        Closed · Ask your advisor for a new quote.
       </div>
     );
   if (props.status === "ACCEPTED")
     return (
       <div className={styles.notice}>
-        This quotation is marked as accepted. Contact your coordinator for the
-        next booking steps.
+        Accepted · Contact your advisor to arrange your booking.
       </div>
     );
-  const hours = Math.max(
-    1,
-    Math.ceil((Date.parse(props.validUntil) - now) / 3600000),
-  );
   return (
     <div className={styles.validity}>
-      Offer valid until {formatQuoteDate(props.validUntil)}{" "}
-      <span>
-        {hours >= 24
-          ? `${Math.ceil(hours / 24)} days remaining`
-          : `${hours} ${hours === 1 ? "hour" : "hours"} remaining`}
-      </span>
+      Valid until {formatQuoteDate(props.validUntil)}
     </div>
   );
 }
@@ -96,12 +84,12 @@ export function QuoteActions(
   const confirm = !expired && props.status === "SENT";
   const revised = expired || props.status === "REJECTED";
   const label = confirm
-    ? "Accept & Confirm via WhatsApp"
+    ? "Discuss & book"
     : revised
-      ? "Request an Updated Quote"
+      ? "Request new quote"
       : props.status === "DRAFT"
-        ? "Request the Final Quote"
-        : "Discuss Your Booking";
+        ? "Request final quote"
+        : "Discuss booking";
   const message = confirm
     ? `Hi ${props.coordinator.fullName}, I reviewed quotation #${props.quoteNumber} for ${props.serviceTitle}. I would like to confirm and proceed with booking!`
     : `Hi ${props.coordinator.fullName}, I reviewed quotation #${props.quoteNumber} for ${props.serviceTitle}. ${revised ? "Please send me an updated quotation." : props.status === "DRAFT" ? "Please share the final quotation." : "I would like to discuss the next booking steps."}`;
@@ -120,22 +108,23 @@ export function QuoteActions(
           </a>
           <a className={styles.call} href={`tel:+${number}`}>
             <Phone size={17} aria-hidden="true" />
-            Call Coordinator
+            Call advisor
           </a>
         </>
       ) : (
         <p className={styles.contactMissing}>
-          Please contact your Flyora coordinator to discuss this proposal.
+          Contact your travel advisor to continue.
         </p>
       )}
       <button className={styles.print} onClick={() => window.print()}>
         <Printer size={17} aria-hidden="true" />
-        Print / Save PDF
+        Save / Print PDF
       </button>
-      <p className={styles.actionHint}>
-        WhatsApp opens a conversation. Your coordinator will confirm
-        availability and booking.
-      </p>
+      {number && confirm && (
+        <p className={styles.actionHint}>
+          Opens WhatsApp. Your advisor will confirm your booking.
+        </p>
+      )}
     </div>
   );
 }
