@@ -8,11 +8,8 @@ import { BecomeAdvisorModal } from "../../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../../components/FloatingWhatsApp";
 import { ABOUT_DATA } from "./aboutData";
 import { AboutEditorialStory } from "./components/AboutEditorialStory";
-import { AboutTransition } from "./components/AboutTransition";
-import { AboutCurators } from "./components/AboutCurators";
-import { AboutValues } from "./components/AboutValues";
-import { AboutTestimonials } from "./components/AboutTestimonials";
-import { AboutCTA } from "./components/AboutCTA";
+import { AboutPurposeJourney } from "./components/AboutPurposeJourney";
+import { AboutValuesExperience } from "./components/AboutValuesExperience";
 
 export default function AboutPage() {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
@@ -39,26 +36,20 @@ export default function AboutPage() {
         {/* Editorial Story matching 4 reference screenshots: Hero, Overlapping Mountain, It Began With A Feeling, Unique Different & Daring, Regenerative Travel */}
         <AboutEditorialStory onOpenEnquiry={handleOpenEnquiry} />
 
-        {/* Section 3: "A GENTLE PLACE TO BEGIN" Centered Transition Statement */}
-        <AboutTransition data={ABOUT_DATA.transitionStatement} />
+        {/* A scroll-led purpose story replaces the transition, curators, and
+            standalone approach sections. */}
+        <AboutPurposeJourney data={ABOUT_DATA.approach} />
 
-        {/* Section 4: "MEET OUR TRAVEL CURATORS" 4-Card Showcase */}
-        <AboutCurators
-          data={ABOUT_DATA.curators}
-          onOpenEnquiry={handleOpenEnquiry}
-        />
-
-        {/* Section 5: "HOW WE PLAN OUR JOURNEYS" Numbered Accordion & Visual */}
-        <AboutValues data={ABOUT_DATA.approach} />
-
-        {/* Section 6: "WORDS FROM OUR TRAVELERS" Testimonials with Navigation */}
-        <AboutTestimonials data={ABOUT_DATA.testimonials} />
-
-        {/* Section 7: "SIMPLE AND TRANSPARENT PLANNING" Tiers & Final CTA */}
-        <AboutCTA
-          data={ABOUT_DATA.pricingAndCta}
-          onOpenEnquiry={handleOpenEnquiry}
-        />
+        {/* Start the white stage one viewport before the purple story ends.
+            Its sticky surface rises over the still-pinned purpose scene,
+            creating the requested bottom-to-top curtain handoff. */}
+        <div className="relative z-10 -mt-[100svh]">
+          <AboutValuesExperience
+            approach={ABOUT_DATA.approach}
+            curators={ABOUT_DATA.curators}
+            onOpenEnquiry={handleOpenEnquiry}
+          />
+        </div>
       </main>
 
       {/* Reusable Enquiry Modal */}

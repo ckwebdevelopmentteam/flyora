@@ -307,9 +307,9 @@ export const ABOUT_DATA: AboutPageData = {
       },
     ],
     companionImage: {
-      src: "/about/destination-story.jpg",
-      alt: "Serene alpine lake with tranquil pier reflecting peaceful travel discovery",
-      caption: "Oeschinensee, Swiss Alps",
+      src: "/about/journey-companion.jpg",
+      alt: "Contemplative traveler on a serene timber terrace overlooking twilight misty fjords",
+      caption: "Thoughtful pacing & handcrafted flow",
     },
   },
 
