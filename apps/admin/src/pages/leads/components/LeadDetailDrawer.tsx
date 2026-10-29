@@ -446,6 +446,20 @@ export const LeadDetailDrawer = ({
                 </div>
               </div>
 
+              {lead.customerNotes && (
+                <section
+                  className="rounded-lg border border-zinc-200 bg-white p-4"
+                  aria-label="Customer message"
+                >
+                  <h3 className="text-sm font-semibold text-zinc-900">
+                    Customer message
+                  </h3>
+                  <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-zinc-600">
+                    {lead.customerNotes}
+                  </p>
+                </section>
+              )}
+
               {/* Follow-up Reminder Badge */}
               {lead.followUpDate && (
                 <div

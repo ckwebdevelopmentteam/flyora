@@ -134,6 +134,7 @@ model Lead {
   claimedAt       DateTime?
   status          LeadStatus     @default(NEW)
   source          LeadSource     @default(WEBSITE_FORM)
+  customerNotes   String?        @db.Text
   travelDate      DateTime?
   numberOfAdults  Int            @default(1)
   numberOfKids    Int            @default(0)

@@ -146,6 +146,20 @@ export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
                 </div>
               </div>
 
+              {lead.customerNotes && (
+                <section
+                  className="rounded-xl border border-zinc-200 bg-white p-4"
+                  aria-label="Customer message"
+                >
+                  <h4 className="text-sm font-semibold text-zinc-900">
+                    Customer message
+                  </h4>
+                  <p className="mt-2 whitespace-pre-wrap break-words text-sm leading-relaxed text-zinc-600">
+                    {lead.customerNotes}
+                  </p>
+                </section>
+              )}
+
               {/* Trip Specifications */}
               <div className="grid grid-cols-2 gap-3 text-xs">
                 <div className="p-3 rounded-xl border border-zinc-200 bg-white">

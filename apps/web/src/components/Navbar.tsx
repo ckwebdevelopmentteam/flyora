@@ -400,10 +400,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </Link>
 
-            {/* Contact — link to homepage section */}
+            {/* Contact */}
             <Link
-              href="/#contact"
-              className="text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 relative select-none text-[#4A423B] hover:text-black"
+              href="/contact"
+              aria-current={activePath === "/contact" ? "page" : undefined}
+              className={`text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 relative select-none ${activePath === "/contact" ? "text-[#1C1815] font-semibold border-b-2 border-[#463D34]" : "text-[#4A423B] hover:text-black"}`}
             >
               Contact
             </Link>
@@ -654,7 +655,8 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Contact */}
             <Link
-              href="/#contact"
+              href="/contact"
+              aria-current={activePath === "/contact" ? "page" : undefined}
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 text-[#38312B] hover:text-black transition-colors border-b border-black/[0.04]"
             >
