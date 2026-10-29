@@ -85,7 +85,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:grid-cols-[585px_minmax(0,1fr)] xl:gap-[154px] items-end xl:items-start">
             {/* Left Column (5 Cols): ABOUT US + Mountain Image (Image 1) */}
             <div className="lg:col-span-5 xl:col-auto">
-              <h1 className="font-heading font-bold text-5xl sm:text-6xl lg:text-[76px] xl:text-[98px] text-[#5BC3A6] leading-none tracking-tight uppercase mb-6 sm:mb-8 xl:mb-[117px] select-none">
+              <h1 className="font-heading font-bold text-5xl sm:text-6xl lg:text-[76px] xl:text-[98px] text-[#5BC3A6] leading-none tracking-tight uppercase mb-6 sm:mb-8 xl:mt-[77px] xl:mb-[40px] select-none">
                 ABOUT US
               </h1>
 
@@ -107,8 +107,8 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
               <span className="block text-[#5BC3A6] text-xs sm:text-[13px] font-sans font-medium tracking-[0.25em] uppercase mb-3">
                 ABOUT US
               </span>
-              <h2 className="font-heading font-bold text-2xl sm:text-3xl lg:text-[32px] xl:text-[38px] text-white tracking-tight leading-[1.18] uppercase max-w-lg">
-                AWARD-WINNING CREATORS OF REMARKABLE TRAVEL EXPERIENCES
+              <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] text-white tracking-tight leading-[1.15] max-w-lg">
+                Award-Winning Creators of Remarkable Travel Experiences
               </h2>
             </div>
           </div>
@@ -128,32 +128,33 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
             {/* Left Column (5 Cols): Clearance for hanging Mountain Image + IT BEGAN WITH A FEELING */}
             <div className="lg:col-span-5 xl:col-auto pt-44 sm:pt-56 lg:pt-68 xl:pt-[530px]">
               <div className="max-w-md">
-                <h2 className="font-heading font-bold text-3xl sm:text-4xl lg:text-[40px] text-[#111111] leading-[1.12] tracking-tight uppercase mb-4">
-                  IT BEGAN WITH A FEELING
+                <h2 className="font-serif font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#111111] leading-[1.12] tracking-tight mb-4">
+                  It Began With a Vision
                 </h2>
 
                 <span className="block text-[11px] sm:text-xs font-sans font-medium tracking-[0.2em] text-[#777777] uppercase mb-6">
-                  FLYORA WAS FOUNDED IN 2005 BY TOM, JAMES AND MATT
+                  FLYORA • CRAFTING EXTRAORDINARY JOURNEYS WORLDWIDE
                 </span>
 
                 <div className="space-y-4 text-[14.5px] sm:text-[15.5px] text-[#444444] font-sans font-light leading-relaxed">
                   <p>
-                    A trio of friends who wanted to sweep aside the prevailing
-                    current of &apos;package&apos; trips and same-same
-                    vacations.
+                    Flyora was founded on a simple conviction: travel should be
+                    seamless, inspiring, and completely personal. We set out to
+                    sweep aside the stress of generic tour packages and
+                    one-size-fits-all itineraries.
                   </p>
                   <p>
-                    Since then, we&apos;ve become award-winning curators of
-                    tailor-made travel experiences — all crafted with
-                    inspirational engineering and an incomparable attention to
-                    detail. For us, the most important thing has always been:
-                    how do you want to feel? The rest is in the detail.
+                    Today, we curate bespoke international journeys, luxury
+                    stays, and seamless travel logistics for travelers across
+                    the globe. From the first spark of inspiration to your
+                    journey home, we shape every detail around how you want to
+                    feel.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Right Column (7 Cols): WHAT WE'RE ABOUT + Image 2 (Vestrahorn peaks) */}
+            {/* Right Column (7 Cols): WHAT WE'RE ABOUT + Image 2 (Luxury overwater bungalows) */}
             <div className="lg:col-span-7 xl:col-auto lg:pl-4 xl:pl-0">
               {/* WHAT WE'RE ABOUT & WE'RE A TEAM... */}
               <div className="max-w-xl">
@@ -161,24 +162,24 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
                   WHAT WE&apos;RE ABOUT
                 </span>
 
-                <h2 className="font-heading font-bold text-3xl sm:text-4xl lg:text-[42px] xl:text-[48px] text-[#111111] leading-[1.1] tracking-tight uppercase">
-                  WE&apos;RE A TEAM OF PEOPLE IN THE KNOW ABOUT TRAVEL
+                <h2 className="font-serif font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#111111] leading-[1.1] tracking-tight">
+                  Your Complete Travel Partner for Every Destination
                 </h2>
 
                 <p className="mt-6 text-base sm:text-lg lg:text-[18px] text-[#333333] font-sans font-light leading-relaxed">
-                  And we&apos;re on a mission to create remarkable experiences
-                  that thoughtfully connect our clients to the world and inspire
-                  them to explore it with curiosity, humility and a sense of
-                  wonder.
+                  We bring international holiday packages, fast-track visa
+                  approvals, air ticketing, and 24/7 global concierge care
+                  together under one roof — ensuring every trip is effortless,
+                  enriching, and unforgettable.
                 </p>
               </div>
 
-              {/* Image 2 (Vestrahorn peaks): Large landscape photo overlapping bottom-right of Mountain Image */}
+              {/* Image 2 (Maldives / Overwater Paradise): Large landscape photo overlapping bottom-right of Mountain Image */}
               <div className="mt-12 sm:mt-16 lg:mt-20 relative z-20 xl:mt-[60px]">
                 <div className="relative w-full lg:-ml-12 xl:-ml-[247px] lg:w-[calc(100%+3rem)] xl:w-[957px] aspect-[16/10] xl:aspect-[957/649] bg-[#1a1a1a] overflow-hidden shadow-[0_20px_50px_-10px_rgba(0,0,0,0.18)]">
                   <Image
-                    src="/about/vestrahorn-peaks.jpg"
-                    alt="Dramatic volcanic mountain peaks rising from dark sand beach dunes"
+                    src="/destinations/maldives.jpg"
+                    alt="Luxury overwater villa resort with crystal turquoise lagoon and wooden boardwalk"
                     fill
                     sizes="(max-width: 1024px) 100vw, 60vw"
                     className="object-cover object-center"
@@ -197,21 +198,22 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
       <section className="relative w-full bg-white py-14 sm:py-20 lg:pt-24 lg:pb-36 xl:pt-[132px] xl:pb-[225px] overflow-hidden">
         <div className="container-standard xl:max-w-[1220px] xl:px-0">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:grid-cols-[400px_minmax(0,1fr)] xl:gap-[93px] items-center xl:items-start">
-            {/* Left Column: Regenerative Travel Text & FIND OUT MORE Button */}
+            {/* Left Column: Complete Travel Management & PLAN YOUR TRIP Button */}
             <div className="lg:col-span-5 xl:col-auto xl:pt-[137px]">
-              <h2 className="font-heading font-bold text-3xl sm:text-4xl lg:text-[42px] text-[#111111] leading-[1.12] tracking-tight uppercase mb-3">
-                REGENERATIVE TRAVEL
+              <h2 className="font-serif font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#111111] leading-[1.12] tracking-tight mb-3">
+                Complete Travel Management
               </h2>
 
               <span className="block text-[11px] sm:text-xs font-sans font-medium tracking-[0.2em] text-[#777777] uppercase mb-5">
-                A LASTING IMPACT FOR A CHANGING WORLD
+                FROM VISA TO RETURN FLIGHT • WE HANDLE EVERYTHING
               </span>
 
               <p className="text-[14.5px] sm:text-[15.5px] text-[#444444] font-sans font-light leading-relaxed mb-8 max-w-md">
-                At Flyora, we know you&apos;re seeking travel experiences that
-                will leave a lasting, positive impact on our planet and the
-                communities that call it home. This is a belief we also share,
-                and it has been since our founding.
+                At Flyora, we handle the complexities of global travel so you
+                can savor every moment. From expedited visa approvals for 100+
+                countries to premier flights, 5-star hotel partnerships, and
+                round-the-clock advisory, your journey is always in expert
+                hands.
               </p>
 
               {/* Exact Solid Black Button from Reference */}
@@ -219,34 +221,34 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
                 type="button"
                 onClick={() =>
                   onOpenEnquiry
-                    ? onOpenEnquiry("Regenerative Travel Inquiry")
+                    ? onOpenEnquiry("Custom Travel Inquiry")
                     : undefined
                 }
                 className="inline-flex items-center justify-center px-8 py-3.5 bg-black hover:bg-zinc-800 active:bg-zinc-900 text-white text-xs font-sans font-semibold uppercase tracking-[0.2em] transition-colors rounded-none cursor-pointer shadow-xs"
               >
-                FIND OUT MORE
+                PLAN YOUR JOURNEY
               </button>
             </div>
 
-            {/* Right Column: Large Field Photograph with Overlapping Coral Reef Inset */}
+            {/* Right Column: Large Holiday Destination Photograph with Overlapping Travel Documentation Inset */}
             <div className="lg:col-span-7 xl:col-auto">
               <div className="relative w-full max-w-[640px] xl:max-w-none xl:w-[834px] ml-auto xl:ml-0">
-                {/* Main Landscape Photo: Conservationist in Desert Canyon */}
+                {/* Main Landscape Photo: Amalfi Coast Terrace */}
                 <div className="relative w-full aspect-[16/11] xl:aspect-[834/570] bg-[#1a1a1a] overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.12)]">
                   <Image
-                    src="/about/regenerative-field.jpg"
-                    alt="Female conservationist traveler holding an archaeological specimen in sunny canyon landscape"
+                    src="/about/hero-travel.jpg"
+                    alt="Traveler on a picturesque sunlit terrace overlooking the azure Amalfi coastline"
                     fill
                     sizes="(max-width: 1024px) 100vw, 55vw"
                     className="object-cover object-center"
                   />
                 </div>
 
-                {/* Overlapping Coral Reef Inset (Matching exact reference: borderless, inset from right edge, hanging over bottom edge) */}
+                {/* Overlapping Travel Documents Inset (Matching exact reference: borderless, inset from right edge, hanging over bottom edge) */}
                 <div className="absolute -bottom-10 sm:-bottom-14 lg:-bottom-16 right-8 sm:right-12 lg:right-16 xl:-bottom-[97px] xl:right-[55px] w-[42%] max-w-[260px] xl:w-[264px] xl:max-w-none aspect-[4/5] xl:aspect-[264/250] bg-[#082032] overflow-hidden z-10 shadow-[0_20px_45px_-10px_rgba(0,0,0,0.3)]">
                   <Image
-                    src="/about/coral-reef.jpg"
-                    alt="Vibrant tropical branching coral reef in crystal-clear turquoise ocean water"
+                    src="/services/visa-assistance.jpg"
+                    alt="Official passports, verified international visas, flight boarding passes, and bespoke hotel confirmations"
                     fill
                     sizes="(max-width: 640px) 180px, 260px"
                     className="object-cover object-center"

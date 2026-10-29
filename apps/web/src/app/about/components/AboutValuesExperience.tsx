@@ -10,6 +10,10 @@ import Team, {
   LinkedinIcon,
   DribbbleIcon,
 } from "@/components/ui/team-02";
+import {
+  useRobotoFlex,
+  ProximityLetters,
+} from "@/components/ui/variable-text-proximity";
 import type { AboutPageData } from "../aboutData";
 
 interface AboutValuesExperienceProps {
@@ -28,7 +32,9 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
   curators,
   onOpenEnquiry,
 }) => {
+  useRobotoFlex();
   const sectionRef = useRef<HTMLElement>(null);
+  const missionStageRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -107,21 +113,36 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
         </div>
 
         <div
+          ref={missionStageRef}
           className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center transition-[opacity,transform] duration-700 ease-out"
           style={{
             opacity: missionOpacity,
             transform: "translateY(" + (1 - missionOpacity) * 30 + "px)",
-            pointerEvents: "none",
+            pointerEvents: missionOpacity > 0.8 ? "auto" : "none",
           }}
           aria-hidden={missionOpacity < 0.05}
         >
-          <h2 className="max-w-5xl font-heading text-[30px] font-bold uppercase leading-[1.18] tracking-[0.07em] sm:text-[43px] lg:text-[57px]">
-            Our mission is to create remarkable journeys that{" "}
-            <span className="text-[#4FAF9F]">thoughtfully</span> connect our
-            travelers to the world, inspiring them to explore with{" "}
-            <span className="text-[#B86A3B]">curiosity</span>,{" "}
-            <span className="text-[#397FB0]">confidence</span> and wonder.
-          </h2>
+          <div className="max-w-5xl w-full">
+            <h2 className="font-heading text-[30px] font-bold uppercase leading-[1.18] tracking-[0.07em] sm:text-[43px] lg:text-[57px] text-[#29231F]">
+              <ProximityLetters
+                label="OUR MISSION IS TO CREATE REMARKABLE JOURNEYS THAT THOUGHTFULLY CONNECT OUR TRAVELERS TO THE WORLD, INSPIRING THEM TO EXPLORE WITH CURIOSITY, CONFIDENCE AND WONDER."
+                fromFontVariationSettings="'wght' 400, 'opsz' 14, 'slnt' 0"
+                toFontVariationSettings="'wght' 900, 'opsz' 48, 'slnt' 0"
+                containerRef={missionStageRef}
+                radius={130}
+                falloff="gaussian"
+                wordColors={{
+                  THOUGHTFULLY: "#4FAF9F",
+                  CURIOSITY: "#B86A3B",
+                  CONFIDENCE: "#397FB0",
+                }}
+                style={{
+                  fontFamily:
+                    '"Roboto Flex", ui-sans-serif, system-ui, sans-serif',
+                }}
+              />
+            </h2>
+          </div>
         </div>
 
         <div
@@ -136,7 +157,7 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
           <div className="mx-auto w-full max-w-7xl my-auto">
             <Team
               badge="Team"
-              title="Meet our team"
+              title="Meet Our Team"
               description="Our team is committed to redefining digital experiences through innovative web solutions while fostering a diverse and collaborative environment."
               members={curators.items.map((curator) => ({
                 name: curator.name,
@@ -168,23 +189,23 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
         </div>
 
         <div
-          className="absolute inset-0 z-10 overflow-y-auto px-6 pt-20 pb-16 transition-opacity duration-700 ease-out sm:px-10 sm:pt-24 lg:px-16 lg:pt-[140px] lg:pb-20"
+          className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-8 transition-opacity duration-700 ease-out sm:px-8 lg:px-12"
           style={{
             opacity: valuesOpacity,
             pointerEvents: valuesOpacity > 0.95 ? "auto" : "none",
           }}
           aria-hidden={valuesOpacity < 0.05}
         >
-          <div className="mx-auto min-h-full max-w-[1464px]">
-            <p className="font-heading text-[52px] font-bold uppercase leading-none tracking-[0.04em] text-[#4FAF9F] sm:text-[76px] lg:text-[100px]">
-              OUR VALUES
+          <div className="mx-auto w-full max-w-7xl my-auto">
+            <p className="font-serif text-[52px] font-bold leading-none tracking-tight text-[#4FAF9F] sm:text-[76px] lg:text-[96px]">
+              Our Values
             </p>
             <p className="mt-3 max-w-3xl text-[14px] font-semibold uppercase leading-[1.45] tracking-[0.15em] text-[#463D34] sm:text-[16px]">
               The three principles that guide every Flyora journey, from the
               first idea to the journey home.
             </p>
 
-            <div className="mt-10 grid grid-cols-1 gap-5 md:grid-cols-3 lg:mt-14 lg:gap-7">
+            <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3 lg:mt-10 lg:gap-7">
               {values.map((value, index) => {
                 const cardOpacity = clamp(
                   (progress - (0.8 + index * 0.07)) / 0.06,

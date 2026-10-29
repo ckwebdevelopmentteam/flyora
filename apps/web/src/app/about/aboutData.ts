@@ -307,9 +307,9 @@ export const ABOUT_DATA: AboutPageData = {
       },
     ],
     companionImage: {
-      src: "/about/journey-companion.jpg",
-      alt: "Contemplative traveler on a serene timber terrace overlooking twilight misty fjords",
-      caption: "Thoughtful pacing & handcrafted flow",
+      src: "/about/flyora_about_travel_photo.png",
+      alt: "Traveler on a mountain peak admiring the sunset over scenic coastal bays and islands",
+      caption: "",
     },
   },
 

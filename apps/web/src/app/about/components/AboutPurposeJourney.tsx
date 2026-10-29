@@ -5,6 +5,8 @@ import Image from "next/image";
 import { ChevronDown } from "lucide-react";
 import type { AboutPageData } from "../aboutData";
 
+import { AboutWhatWeOffer } from "./AboutWhatWeOffer";
+
 interface AboutPurposeJourneyProps {
   data: AboutPageData["approach"];
 }
@@ -48,7 +50,7 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
 
   // Carefully timed scroll-lag narrative sequence across 560vh:
   // - Scene 1 ("OUR PURPOSE"): holds from 0 to 0.18, crossfades out to 0.24 (~110vh scroll time)
-  // - Scene 2 (Wonder & Connection): holds from 0.24 to 0.44, crossfades out to 0.48 (~120vh scroll time)
+  // - Scene 2 ("WHAT WE OFFER"): holds from 0.24 to 0.44, crossfades out to 0.48 (~120vh scroll time)
   // - Scene 3 ("HOW WE PLAN OUR JOURNEYS"): fades in 0.46 -> 0.52, HOLDS FULLY VISIBLE & INTERACTIVE from 0.52 to 0.78 (~120vh clean scroll time)
   // - White Curtain Handoff: The white section begins entering from the bottom at ~0.78 and smoothly rises over Scene 3 until 1.0!
   const purposeOpacity = clamp((0.24 - progress) / 0.08);
@@ -148,23 +150,8 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
           </div>
         </div>
 
-        {/* Scene 2: Wonder, Connection, Stories Statement */}
-        <div
-          className="absolute inset-0 flex items-center justify-center px-6 text-center transition-[opacity,transform] duration-700 ease-out"
-          style={{
-            opacity: impactOpacity,
-            transform: "translateY(" + (0.5 - impactOpacity) * 30 + "px)",
-            pointerEvents: impactOpacity > 0.8 ? "auto" : "none",
-          }}
-          aria-hidden={impactOpacity < 0.05}
-        >
-          <h2 className="max-w-5xl font-heading text-[31px] font-bold uppercase leading-[1.14] tracking-[0.075em] sm:text-[43px] lg:text-[57px]">
-            We create journeys that leave you with more{" "}
-            <span className="text-[#F08B4C]">wonder</span>, more{" "}
-            <span className="text-[#5BC3A6]">connection</span>, and more stories
-            worth carrying home.
-          </h2>
-        </div>
+        {/* Scene 2: What We Offer with Variable Text Proximity */}
+        <AboutWhatWeOffer opacity={impactOpacity} progress={progress} />
 
         {/* Scene 3: HOW WE PLAN OUR JOURNEYS (Matching exact UI from screenshot, with dedicated hold scroll time & lag effect) */}
         <div
@@ -185,8 +172,8 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
               }}
             >
               <Image
-                src={data.companionImage.src}
-                alt={data.companionImage.alt}
+                src="/about/flyora_about_travel_photo.png"
+                alt="Traveler on a mountain peak admiring the sunset over scenic coastal bays and islands"
                 fill
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-center"
@@ -201,16 +188,6 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
                 aria-hidden="true"
               />
             </div>
-
-            {/* Subtle Editorial Watermark Overlay */}
-            <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10 z-10 max-w-xs pointer-events-none">
-              <span className="inline-block text-[10px] font-sans font-semibold tracking-[0.25em] text-[#5BC3A6] uppercase mb-1 drop-shadow-sm">
-                UNHURRIED LUXURY
-              </span>
-              <p className="font-heading text-xs sm:text-sm text-white/90 uppercase tracking-wider font-medium drop-shadow-sm">
-                {data.companionImage.caption}
-              </p>
-            </div>
           </div>
 
           <div
@@ -224,7 +201,7 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
               <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#5BC3A6] sm:text-[11px]">
                 {data.eyebrow}
               </p>
-              <h2 className="font-heading text-[27px] font-bold uppercase leading-[1.12] tracking-[0.045em] sm:text-[35px] lg:text-[42px]">
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[1.15] tracking-tight text-white">
                 {data.heading}
               </h2>
 

@@ -203,7 +203,7 @@ const Team: React.FC<TeamProps> = ({
               {/* {badge} */}
               {/* </Badge> */}
               <div className="flex flex-col items-center justify-center gap-3">
-                <h2 className="text-3xl md:text-5xl font-semibold text-foreground">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight text-foreground">
                   {title}
                 </h2>
                 <p className="text-base font-normal text-muted-foreground">
