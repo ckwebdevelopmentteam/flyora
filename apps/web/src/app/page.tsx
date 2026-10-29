@@ -28,6 +28,7 @@ import { HeroSection } from "../components/HeroSection";
 import { EnquiryModal } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
+import { JourneyCTA } from "../components/JourneyCTA";
 
 // Luxury carousel destinations matching Fora Travel / user screenshot
 const CAROUSEL_DESTINATIONS = [
@@ -753,26 +754,7 @@ export default function Home() {
       {/* =========================================================================
           SECTION: FINAL BOTTOM CTA BANNER
           ========================================================================= */}
-      <section className="py-20 sm:py-28 bg-[#463D34] text-white text-center px-5">
-        <div className="max-w-3xl mx-auto">
-          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-3">
-            YOUR NEXT GETAWAY STARTS HERE
-          </span>
-          <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl font-normal mb-5 tracking-tight leading-[1.08]">
-            Find the perfect travel advisor for your next trip
-          </h2>
-          <p className="text-sm sm:text-base text-white/80 max-w-xl mx-auto mb-8 font-light leading-relaxed">
-            Connect with a handpicked specialist, unlock complimentary hotel
-            perks, and travel with total peace of mind.
-          </p>
-          <button
-            onClick={() => openEnquiry()}
-            className="px-9 py-4 rounded-sm bg-white hover:bg-[#FAF7F2] text-[#463D34] text-xs font-semibold uppercase tracking-[0.14em] shadow-lg hover:shadow-xl transition active:scale-[0.98] cursor-pointer"
-          >
-            GET MATCHED
-          </button>
-        </div>
-      </section>
+      <JourneyCTA onStart={() => openEnquiry()} />
 
       {/* =========================================================================
           LUXURY EDITORIAL FOOTER (Shared Reusable Component)
