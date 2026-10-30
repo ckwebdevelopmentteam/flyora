@@ -13,14 +13,8 @@ import {
   Clock,
   MapPin,
   Compass,
-  Heart,
-  Users,
-  Palmtree,
-  Sparkles,
-  Mountain,
   ShieldCheck,
   Headphones,
-  CheckCircle2,
   CalendarCheck,
 } from "lucide-react";
 import { Navbar } from "../components/Navbar";
@@ -172,46 +166,6 @@ const POPULAR_PACKAGES = [
   },
 ];
 
-// Section 3: Explore by Travel Style (6 categories)
-const TRAVEL_STYLES = [
-  {
-    id: "style-honeymoon",
-    title: "Honeymoon Holidays",
-    icon: Heart,
-    note: "Romantic escapes & private villas",
-  },
-  {
-    id: "style-family",
-    title: "Family Holidays",
-    icon: Users,
-    note: "Tailored for all generations",
-  },
-  {
-    id: "style-adventure",
-    title: "Adventure Trips",
-    icon: Mountain,
-    note: "Trekking, safaris & expeditions",
-  },
-  {
-    id: "style-beach",
-    title: "Beach Holidays",
-    icon: Palmtree,
-    note: "Coastal retreats & island leisure",
-  },
-  {
-    id: "style-group",
-    title: "Group Tours",
-    icon: Compass,
-    note: "Curated itineraries & shared journeys",
-  },
-  {
-    id: "style-luxury",
-    title: "Luxury Holidays",
-    icon: Sparkles,
-    note: "Five-star stays & bespoke VIP perks",
-  },
-];
-
 // Section 4: Why Choose Flyora (4 blocks)
 const WHY_CHOOSE_FLYORA = [
   {
@@ -263,53 +217,6 @@ const SIGNATURE_SMALLER = [
     title: "Private Cultural Heritage Masterclass",
     description:
       "Immerse yourself in authentic traditions with local master artisans, private museum entries, and historian guides.",
-  },
-];
-
-// Section 6: How It Works (3 numbered steps)
-const HOW_IT_WORKS_STEPS = [
-  {
-    step: "01",
-    title: "Tell Us Your Travel Plans",
-    description:
-      "Share your destination wishlist, travel dates, companion details, and preferred style with our team.",
-  },
-  {
-    step: "02",
-    title: "Explore Your Options",
-    description:
-      "Review customized itinerary proposals, handpicked accommodation options, and transparent price estimates.",
-  },
-  {
-    step: "03",
-    title: "Prepare for Your Journey",
-    description:
-      "Finalize your booking, receive complete travel dossiers, and travel with dedicated 24/7 coordinator support.",
-  },
-];
-
-// Section 7: Traveller Testimonials (3 items)
-const TESTIMONIALS = [
-  {
-    id: "test-1",
-    quote:
-      "Placeholder Review: 'Our family vacation was planned to absolute perfection. Every hotel, driver, and private excursion ran smoothly without any hassle.'",
-    customerName: "Placeholder: David & Sarah M.",
-    destination: "Switzerland & Italy Tour",
-  },
-  {
-    id: "test-2",
-    quote:
-      "Placeholder Review: 'The attention to detail and personal hotel upgrades made our honeymoon unforgettable. Exceptional coordinator support from start to finish.'",
-    customerName: "Placeholder: Priya & Rohan K.",
-    destination: "Bali Luxury Escape",
-  },
-  {
-    id: "test-3",
-    quote:
-      "Placeholder Review: 'Transparent costs, responsive communication, and wonderful local guides. Flyora made international travel completely stress-free.'",
-    customerName: "Placeholder: Alexander T.",
-    destination: "Dubai & Abu Dhabi Holiday",
   },
 ];
 
@@ -713,52 +620,6 @@ export default function Home() {
         />
 
         {/* ===================================================================
-            SECTION 3: EXPLORE BY TRAVEL STYLE
-            =================================================================== */}
-        <section
-          id="travel-styles"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
-        >
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
-                CATEGORIES
-              </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
-                Find Your Kind of Holiday
-              </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
-                Whether seeking romance, family moments, or wild adventures,
-                discover journeys tailored around your travel style.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
-              {TRAVEL_STYLES.map((style) => {
-                const IconComponent = style.icon;
-                return (
-                  <div
-                    key={style.id}
-                    onClick={() => openEnquiry(style.title)}
-                    className="bg-white rounded-xl border border-stone-200/80 p-5 flex flex-col items-center text-center justify-center hover:border-stone-400 transition cursor-pointer shadow-xs group"
-                  >
-                    <div className="w-12 h-12 rounded-lg bg-stone-100 flex items-center justify-center text-[#463D34] mb-3 group-hover:scale-105 transition-transform">
-                      <IconComponent className="w-5 h-5 stroke-[1.75]" />
-                    </div>
-                    <h3 className="text-xs sm:text-sm font-semibold text-[#1E1A17] mb-1">
-                      {style.title}
-                    </h3>
-                    <p className="text-[11px] text-stone-500 leading-tight">
-                      {style.note}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-
-        {/* ===================================================================
             SECTION 4: WHY CHOOSE FLYORA
             =================================================================== */}
         <section
@@ -892,54 +753,6 @@ export default function Home() {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ===================================================================
-            SECTION 6: HOW IT WORKS
-            =================================================================== */}
-        <section
-          id="how-it-works"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
-        >
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
-                TRIP PLANNING PROCESS
-              </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
-                Your Journey Starts Here
-              </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
-                A simple, seamless three-step process from your first travel
-                idea to departure day.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-              {HOW_IT_WORKS_STEPS.map((step) => (
-                <div
-                  key={step.step}
-                  className="bg-white rounded-xl border border-stone-200/80 p-6 flex flex-col justify-between shadow-xs"
-                >
-                  <div>
-                    <span className="text-3xl font-serif text-[#463D34] font-normal block mb-4">
-                      {step.step}
-                    </span>
-                    <h3 className="text-lg font-semibold text-[#1E1A17] mb-2">
-                      {step.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                      {step.description}
-                    </p>
-                  </div>
-                  <div className="pt-4 mt-6 border-t border-stone-100 flex items-center gap-2 text-xs font-semibold text-[#463D34]">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>Dedicated Coordinator Assistance</span>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
         </section>
