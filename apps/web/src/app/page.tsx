@@ -7,6 +7,7 @@ import "lenis/dist/lenis.css";
 import {
   Image as ImageIcon,
   ChevronDown,
+  Plus,
   ArrowRight,
   ArrowLeft,
   Clock,
@@ -30,6 +31,67 @@ import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
 import { JourneyCTA } from "../components/JourneyCTA";
 import { PopularHolidayPackages } from "../components/PopularHolidayPackages";
+import InkOrbitTestimonials, {
+  type InkTestimonial,
+} from "@/components/ui/ink-orbit-testimonials";
+
+// Verified Traveler Testimonials for InkOrbitTestimonials
+const TRAVEL_TESTIMONIALS: InkTestimonial[] = [
+  {
+    quote:
+      "Flyora matched us with Elena for our honeymoon in Amalfi. Not only was our room upgraded to a sea-facing terrace at Belmond, we received a handwritten note and champagne from the GM. Flawless from start to finish.",
+    name: "Claire & Jonathan M.",
+    role: "Traveled to Italy",
+    rating: 5,
+    avatar:
+      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
+  },
+  {
+    quote:
+      "I was skeptical that using an advisor wouldn't cost extra, but the price was the same as the hotel website—plus we had free daily breakfast and a $100 resort credit that paid for dinner. I will never book hotels alone again.",
+    name: "David S.",
+    role: "Traveled to Maui, Hawaii",
+    rating: 5,
+    avatar:
+      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
+  },
+  {
+    quote:
+      "Kenji planned our 10-day trip across Tokyo, Hakone, and Kyoto. The ryokan he reserved had private open-air hot spring baths and breathtaking kaiseki dinners. An unforgettable family adventure.",
+    name: "The Harrison Family",
+    role: "Traveled to Japan",
+    rating: 5,
+    avatar:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80",
+  },
+  {
+    quote:
+      "Our safari in the Serengeti was seamless. Private game drives, luxury tented camps under open skies, and flawless bush flights. Flyora made our dream bucket-list trip completely effortless.",
+    name: "Marcus & Priya T.",
+    role: "Traveled to Tanzania",
+    rating: 5,
+    avatar:
+      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
+  },
+  {
+    quote:
+      "Fast-track visa support and 5-star Swiss chalet bookings. When our flight was delayed, their 24/7 concierge rearranged private transfers before we even landed. Truly exceptional care.",
+    name: "Liyana R.",
+    role: "Traveled to Switzerland",
+    rating: 5,
+    avatar:
+      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=300&q=80",
+  },
+  {
+    quote:
+      "From overwater villas in Maldives to private catamarans in Greece, Flyora crafts every single detail with immense care. Highly recommended for discerning travelers.",
+    name: "Aaron & Chloe K.",
+    role: "Traveled to Maldives",
+    rating: 5,
+    avatar:
+      "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=300&q=80",
+  },
+];
 
 // =============================================================================
 // PLACEHOLDER DATA STRUCTURES FOR HOMEPAGE SECTIONS
@@ -339,7 +401,7 @@ export default function Home() {
   const [selectedDestination, setSelectedDestination] = useState<
     string | undefined
   >(undefined);
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const destinationsRef = useRef<HTMLDivElement>(null);
   const carouselTrackRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
@@ -949,47 +1011,16 @@ export default function Home() {
         </section>
 
         {/* ===================================================================
-            SECTION 7: TRAVELLER TESTIMONIALS
+            SECTION 7: TRAVELLER TESTIMONIALS (Ink Orbit Testimonials)
             =================================================================== */}
-        <section
-          id="testimonials"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
-        >
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
-                CLIENT REVIEWS (PLACEHOLDER)
-              </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
-                Stories from Our Travellers
-              </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
-                Read experiences and feedback from travellers who explored the
-                world with Flyora.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {TESTIMONIALS.map((t) => (
-                <div
-                  key={t.id}
-                  className="bg-white rounded-xl border border-stone-200/80 p-6 flex flex-col justify-between shadow-xs"
-                >
-                  <p className="text-xs sm:text-sm text-[#5C534A] italic leading-relaxed mb-6">
-                    {t.quote}
-                  </p>
-                  <div className="pt-4 border-t border-stone-100">
-                    <span className="text-xs font-semibold text-[#1E1A17] block">
-                      {t.customerName}
-                    </span>
-                    <span className="text-[11px] text-[#7A7167] block mt-0.5">
-                      {t.destination}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
+        <section id="testimonials" className="py-16 sm:py-24">
+          <InkOrbitTestimonials
+            theme="light"
+            tag="VERIFIED EXPERIENCES"
+            title="What *Travelers* Say\nAbout Flyora."
+            testimonials={TRAVEL_TESTIMONIALS}
+            logos={[]}
+          />
         </section>
 
         {/* ===================================================================
@@ -1054,57 +1085,79 @@ export default function Home() {
         </section>
 
         {/* ===================================================================
-            SECTION 9: FREQUENTLY ASKED QUESTIONS
+            SECTION 9: FREQUENTLY ASKED QUESTIONS (Interactive Accordion)
             =================================================================== */}
         <section
           id="faqs"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+          className="py-16 sm:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
         >
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-3xl mx-auto px-5 sm:px-8">
             <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
-                HAVE QUESTIONS?
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3">
+                EVERYTHING YOU NEED TO KNOW
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+              <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[#1E1A17] tracking-tight">
                 Frequently Asked Questions
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
-                Clear answers regarding holiday packages, customization, and
-                travel support.
-              </p>
             </div>
 
-            <div className="space-y-3.5">
+            <div className="space-y-4">
               {FAQS.map((faq, idx) => {
                 const isOpen = openFaqIndex === idx;
                 return (
                   <div
                     key={idx}
-                    className="bg-white rounded-xl border border-stone-200/80 overflow-hidden shadow-xs"
+                    className="bg-white rounded-[22px] sm:rounded-[26px] border border-black/[0.04] shadow-[0_2px_10px_rgba(0,0,0,0.02)] transition-all hover:border-black/[0.08] hover:shadow-[0_4px_16px_rgba(0,0,0,0.04)] overflow-hidden"
                   >
                     <button
                       type="button"
                       onClick={() => toggleFaq(idx)}
+                      className="w-full px-6 sm:px-8 py-5 sm:py-5.5 text-left flex items-center justify-between gap-4 cursor-pointer select-none transition-colors"
                       aria-expanded={isOpen}
-                      className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-stone-50/60 transition"
                     >
-                      <span className="text-sm sm:text-base font-semibold text-[#1E1A17]">
+                      <span className="text-sm sm:text-base font-semibold text-[#1E1A17] tracking-tight">
                         {faq.question}
                       </span>
-                      <ChevronDown
-                        className={`w-4 h-4 text-[#7A7167] shrink-0 transition-transform duration-200 ${
-                          isOpen ? "rotate-180 text-black" : ""
+                      <Plus
+                        className={`w-5 h-5 text-[#1E1A17] shrink-0 transition-transform duration-300 stroke-[1.8] ${
+                          isOpen ? "rotate-45" : ""
                         }`}
                       />
                     </button>
-                    {isOpen && (
-                      <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-[#5C534A] leading-relaxed border-t border-stone-100">
-                        {faq.answer}
+                    <div
+                      className={`grid transition-[grid-template-rows,opacity] duration-300 ease-in-out ${
+                        isOpen
+                          ? "grid-rows-[1fr] opacity-100"
+                          : "grid-rows-[0fr] opacity-0"
+                      }`}
+                    >
+                      <div className="overflow-hidden">
+                        <div className="px-6 sm:px-8 pb-6 pt-1 text-xs sm:text-sm text-[#5C534A] leading-relaxed border-t border-black/[0.04]">
+                          {faq.answer}
+                        </div>
                       </div>
-                    )}
+                    </div>
                   </div>
                 );
               })}
+            </div>
+
+            {/* Still have a question? Contact Block */}
+            <div className="mt-14 sm:mt-18 text-center flex flex-col items-center">
+              <h3 className="font-serif text-2xl sm:text-3xl font-medium text-[#1E1A17] tracking-tight">
+                Still have a question?
+              </h3>
+              <p className="mt-2 text-xs sm:text-sm text-[#7A7167] max-w-md leading-relaxed">
+                Can&apos;t find the answer you&apos;re looking for? Reach out to
+                our dedicated travel advisory team.
+              </p>
+              <button
+                type="button"
+                onClick={() => openEnquiry("General Question / FAQ Support")}
+                className="mt-6 inline-flex items-center justify-center px-8 py-2.5 rounded-full border border-[#1E1A17] text-xs sm:text-sm font-medium text-[#1E1A17] hover:bg-[#1E1A17] hover:text-white transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs"
+              >
+                Contact
+              </button>
             </div>
           </div>
         </section>
@@ -1112,39 +1165,7 @@ export default function Home() {
         {/* ===================================================================
             SECTION 10: FINAL CALL TO ACTION
             =================================================================== */}
-        <section
-          id="cta"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#463D34] text-white text-center px-4"
-        >
-          <div className="max-w-2xl mx-auto">
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-2">
-              START YOUR JOURNEY
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal mb-4 tracking-tight">
-              Let's Plan Your Next Journey
-            </h2>
-            <p className="text-sm sm:text-base text-white/80 max-w-xl mx-auto mb-8 font-light leading-relaxed">
-              Connect with our travel team to begin designing your tailor-made
-              holiday with expert guidance every step of the way.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
-              <button
-                type="button"
-                onClick={() => openEnquiry("Plan My Trip")}
-                className="w-full sm:w-auto px-7 py-3 rounded-md bg-white hover:bg-[#FAF7F2] text-[#463D34] text-xs font-semibold uppercase tracking-wider shadow-sm transition cursor-pointer"
-              >
-                Plan My Trip
-              </button>
-              <button
-                type="button"
-                onClick={() => openEnquiry("Contact Flyora")}
-                className="w-full sm:w-auto px-7 py-3 rounded-md bg-transparent hover:bg-white/10 text-white text-xs font-semibold uppercase tracking-wider border border-white/40 transition cursor-pointer"
-              >
-                Contact Flyora
-              </button>
-            </div>
-          </div>
-        </section>
+        <JourneyCTA onStart={() => openEnquiry()} />
 
         {/* ---------------------------------------------------------------------
               FOOTER: Preserved editorial footer
