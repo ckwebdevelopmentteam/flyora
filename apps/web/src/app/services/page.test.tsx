@@ -199,3 +199,26 @@ it("a failed submission does not claim success or permit an accidental duplicate
     ).toBe(true),
   );
 });
+
+it("does not silently send an unavailable service enquiry to a different team", async () => {
+  window.history.replaceState(null, "", "/services#paused-service");
+  render(<ServicesPage />);
+  await screen.findByText("This service is currently unavailable");
+  expect(
+    (
+      screen.getByRole("button", {
+        name: "Submit Enquiry",
+      }) as HTMLButtonElement
+    ).disabled,
+  ).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "Holiday Packages" }));
+  await waitFor(() =>
+    expect(
+      (
+        screen.getByRole("button", {
+          name: "Submit Enquiry",
+        }) as HTMLButtonElement
+      ).disabled,
+    ).toBe(false),
+  );
+});

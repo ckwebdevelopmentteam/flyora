@@ -167,10 +167,13 @@ export default function ServicesPage() {
     retry: retryServices,
   } = useServicesCatalog();
   const matchedService = resolveService(services, selectedSlug);
-  const activeServiceIndex = Math.max(
-    0,
-    services.findIndex((service) => service.id === matchedService?.id),
-  );
+  const activeServiceIndex = matchedService
+    ? services.findIndex((service) => service.id === matchedService.id)
+    : selectedSlug
+      ? -1
+      : 0;
+  const unavailableSelection =
+    servicesLoaded && !!selectedSlug && !matchedService;
 
   const [packages, setPackages] = useState<PackageSummary[]>([]);
   const [packagesLoading, setPackagesLoading] = useState(true);
@@ -249,9 +252,14 @@ export default function ServicesPage() {
   const activeService = HERO_SERVICES[activeServiceIndex] || {
     ...SERVICE_DESIGNS[0],
     serviceId: "",
-    name: "Travel services",
-    heroHeadline: "Your next journey starts here",
-    heroSubheadline: "Explore our travel services and packages.",
+    name: unavailableSelection ? "Choose a service" : "Travel services",
+    badge: "Travel services",
+    heroHeadline: unavailableSelection
+      ? "This service is currently unavailable"
+      : "Your next journey starts here",
+    heroSubheadline: unavailableSelection
+      ? "Choose an available service below to send your enquiry."
+      : "Explore our travel services and packages.",
   };
 
   // Motion parallax refs for coastal stats banner & Creed banner
