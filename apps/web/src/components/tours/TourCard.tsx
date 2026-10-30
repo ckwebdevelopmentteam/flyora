@@ -3,14 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import {
+  Check,
   Clock,
   MapPin,
-  Plane,
-  Building2,
-  Car,
-  FileCheck2,
-  Utensils,
-  Star,
   MessageCircle,
   ArrowRight,
   Sparkles,
@@ -68,12 +63,6 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
 
         {/* Bottom Image Overlay Tags */}
         <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-white text-xs">
-          <div className="flex items-center gap-1 bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[11px]">
-            <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-            <span className="font-semibold">4.9</span>
-            <span className="text-stone-300 text-[10px]">(90+ reviews)</span>
-          </div>
-
           {pkg.isFeatured && (
             <span className="bg-amber-400/90 text-stone-900 font-semibold text-[10px] uppercase font-mono px-2 py-0.5 rounded-full shadow-xs">
               Handpicked
@@ -99,25 +88,19 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
             </p>
           </div>
 
-          {/* Inclusion Pills (Thrillophilia style) */}
-          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-stone-100">
-            <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Plane className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
-              <span className="truncate">Flights Included</span>
+          {pkg.inclusions?.length ? (
+            <div className="grid grid-cols-2 gap-2 pt-1 border-t border-stone-100">
+              {pkg.inclusions.slice(0, 4).map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg"
+                >
+                  <Check className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
+                  <span className="truncate">{item}</span>
+                </div>
+              ))}
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Building2 className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
-              <span className="truncate">4★/5★ Luxury Stay</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Car className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
-              <span className="truncate">Private Transfers</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Utensils className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
-              <span className="truncate">Daily Breakfast</span>
-            </div>
-          </div>
+          ) : null}
         </div>
 
         {/* Pricing and Action Buttons */}
@@ -131,9 +114,6 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
               <div className="flex items-baseline gap-1">
                 <span className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight">
                   ₹{formattedPrice}
-                </span>
-                <span className="text-xs text-stone-500 font-normal">
-                  / person
                 </span>
               </div>
             </div>

@@ -31,6 +31,7 @@ export class PackagesService {
 
     if (!filter.includeUnpublished) {
       where.isPublished = true;
+      where.service = { isActive: true };
     }
 
     if (filter.featuredOnly) {
@@ -92,6 +93,7 @@ export class PackagesService {
       destination: p.destination,
       startingPrice: Number(p.startingPrice),
       coverImageUrl: p.coverImageUrl,
+      inclusions: p.inclusions,
       isFeatured: p.isFeatured,
       isPublished: p.isPublished,
       createdAt: p.createdAt.toISOString(),
@@ -106,19 +108,26 @@ export class PackagesService {
     };
   }
 
-  async getPackageBySlug(slug: string): Promise<PackageDetails> {
+  async getPackageBySlug(
+    slug: string,
+    allowUnpublished = false,
+  ): Promise<PackageDetails> {
     const pkg = await this.fastify.prisma.package.findUnique({
       where: { slug },
       include: {
         service: {
           select: {
             name: true,
+            isActive: true,
           },
         },
       },
     });
 
-    if (!pkg) {
+    if (
+      !pkg ||
+      (!allowUnpublished && (!pkg.isPublished || !pkg.service.isActive))
+    ) {
       throw new Error("Tour package not found");
     }
 

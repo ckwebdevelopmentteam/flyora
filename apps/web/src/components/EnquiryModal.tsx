@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import type { PublicEnquiryInput } from "@flyora/validators";
 import type { ServiceSummary } from "@flyora/types";
+import { resolveService } from "../lib/service-catalog";
 import { enquiryFormSchema, whatsappLink } from "../lib/enquiry";
 
 interface EnquiryModalProps {
@@ -116,14 +117,10 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
           setServices(data.data);
           setFormData((prev) => ({
             ...prev,
-            serviceId: data.data.some(
-              (s: ServiceSummary) =>
-                s.id === (prev.serviceId || defaultServiceId),
-            )
-              ? prev.serviceId || defaultServiceId
-              : defaultPackageId
-                ? ""
-                : data.data[0].id,
+            serviceId:
+              resolveService(data.data, prev.serviceId || defaultServiceId)
+                ?.id ||
+              (defaultServiceId || defaultPackageId ? "" : data.data[0].id),
           }));
         }
       } catch {

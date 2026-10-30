@@ -22,6 +22,16 @@ export const packagesRoutes: FastifyPluginAsync = async (fastify) => {
       });
     }
 
+    if (parseResult.data.includeUnpublished) {
+      await fastify.authenticate(request, reply);
+      if (reply.sent) return;
+      await requireRole([
+        "SUPER_ADMIN",
+        "CONTENT_MANAGER",
+        "OPERATIONS_MANAGER",
+      ])(request, reply);
+      if (reply.sent) return;
+    }
     const result = await packagesService.listPackages(parseResult.data);
     return reply.send({
       statusCode: 200,
@@ -33,7 +43,20 @@ export const packagesRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get("/:slug", async (request, reply) => {
     const { slug } = request.params as { slug: string };
     try {
-      const pkg = await packagesService.getPackageBySlug(slug);
+      let allowUnpublished = false;
+      if (request.headers.authorization) {
+        await fastify.authenticate(request, reply);
+        if (reply.sent) return;
+        allowUnpublished = [
+          "SUPER_ADMIN",
+          "CONTENT_MANAGER",
+          "OPERATIONS_MANAGER",
+        ].includes(request.user.role);
+      }
+      const pkg = await packagesService.getPackageBySlug(
+        slug,
+        allowUnpublished,
+      );
       return reply.send({
         statusCode: 200,
         data: pkg,

@@ -17,6 +17,7 @@ export interface PackageSummary {
   destination: string;
   startingPrice: number;
   coverImageUrl: string;
+  inclusions?: string[];
   isFeatured: boolean;
   isPublished: boolean;
   createdAt: string;

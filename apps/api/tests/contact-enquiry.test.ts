@@ -117,3 +117,75 @@ test("staff can read their customer messages while the shared pool hides other m
     false,
   );
 });
+
+test("package enquiries reject drafts and mismatched services before creating customers or leads", async () => {
+  const { app, db, saved } = setup();
+  const packageId = "9fcdf946-37af-4b1b-a994-c5509a5605ae";
+  let customerWrites = 0;
+  db.customer.upsert = async () => {
+    customerWrites++;
+    return { id: "customer" };
+  };
+  try {
+    for (const pkg of [
+      null,
+      { isPublished: false, serviceId },
+      { isPublished: true, serviceId: "other" },
+    ]) {
+      db.package = { findUnique: async () => pkg };
+      const res = await app.inject({
+        method: "POST",
+        url: "/api/v1/public/enquiry",
+        payload: {
+          fullName: "Sana",
+          phone: "0000000000",
+          serviceId,
+          packageId,
+        },
+      });
+      assert.equal(res.statusCode, 400);
+    }
+    assert.equal(saved.length, 0);
+    assert.equal(customerWrites, 0);
+    db.package = {
+      findUnique: async () => ({ id: packageId, serviceId, isPublished: true }),
+    };
+    const res = await app.inject({
+      method: "POST",
+      url: "/api/v1/public/enquiry",
+      payload: { fullName: "Sana", phone: "0000000000", serviceId, packageId },
+    });
+    assert.equal(res.statusCode, 201);
+    assert.equal(saved[0].packageId, packageId);
+    assert.equal(saved[0].serviceId, serviceId);
+    assert.equal(saved[0].assignedToId, null);
+  } finally {
+    await app.close();
+  }
+});
+
+test("service enquiries are only offered to staff mapped to the selected service", async () => {
+  const { db } = setup();
+  const queries: any[] = [];
+  db.userService = {
+    findMany: async ({ where }: any) =>
+      where.userId === "holiday-staff"
+        ? [{ serviceId }]
+        : [{ serviceId: "flight-service" }],
+  };
+  db.lead.findMany = async (query: any) => {
+    queries.push(query);
+    return [];
+  };
+  const leads = new LeadsService({ prisma: db } as any);
+  await leads.getCoordinatorLeadPool("holiday-staff", "SERVICE_COORDINATOR");
+  await leads.getCoordinatorLeadPool("flight-staff", "SERVICE_COORDINATOR");
+  assert.deepEqual(queries[0].where, {
+    assignedToId: null,
+    serviceId: { in: [serviceId] },
+  });
+  assert.deepEqual(queries[1].where, {
+    assignedToId: null,
+    serviceId: { in: ["flight-service"] },
+  });
+});

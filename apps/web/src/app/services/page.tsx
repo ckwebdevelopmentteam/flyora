@@ -2,6 +2,15 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import type { PackageSummary, ServiceSummary } from "@flyora/types";
+import {
+  loadServices,
+  loadPackages,
+  resolveService,
+  publicApiUrl,
+} from "../../lib/service-catalog";
+import { enquiryFormSchema } from "../../lib/enquiry";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EnquiryModal } from "../../components/EnquiryModal";
@@ -24,7 +33,6 @@ import {
   Tag,
   MessageCircle,
   MapPin,
-  Check,
 } from "lucide-react";
 
 interface ServiceHeroConfig {
@@ -38,7 +46,7 @@ interface ServiceHeroConfig {
   icon: React.ReactNode;
 }
 
-const HERO_SERVICES: ServiceHeroConfig[] = [
+const SERVICE_DESIGNS: ServiceHeroConfig[] = [
   {
     id: "custom-holidays",
     serviceId: "Custom Holidays",
@@ -118,161 +126,6 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
   },
 ];
 
-// Promotional Offer Banners matching the reference image row 2
-const DISCOUNTS_OFFERS = [
-  {
-    id: "offer-1",
-    tag: "HOLIDAY SAVER",
-    discount: "Up to 25% OFF",
-    title: "Summer International Holidays",
-    description: "Book 45 days in advance & get complimentary 5-star upgrades",
-    code: "FLYHOLIDAY25",
-    image: "/destinations/maldives.jpg",
-    serviceId: "Custom Holidays",
-  },
-  {
-    id: "offer-2",
-    tag: "FAMILY VISA BUNDLE",
-    discount: "Flat 20% OFF",
-    title: "Schengen & Gulf Visa Processing",
-    description: "Apply for 3 or more family members with zero processing fee",
-    code: "FLYVISA20",
-    image: "/services/visa-assistance.jpg",
-    serviceId: "Visas",
-  },
-  {
-    id: "offer-3",
-    tag: "PILGRIM SPECIAL",
-    discount: "Save $250 / Pilgrim",
-    title: "Executive Umrah & Hajj Packages",
-    description: "Complimentary Haram-facing room upgrade on group bookings",
-    code: "PILGRIM250",
-    image: "/services/umrah-packages.jpg",
-    serviceId: "Umrah Packages",
-  },
-];
-
-// Top Pickups Gallery matching user reference design
-const TOP_PICKUPS = [
-  {
-    id: "pickup-1",
-    title: "VILLA AQUARIUM",
-    toursCount: "2 Tours",
-    image: "/gallery/villa-aquarium.jpg",
-    colSpan: "md:col-span-2",
-    serviceId: "Custom Holidays",
-  },
-  {
-    id: "pickup-2",
-    title: "LA CABANE",
-    toursCount: "1 Tour",
-    image: "/gallery/la-cabane.jpg",
-    colSpan: "md:col-span-1",
-    serviceId: "Custom Holidays",
-  },
-  {
-    id: "pickup-3",
-    title: "AZURE",
-    toursCount: "3 Tours",
-    image: "/gallery/azure.jpg",
-    colSpan: "md:col-span-1",
-    serviceId: "Custom Holidays",
-  },
-  {
-    id: "pickup-4",
-    title: "SERENE",
-    toursCount: "1 Tour",
-    image: "/gallery/serene.jpg",
-    colSpan: "md:col-span-1",
-    serviceId: "Custom Holidays",
-  },
-  {
-    id: "pickup-5",
-    title: "VERDANT",
-    toursCount: "2 Tours",
-    image: "/gallery/verdant.jpg",
-    colSpan: "md:col-span-1",
-    serviceId: "Custom Holidays",
-  },
-];
-
-const PICKUP_STATS = [
-  { value: "12", label: "AMAZING DEALS" },
-  { value: "670", label: "SOLD TOURS" },
-  { value: "24", label: "NEW TOURS" },
-  { value: "980", label: "HAPPY CUSTOMERS" },
-];
-
-// Popular Packages Cards matching the reference image grid
-const POPULAR_PACKAGES = [
-  {
-    id: "pkg-1",
-    serviceId: "Custom Holidays",
-    title: "5D/4N Dubai Family Luxury Escape",
-    destination: "Dubai, UAE",
-    duration: "5 Days / 4 Nights",
-    startingPrice: "$799",
-    tag: "Featured",
-    image: "/destinations/dubai.jpg",
-    features: ["Burj Khalifa VIP", "Desert Safari BBQ", "Private Yacht"],
-  },
-  {
-    id: "pkg-2",
-    serviceId: "Custom Holidays",
-    title: "4D/3N Maldives Overwater Villa Sanctuary",
-    destination: "North Malé Atoll, Maldives",
-    duration: "4 Days / 3 Nights",
-    startingPrice: "$1,299",
-    tag: "Best Seller",
-    image: "/destinations/maldives.jpg",
-    features: ["Private Plunge Pool", "Seaplane Transfer", "All-Inclusive"],
-  },
-  {
-    id: "pkg-3",
-    serviceId: "Custom Holidays",
-    title: "6D/5N Bali Ubud Rainforest & Seminyak",
-    destination: "Bali, Indonesia",
-    duration: "6 Days / 5 Nights",
-    startingPrice: "$649",
-    tag: "Trending",
-    image: "/destinations/bali.jpg",
-    features: ["Jungle Swing", "Private Villa Pool", "Sunset Seafood"],
-  },
-  {
-    id: "pkg-4",
-    serviceId: "Visas",
-    title: "Schengen & UK Fast-Track Tourist Visa",
-    destination: "Europe & United Kingdom",
-    duration: "Express 7-10 Days",
-    startingPrice: "$180",
-    tag: "99% Approval",
-    image: "/services/visa-assistance.jpg",
-    features: ["Document Audit", "Biometric Slot Booking", "Doorstep Pickup"],
-  },
-  {
-    id: "pkg-5",
-    serviceId: "Umrah Packages",
-    title: "10D/9N Deluxe Makkah & Madinah Umrah",
-    destination: "Saudi Arabia",
-    duration: "10 Days / 9 Nights",
-    startingPrice: "$1,450",
-    tag: "Direct Flight",
-    image: "/services/umrah-packages.jpg",
-    features: ["Clock Tower Hotel", "Private AC Coach", "Ziyarat Guide"],
-  },
-  {
-    id: "pkg-6",
-    serviceId: "Trains",
-    title: "Swiss Panoramic Glacier Express Tour",
-    destination: "Zermatt to St. Moritz, Switzerland",
-    duration: "3 Days Scenic Rail",
-    startingPrice: "$520",
-    tag: "Iconic Rail",
-    image: "/services/train-booking.jpg",
-    features: ["Panoramic Windows", "3-Course Dining", "Swiss Rail Pass"],
-  },
-];
-
 const FAQS = [
   {
     question: "How do I submit my enquiry through this page?",
@@ -304,9 +157,116 @@ const FAQS = [
 
 export default function ServicesPage() {
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
+
+  const [services, setServices] = useState<ServiceSummary[]>([]);
+  const [packages, setPackages] = useState<PackageSummary[]>([]);
+  const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState("");
+  const [packagesError, setPackagesError] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const HERO_SERVICES: ServiceHeroConfig[] = services.map((service) => {
+    const design = SERVICE_DESIGNS.find((d) => resolveService([service], d.id));
+    return {
+      ...(design || SERVICE_DESIGNS[0]),
+      id: service.slug,
+      serviceId: service.id,
+      name: service.name,
+      heroHeadline: design?.heroHeadline || service.name,
+      heroSubheadline:
+        (service as ServiceSummary & { description?: string }).description ||
+        design?.heroSubheadline ||
+        "Plan your journey with our travel team.",
+      badge: design?.badge || "Travel services",
+    };
+  });
+  const popularPackages = packages
+    .filter((p) => p.serviceId === HERO_SERVICES[activeServiceIndex]?.serviceId)
+    .map((p) => ({
+      ...p,
+      image: p.coverImageUrl || "/services/custom-holidays.jpg",
+      tag: p.isFeatured ? "Featured" : p.serviceName,
+      duration: `${p.durationDays} Days / ${p.durationNights} Nights`,
+      price: new Intl.NumberFormat("en-IN", {
+        style: "currency",
+        currency: "INR",
+        maximumFractionDigits: 0,
+      }).format(p.startingPrice),
+    }));
+  const topPickups = popularPackages.slice(0, 5).map((p, i) => ({
+    ...p,
+    colSpan: i === 0 ? "md:col-span-2" : "md:col-span-1",
+    toursCount: p.duration,
+  }));
+  const pickupStats = [
+    { value: services.length, label: "TRAVEL SERVICES" },
+    { value: packages.length, label: "PACKAGES" },
+    {
+      value: new Set(packages.map((p) => p.destination)).size,
+      label: "DESTINATIONS",
+    },
+    {
+      value: packages.filter((p) => p.isFeatured).length,
+      label: "FEATURED TRIPS",
+    },
+  ];
+  useEffect(() => {
+    const controller = new AbortController();
+    const signal = AbortSignal.any([
+      controller.signal,
+      AbortSignal.timeout(15000),
+    ]);
+    Promise.allSettled([loadServices(signal), loadPackages(signal)])
+      .then(([serviceResult, packageResult]) => {
+        if (controller.signal.aborted) return;
+        if (serviceResult.status === "rejected") {
+          setServices([]);
+          setPackages([]);
+          setCatalogError("We couldn’t load our services. Please try again.");
+          return;
+        }
+        const liveServices = serviceResult.value;
+        setServices(liveServices);
+        if (packageResult.status === "fulfilled") {
+          setPackages(
+            packageResult.value.filter((p) =>
+              liveServices.some((service) => service.id === p.serviceId),
+            ),
+          );
+        } else {
+          setPackages([]);
+          setPackagesError(
+            "We couldn’t load our packages. You can still send a service enquiry above.",
+          );
+        }
+        const requested = resolveService(
+          liveServices,
+          window.location.hash.slice(1),
+        );
+        setActiveServiceIndex(
+          Math.max(
+            0,
+            liveServices.findIndex((service) => service.id === requested?.id),
+          ),
+        );
+      })
+      .catch(() => {
+        if (!controller.signal.aborted)
+          setCatalogError("We couldn’t load our services. Please try again.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setCatalogLoading(false);
+      });
+    return () => controller.abort();
+  }, [attempt]);
   const [prevIndex, setPrevIndex] = useState(0);
   const [slideDirection, setSlideDirection] = useState<"next" | "prev">("next");
-  const activeService = HERO_SERVICES[activeServiceIndex];
+  const activeService = HERO_SERVICES[activeServiceIndex] || {
+    ...SERVICE_DESIGNS[0],
+    serviceId: "",
+    name: "Travel services",
+    heroHeadline: "Your next journey starts here",
+    heroSubheadline: "Explore our travel services and packages.",
+  };
 
   // Motion parallax refs for coastal stats banner & Creed banner
   const statsSectionRef = useRef<HTMLDivElement>(null);
@@ -315,7 +275,7 @@ export default function ServicesPage() {
   const creedImageRef = useRef<HTMLDivElement>(null);
 
   const handleSelectService = (idx: number) => {
-    if (idx === activeServiceIndex) return;
+    if (sending || uncertain || idx === activeServiceIndex) return;
     setSlideDirection(idx > activeServiceIndex ? "next" : "prev");
     setPrevIndex(activeServiceIndex);
     setActiveServiceIndex(idx);
@@ -336,12 +296,21 @@ export default function ServicesPage() {
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+  const [sending, setSending] = useState(false);
+  const [uncertain, setUncertain] = useState(false);
+  const submitting = useRef(false);
+  const submission = useRef<AbortController | null>(null);
+  useEffect(() => () => submission.current?.abort(), []);
 
   // Enquiry Modal state for card buttons
   const [modalOpen, setModalOpen] = useState(false);
   const [modalServiceId, setModalServiceId] = useState<string | undefined>(
     undefined,
   );
+  const [modalPackage, setModalPackage] = useState<
+    PackageSummary | undefined
+  >();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   // Listen to hash changes on initial mount and external navigation (back/forward or navbar links)
@@ -350,7 +319,8 @@ export default function ServicesPage() {
       if (typeof window === "undefined") return;
       const hash = window.location.hash.replace("#", "");
       if (!hash) return;
-      const index = HERO_SERVICES.findIndex((s) => s.id === hash);
+      const matched = resolveService(services, hash);
+      const index = services.findIndex((s) => s.id === matched?.id);
       if (index !== -1) {
         setActiveServiceIndex((curr) => {
           if (curr !== index) {
@@ -363,13 +333,10 @@ export default function ServicesPage() {
       }
     };
 
-    // Run once on initial page load
-    syncFromHash();
-
     // Listen to external hash changes (e.g. from navbar anchor clicks or browser back/forward)
     window.addEventListener("hashchange", syncFromHash);
     return () => window.removeEventListener("hashchange", syncFromHash);
-  }, []);
+  }, [services]);
 
   // Motion effect: Parallax scroll for the coastal counter strip image
   useEffect(() => {
@@ -419,25 +386,86 @@ export default function ServicesPage() {
     };
   }, []);
 
-  const handleHeroSubmit = (e: React.FormEvent) => {
+  const handleHeroSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!fullName || !phone) {
-      // If empty, open modal prefilled
-      setModalServiceId(activeService.serviceId);
-      setModalOpen(true);
+    if (submitting.current || uncertain || !activeService.serviceId) return;
+    const guests: Record<string, [number, number]> = {
+      "1 Adult": [1, 0],
+      "2 Adults, 0 Kids": [2, 0],
+      "Family (2 Adults, 2 Kids)": [2, 2],
+      "3 Adults": [3, 0],
+      "6 Adults": [6, 0],
+    };
+    const [numberOfAdults, numberOfKids] = guests[travelers] || [1, 0];
+    const normalized = phone
+      .replace(/[+\s()-]/g, "")
+      .replace(/^91(?=\d{10}$)/, "");
+    const parsed = enquiryFormSchema.safeParse({
+      fullName: fullName.trim(),
+      phone: normalized,
+      serviceId: activeService.serviceId,
+      travelDate: travelDate || undefined,
+      numberOfAdults,
+      numberOfKids,
+      notes: `Travel party: ${travelers}`,
+    });
+    if (!parsed.success) {
+      setSubmitError(parsed.error.issues[0].message);
       return;
     }
-
-    setSubmitted(true);
-    // WhatsApp direct fallback link for instant admin communication
-    const message = encodeURIComponent(
-      `Hello Flyora Team,\n\nI want to enquire about *${activeService.name}*.\nName: ${fullName}\nPhone: ${phone}\nDate: ${travelDate || "Flexible"}\nTravelers: ${travelers}`,
-    );
-    window.open(`https://wa.me/919876543210?text=${message}`, "_blank");
+    submitting.current = true;
+    setSending(true);
+    setSubmitError("");
+    const controller = new AbortController();
+    submission.current = controller;
+    try {
+      const res = await fetch(`${publicApiUrl()}/public/enquiry`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(parsed.data),
+        signal: AbortSignal.any([
+          controller.signal,
+          AbortSignal.timeout(30000),
+        ]),
+      });
+      if (res.status === 400 || res.status === 429) {
+        setSubmitError(
+          res.status === 429
+            ? "Please wait a moment before trying again."
+            : "Please check your details and try again.",
+        );
+        return;
+      }
+      const body = await res.json();
+      if (
+        !res.ok ||
+        body.data?.success !== true ||
+        typeof body.data?.leadId !== "string" ||
+        !body.data.leadId
+      )
+        throw new Error();
+      setSubmitted(true);
+    } catch {
+      if (!controller.signal.aborted) {
+        setUncertain(true);
+        setSubmitError(
+          "We couldn’t confirm receipt. Please contact our travel team before sending again.",
+        );
+      }
+    } finally {
+      submitting.current = false;
+      setSending(false);
+    }
   };
 
-  const handleCardEnquiry = (serviceId?: string) => {
-    setModalServiceId(serviceId);
+  const handleCardEnquiry = (value?: string, pkg?: PackageSummary) => {
+    setModalServiceId(
+      pkg?.serviceId ||
+        resolveService(services, value)?.id ||
+        value ||
+        activeService.serviceId,
+    );
+    setModalPackage(pkg);
     setModalOpen(true);
   };
 
@@ -451,6 +479,29 @@ export default function ServicesPage() {
       />
 
       <main>
+        {catalogLoading && (
+          <p role="status" className="pt-28 px-6">
+            Loading services…
+          </p>
+        )}
+        {catalogError && (
+          <div role="alert" className="pt-28 px-6">
+            {catalogError}{" "}
+            <button
+              onClick={() => {
+                setCatalogLoading(true);
+                setCatalogError("");
+                setPackagesError("");
+                setAttempt((n) => n + 1);
+              }}
+            >
+              Try again
+            </button>
+          </div>
+        )}
+        {!catalogLoading && !catalogError && !services.length && (
+          <p className="pt-28 px-6">Our services will be available soon.</p>
+        )}
         {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & ENQUIRY BAR */}
         <section className="relative w-full min-h-[760px] sm:min-h-[800px] lg:h-[830px] lg:min-h-[830px] flex flex-col justify-between overflow-hidden -mt-20 pt-44 sm:pt-48 lg:pt-52 xl:pt-56 pb-12 sm:pb-16">
           {/* Dynamic Full-Width Background Sliding Images */}
@@ -574,7 +625,7 @@ export default function ServicesPage() {
                       <CheckCircle2 className="w-7 h-7" />
                     </div>
                     <h3 className="text-2xl sm:text-3xl font-sans font-bold text-[#1C1815] tracking-tight">
-                      Enquiry Done!
+                      Enquiry received
                     </h3>
                     <p className="text-sm sm:text-base font-sans font-medium text-stone-800 max-w-lg mx-auto leading-relaxed">
                       Thank you,{" "}
@@ -591,7 +642,11 @@ export default function ServicesPage() {
                     <div className="pt-2">
                       <button
                         type="button"
-                        onClick={() => setSubmitted(false)}
+                        onClick={() => {
+                          setSubmitted(false);
+                          setFullName("");
+                          setPhone("");
+                        }}
                         className="inline-flex items-center justify-center px-6 py-2.5 rounded-none border border-[#463D34] bg-white text-[#463D34] text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider hover:bg-[#463D34] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
                       >
                         Submit Another Enquiry
@@ -603,6 +658,14 @@ export default function ServicesPage() {
                     onSubmit={handleHeroSubmit}
                     className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 items-end"
                   >
+                    {submitError && (
+                      <p
+                        role="alert"
+                        className="col-span-full text-sm text-red-700"
+                      >
+                        {submitError}
+                      </p>
+                    )}
                     {/* Field 1: Service Chosen */}
                     <div className="space-y-1">
                       <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
@@ -625,6 +688,7 @@ export default function ServicesPage() {
                       </label>
                       <input
                         type="date"
+                        aria-label="Expected date"
                         value={travelDate}
                         onChange={(e) => setTravelDate(e.target.value)}
                         className="w-full h-11 px-3.5 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition"
@@ -638,6 +702,7 @@ export default function ServicesPage() {
                         Guests / Travelers
                       </label>
                       <select
+                        aria-label="Guests / Travelers"
                         value={travelers}
                         onChange={(e) => setTravelers(e.target.value)}
                         className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition cursor-pointer"
@@ -649,12 +714,8 @@ export default function ServicesPage() {
                         <option value="Family (2 Adults, 2 Kids)">
                           Family (2 Adults, 2 Kids)
                         </option>
-                        <option value="Small Group (3-5 Adults)">
-                          Small Group (3-5 Adults)
-                        </option>
-                        <option value="Large Group (6+ Persons)">
-                          Large Group (6+ Persons)
-                        </option>
+                        <option value="3 Adults">Group (3 Adults)</option>
+                        <option value="6 Adults">Group (6 Adults)</option>
                       </select>
                     </div>
 
@@ -668,6 +729,10 @@ export default function ServicesPage() {
                         <input
                           type="text"
                           placeholder="Your Name"
+                          aria-label="Your name"
+                          autoComplete="name"
+                          required
+                          disabled={sending}
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
                           className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition"
@@ -675,6 +740,10 @@ export default function ServicesPage() {
                         <input
                           type="tel"
                           placeholder="Phone / WhatsApp"
+                          aria-label="Phone / WhatsApp"
+                          autoComplete="tel"
+                          required
+                          disabled={sending}
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition"
@@ -686,87 +755,23 @@ export default function ServicesPage() {
                     <div>
                       <button
                         type="submit"
+                        disabled={
+                          catalogLoading ||
+                          !!catalogError ||
+                          !activeService.serviceId ||
+                          sending ||
+                          uncertain
+                        }
                         className="w-full h-11 rounded-lg bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-xs font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-md flex items-center justify-center gap-2"
                       >
                         <Send className="w-3.5 h-3.5 text-amber-300" />
-                        <span>Submit Enquiry</span>
+                        <span>{sending ? "Sending…" : "Submit Enquiry"}</span>
                       </button>
                     </div>
                   </form>
                 )}
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* 3. DISCOUNTS & OFFERS SECTION (Matching Reference Image Row 2) */}
-        <section className="py-14 sm:py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
-              Exclusive Discounts &amp; Deals
-            </h2>
-            <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto leading-relaxed font-sans">
-              Limited-time benefits and promotional upgrades curated for early
-              bookers and family travelers.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7">
-            {DISCOUNTS_OFFERS.map((offer) => (
-              <div
-                key={offer.id}
-                className="relative rounded-2xl min-h-[320px] sm:min-h-[340px] p-6 sm:p-7 text-white shadow-xl overflow-hidden flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300 border border-black/10"
-              >
-                {/* Background Image */}
-                <Image
-                  src={offer.image}
-                  alt={offer.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-[0.72]"
-                />
-
-                {/* Dark Gradient Overlay for high text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/35 group-hover:via-black/50 transition-colors" />
-
-                {/* Card Border Outline */}
-                <div className="absolute inset-0 rounded-2xl border border-white/15 pointer-events-none" />
-
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-3.5">
-                    <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-[10.5px] font-mono font-bold tracking-widest uppercase text-white shadow-xs">
-                      {offer.tag}
-                    </span>
-                    <span className="text-2xl sm:text-3xl font-serif font-black tracking-tight text-amber-300 drop-shadow-sm">
-                      {offer.discount}
-                    </span>
-                  </div>
-
-                  <h3 className="text-xl sm:text-2xl font-serif font-bold leading-snug drop-shadow-sm">
-                    {offer.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-white/85 mt-2.5 leading-relaxed drop-shadow-xs">
-                    {offer.description}
-                  </p>
-                </div>
-
-                <div className="relative z-10 pt-5 mt-4 border-t border-white/20 flex items-center justify-between">
-                  <div className="text-xs font-mono bg-black/45 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 text-white/90">
-                    CODE:{" "}
-                    <strong className="text-amber-300 font-bold">
-                      {offer.code}
-                    </strong>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleCardEnquiry(offer.serviceId)}
-                    className="px-4 py-2 rounded-lg bg-white text-stone-900 text-xs sm:text-sm font-semibold hover:bg-amber-100 transition shadow-md cursor-pointer active:scale-95"
-                  >
-                    Claim Deal
-                  </button>
-                </div>
-              </div>
-            ))}
           </div>
         </section>
 
@@ -816,15 +821,24 @@ export default function ServicesPage() {
 
             {/* 5-Card Gallery Grid (Row 1: 2 cols + 1 col, Row 2: 1 + 1 + 1) */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-              {TOP_PICKUPS.map((pickup) => (
+              {topPickups.map((pickup) => (
                 <div
                   key={pickup.id}
-                  onClick={() => handleCardEnquiry(pickup.serviceId)}
+                  onClick={() => handleCardEnquiry(pickup.serviceId, pickup)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      handleCardEnquiry(pickup.serviceId, pickup);
+                    }
+                  }}
                   className={`relative ${pickup.colSpan} h-[260px] sm:h-[300px] lg:h-[340px] rounded-2xl overflow-hidden group shadow-sm hover:shadow-2xl border border-black/[0.08] hover:border-amber-400/40 transition-all duration-300 cursor-pointer`}
                 >
                   {/* Background Image */}
                   <Image
                     src={pickup.image}
+                    unoptimized
                     alt={pickup.title}
                     fill
                     sizes="(max-width: 768px) 100vw, 50vw"
@@ -852,7 +866,11 @@ export default function ServicesPage() {
             <div className="mt-8 sm:mt-10 mb-12 sm:mb-16 text-center">
               <button
                 type="button"
-                onClick={() => handleCardEnquiry("Custom Holidays")}
+                onClick={() =>
+                  document
+                    .getElementById("service-packages")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
                 className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg border border-[#463D34] text-[#463D34] text-xs sm:text-sm font-sans font-semibold hover:bg-[#463D34] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
               >
                 View All
@@ -1008,7 +1026,7 @@ export default function ServicesPage() {
 
             {/* 4 Stats Grid: Same width as other sections (max-w-[1360px]) with 4 equal gaps */}
             <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 lg:gap-14 text-center">
-              {PICKUP_STATS.map((stat) => (
+              {pickupStats.map((stat) => (
                 <div
                   key={stat.label}
                   className="flex flex-col items-center justify-center w-full px-2"
@@ -1031,8 +1049,35 @@ export default function ServicesPage() {
           </div>
         </section>
 
+        {packagesError && (
+          <div role="alert" className="px-6 py-8 text-center">
+            {packagesError}{" "}
+            <button
+              onClick={() => {
+                setPackagesError("");
+                setCatalogLoading(true);
+                setAttempt((n) => n + 1);
+              }}
+            >
+              Try again
+            </button>
+          </div>
+        )}
+        {!catalogLoading &&
+          !catalogError &&
+          !packagesError &&
+          services.length > 0 &&
+          popularPackages.length === 0 && (
+            <p role="status" className="px-6 py-10 text-center">
+              No packages are published for {activeService.name} yet. You can
+              still enquire above.
+            </p>
+          )}
         {/* 5. POPULAR PACKAGES & SERVICES GRID (Matching Reference Image "Popular Travel Packages") */}
-        <section className="py-14 sm:py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
+        <section
+          id="service-packages"
+          className="py-14 sm:py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8"
+        >
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12">
             <div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
@@ -1046,7 +1091,7 @@ export default function ServicesPage() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-            {POPULAR_PACKAGES.map((pkg) => (
+            {popularPackages.map((pkg) => (
               <div
                 key={pkg.id}
                 className="rounded-2xl overflow-hidden bg-white border border-black/[0.07] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
@@ -1056,6 +1101,7 @@ export default function ServicesPage() {
                   <div className="relative h-52 sm:h-56 w-full overflow-hidden">
                     <Image
                       src={pkg.image}
+                      unoptimized
                       alt={pkg.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
@@ -1086,18 +1132,17 @@ export default function ServicesPage() {
                       {pkg.title}
                     </h3>
 
-                    {/* Features list */}
-                    <div className="mt-3.5 space-y-1.5 pt-3 border-t border-black/[0.05]">
-                      {pkg.features.map((feat) => (
-                        <div
-                          key={feat}
-                          className="flex items-center gap-2 text-xs text-stone-600"
-                        >
-                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span>{feat}</span>
-                        </div>
-                      ))}
-                    </div>
+                    {pkg.inclusions?.slice(0, 3).map((item) => (
+                      <p key={item} className="mt-2 text-xs text-stone-600">
+                        {item}
+                      </p>
+                    ))}
+                    <Link
+                      href={`/tours/${pkg.slug}`}
+                      className="mt-3 inline-flex text-sm underline underline-offset-4"
+                    >
+                      View itinerary
+                    </Link>
                   </div>
                 </div>
 
@@ -1108,13 +1153,13 @@ export default function ServicesPage() {
                       Starting From
                     </span>
                     <span className="text-lg font-serif font-black text-stone-900">
-                      {pkg.startingPrice}
+                      {pkg.price}
                     </span>
                   </div>
 
                   <button
                     type="button"
-                    onClick={() => handleCardEnquiry(pkg.serviceId)}
+                    onClick={() => handleCardEnquiry(pkg.serviceId, pkg)}
                     className="px-4 py-2 rounded-lg bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
                   >
                     <span>Enquire Now</span>
@@ -1164,7 +1209,11 @@ export default function ServicesPage() {
             <div className="mt-8 sm:mt-10 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
               <button
                 type="button"
-                onClick={() => handleCardEnquiry("Custom Holidays")}
+                onClick={() =>
+                  document
+                    .getElementById("service-packages")
+                    ?.scrollIntoView({ behavior: "smooth" })
+                }
                 className="px-7 py-3.5 rounded-xl bg-white text-stone-900 text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider hover:bg-[#FAF7F2] transition-all duration-200 shadow-xl cursor-pointer active:scale-95"
               >
                 Plan Your Vacation
@@ -1325,7 +1374,7 @@ export default function ServicesPage() {
       </main>
 
       {/* Footer */}
-      <Footer />
+      <Footer onOpenEnquiry={handleCardEnquiry} />
 
       {/* Floating WhatsApp Action */}
       <FloatingWhatsApp />
@@ -1335,6 +1384,8 @@ export default function ServicesPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         defaultServiceId={modalServiceId}
+        defaultPackageId={modalPackage?.id}
+        packageTitle={modalPackage?.title}
       />
     </div>
   );

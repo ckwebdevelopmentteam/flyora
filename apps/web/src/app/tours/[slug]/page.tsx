@@ -1,14 +1,12 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
-  Clock,
   MapPin,
-  Plane,
   Building2,
-  Car,
   Utensils,
   CheckCircle2,
   XCircle,
@@ -17,9 +15,7 @@ import {
   Sparkles,
   ChevronDown,
   ChevronUp,
-  Share2,
   Calendar,
-  Users,
   ShieldCheck,
   Award,
 } from "lucide-react";
@@ -29,297 +25,6 @@ import { EnquiryModal } from "../../../components/EnquiryModal";
 import { FloatingWhatsApp } from "../../../components/FloatingWhatsApp";
 import type { PackageDetails } from "@flyora/types";
 
-// Fallback package database dictionary
-const FALLBACK_DETAILS: Record<string, Partial<PackageDetails>> = {
-  "5d-4n-dubai-family-luxury": {
-    id: "37aba6d8-fee8-464f-8a20-46d2bd16229c",
-    title: "5D/4N Dubai Family Luxury",
-    slug: "5d-4n-dubai-family-luxury",
-    durationDays: 5,
-    durationNights: 4,
-    destination: "Dubai, United Arab Emirates",
-    startingPrice: 64999,
-    coverImageUrl: "/destinations/dubai.jpg",
-    galleryImageUrls: ["/destinations/dubai.jpg"],
-    overview:
-      "Experience the ultimate 5-day luxury Dubai vacation with private chauffeur transfers, VIP Burj Khalifa 124th floor access, red dune 4x4 desert safari with five-star Arabian BBQ dinner, and a luxury waterfront hotel stay in Dubai Marina.",
-    itinerary: [
-      {
-        day: 1,
-        title: "VIP Airport Meet & Marina Dhow Cruise Dinner",
-        description:
-          "Private chauffeur pickup from Dubai International Airport (DXB). Check-in to your 5-star marina hotel. In the evening, board a luxury glass-enclosed dhow cruise for an international buffet dinner with live saxophone and illuminated skyline views.",
-        stay: "Radisson Blu Waterfront 5*",
-        meals: "Dinner",
-      },
-      {
-        day: 2,
-        title: "Dubai City Tour & Burj Khalifa At The Top VIP",
-        description:
-          "Morning guided exploration of historic Al Fahidi Fort, gold souk, and modern landmarks including Dubai Frame. In the late afternoon, enjoy skip-the-line VIP access to the Burj Khalifa 124th and 125th floor observation decks for a breathtaking sunset.",
-        stay: "Radisson Blu Waterfront 5*",
-        meals: "Breakfast",
-      },
-      {
-        day: 3,
-        title: "Red Dune Desert Safari, Sandboarding & BBQ Night",
-        description:
-          "Afternoon pickup in a private luxury Land Cruiser. Experience thrilling 4x4 dune bashing across Lahbab red dunes, camel riding, sandboarding, and an authentic Bedouin campsite BBQ buffet with belly dancing and Tanoura show.",
-        stay: "Radisson Blu Waterfront 5*",
-        meals: "Breakfast, Dinner",
-      },
-      {
-        day: 4,
-        title: "Aquaventure Waterpark & Dubai Mall Fountain Spectacle",
-        description:
-          "Full-day thrilling access to Atlantis Aquaventure Waterpark and Lost Chambers Aquarium on Palm Jumeirah. Evening leisure shopping at Dubai Mall with front-row views of the dancing fountain show.",
-        stay: "Radisson Blu Waterfront 5*",
-        meals: "Breakfast",
-      },
-      {
-        day: 5,
-        title: "Souk Madinat Jumeirah & Chauffeur Airport Drop-off",
-        description:
-          "Enjoy a leisurely breakfast and souvenir shopping at the Venetian-style Souk Madinat Jumeirah. Your private chauffeur transfers you to DXB airport for your return flight.",
-        meals: "Breakfast",
-      },
-    ],
-    inclusions: [
-      "Return International Flights (Emirates / FlyDubai)",
-      "4 Nights in 5-Star Waterfront Hotel",
-      "Daily International Buffet Breakfast",
-      "Private Airport & Sightseeing Chauffeur Transfers",
-      "Burj Khalifa 124th Floor VIP Sunset Tickets",
-      "Red Dune 4x4 Desert Safari with Barbecue Dinner",
-      "Dubai Marina Luxury Dhow Cruise with Dinner",
-      "UAE Tourist Visa Assistance & Insurance",
-    ],
-    exclusions: [
-      "Tourism Dirham Fee (payable at hotel, ~AED 20/night)",
-      "Personal Shopping & Expenses",
-      "Optional Helicopter Tour",
-    ],
-  },
-  "4d-3n-maldives-overwater-escape": {
-    id: "cf21dea8-85c6-4bf2-ba0e-02873140969a",
-    title: "4D/3N Maldives Luxury Overwater Villa",
-    slug: "4d-3n-maldives-overwater-escape",
-    durationDays: 4,
-    durationNights: 3,
-    destination: "North Male Atoll, Maldives",
-    startingPrice: 94999,
-    coverImageUrl: "/destinations/maldives.jpg",
-    galleryImageUrls: ["/destinations/maldives.jpg"],
-    overview:
-      "Escape to an iconic private overwater villa suspended over turquoise Maldivian waters. Features private sundeck, glass floor viewing panel, direct lagoon stairs, all-inclusive gourmet dining, and a sunset dolphin cruise.",
-    itinerary: [
-      {
-        day: 1,
-        title: "Speedboat Arrival & Overwater Villa Welcome",
-        description:
-          "Scenic 25-minute luxury speedboat transfer across turquoise atolls to your private island resort. Chilled champagne welcome, villa orientation, and evening cocktail on the wooden boardwalk.",
-        stay: "Centara Grand Island Resort 5*",
-        meals: "Dinner",
-      },
-      {
-        day: 2,
-        title: "House Reef Snorkeling & Marine Safari",
-        description:
-          "Morning guided snorkeling tour along the house reef to observe sea turtles, rays, and tropical reef fish. Afternoon leisure at the overwater infinity pool with unlimited drinks.",
-        stay: "Centara Grand Island Resort 5*",
-        meals: "Breakfast, Lunch, Dinner",
-      },
-      {
-        day: 3,
-        title: "Sunset Dolphin Safari & Candlelit Beach Barbecue",
-        description:
-          "Board a traditional wooden Dhoni boat into the open atoll to watch playful spinner dolphins leaping against the setting sun. Later, savor a 4-course seafood dinner served on the beach.",
-        stay: "Centara Grand Island Resort 5*",
-        meals: "Breakfast, Lunch, Dinner",
-      },
-      {
-        day: 4,
-        title: "Glass-Bottom Kayaking & Departure Transfer",
-        description:
-          "Enjoy a morning paddleboard or glass-bottom kayak session before speedboat transfer back to Velana International Airport in Male.",
-        meals: "Breakfast",
-      },
-    ],
-    inclusions: [
-      "Return International Flights",
-      "3 Nights in Luxury Overwater Pool Villa",
-      "All-Inclusive Dining (All Meals, Snacks & Premium Beverages)",
-      "Roundtrip Speedboat Airport Transfers",
-      "Sunset Wild Dolphin Boat Safari",
-      "Complimentary Snorkeling Equipment & Kayaks",
-      "Maldives Green Tax & Visa on Arrival Support",
-    ],
-    exclusions: [
-      "Motorized Jet-Ski & Scuba Diving Courses",
-      "Spa Treatments & Massages",
-    ],
-  },
-  "6d-5n-bali-ubud-seminyak-bliss": {
-    id: "28615277-8bd2-4484-9a90-28eabce5a6ce",
-    title: "6D/5N Bali Ubud Rainforest & Seminyak Beach",
-    slug: "6d-5n-bali-ubud-seminyak-bliss",
-    durationDays: 6,
-    durationNights: 5,
-    destination: "Bali (Ubud & Seminyak), Indonesia",
-    startingPrice: 52999,
-    coverImageUrl: "/destinations/bali.jpg",
-    galleryImageUrls: ["/destinations/bali.jpg"],
-    overview:
-      "The quintessential Indonesian escape combining 3 nights in a secluded Ubud private pool villa surrounded by rainforest rice terraces, and 2 nights in high-end Seminyak beachfront luxury.",
-    itinerary: [
-      {
-        day: 1,
-        title: "Denpasar Arrival & Private Ubud Villa Check-in",
-        description:
-          "Welcome to the Island of the Gods. Private chauffeur greets you with frangipani flower garlands and transfers you to your private pool villa nestled in the lush Ubud river valley.",
-        stay: "Kamandalu Ubud 5*",
-        meals: "Dinner",
-      },
-      {
-        day: 2,
-        title: "Tegalalang Rice Terraces, Bali Swing & Monkey Forest",
-        description:
-          "Walk through UNESCO emerald rice terraces, soar high on the famous jungle swing, and visit the sacred monkeys at Ubud Sanctuary. Afternoon organic tea tasting at a coffee plantation.",
-        stay: "Kamandalu Ubud 5*",
-        meals: "Breakfast, Lunch",
-      },
-      {
-        day: 3,
-        title: "Kintamani Volcano & Tirta Empul Holy Springs",
-        description:
-          "Panoramic breakfast with unobstructed views of active Mount Batur volcano and crater lake. Visit the holy water temple of Tirta Empul for traditional Balinese blessings.",
-        stay: "Kamandalu Ubud 5*",
-        meals: "Breakfast",
-      },
-      {
-        day: 4,
-        title: "Transfer to Seminyak & Sunset Kecak Fire Dance at Uluwatu",
-        description:
-          "Check in to your beachfront Seminyak resort. Later, drive to Uluwatu clifftop temple to witness the dramatic Kecak fire dance against a fiery Indian Ocean sunset.",
-        stay: "The Seminyak Beach Resort 5*",
-        meals: "Breakfast, Dinner",
-      },
-      {
-        day: 5,
-        title: "Nusa Penida Island Fast-Boat Day Trip",
-        description:
-          "Speedboat cruise to Nusa Penida island. Visit the famous T-Rex shaped Kelingking Beach, Broken Beach, and natural infinity pool at Angel Billabong.",
-        stay: "The Seminyak Beach Resort 5*",
-        meals: "Breakfast, Lunch",
-      },
-      {
-        day: 6,
-        title: "Seminyak Beach Club & Airport Transfer",
-        description:
-          "Relax at Potato Head Beach Club or shop boutique handicrafts along Seminyak strip before private transfer to Denpasar Airport.",
-        meals: "Breakfast",
-      },
-    ],
-    inclusions: [
-      "Return Flights (Singapore Airlines / Malaysia Airlines)",
-      "3 Nights in Ubud Private Pool Villa 5*",
-      "2 Nights in Seminyak 5-Star Beach Resort",
-      "Daily Gourmet Breakfast & Select Lunch/Dinners",
-      "Private Chauffeur & English Speaking Guide throughout",
-      "Nusa Penida Fast Boat Island Tickets",
-      "All Sightseeing Entrance Tickets & Bali Swing",
-    ],
-    exclusions: [
-      "Indonesia Visa on Arrival ($35 USD)",
-      "Personal Expenses & Souvenirs",
-    ],
-  },
-  "7d-6n-swiss-alps-panoramic-dream": {
-    id: "fe9cebd1-8d8b-44f2-a731-639bd5ba6019",
-    title: "7D/6N Scenic Switzerland & Alpine Express",
-    slug: "7d-6n-swiss-alps-panoramic-dream",
-    durationDays: 7,
-    durationNights: 6,
-    destination: "Zurich, Lucerne, Interlaken & Zermatt",
-    startingPrice: 148999,
-    coverImageUrl: "/destinations/switzerland.jpg",
-    galleryImageUrls: ["/destinations/switzerland.jpg"],
-    overview:
-      "A once-in-a-lifetime Swiss rail adventure featuring 1st Class Swiss Travel Pass, Mount Titlis revolving cable car, Jungfraujoch Top of Europe, and the iconic Matterhorn in Zermatt.",
-    itinerary: [
-      {
-        day: 1,
-        title: "Zurich Airport Arrival & First-Class Train to Lucerne",
-        description:
-          "Arrive in Zurich. Board the scenic Swiss Federal Railway to Lucerne with your 1st Class Swiss Pass. Evening cruise on Lake Lucerne with views of Mount Pilatus.",
-        stay: "Hotel Schweizerhof Lucerne 5*",
-        meals: "Dinner",
-      },
-      {
-        day: 2,
-        title: "Mount Titlis Rotair Cable Car & Ice Glacier Cave",
-        description:
-          "Ascend to 3,020 meters via the Rotair rotating cable car. Walk across Europe highest suspension cliff bridge and explore prehistoric glacier ice caves.",
-        stay: "Hotel Schweizerhof Lucerne 5*",
-        meals: "Breakfast",
-      },
-      {
-        day: 3,
-        title: "GoldenPass Panoramic Train to Interlaken",
-        description:
-          "Scenic rail journey along sparkling alpine lakes and waterfalls to Interlaken, nestled between Lake Thun and Lake Brienz.",
-        stay: "Victoria-Jungfrau Grand Hotel 5*",
-        meals: "Breakfast",
-      },
-      {
-        day: 4,
-        title: "Jungfraujoch - Top of Europe at 3,454m",
-        description:
-          "Historic cogwheel train journey through the Eiger mountain to the highest railway station in Europe. Experience the Sphinx Observatory and Ice Palace.",
-        stay: "Victoria-Jungfrau Grand Hotel 5*",
-        meals: "Breakfast",
-      },
-      {
-        day: 5,
-        title: "Scenic Rail to Zermatt & The Iconic Matterhorn",
-        description:
-          "Travel to the world-famous car-free village of Zermatt. Enjoy pristine mountain air and direct views of the majestic Matterhorn peak from your private balcony.",
-        stay: "Mont Cervin Palace Zermatt 5*",
-        meals: "Breakfast, Dinner",
-      },
-      {
-        day: 6,
-        title: "Gornergrat Cogwheel Mountain Railway",
-        description:
-          "Ascend to 3,089m on the Gornergrat open-air railway for 360-degree panoramic views of 29 peaks exceeding 4,000 meters. Afternoon traditional Swiss cheese fondue tasting.",
-        stay: "Mont Cervin Palace Zermatt 5*",
-        meals: "Breakfast, Dinner",
-      },
-      {
-        day: 7,
-        title: "First-Class Rail Transfer to Zurich & Departure",
-        description:
-          "Relaxed morning breakfast in Zermatt before boarding the scenic express rail connection directly into Zurich Airport for your international return flight.",
-        meals: "Breakfast",
-      },
-    ],
-    inclusions: [
-      "Return Flights (Swiss International Air Lines / Emirates)",
-      "7-Day Swiss Travel Pass (1st Class Unlimited Trains, Boats & Buses)",
-      "6 Nights in 5-Star Boutique Swiss Hotels",
-      "Daily Swiss Breakfast Buffets & 3 Gourmet Dinners",
-      "Mount Titlis Rotair & Suspension Bridge Pass",
-      "Jungfraujoch Top of Europe Mountain Rail Ticket",
-      "Gornergrat Matterhorn Railway Ticket",
-      "Schengen Visa Documentation Concierge Assistance",
-    ],
-    exclusions: [
-      "City Tourist Taxes (CHF 4/day)",
-      "Optional Tandem Paragliding in Interlaken",
-    ],
-  },
-};
-
 export default function TourDetailPage() {
   const params = useParams();
   const currentSlug =
@@ -328,46 +33,60 @@ export default function TourDetailPage() {
       : Array.isArray(params?.slug)
         ? params.slug[0] || ""
         : "";
+  return <TourDetails key={currentSlug} currentSlug={currentSlug} />;
+}
+
+function TourDetails({ currentSlug }: { currentSlug: string }) {
   const [pkg, setPkg] = useState<Partial<PackageDetails> | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [attempt, setAttempt] = useState(0);
   const [openDays, setOpenDays] = useState<Record<number, boolean>>({
     1: true,
   });
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
+  const [enquiryService, setEnquiryService] = useState<string>();
+  const [selectedImage, setSelectedImage] = useState<string>();
+  const openEnquiry = (service?: string) => {
+    setEnquiryService(service);
+    setIsEnquiryOpen(true);
+  };
 
   useEffect(() => {
-    const activeSlug =
-      currentSlug ||
-      (typeof window !== "undefined"
-        ? window.location.pathname.split("/").pop() || ""
-        : "");
-
-    // Check fallback or fetch from API
+    const controller = new AbortController();
     async function loadDetails() {
       try {
         const apiUrl =
           process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
-        const res = await fetch(`${apiUrl}/packages/${activeSlug}`);
-        if (res.ok) {
-          const json = await res.json();
-          if (json.data) {
-            setPkg(json.data);
-            return;
-          }
+        const res = await fetch(
+          `${apiUrl}/packages/${encodeURIComponent(currentSlug)}`,
+          {
+            cache: "no-store",
+            signal: AbortSignal.any([
+              controller.signal,
+              AbortSignal.timeout(15000),
+            ]),
+          },
+        );
+        if (res.status === 404) {
+          if (!controller.signal.aborted)
+            setLoadError("This package is no longer available.");
+          return;
         }
+        const json = await res.json();
+        if (!res.ok || !json.data?.id || !json.data?.serviceId)
+          throw new Error();
+        if (!controller.signal.aborted) setPkg(json.data);
       } catch {
-        // Ignore, fallback handles it
+        if (!controller.signal.aborted)
+          setLoadError("We couldn’t load this package. Please try again.");
+      } finally {
+        if (!controller.signal.aborted) setLoading(false);
       }
-
-      // Use fallback if API is not reached
-      const fallback =
-        FALLBACK_DETAILS[activeSlug] ||
-        FALLBACK_DETAILS["5d-4n-dubai-family-luxury"];
-      setPkg(fallback);
-      setLoading(false);
     }
-    loadDetails();
-  }, [currentSlug]);
+    void loadDetails();
+    return () => controller.abort();
+  }, [currentSlug, attempt]);
 
   const toggleDay = (dayNum: number) => {
     setOpenDays((prev) => ({ ...prev, [dayNum]: !prev[dayNum] }));
@@ -390,12 +109,33 @@ export default function TourDetailPage() {
     return (
       <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
         <h2 className="text-xl font-bold text-stone-900">
-          Loading Tour Itinerary...
+          {loading ? "Loading itinerary…" : loadError}
         </h2>
+        {!loading && (
+          <>
+            <button
+              onClick={() => {
+                setLoading(true);
+                setLoadError("");
+                setAttempt((n) => n + 1);
+              }}
+            >
+              Try again
+            </button>
+            <Link href="/tours">View all packages</Link>
+          </>
+        )}
       </div>
     );
   }
 
+  const photos = [
+    ...new Set(
+      [pkg.coverImageUrl, ...(pkg.galleryImageUrls || [])].filter(
+        (url): url is string => !!url,
+      ),
+    ),
+  ];
   const formattedPrice = Number(pkg.startingPrice || 0).toLocaleString("en-IN");
   const whatsappText = encodeURIComponent(
     `Hi Flyora Travels, I'm reviewing the "${pkg.title}" package on your website. I want to customize this trip and get an official quotation.`,
@@ -405,10 +145,7 @@ export default function TourDetailPage() {
   return (
     <div className="min-h-screen bg-white text-stone-900 font-sans selection:bg-[#4A2E18] selection:text-white">
       {/* Navbar */}
-      <Navbar
-        activePath="/tours"
-        onOpenEnquiry={() => setIsEnquiryOpen(true)}
-      />
+      <Navbar activePath="/tours" onOpenEnquiry={openEnquiry} />
 
       {/* Main Container (Wider than Navbar like Homepage Image Section: 1440px) */}
       <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -433,8 +170,13 @@ export default function TourDetailPage() {
           <div className="lg:col-span-2 space-y-8">
             {/* Main Cover Image */}
             <div className="relative aspect-16/9 w-full rounded-3xl overflow-hidden bg-stone-100 shadow-md">
-              <img
-                src={pkg.coverImageUrl || "/destinations/dubai.jpg"}
+              <Image
+                unoptimized
+                fill
+                sizes="(max-width: 1024px) 100vw, 66vw"
+                src={
+                  selectedImage || photos[0] || "/services/custom-holidays.jpg"
+                }
                 alt={pkg.title || "Tour Cover"}
                 className="w-full h-full object-cover object-center"
               />
@@ -455,7 +197,7 @@ export default function TourDetailPage() {
               {/* Title Overlay */}
               <div className="absolute bottom-6 left-6 right-6 text-white space-y-2">
                 <span className="bg-emerald-500/90 text-white font-mono text-[10px] uppercase tracking-wider font-semibold px-2.5 py-0.5 rounded-full">
-                  100% Customized Available
+                  {pkg.serviceName}
                 </span>
                 <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight drop-shadow-xs">
                   {pkg.title}
@@ -463,63 +205,50 @@ export default function TourDetailPage() {
               </div>
             </div>
 
-            {/* Quick Trip Specs Bar */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 bg-stone-50 border border-stone-200/90 rounded-2xl p-4">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-[#4A2E18] shrink-0">
-                  <Clock className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-stone-400 font-mono uppercase">
-                    Duration
-                  </p>
-                  <p className="text-xs font-bold text-stone-900">
-                    {pkg.durationDays} Days / {pkg.durationNights} N
-                  </p>
-                </div>
+            {photos.length > 1 && (
+              <div
+                className="flex gap-3 overflow-x-auto pb-1"
+                aria-label="Package photos"
+              >
+                {photos.map((photo, index) => (
+                  <button
+                    key={photo}
+                    type="button"
+                    aria-label={`View photo ${index + 1}`}
+                    aria-pressed={(selectedImage || photos[0]) === photo}
+                    onClick={() => setSelectedImage(photo)}
+                    className="relative w-24 h-16 shrink-0 overflow-hidden rounded-lg border-2 border-stone-200 aria-pressed:border-[#4A2E18]"
+                  >
+                    <Image
+                      unoptimized
+                      fill
+                      sizes="96px"
+                      src={photo}
+                      alt={`${pkg.title} photo ${index + 1}`}
+                      className="object-cover"
+                    />
+                  </button>
+                ))}
               </div>
-
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-[#4A2E18] shrink-0">
-                  <Building2 className="w-4 h-4" />
-                </div>
-                <div>
+            )}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 bg-stone-50 border border-stone-200/90 rounded-2xl p-4">
+              {[
+                {
+                  label: "Duration",
+                  value: `${pkg.durationDays} Days / ${pkg.durationNights} Nights`,
+                },
+                { label: "Destination", value: pkg.destination },
+                { label: "Service", value: pkg.serviceName },
+              ].map((item) => (
+                <div key={item.label} className="min-w-0">
                   <p className="text-[10px] text-stone-400 font-mono uppercase">
-                    Hotel Stay
+                    {item.label}
                   </p>
-                  <p className="text-xs font-bold text-stone-900">
-                    5-Star Luxury
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-[#4A2E18] shrink-0">
-                  <Plane className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-stone-400 font-mono uppercase">
-                    Airfare
-                  </p>
-                  <p className="text-xs font-bold text-stone-900">
-                    Return Flights
+                  <p className="text-xs font-bold text-stone-900 break-words">
+                    {item.value}
                   </p>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-white border border-stone-200 flex items-center justify-center text-[#4A2E18] shrink-0">
-                  <Car className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[10px] text-stone-400 font-mono uppercase">
-                    Transfers
-                  </p>
-                  <p className="text-xs font-bold text-stone-900">
-                    Private Chauffeur
-                  </p>
-                </div>
-              </div>
+              ))}
             </div>
 
             {/* Overview Section */}
@@ -668,17 +397,16 @@ export default function TourDetailPage() {
               {/* Pricing Header */}
               <div className="space-y-1 pb-5 border-b border-stone-100">
                 <span className="text-[11px] font-mono text-stone-400 uppercase tracking-wider block">
-                  All-Inclusive Package Price
+                  Starting price
                 </span>
                 <div className="flex items-baseline gap-1.5">
                   <span className="text-3xl font-extrabold text-stone-900 tracking-tight">
                     ₹{formattedPrice}
                   </span>
-                  <span className="text-xs text-stone-500">/ traveler</span>
                 </div>
                 <p className="text-[11px] text-emerald-700 font-medium flex items-center gap-1 pt-1">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Transparent Price • Zero Booking Fees</span>
+                  <span>Final price depends on your travel dates.</span>
                 </p>
               </div>
 
@@ -686,7 +414,7 @@ export default function TourDetailPage() {
               <div className="space-y-3">
                 {/* Primary Button in Coffee Brown */}
                 <button
-                  onClick={() => setIsEnquiryOpen(true)}
+                  onClick={() => openEnquiry()}
                   className="w-full py-3.5 px-4 rounded-xl bg-[#4A2E18] hover:bg-[#38200F] active:scale-98 text-white text-xs sm:text-sm font-semibold text-center shadow-md hover:shadow-lg transition flex items-center justify-center gap-2"
                 >
                   <Sparkles className="w-4 h-4 text-[#E6D5C7]" />
@@ -729,15 +457,16 @@ export default function TourDetailPage() {
       <EnquiryModal
         isOpen={isEnquiryOpen}
         onClose={() => setIsEnquiryOpen(false)}
-        defaultPackageId={pkg.id}
-        packageTitle={pkg.title}
+        defaultServiceId={enquiryService || pkg.serviceId}
+        defaultPackageId={enquiryService ? undefined : pkg.id}
+        packageTitle={enquiryService ? undefined : pkg.title}
       />
 
       {/* Floating WhatsApp Action */}
       <FloatingWhatsApp />
 
       {/* Footer */}
-      <Footer onOpenEnquiry={() => setIsEnquiryOpen(true)} />
+      <Footer onOpenEnquiry={openEnquiry} />
     </div>
   );
 }

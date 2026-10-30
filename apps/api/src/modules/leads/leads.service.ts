@@ -93,11 +93,11 @@ export class LeadsService {
       const pkg = await this.fastify.prisma.package.findUnique({
         where: { id: data.packageId },
       });
-      if (!pkg) {
+      if (!pkg || !pkg.isPublished || pkg.serviceId !== data.serviceId) {
         throw {
           statusCode: 400,
           error: "Bad Request",
-          message: "Selected tour package does not exist",
+          message: "Selected tour package is unavailable for this service",
         };
       }
     }

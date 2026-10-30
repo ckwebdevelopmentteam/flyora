@@ -52,8 +52,14 @@ export const packageFilterSchema = z.object({
   search: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),
   limit: z.coerce.number().int().min(1).max(50).default(12),
-  featuredOnly: z.coerce.boolean().optional(),
-  includeUnpublished: z.coerce.boolean().optional(),
+  featuredOnly: z.preprocess(
+    (value) => (value === "true" ? true : value === "false" ? false : value),
+    z.boolean().optional(),
+  ),
+  includeUnpublished: z.preprocess(
+    (value) => (value === "true" ? true : value === "false" ? false : value),
+    z.boolean().optional(),
+  ),
 });
 
 export type PackageFilterInput = z.infer<typeof packageFilterSchema>;

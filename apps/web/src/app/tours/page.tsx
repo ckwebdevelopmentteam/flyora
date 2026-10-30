@@ -13,76 +13,16 @@ import {
   INITIAL_FILTERS,
   type TourFilterState,
 } from "../../components/tours/types";
+import { loadPackages } from "../../lib/service-catalog";
 import type { PackageSummary } from "@flyora/types";
-import { Sparkles, Compass, RotateCcw, Loader2 } from "lucide-react";
-
-// Fallback real packages with real generated images in case API is cold-starting
-const FALLBACK_PACKAGES: PackageSummary[] = [
-  {
-    id: "37aba6d8-fee8-464f-8a20-46d2bd16229c",
-    serviceId: "880a9c17-1bdd-42cf-bb3d-62242b9446ff",
-    serviceName: "Holiday Packages",
-    title: "5D/4N Dubai Family Luxury",
-    slug: "5d-4n-dubai-family-luxury",
-    durationDays: 5,
-    durationNights: 4,
-    destination: "Dubai, United Arab Emirates",
-    startingPrice: 64999,
-    coverImageUrl: "/destinations/dubai.jpg",
-    isFeatured: true,
-    isPublished: true,
-    createdAt: "2026-10-22T10:49:12.982Z",
-  },
-  {
-    id: "cf21dea8-85c6-4bf2-ba0e-02873140969a",
-    serviceId: "880a9c17-1bdd-42cf-bb3d-62242b9446ff",
-    serviceName: "Holiday Packages",
-    title: "4D/3N Maldives Luxury Overwater Villa",
-    slug: "4d-3n-maldives-overwater-escape",
-    durationDays: 4,
-    durationNights: 3,
-    destination: "North Male Atoll, Maldives",
-    startingPrice: 94999,
-    coverImageUrl: "/destinations/maldives.jpg",
-    isFeatured: true,
-    isPublished: true,
-    createdAt: "2026-10-24T10:31:30.585Z",
-  },
-  {
-    id: "28615277-8bd2-4484-9a90-28eabce5a6ce",
-    serviceId: "880a9c17-1bdd-42cf-bb3d-62242b9446ff",
-    serviceName: "Holiday Packages",
-    title: "6D/5N Bali Ubud Rainforest & Seminyak Beach",
-    slug: "6d-5n-bali-ubud-seminyak-bliss",
-    durationDays: 6,
-    durationNights: 5,
-    destination: "Bali (Ubud & Seminyak), Indonesia",
-    startingPrice: 52999,
-    coverImageUrl: "/destinations/bali.jpg",
-    isFeatured: true,
-    isPublished: true,
-    createdAt: "2026-10-24T10:31:30.756Z",
-  },
-  {
-    id: "fe9cebd1-8d8b-44f2-a731-639bd5ba6019",
-    serviceId: "880a9c17-1bdd-42cf-bb3d-62242b9446ff",
-    serviceName: "Holiday Packages",
-    title: "7D/6N Scenic Switzerland & Alpine Express",
-    slug: "7d-6n-swiss-alps-panoramic-dream",
-    durationDays: 7,
-    durationNights: 6,
-    destination: "Zurich, Lucerne, Interlaken & Zermatt",
-    startingPrice: 148999,
-    coverImageUrl: "/destinations/switzerland.jpg",
-    isFeatured: true,
-    isPublished: true,
-    createdAt: "2026-10-24T10:31:30.861Z",
-  },
-];
+import { Sparkles, Compass, RotateCcw } from "lucide-react";
 
 export default function ToursPage() {
-  const [packages, setPackages] = useState<PackageSummary[]>(FALLBACK_PACKAGES);
+  const [packages, setPackages] = useState<PackageSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState("");
+  const [attempt, setAttempt] = useState(0);
+  const [enquiryServiceId, setEnquiryServiceId] = useState<string>();
   const [filters, setFilters] = useState<TourFilterState>(INITIAL_FILTERS);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
@@ -95,31 +35,25 @@ export default function ToursPage() {
     string | undefined
   >(undefined);
 
-  // Fetch live packages from API
   useEffect(() => {
-    async function loadPackages() {
-      try {
-        const apiUrl =
-          process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
-        const res = await fetch(`${apiUrl}/packages`);
-        if (res.ok) {
-          const json = await res.json();
-          if (
-            json.data &&
-            Array.isArray(json.data.items) &&
-            json.data.items.length > 0
-          ) {
-            setPackages(json.data.items);
-          }
+    const controller = new AbortController();
+    loadPackages(
+      AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
+    )
+      .then((items) => {
+        if (!controller.signal.aborted) setPackages(items);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setPackages([]);
+          setLoadError("We couldn’t load our packages. Please try again.");
         }
-      } catch {
-        // Fallback pre-bundled packages used cleanly when API is offline
-      } finally {
-        setLoading(false);
-      }
-    }
-    loadPackages();
-  }, []);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [attempt]);
 
   // Extract unique available destinations for filter sidebar
   const availableDestinations = useMemo(() => {
@@ -143,6 +77,7 @@ export default function ToursPage() {
 
   // Open Enquiry modal with pre-selected package
   const handleCustomizePackage = (pkgId: string, pkgTitle: string) => {
+    setEnquiryServiceId(packages.find((p) => p.id === pkgId)?.serviceId);
     setEnquiryPackageId(pkgId);
     setEnquiryPackageTitle(pkgTitle);
     setIsEnquiryOpen(true);
@@ -214,6 +149,7 @@ export default function ToursPage() {
       <Navbar
         activePath="/tours"
         onOpenEnquiry={(service) => {
+          setEnquiryServiceId(service);
           setEnquiryPackageId(undefined);
           setEnquiryPackageTitle(service ? `Enquiry: ${service}` : undefined);
           setIsEnquiryOpen(true);
@@ -222,6 +158,21 @@ export default function ToursPage() {
 
       {/* Main Page Canvas (Wider than Navbar like Homepage Image Section: 1440px) */}
       <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-18">
+        {loading && <p role="status">Loading packages…</p>}
+        {loadError && (
+          <div role="alert">
+            {loadError}{" "}
+            <button
+              onClick={() => {
+                setLoading(true);
+                setLoadError("");
+                setAttempt((n) => n + 1);
+              }}
+            >
+              Try again
+            </button>
+          </div>
+        )}
         {/* Header with Title and Sorting */}
         <TourHeader
           totalResults={filteredPackages.length}
@@ -280,6 +231,7 @@ export default function ToursPage() {
                   </button>
                   <button
                     onClick={() => {
+                      setEnquiryServiceId(undefined);
                       setEnquiryPackageId(undefined);
                       setEnquiryPackageTitle(undefined);
                       setIsEnquiryOpen(true);
@@ -311,6 +263,7 @@ export default function ToursPage() {
       <EnquiryModal
         isOpen={isEnquiryOpen}
         onClose={() => setIsEnquiryOpen(false)}
+        defaultServiceId={enquiryServiceId}
         defaultPackageId={enquiryPackageId}
         packageTitle={enquiryPackageTitle}
       />
@@ -321,6 +274,7 @@ export default function ToursPage() {
       {/* Luxury Footer */}
       <Footer
         onOpenEnquiry={(service) => {
+          setEnquiryServiceId(service);
           setEnquiryPackageId(undefined);
           setEnquiryPackageTitle(service ? `Enquiry: ${service}` : undefined);
           setIsEnquiryOpen(true);
