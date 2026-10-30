@@ -63,6 +63,8 @@ export const PackagesListPage = () => {
   // Fetch Services for filter dropdown
   const { data: services = [] } = useQuery<ServiceSummary[]>({
     queryKey: ["services"],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
     queryFn: () => apiClient.get("/services"),
   });
 

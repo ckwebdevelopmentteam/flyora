@@ -33,10 +33,17 @@ export interface ServiceSummary {
   name: string;
   slug: string;
   minMarginPercent: number;
+  description?: string | null;
+  isActive?: boolean;
 }
 
 export interface AuthSession {
   user: UserProfile;
   accessToken: string;
   accessExpiresIn: number;
+}
+
+export interface ManagedService extends ServiceSummary {
+  isActive: boolean;
+  _count: { coordinators: number; packages: number; leads: number };
 }

@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import {
   Compass,
+  Briefcase,
   LayoutDashboard,
   Users,
   Inbox,
@@ -62,6 +63,9 @@ export const Sidebar = ({
       : []),
     ...(manager || user?.role === "CONTENT_MANAGER"
       ? [{ name: "Tour packages", path: "/packages", icon: Palmtree }]
+      : []),
+    ...(user?.role === "SUPER_ADMIN"
+      ? [{ name: "Services", path: "/services", icon: Briefcase }]
       : []),
     ...(manager ? [{ name: "Team", path: "/team", icon: Users }] : []),
   ];

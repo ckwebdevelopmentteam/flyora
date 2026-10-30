@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, Suspense } from "react";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { TourHeader } from "../../components/tours/TourHeader";
@@ -14,16 +14,58 @@ import {
   type TourFilterState,
 } from "../../components/tours/types";
 import { loadPackages } from "../../lib/service-catalog";
+import { useSearchParams } from "next/navigation";
 import type { PackageSummary } from "@flyora/types";
 import { Sparkles, Compass, RotateCcw } from "lucide-react";
 
 export default function ToursPage() {
+  return (
+    <Suspense
+      fallback={
+        <p className="p-8" role="status">
+          Loading packages…
+        </p>
+      }
+    >
+      <ToursRoute />
+    </Suspense>
+  );
+}
+function ToursRoute() {
+  const params = useSearchParams();
+  return (
+    <ToursCatalog
+      filterKey={params.toString()}
+      initialDestination={params.get("destination") || ""}
+      initialSearch={params.get("q") || ""}
+    />
+  );
+}
+function ToursCatalog({
+  filterKey,
+  initialDestination,
+  initialSearch,
+}: {
+  filterKey: string;
+  initialDestination: string;
+  initialSearch: string;
+}) {
   const [packages, setPackages] = useState<PackageSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [attempt, setAttempt] = useState(0);
   const [enquiryServiceId, setEnquiryServiceId] = useState<string>();
-  const [filters, setFilters] = useState<TourFilterState>(INITIAL_FILTERS);
+  const initialFilters = {
+    ...INITIAL_FILTERS,
+    searchQuery: initialSearch,
+    selectedDestinations: initialDestination ? [initialDestination] : [],
+  };
+  const [filterState, setFilterState] = useState<{
+    key: string;
+    values: TourFilterState;
+  }>({ key: filterKey, values: initialFilters });
+  const filters =
+    filterState.key === filterKey ? filterState.values : initialFilters;
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
 
   // Enquiry Modal state
@@ -67,12 +109,12 @@ export default function ToursPage() {
 
   // Update filter helper
   const handleFilterChange = (updated: Partial<TourFilterState>) => {
-    setFilters((prev) => ({ ...prev, ...updated }));
+    setFilterState({ key: filterKey, values: { ...filters, ...updated } });
   };
 
   // Reset filter helper
   const handleResetFilters = () => {
-    setFilters(INITIAL_FILTERS);
+    setFilterState({ key: filterKey, values: INITIAL_FILTERS });
   };
 
   // Open Enquiry modal with pre-selected package
@@ -89,7 +131,7 @@ export default function ToursPage() {
 
     // 1. Search Query
     if (filters.searchQuery.trim()) {
-      const q = filters.searchQuery.toLowerCase();
+      const q = filters.searchQuery.trim().toLowerCase();
       result = result.filter(
         (p) =>
           p.title.toLowerCase().includes(q) ||
@@ -205,7 +247,7 @@ export default function ToursPage() {
                   />
                 ))}
               </div>
-            ) : (
+            ) : !loading && !loadError ? (
               /* Empty State */
               <div className="bg-stone-50 border border-stone-200/90 rounded-2xl p-12 text-center space-y-4 max-w-lg mx-auto my-8">
                 <div className="w-12 h-12 rounded-full bg-[#F5EBE6] text-[#4A2E18] flex items-center justify-center mx-auto shadow-xs">
@@ -243,7 +285,7 @@ export default function ToursPage() {
                   </button>
                 </div>
               </div>
-            )}
+            ) : null}
           </div>
         </div>
       </main>

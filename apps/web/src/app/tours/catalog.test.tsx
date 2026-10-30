@@ -3,7 +3,10 @@ import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import ToursPage from "./page";
 import TourDetailPage from "./[slug]/page";
-vi.mock("next/navigation", () => ({ useParams: () => ({ slug: "bali" }) }));
+vi.mock("next/navigation", () => ({
+  useParams: () => ({ slug: "bali" }),
+  useSearchParams: () => new URLSearchParams(),
+}));
 vi.mock("next/image", () => ({
   default: ({ alt }: { alt: string }) => <span>{alt}</span>,
 }));
@@ -74,4 +77,59 @@ it("the catalogue honours an empty backend instead of showing bundled sample tri
   await screen.findByText(/No .*found/i);
   expect(screen.queryByText("Loading packages…")).toBeNull();
   expect(screen.queryByText(/Dubai Family Luxury/)).toBeNull();
+});
+
+it("combines search, destination, duration and budget filters and resets them", async () => {
+  const dubai = {
+    ...pkg,
+    id: "dubai",
+    title: "Dubai City Break",
+    slug: "dubai",
+    destination: "Dubai, UAE",
+    startingPrice: 36000,
+    durationDays: 4,
+  };
+  const swiss = {
+    ...pkg,
+    id: "swiss",
+    title: "Swiss Alps",
+    slug: "swiss",
+    destination: "Zurich, Switzerland",
+    startingPrice: 148000,
+    durationDays: 7,
+  };
+  vi.mocked(fetch).mockImplementation(
+    async () =>
+      new Response(
+        JSON.stringify({ data: { items: [pkg, dubai, swiss], totalPages: 1 } }),
+      ),
+  );
+  render(<ToursPage />);
+  await screen.findByRole("link", { name: "Bali Escape" });
+  fireEvent.change(screen.getByLabelText("Search destination or title"), {
+    target: { value: "  BALI  " },
+  });
+  expect(screen.queryByRole("link", { name: "Dubai City Break" })).toBeNull();
+  fireEvent.click(screen.getByRole("checkbox", { name: "Dubai" }));
+  expect(screen.getByText("No matching tour packages found")).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "Reset All Filters" }));
+  expect(screen.getByRole("link", { name: "Swiss Alps" })).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "4 - 5 Days" }));
+  expect(screen.queryByRole("link", { name: "Swiss Alps" })).toBeNull();
+  fireEvent.click(screen.getByRole("radio", { name: "Above ₹1,00,000" }));
+  expect(screen.getByText("No matching tour packages found")).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "All Durations" }));
+  expect(screen.getByRole("link", { name: "Swiss Alps" })).toBeDefined();
+  expect(screen.queryByRole("link", { name: "Bali Escape" })).toBeNull();
+  fireEvent.click(screen.getByRole("radio", { name: "All Budgets" }));
+  fireEvent.change(screen.getByLabelText("Sort packages"), {
+    target: { value: "price-asc" },
+  });
+  expect(
+    screen
+      .getAllByRole("link", {
+        name: /^(Bali Escape|Dubai City Break|Swiss Alps)$/,
+      })
+      .map((link) => link.textContent),
+  ).toEqual(["Dubai City Break", "Bali Escape", "Swiss Alps"]);
 });

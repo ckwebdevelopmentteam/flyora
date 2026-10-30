@@ -55,3 +55,12 @@ it("puts staff Mine and All in the sidebar with Mine selected by default", () =>
   ).toBeNull();
   expect(screen.queryByRole("link", { name: "Tour packages" })).toBeNull();
 });
+it("only shows service management to Super Admin", () => {
+  show("SUPER_ADMIN", "/services");
+  expect(
+    screen.getByRole("link", { name: "Services" }).getAttribute("aria-current"),
+  ).toBe("page");
+  cleanup();
+  show("OPERATIONS_MANAGER", "/");
+  expect(screen.queryByRole("link", { name: "Services" })).toBeNull();
+});

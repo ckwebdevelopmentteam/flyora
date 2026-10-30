@@ -30,18 +30,19 @@ vi.mock("next/image", () => ({
 beforeEach(() => {
   vi.stubGlobal(
     "fetch",
-    vi.fn().mockResolvedValue(
-      new Response(
-        JSON.stringify({
-          data: [
-            {
-              id: "7fcdf946-37af-4b1b-a994-c5509a5605ae",
-              name: "Holiday Packages",
-              slug: "holiday-packages",
-            },
-          ],
-        }),
-      ),
+    vi.fn().mockImplementation(
+      async () =>
+        new Response(
+          JSON.stringify({
+            data: [
+              {
+                id: "7fcdf946-37af-4b1b-a994-c5509a5605ae",
+                name: "Holiday Packages",
+                slug: "holiday-packages",
+              },
+            ],
+          }),
+        ),
     ),
   );
   Element.prototype.scrollIntoView = vi.fn();

@@ -50,7 +50,9 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
           ? "Tour packages"
           : pathname.startsWith("/team")
             ? "Team"
-            : "Overview";
+            : pathname.startsWith("/services")
+              ? "Services"
+              : "Overview";
   const { user, setAvailability } = useAuthStore();
   const [confirmLogout, setConfirmLogout] = useState(false);
   const [logoutError, setLogoutError] = useState<string | null>(null);

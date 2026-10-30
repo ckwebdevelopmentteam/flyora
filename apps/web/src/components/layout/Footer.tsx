@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { useServicesCatalog } from "../../lib/use-services-catalog";
 import {
   ShieldCheck,
   Award,
@@ -23,6 +24,7 @@ export const Footer: React.FC<FooterProps> = ({
   onBecomeAdvisor,
   className = "",
 }) => {
+  const { services } = useServicesCatalog();
   return (
     <footer
       className={`border-t border-black/[0.06] bg-[#F7F2EC] text-[#5C534A] pt-14 pb-10 transition-colors ${className}`}
@@ -176,46 +178,26 @@ export const Footer: React.FC<FooterProps> = ({
                   Tour Packages
                 </Link>
               </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() =>
-                    onOpenEnquiry && onOpenEnquiry("Custom Holidays")
-                  }
-                  className="hover:text-black transition text-left cursor-pointer"
-                >
-                  Custom Holidays
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onOpenEnquiry && onOpenEnquiry("Visas")}
-                  className="hover:text-black transition text-left cursor-pointer"
-                >
-                  International Visas
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() => onOpenEnquiry && onOpenEnquiry("Flights")}
-                  className="hover:text-black transition text-left cursor-pointer"
-                >
-                  Corporate &amp; Leisure Flights
-                </button>
-              </li>
-              <li>
-                <button
-                  type="button"
-                  onClick={() =>
-                    onOpenEnquiry && onOpenEnquiry("Umrah Packages")
-                  }
-                  className="hover:text-black transition text-left cursor-pointer"
-                >
-                  Umrah &amp; Hajj Concierge
-                </button>
-              </li>
+              {services.map((service) => (
+                <li key={service.id}>
+                  {onOpenEnquiry ? (
+                    <button
+                      type="button"
+                      onClick={() => onOpenEnquiry(service.id)}
+                      className="hover:text-black transition text-left cursor-pointer"
+                    >
+                      {service.name}
+                    </button>
+                  ) : (
+                    <Link
+                      href={`/services#${service.slug}`}
+                      className="hover:text-black transition"
+                    >
+                      {service.name}
+                    </Link>
+                  )}
+                </li>
+              ))}
               <li>
                 <Link href="/explore" className="hover:text-black transition">
                   Explore Destinations &amp; Guides

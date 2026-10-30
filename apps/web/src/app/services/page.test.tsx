@@ -8,6 +8,10 @@ import {
   waitFor,
 } from "@testing-library/react";
 import ServicesPage from "./page";
+import { useServicesCatalog } from "../../lib/use-services-catalog";
+vi.mock("../../lib/use-services-catalog", () => ({
+  useServicesCatalog: vi.fn(),
+}));
 vi.mock("next/image", () => ({
   default: ({ src, alt }: { src: string; alt: string }) => (
     <img src={src} alt={alt} />
@@ -34,11 +38,13 @@ const holiday = {
   id: "7fcdf946-37af-4b1b-a994-c5509a5605ae",
   name: "Holiday Packages",
   slug: "holiday-packages",
+  minMarginPercent: 10,
 };
 const visa = {
   id: "8fcdf946-37af-4b1b-a994-c5509a5605ae",
   name: "Visa Assistance",
   slug: "visa-assistance",
+  minMarginPercent: 10,
 };
 const pkg = {
   id: "9fcdf946-37af-4b1b-a994-c5509a5605ae",
@@ -57,6 +63,12 @@ const pkg = {
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify({ data }), { status });
 beforeEach(() => {
+  vi.mocked(useServicesCatalog).mockReturnValue({
+    services: [holiday, visa],
+    loaded: true,
+    error: false,
+    retry: async () => {},
+  });
   window.history.replaceState(null, "", "/services");
   vi.stubGlobal(
     "requestAnimationFrame",
@@ -131,7 +143,20 @@ it("selects legacy navbar hashes using the live service and filters packages whe
   ).toBeDefined();
 });
 it("does not show sample packages on backend failure and can retry", async () => {
-  vi.mocked(fetch).mockResolvedValueOnce(json(null, 503));
+  const retry = async () => {
+    vi.mocked(useServicesCatalog).mockReturnValue({
+      services: [holiday, visa],
+      loaded: true,
+      error: false,
+      retry: async () => {},
+    });
+  };
+  vi.mocked(useServicesCatalog).mockReturnValue({
+    services: [],
+    loaded: true,
+    error: true,
+    retry,
+  });
   render(<ServicesPage />);
   await screen.findByRole("alert");
   expect(screen.queryByRole("button", { name: "Enquire Now" })).toBeNull();

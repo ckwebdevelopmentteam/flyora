@@ -31,6 +31,8 @@ export const EditServicesModal = ({
     refetch: retryServices,
   } = useQuery<ServiceSummary[]>({
     queryKey: ["services"],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
     queryFn: () => apiClient.get("/services"),
     enabled: isOpen,
   });

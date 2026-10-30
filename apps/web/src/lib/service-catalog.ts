@@ -32,7 +32,7 @@ export async function loadServices(
 ): Promise<ServiceSummary[]> {
   const res = await fetch(`${publicApiUrl()}/services`, {
     signal,
-    cache: "no-store",
+    cache: "no-cache",
   });
   const body = await res.json();
   if (

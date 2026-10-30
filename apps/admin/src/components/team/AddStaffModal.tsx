@@ -35,6 +35,8 @@ export const AddStaffModal = ({ isOpen, onClose }: AddStaffModalProps) => {
     refetch: retryServices,
   } = useQuery<ServiceSummary[]>({
     queryKey: ["services"],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
     queryFn: () => apiClient.get("/services"),
     enabled: isOpen,
   });

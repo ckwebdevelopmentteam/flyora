@@ -85,6 +85,7 @@ export const TourFilterSidebar: React.FC<TourFilterSidebarProps> = ({
             type="text"
             value={filters.searchQuery}
             onChange={(e) => onChange({ searchQuery: e.target.value })}
+            aria-label="Search destination or title"
             placeholder="e.g. Dubai, Bali, Maldives..."
             className="w-full pl-9 pr-3 py-2 text-xs rounded-xl border border-stone-200 bg-stone-50/50 focus:bg-white focus:outline-hidden focus:border-[#4A2E18] focus:ring-1 focus:ring-[#4A2E18] text-stone-800 transition"
           />
@@ -148,7 +149,7 @@ export const TourFilterSidebar: React.FC<TourFilterSidebarProps> = ({
       <div className="space-y-3 pt-2 border-t border-stone-100">
         <div className="flex items-center gap-1.5 text-xs font-semibold text-stone-800">
           <IndianRupee className="w-3.5 h-3.5 text-[#4A2E18]" />
-          <span>Budget Range (per person)</span>
+          <span>Starting price</span>
         </div>
         <div className="space-y-2">
           {budgetOptions.map((opt) => {

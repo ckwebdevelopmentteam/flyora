@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useServicesCatalog } from "../lib/use-services-catalog";
+import { serviceImage, serviceDescription } from "../lib/service-visuals";
 import {
   Menu,
   X,
@@ -12,10 +14,6 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  Plane,
-  Train,
-  Bus,
-  Globe,
   Compass,
   Star,
   Info,
@@ -57,79 +55,6 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Tour Packages", href: "/tours" },
 ];
 
-// All 7 Services with matched high-quality image backgrounds & direct dedicated page section links
-export const SERVICE_ITEMS: ServiceItem[] = [
-  {
-    label: "Custom Holidays",
-    description: "Bespoke itineraries crafted around your dream travel style",
-    serviceId: "Custom Holidays",
-    badge: "Tailored Luxury",
-    imageSrc: "/services/custom-holidays.jpg",
-    href: "/services#custom-holidays",
-    icon: <Star className="w-3.5 h-3.5 text-amber-300" />,
-  },
-  {
-    label: "Visa Assistance",
-    description:
-      "Hassle-free document verification & processing for 100+ countries",
-    serviceId: "Visas",
-    badge: "Fast & Seamless",
-    imageSrc: "/services/visa-assistance.jpg",
-    href: "/services#visa-assistance",
-    icon: <Globe className="w-3.5 h-3.5 text-blue-300" />,
-  },
-  {
-    label: "Flight Booking",
-    description:
-      "Best fare routes, corporate travel & 24/7 dedicated flight support",
-    serviceId: "Flights",
-    badge: "Best Fares",
-    imageSrc: "/services/flight-booking.jpg",
-    href: "/services#flight-booking",
-    icon: <Plane className="w-3.5 h-3.5 text-sky-300" />,
-  },
-  {
-    label: "Train Booking",
-    description:
-      "Express reservations, luxury tourist rails & scenic train journeys",
-    serviceId: "Trains",
-    badge: "Scenic Rail",
-    imageSrc: "/services/train-booking.jpg",
-    href: "/services#train-booking",
-    icon: <Train className="w-3.5 h-3.5 text-emerald-300" />,
-  },
-  {
-    label: "Bus Booking",
-    description:
-      "Premium AC Volvo, sleeper coaches & dependable intercity road transit",
-    serviceId: "Buses",
-    badge: "Highway Comfort",
-    imageSrc: "/services/bus-booking.jpg",
-    href: "/services#bus-booking",
-    icon: <Bus className="w-3.5 h-3.5 text-orange-300" />,
-  },
-  {
-    label: "Umrah Packages",
-    description:
-      "Sacred pilgrimages with premium close-to-Haram accommodation & guidance",
-    serviceId: "Umrah Packages",
-    badge: "Spiritual Journey",
-    imageSrc: "/services/umrah-packages.jpg",
-    href: "/services#umrah-packages",
-    icon: <Compass className="w-3.5 h-3.5 text-teal-300" />,
-  },
-  {
-    label: "Hajj Packages",
-    description:
-      "Comprehensive blessed pilgrimage with deluxe Mina camps & sacred guidance",
-    serviceId: "Hajj Packages",
-    badge: "Sacred Pilgrimage",
-    imageSrc: "/services/hajj-packages.jpg",
-    href: "/services#hajj-packages",
-    icon: <Sparkles className="w-3.5 h-3.5 text-amber-300" />,
-  },
-];
-
 export const Navbar: React.FC<NavbarProps> = ({
   onFindAdvisor,
   onBecomeAdvisor,
@@ -139,11 +64,29 @@ export const Navbar: React.FC<NavbarProps> = ({
   className = "",
   ctaLabel = "Plan My Trip",
 }) => {
+  const {
+    services,
+    loaded: servicesLoaded,
+    error: servicesError,
+    retry: retryServices,
+  } = useServicesCatalog();
+  const serviceItems: ServiceItem[] = services.map((service) => ({
+    label: service.name,
+    description: serviceDescription(service),
+    serviceId: service.id,
+    badge: "Travel services",
+    imageSrc: serviceImage(service.slug),
+    href: `/services#${service.slug}`,
+    icon: <Compass className="w-4 h-4" />,
+  }));
+  const pageCount = Math.max(1, Math.ceil(serviceItems.length / 4));
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [servicesOpen, setServicesOpen] = useState(false);
   const [mobileServicesOpen, setMobileServicesOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [servicePage, setServicePage] = useState(0); // 0 = first 4 cards, 1 = next 3 cards
+  const [servicePage, setServicePage] = useState(0);
+
+  const currentPage = Math.min(servicePage, pageCount - 1);
 
   const servicesTriggerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -239,15 +182,30 @@ export const Navbar: React.FC<NavbarProps> = ({
     activePath.startsWith("/services") ||
     activePath === "/#services";
 
+  const selectService = (
+    event: React.MouseEvent<HTMLAnchorElement>,
+    service: ServiceItem,
+  ) => {
+    setServicesOpen(false);
+    setMobileMenuOpen(false);
+    if (
+      window.location.pathname === "/services" &&
+      !event.metaKey &&
+      !event.ctrlKey &&
+      !event.shiftKey &&
+      !event.altKey
+    ) {
+      event.preventDefault();
+      window.history.pushState(null, "", service.href);
+      window.dispatchEvent(new HashChangeEvent("hashchange"));
+    }
+  };
   // Reusable single service card component linking directly to dedicated section
   const renderServiceCard = (service: ServiceItem, isThreeCol = false) => (
     <Link
       key={service.serviceId}
       href={service.href}
-      onClick={() => {
-        setServicesOpen(false);
-        setMobileMenuOpen(false);
-      }}
+      onClick={(event) => selectService(event, service)}
       className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-xl overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer block"
     >
       {/* Background Image */}
@@ -367,7 +325,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               <button
                 type="button"
-                onClick={() => setServicesOpen((prev) => !prev)}
+                onClick={handleMouseEnter}
                 className={`flex items-center gap-1 text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 select-none cursor-pointer ${
                   isServicesActive || servicesOpen
                     ? "text-[#1C1815] font-semibold"
@@ -462,7 +420,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   Flyora Travel Services
                 </span>
                 <span className="text-[10px] font-mono text-stone-400 px-2 py-0.5 rounded-full bg-stone-100">
-                  {servicePage === 0 ? "1 - 4 of 7" : "5 - 7 of 7"}
+                  {serviceItems.length
+                    ? `${currentPage * 4 + 1} – ${Math.min((currentPage + 1) * 4, serviceItems.length)} of ${serviceItems.length}`
+                    : ""}
                 </span>
               </div>
 
@@ -471,11 +431,11 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   data-testid="services-prev-arrow"
-                  onClick={() => setServicePage(0)}
-                  disabled={servicePage === 0}
+                  onClick={() => setServicePage(Math.max(0, currentPage - 1))}
+                  disabled={currentPage === 0}
                   aria-label="Previous services"
                   className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-black/10 flex items-center justify-center transition-all ${
-                    servicePage === 0
+                    currentPage === 0
                       ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
                       : "opacity-100 cursor-pointer text-stone-700 hover:bg-stone-100 hover:text-black active:scale-95 shadow-xs"
                   }`}
@@ -485,11 +445,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <button
                   type="button"
                   data-testid="services-next-arrow"
-                  onClick={() => setServicePage(1)}
-                  disabled={servicePage === 1}
+                  onClick={() =>
+                    setServicePage(Math.min(pageCount - 1, currentPage + 1))
+                  }
+                  disabled={currentPage === pageCount - 1}
                   aria-label="Next services"
                   className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-black/10 flex items-center justify-center transition-all ${
-                    servicePage === 1
+                    currentPage === pageCount - 1
                       ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
                       : "opacity-100 cursor-pointer text-stone-700 hover:bg-stone-100 hover:text-black active:scale-95 shadow-xs"
                   }`}
@@ -499,26 +461,31 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             </div>
 
-            {/* Carousel Content (7 Cards Across 2 Slides) */}
-            <div className="overflow-hidden w-full">
-              <div
-                className="flex transition-transform duration-500 ease-out"
-                style={{ transform: `translateX(-${servicePage * 100}%)` }}
-              >
-                {/* Slide 1: First 4 Cards */}
-                <div className="w-full shrink-0 grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
-                  {SERVICE_ITEMS.slice(0, 4).map((service) =>
-                    renderServiceCard(service, false),
-                  )}
-                </div>
-
-                {/* Slide 2: Next 3 Cards */}
-                <div className="w-full shrink-0 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 sm:gap-4">
-                  {SERVICE_ITEMS.slice(4, 7).map((service) =>
-                    renderServiceCard(service, true),
-                  )}
-                </div>
-              </div>
+            {!servicesLoaded && (
+              <p role="status" className="py-8 text-sm text-stone-500">
+                Loading services…
+              </p>
+            )}
+            {servicesError && (
+              <p role="alert" className="py-4 text-sm text-stone-600">
+                We couldn’t refresh services.{" "}
+                <button
+                  onClick={() => void retryServices()}
+                  className="underline"
+                >
+                  Try again
+                </button>
+              </p>
+            )}
+            {servicesLoaded && !servicesError && !serviceItems.length && (
+              <p className="py-8 text-sm text-stone-500">
+                Our services will be available soon.
+              </p>
+            )}
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4">
+              {serviceItems
+                .slice(currentPage * 4, currentPage * 4 + 4)
+                .map((service) => renderServiceCard(service))}
             </div>
 
             {/* Bottom Bar: Link to Dedicated Guide + Pagination Dots */}
@@ -532,30 +499,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <ArrowUpRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 text-stone-400 group-hover:text-black" />
               </Link>
 
-              {/* Pagination Dots (2 Dots) */}
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  data-testid="services-dot-0"
-                  onClick={() => setServicePage(0)}
-                  aria-label="Page 1: First 4 services"
-                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                    servicePage === 0
-                      ? "w-7 bg-[#463D34]"
-                      : "w-2 bg-stone-300 hover:bg-stone-400"
-                  }`}
-                />
-                <button
-                  type="button"
-                  data-testid="services-dot-1"
-                  onClick={() => setServicePage(1)}
-                  aria-label="Page 2: Next 3 services"
-                  className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                    servicePage === 1
-                      ? "w-7 bg-[#463D34]"
-                      : "w-2 bg-stone-300 hover:bg-stone-400"
-                  }`}
-                />
+                {Array.from({ length: pageCount }, (_, index) => (
+                  <button
+                    key={index}
+                    type="button"
+                    data-testid={`services-dot-${index}`}
+                    onClick={() => setServicePage(index)}
+                    aria-label={`Service page ${index + 1}`}
+                    aria-current={index === currentPage ? "page" : undefined}
+                    className={`h-2 rounded-full transition-all ${index === currentPage ? "w-7 bg-[#463D34]" : "w-2 bg-stone-300"}`}
+                  />
+                ))}
               </div>
             </div>
           </div>
@@ -595,7 +550,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <span className="flex items-center gap-2">
                   <Star className="w-3.5 h-3.5 text-stone-400" />
-                  Services ({SERVICE_ITEMS.length})
+                  Services ({serviceItems.length})
                 </span>
                 <ChevronDown
                   className={`w-3.5 h-3.5 transition-transform duration-200 ${
@@ -606,14 +561,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
               {mobileServicesOpen && (
                 <div className="mt-2.5 mb-2 grid grid-cols-1 sm:grid-cols-2 gap-2 animate-in slide-in-from-top-1 duration-150 max-h-[380px] overflow-y-auto pr-1">
-                  {SERVICE_ITEMS.map((service) => (
+                  {serviceItems.map((service) => (
                     <Link
                       key={service.serviceId}
                       href={service.href}
-                      onClick={() => {
-                        setServicesOpen(false);
-                        setMobileMenuOpen(false);
-                      }}
+                      onClick={(event) => selectService(event, service)}
                       className="relative h-24 rounded-xl overflow-hidden text-left p-3 flex flex-col justify-end group border border-black/10 cursor-pointer shadow-xs shrink-0 block"
                     >
                       <Image

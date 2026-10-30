@@ -3,13 +3,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import type { PackageSummary, ServiceSummary } from "@flyora/types";
+import type { PackageSummary } from "@flyora/types";
 import {
-  loadServices,
   loadPackages,
   resolveService,
   publicApiUrl,
 } from "../../lib/service-catalog";
+import { useServicesCatalog } from "../../lib/use-services-catalog";
+import { serviceImage, serviceDescription } from "../../lib/service-visuals";
 import { enquiryFormSchema } from "../../lib/enquiry";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
@@ -156,12 +157,27 @@ const FAQS = [
 ];
 
 export default function ServicesPage() {
-  const [activeServiceIndex, setActiveServiceIndex] = useState(0);
+  const [selectedSlug, setSelectedSlug] = useState(() =>
+    typeof window === "undefined" ? "" : window.location.hash.slice(1),
+  );
+  const {
+    services,
+    loaded: servicesLoaded,
+    error: servicesError,
+    retry: retryServices,
+  } = useServicesCatalog();
+  const matchedService = resolveService(services, selectedSlug);
+  const activeServiceIndex = Math.max(
+    0,
+    services.findIndex((service) => service.id === matchedService?.id),
+  );
 
-  const [services, setServices] = useState<ServiceSummary[]>([]);
   const [packages, setPackages] = useState<PackageSummary[]>([]);
-  const [catalogLoading, setCatalogLoading] = useState(true);
-  const [catalogError, setCatalogError] = useState("");
+  const [packagesLoading, setPackagesLoading] = useState(true);
+  const catalogLoading = !servicesLoaded || packagesLoading;
+  const catalogError = servicesError
+    ? "We couldn’t load our services. Please try again."
+    : "";
   const [packagesError, setPackagesError] = useState("");
   const [attempt, setAttempt] = useState(0);
   const HERO_SERVICES: ServiceHeroConfig[] = services.map((service) => {
@@ -171,11 +187,9 @@ export default function ServicesPage() {
       id: service.slug,
       serviceId: service.id,
       name: service.name,
-      heroHeadline: design?.heroHeadline || service.name,
-      heroSubheadline:
-        (service as ServiceSummary & { description?: string }).description ||
-        design?.heroSubheadline ||
-        "Plan your journey with our travel team.",
+      imageSrc: serviceImage(service.slug),
+      heroHeadline: service.name,
+      heroSubheadline: serviceDescription(service),
       badge: design?.badge || "Travel services",
     };
   });
@@ -215,46 +229,18 @@ export default function ServicesPage() {
       controller.signal,
       AbortSignal.timeout(15000),
     ]);
-    Promise.allSettled([loadServices(signal), loadPackages(signal)])
-      .then(([serviceResult, packageResult]) => {
-        if (controller.signal.aborted) return;
-        if (serviceResult.status === "rejected") {
-          setServices([]);
-          setPackages([]);
-          setCatalogError("We couldn’t load our services. Please try again.");
-          return;
-        }
-        const liveServices = serviceResult.value;
-        setServices(liveServices);
-        if (packageResult.status === "fulfilled") {
-          setPackages(
-            packageResult.value.filter((p) =>
-              liveServices.some((service) => service.id === p.serviceId),
-            ),
-          );
-        } else {
-          setPackages([]);
-          setPackagesError(
-            "We couldn’t load our packages. You can still send a service enquiry above.",
-          );
-        }
-        const requested = resolveService(
-          liveServices,
-          window.location.hash.slice(1),
-        );
-        setActiveServiceIndex(
-          Math.max(
-            0,
-            liveServices.findIndex((service) => service.id === requested?.id),
-          ),
-        );
+    loadPackages(signal)
+      .then((items) => {
+        if (!controller.signal.aborted) setPackages(items);
       })
       .catch(() => {
         if (!controller.signal.aborted)
-          setCatalogError("We couldn’t load our services. Please try again.");
+          setPackagesError(
+            "We couldn’t load our packages. You can still send a service enquiry above.",
+          );
       })
       .finally(() => {
-        if (!controller.signal.aborted) setCatalogLoading(false);
+        if (!controller.signal.aborted) setPackagesLoading(false);
       });
     return () => controller.abort();
   }, [attempt]);
@@ -278,7 +264,7 @@ export default function ServicesPage() {
     if (sending || uncertain || idx === activeServiceIndex) return;
     setSlideDirection(idx > activeServiceIndex ? "next" : "prev");
     setPrevIndex(activeServiceIndex);
-    setActiveServiceIndex(idx);
+    setSelectedSlug(HERO_SERVICES[idx].id);
     setSubmitted(false);
 
     // Keep URL hash in sync with user's selection without causing page jump or reload
@@ -313,30 +299,18 @@ export default function ServicesPage() {
   >();
   const [openFaq, setOpenFaq] = useState<number | null>(0);
 
-  // Listen to hash changes on initial mount and external navigation (back/forward or navbar links)
   useEffect(() => {
-    const syncFromHash = () => {
-      if (typeof window === "undefined") return;
-      const hash = window.location.hash.replace("#", "");
-      if (!hash) return;
-      const matched = resolveService(services, hash);
-      const index = services.findIndex((s) => s.id === matched?.id);
-      if (index !== -1) {
-        setActiveServiceIndex((curr) => {
-          if (curr !== index) {
-            setSlideDirection(index > curr ? "next" : "prev");
-            setPrevIndex(curr);
-            return index;
-          }
-          return curr;
-        });
-      }
+    const selectFromUrl = () => {
+      setSubmitted(false);
+      setSelectedSlug(window.location.hash.slice(1));
     };
-
-    // Listen to external hash changes (e.g. from navbar anchor clicks or browser back/forward)
-    window.addEventListener("hashchange", syncFromHash);
-    return () => window.removeEventListener("hashchange", syncFromHash);
-  }, [services]);
+    window.addEventListener("hashchange", selectFromUrl);
+    window.addEventListener("popstate", selectFromUrl);
+    return () => {
+      window.removeEventListener("hashchange", selectFromUrl);
+      window.removeEventListener("popstate", selectFromUrl);
+    };
+  }, []);
 
   // Motion effect: Parallax scroll for the coastal counter strip image
   useEffect(() => {
@@ -489,8 +463,8 @@ export default function ServicesPage() {
             {catalogError}{" "}
             <button
               onClick={() => {
-                setCatalogLoading(true);
-                setCatalogError("");
+                setPackagesLoading(true);
+                void retryServices();
                 setPackagesError("");
                 setAttempt((n) => n + 1);
               }}
@@ -509,6 +483,7 @@ export default function ServicesPage() {
             {HERO_SERVICES.map((s, idx) => {
               const isActive = idx === activeServiceIndex;
               const isPrev = idx === prevIndex;
+              if (!isActive && !isPrev) return null;
 
               let transformStyle = "";
               let opacityStyle = 0;
@@ -549,7 +524,7 @@ export default function ServicesPage() {
                     src={s.imageSrc}
                     alt={s.name}
                     fill
-                    priority
+                    preload={isActive}
                     sizes="100vw"
                     className="object-cover brightness-[0.78]"
                   />
@@ -1055,7 +1030,7 @@ export default function ServicesPage() {
             <button
               onClick={() => {
                 setPackagesError("");
-                setCatalogLoading(true);
+                setPackagesLoading(true);
                 setAttempt((n) => n + 1);
               }}
             >

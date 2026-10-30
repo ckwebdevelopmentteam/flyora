@@ -65,6 +65,7 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
             </span>
             <div className="relative">
               <select
+                aria-label="Sort packages"
                 value={sortBy}
                 onChange={(e) =>
                   onSortChange(e.target.value as TourFilterState["sortBy"])

@@ -69,6 +69,8 @@ export const PackageBuilderPage = () => {
     ServiceSummary[]
   >({
     queryKey: ["services"],
+    staleTime: 0,
+    refetchOnWindowFocus: true,
     queryFn: () => apiClient.get("/services"),
   });
 

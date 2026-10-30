@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { LoginPage } from "./pages/LoginPage";
 import { DashboardPage } from "./pages/DashboardPage";
+import { ServicesPage } from "./pages/ServicesPage";
 import { TeamPage } from "./pages/TeamPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 import { AdminLayout } from "./components/layout/AdminLayout";
@@ -113,6 +114,9 @@ export default function App() {
                 />
               </Route>
 
+              <Route element={<RoleGuard allowedRoles={["SUPER_ADMIN"]} />}>
+                <Route path="services" element={<ServicesPage />} />
+              </Route>
               {/* Team Management - Restricted to Super Admin & Operations Manager */}
               <Route
                 element={
