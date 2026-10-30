@@ -167,12 +167,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   return (
     <div
       ref={trackRef}
-      className="sticky top-0 z-0 h-screen w-full text-white overflow-hidden"
+      className="relative z-0 min-h-screen w-full text-white overflow-hidden"
     >
       {/* =========================================================================
-          HERO MAIN VIEWPORT: Fixed Fullscreen Hero Viewport
+          HERO MAIN VIEWPORT: Fullscreen Hero Viewport
           ========================================================================= */}
-      <section className="relative z-0 flex h-full w-full items-center justify-center overflow-hidden bg-[#F9F3EC]">
+      <section className="relative z-0 flex min-h-screen w-full items-center justify-center overflow-hidden bg-[#1E1B18]">
         {/* Background Video & Scrim Overlays */}
         <div className="absolute inset-0 animate-hero-zoom overflow-hidden">
           <video
@@ -205,14 +205,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           />
         </div>
 
-        {/* Hero Content Container: softly drifts up and fades as user scrolls down */}
-        <div
-          style={{
-            opacity: Math.max(0, 1 - progress * 2.8),
-            transform: `translate3d(0, -${24 + progress * 140}px, 0)`,
-          }}
-          className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-14 sm:pt-16 md:pt-20 pb-10 sm:pb-14 flex flex-col items-center gap-2 sm:gap-3 text-center select-none will-change-transform"
-        >
+        {/* Hero Content Container */}
+        <div className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-24 sm:pt-28 md:pt-32 pb-16 sm:pb-24 flex flex-col items-center gap-2 sm:gap-3 text-center select-none">
           {/* Eyebrow Tagline */}
           <span className="animate-hero-eyebrow font-heading max-md:text-[12px] text-sm lg:text-base text-white/90 tracking-[0.14em] uppercase font-light drop-shadow-sm">
             {eyebrow}

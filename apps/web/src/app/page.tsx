@@ -458,72 +458,8 @@ export default function Home() {
       });
     };
 
-    const handleWheel = (e: WheelEvent) => {
-      const scrollY = window.scrollY || window.pageYOffset;
-      const vh = window.innerHeight;
-
-      // When near top of hero and scrolling down slightly, auto-scroll 1 viewport height
-      if (scrollY < vh * 0.45 && e.deltaY > 4) {
-        e.preventDefault();
-        snapToDestinations();
-      }
-      // When at or near top of destinations section and scrolling up, auto-scroll back to hero
-      else if (scrollY >= vh * 0.55 && scrollY <= vh * 1.15 && e.deltaY < -4) {
-        e.preventDefault();
-        snapToHero();
-      }
-    };
-
-    const handleTouchStart = (e: TouchEvent) => {
-      touchStartY = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      const scrollY = window.scrollY || window.pageYOffset;
-      const vh = window.innerHeight;
-      const currentY = e.touches[0].clientY;
-      const deltaY = touchStartY - currentY; // positive = swipe up = scroll down
-
-      if (scrollY < vh * 0.45 && deltaY > 12) {
-        if (e.cancelable) e.preventDefault();
-        snapToDestinations();
-      } else if (scrollY >= vh * 0.55 && scrollY <= vh * 1.15 && deltaY < -12) {
-        if (e.cancelable) e.preventDefault();
-        snapToHero();
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      const scrollY = window.scrollY || window.pageYOffset;
-      const vh = window.innerHeight;
-
-      if (
-        scrollY < vh * 0.45 &&
-        (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ")
-      ) {
-        e.preventDefault();
-        snapToDestinations();
-      } else if (
-        scrollY >= vh * 0.55 &&
-        scrollY <= vh * 1.15 &&
-        (e.key === "ArrowUp" || e.key === "PageUp")
-      ) {
-        e.preventDefault();
-        snapToHero();
-      }
-    };
-
-    window.addEventListener("wheel", handleWheel, { passive: false });
-    window.addEventListener("touchstart", handleTouchStart, { passive: true });
-    window.addEventListener("touchmove", handleTouchMove, { passive: false });
-    window.addEventListener("keydown", handleKeyDown);
-
     return () => {
       cancelAnimationFrame(rafId);
-      window.removeEventListener("wheel", handleWheel);
-      window.removeEventListener("touchstart", handleTouchStart);
-      window.removeEventListener("touchmove", handleTouchMove);
-      window.removeEventListener("keydown", handleKeyDown);
       lenis.destroy();
       lenisRef.current = null;
     };
@@ -604,11 +540,9 @@ export default function Home() {
 
       {/* ---------------------------------------------------------------------
           STACKING CONTENT SHEET:
-          Has z-10 and stacks on top of the sticky fixed hero as you scroll.
-          The clouds are pulled up over the hero video with negative margin and a transparent
-          backdrop so the video shows through, attached directly to the Featured Destinations!
+          Has solid background and stacks cleanly below the hero.
           --------------------------------------------------------------------- */}
-      <div className="relative z-10 w-full">
+      <div className="relative z-10 w-full bg-[#FAF7F2]">
         {/* Floating animated clouds marquee attached to top of Featured Destinations */}
         <div className="relative -mt-[110px] sm:-mt-[150px] md:-mt-[180px] lg:-mt-[210px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
           <div className="animate-marquee flex w-max will-change-transform">
@@ -1013,7 +947,10 @@ export default function Home() {
         {/* ===================================================================
             SECTION 7: TRAVELLER TESTIMONIALS (Ink Orbit Testimonials)
             =================================================================== */}
-        <section id="testimonials" className="py-16 sm:py-24">
+        <section
+          id="testimonials"
+          className="py-16 sm:py-24 border-t border-black/[0.06] bg-white relative z-10"
+        >
           <InkOrbitTestimonials
             theme="light"
             tag="VERIFIED EXPERIENCES"
