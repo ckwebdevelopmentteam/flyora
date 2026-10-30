@@ -2,8 +2,9 @@
 
 @theme inline {
   --font-sans: var(--font-poppins), var(--font-geist-sans), sans-serif;
-  --font-mono: var(--font-geist-mono);
+  --font-mono: var(--font-space-mono), var(--font-geist-mono), monospace;
   --font-serif: var(--font-cormorant), "Times New Roman", Times, serif;
+  --font-space-mono: var(--font-space-mono), monospace;
   --font-spartan: var(--font-spartan), var(--font-cormorant), sans-serif;
   --font-heading: var(--font-spartan), var(--font-cormorant), sans-serif;
   --font-top: var(--font-spartan), sans-serif;
@@ -119,4 +120,13 @@ body {
 
 .animate-flight-dash {
   animation: flightDash 6s linear infinite;
+}
+
+/* Utility to hide scrollbars while keeping scroll functionality */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

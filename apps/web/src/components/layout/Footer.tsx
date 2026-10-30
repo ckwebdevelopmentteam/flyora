@@ -25,7 +25,7 @@ export const Footer: React.FC<FooterProps> = ({
 }) => {
   return (
     <footer
-      className={`border-t border-black/[0.06] bg-[#F7F2EC] text-[#5C534A] pt-14 pb-10 transition-colors ${className}`}
+      className={`relative z-10 border-t border-black/[0.06] bg-[#F7F2EC] text-[#5C534A] pt-14 pb-10 transition-colors ${className}`}
     >
       <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Trust Badges Strip */}

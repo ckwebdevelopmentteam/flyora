@@ -1,26 +1,26 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import Image from "next/image";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
+import Lenis from "lenis";
+import "lenis/dist/lenis.css";
 import {
-  ChevronLeft,
-  ChevronRight,
-  Sparkles,
-  Coffee,
-  Sparkle,
-  CreditCard,
-  Clock,
-  Gift,
-  ShieldCheck,
-  CheckCircle2,
+  Image as ImageIcon,
   ChevronDown,
   ArrowRight,
-  Star,
+  ArrowLeft,
+  Clock,
   MapPin,
-  HeartHandshake,
   Compass,
-  MessageCircle,
+  Heart,
+  Users,
+  Palmtree,
+  Sparkles,
+  Mountain,
+  ShieldCheck,
+  Headphones,
+  CheckCircle2,
+  CalendarCheck,
 } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/layout/Footer";
@@ -28,164 +28,310 @@ import { HeroSection } from "../components/HeroSection";
 import { EnquiryModal } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
+import { PopularHolidayPackages } from "../components/PopularHolidayPackages";
 
-// Luxury carousel destinations matching Fora Travel / user screenshot
-const CAROUSEL_DESTINATIONS = [
+// =============================================================================
+// PLACEHOLDER DATA STRUCTURES FOR HOMEPAGE SECTIONS
+// =============================================================================
+
+// Section 1: Featured Destinations matching reference design
+const FEATURED_DESTINATIONS = [
   {
-    id: "rainforest",
-    title: "Costa Rica Rainforest",
-    category: "Eco-Luxury & Wellness",
-    image:
-      "https://images.unsplash.com/photo-1518457607834-6e8d80c183c5?auto=format&fit=crop&w=800&q=80",
+    id: "dest-bali",
+    name: "Bali, Indonesia",
+    image: "/destinations/bali_hd.jpg",
   },
   {
-    id: "beach-coast",
-    title: "Amalfi Coastline",
-    category: "Mediterranean Escape",
-    image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+    id: "dest-rome",
+    name: "Rome, Italy",
+    image: "/destinations/rome_hd.jpg",
   },
   {
-    id: "classical-art",
-    title: "Rome & Vatican Art",
-    category: "Cultural Masterpieces",
-    image:
-      "https://images.unsplash.com/photo-1582561424760-0321d75e81fa?auto=format&fit=crop&w=800&q=80",
+    id: "dest-kyoto",
+    name: "Kyoto, Japan",
+    image: "/destinations/kyoto_hd.jpg",
   },
   {
-    id: "vineyards",
-    title: "Tuscany Hillside Estates",
-    category: "Wine & Gastronomy",
-    image:
-      "https://images.unsplash.com/photo-1533105079780-92b9be482077?auto=format&fit=crop&w=800&q=80",
+    id: "dest-lisbon",
+    name: "Lisbon, Portugal",
+    image: "/destinations/lisbon_hd.jpg",
   },
   {
-    id: "castle",
-    title: "Bavarian Fairytale Castles",
-    category: "Historic Architecture",
-    image:
-      "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?auto=format&fit=crop&w=800&q=80",
+    id: "dest-tulum",
+    name: "Tulum, Mexico",
+    image: "/destinations/tulum_hd.jpg",
   },
   {
-    id: "resort-pool",
-    title: "Maui Palm Beach Resort",
-    category: "Island Retreat",
-    image:
-      "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
+    id: "dest-switzerland",
+    name: "Switzerland & The Alps",
+    image: "/destinations/switzerland_hd.jpg",
   },
   {
-    id: "cathedral-dome",
-    title: "Vienna Baroque Palaces",
-    category: "Grand Heritage",
-    image:
-      "https://images.unsplash.com/photo-1569154941061-e231b4725ef1?auto=format&fit=crop&w=800&q=80",
+    id: "dest-dubai",
+    name: "Dubai, UAE",
+    image: "/destinations/dubai_hd.jpg",
   },
   {
-    id: "kyoto",
-    title: "Kyoto Bamboo Temples",
-    category: "Zen Serenity",
-    image:
-      "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "swiss-alps",
-    title: "Zermatt Alpine Chalets",
-    category: "Mountain Luxury",
-    image:
-      "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: "maldives",
-    title: "Maldives Overwater Villas",
-    category: "Pure Relaxation",
-    image:
-      "https://images.unsplash.com/photo-1514282401047-d79a71a590e8?auto=format&fit=crop&w=800&q=80",
+    id: "dest-maldives",
+    name: "Maldives Islands",
+    image: "/destinations/maldives_hd.jpg",
   },
 ];
 
-// Featured advisors matching the curated editorial style
-const FEATURED_ADVISORS = [
+// Section 2: Popular Holiday Packages (3 items)
+const POPULAR_PACKAGES = [
   {
-    name: "Elena Vance",
-    location: "Rome & Florence",
-    specialties: ["Amalfi Coast", "Tuscan Wine Estates", "Honeymoons"],
-    rating: "5.0",
-    trips: "140+ Trips Planned",
-    avatar:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80",
-    quote:
-      "I cultivate direct relationships with general managers across Italy so my travelers arrive as cherished guests.",
+    id: "pkg-swiss-alps",
+    name: "Swiss Alpine Wonders",
+    destination: "Switzerland",
+    duration: "7 Days / 6 Nights",
+    pricePlaceholder: "From $1,850 per person",
+    overview:
+      "Scenic rail passes, private Lucerne cruises, and mountain peak excursions.",
   },
   {
-    name: "Kenji Takahashi",
-    location: "Tokyo & Kyoto",
-    specialties: ["Japanese Ryokans", "Culinary Experiences", "Art & Design"],
-    rating: "5.0",
-    trips: "115+ Trips Planned",
-    avatar:
-      "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=300&q=80",
-    quote:
-      "From private tea ceremonies to Michelin counters, I unlock the quiet, authentic soul of Japan.",
+    id: "pkg-bali-island",
+    name: "Bali Island Sanctuary",
+    destination: "Indonesia",
+    duration: "6 Days / 5 Nights",
+    pricePlaceholder: "From $1,250 per person",
+    overview:
+      "Ubud jungle villas, beachfront relaxation, and guided cultural tours.",
   },
   {
-    name: "Sophie Laurent",
-    location: "Paris & Nice",
-    specialties: ["French Riviera", "Alpine Ski Stays", "Boutique Hotels"],
-    rating: "4.9",
-    trips: "180+ Trips Planned",
-    avatar:
-      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80",
-    quote:
-      "My passion is curating unexpected moments—sun-drenched private catamarans, secret bistro tables, and room upgrades.",
-  },
-  {
-    name: "Marcus Thorne",
-    location: "Cape Town & London",
-    specialties: [
-      "African Safaris",
-      "Victoria Falls",
-      "Luxury Wildlife Lodges",
-    ],
-    rating: "5.0",
-    trips: "95+ Trips Planned",
-    avatar:
-      "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=300&q=80",
-    quote:
-      "Tracking wildlife under open skies requires meticulous planning. Every camp is handpicked for safety and wonders.",
+    id: "pkg-dubai-emirates",
+    name: "Emirates City & Desert Tour",
+    destination: "United Arab Emirates",
+    duration: "5 Days / 4 Nights",
+    pricePlaceholder: "From $1,450 per person",
+    overview:
+      "Five-star luxury accommodation, private desert safari, and skyline dinners.",
   },
 ];
 
-// Frequently Asked Questions
+// Section 3: Explore by Travel Style (6 categories)
+const TRAVEL_STYLES = [
+  {
+    id: "style-honeymoon",
+    title: "Honeymoon Holidays",
+    icon: Heart,
+    note: "Romantic escapes & private villas",
+  },
+  {
+    id: "style-family",
+    title: "Family Holidays",
+    icon: Users,
+    note: "Tailored for all generations",
+  },
+  {
+    id: "style-adventure",
+    title: "Adventure Trips",
+    icon: Mountain,
+    note: "Trekking, safaris & expeditions",
+  },
+  {
+    id: "style-beach",
+    title: "Beach Holidays",
+    icon: Palmtree,
+    note: "Coastal retreats & island leisure",
+  },
+  {
+    id: "style-group",
+    title: "Group Tours",
+    icon: Compass,
+    note: "Curated itineraries & shared journeys",
+  },
+  {
+    id: "style-luxury",
+    title: "Luxury Holidays",
+    icon: Sparkles,
+    note: "Five-star stays & bespoke VIP perks",
+  },
+];
+
+// Section 4: Why Choose Flyora (4 blocks)
+const WHY_CHOOSE_FLYORA = [
+  {
+    id: "why-planning",
+    title: "Personalised Travel Planning",
+    description:
+      "Bespoke itineraries built entirely around your preferred pace, schedule, and holiday wishlist.",
+    icon: CalendarCheck,
+  },
+  {
+    id: "why-guidance",
+    title: "Expert Travel Guidance",
+    description:
+      "Firsthand destination expertise and curated advice from seasoned travel coordinators.",
+    icon: Compass,
+  },
+  {
+    id: "why-transparent",
+    title: "Transparent Package Details",
+    description:
+      "Clear itemized inclusions, upfront costs, and zero hidden charges for worry-free planning.",
+    icon: ShieldCheck,
+  },
+  {
+    id: "why-support",
+    title: "Dedicated Travel Support",
+    description:
+      "Round-the-clock coordinator assistance via phone and WhatsApp before, during, and after your trip.",
+    icon: Headphones,
+  },
+];
+
+// Section 5: Signature Experiences (1 large feature + 2 smaller experiences)
+const SIGNATURE_FEATURE = {
+  title: "Private Helicopter Alpine Tour & Glacier Landing",
+  description:
+    "Experience panoramic aerial vistas above iconic alpine summits followed by an exclusive private landing and tasting amidst pristine snowfields.",
+};
+
+const SIGNATURE_SMALLER = [
+  {
+    id: "sig-yacht",
+    title: "Exclusive Sunset Yacht Charter",
+    description:
+      "Cruise tranquil coastal waters accompanied by a private chef, bespoke dinner menu, and golden hour views.",
+  },
+  {
+    id: "sig-cultural",
+    title: "Private Cultural Heritage Masterclass",
+    description:
+      "Immerse yourself in authentic traditions with local master artisans, private museum entries, and historian guides.",
+  },
+];
+
+// Section 6: How It Works (3 numbered steps)
+const HOW_IT_WORKS_STEPS = [
+  {
+    step: "01",
+    title: "Tell Us Your Travel Plans",
+    description:
+      "Share your destination wishlist, travel dates, companion details, and preferred style with our team.",
+  },
+  {
+    step: "02",
+    title: "Explore Your Options",
+    description:
+      "Review customized itinerary proposals, handpicked accommodation options, and transparent price estimates.",
+  },
+  {
+    step: "03",
+    title: "Prepare for Your Journey",
+    description:
+      "Finalize your booking, receive complete travel dossiers, and travel with dedicated 24/7 coordinator support.",
+  },
+];
+
+// Section 7: Traveller Testimonials (3 items)
+const TESTIMONIALS = [
+  {
+    id: "test-1",
+    quote:
+      "Placeholder Review: 'Our family vacation was planned to absolute perfection. Every hotel, driver, and private excursion ran smoothly without any hassle.'",
+    customerName: "Placeholder: David & Sarah M.",
+    destination: "Switzerland & Italy Tour",
+  },
+  {
+    id: "test-2",
+    quote:
+      "Placeholder Review: 'The attention to detail and personal hotel upgrades made our honeymoon unforgettable. Exceptional coordinator support from start to finish.'",
+    customerName: "Placeholder: Priya & Rohan K.",
+    destination: "Bali Luxury Escape",
+  },
+  {
+    id: "test-3",
+    quote:
+      "Placeholder Review: 'Transparent costs, responsive communication, and wonderful local guides. Flyora made international travel completely stress-free.'",
+    customerName: "Placeholder: Alexander T.",
+    destination: "Dubai & Abu Dhabi Holiday",
+  },
+];
+
+// Section 8: Travel Inspiration (3 articles)
+const INSPIRATION_ARTICLES = [
+  {
+    id: "art-1",
+    title: "10 Essential Tips for Planning an International Holiday",
+    description:
+      "From seasonal packing essentials to flight booking timelines, learn how to prepare for effortless international journeys.",
+    readTime: "5 min read",
+  },
+  {
+    id: "art-2",
+    title: "Discovering Secluded Coastal Havens in 2026",
+    description:
+      "Step off the beaten path to explore quiet shores, tranquil fishing villages, and charming seaside boutique stays.",
+    readTime: "4 min read",
+  },
+  {
+    id: "art-3",
+    title: "Curating a Balanced Multi-Generation Family Trip",
+    description:
+      "How to craft itineraries that satisfy curious children, active parents, and grandparents seeking comfort.",
+    readTime: "6 min read",
+  },
+];
+
+// Section 9: Frequently Asked Questions (5 questions)
 const FAQS = [
   {
-    question: "Does it cost extra to book with a Flyora travel advisor?",
+    question: "What is typically included in a Flyora holiday package?",
     answer:
-      "No! In the vast majority of cases, working with a Flyora advisor costs nothing extra. Our partner hotels and luxury brands compensate advisors directly, meaning you pay the standard best available public rate while enjoying complimentary VIP perks like daily breakfast, room upgrades, and resort credits.",
+      "Placeholder: Our packages generally cover premium handpicked accommodations, daily breakfast, private or scheduled airport transfers, guided sightseeing, and selected curated activities as specified in your itinerary.",
   },
   {
-    question: "How does the advisor matching process work?",
+    question: "Can I customize an itinerary to suit my personal preferences?",
     answer:
-      "You complete a quick 2-minute questionnaire detailing your destination, dates, travel style, and budget. Our coordinator team then pairs you with a handpicked, certified Flyora advisor who has firsthand destination expertise and personal hotel relationships in your chosen location.",
+      "Placeholder: Yes, all Flyora itineraries can be completely tailored. You can adjust durations, select preferred hotel tiers, add private tours, or combine multiple destinations according to your schedule.",
   },
   {
-    question: "What perks do I unlock when booking through an advisor?",
+    question: "Are flights and visa assistance included in the package cost?",
     answer:
-      "Through our elite preferred partner affiliations (Four Seasons Preferred Partner, Belmond Bellini Club, Rosewood Elite, Marriott STARS, Aman, Hyatt Privé, etc.), our travelers receive complimentary daily breakfast for two, room upgrades upon arrival (subject to availability), $100+ resort or spa credits, and flexible early check-in/late check-out.",
+      "Placeholder: International flights and visa assistance can be packaged together or booked separately depending on your preference. All inclusions and exclusions are clearly itemized prior to booking.",
   },
   {
-    question:
-      "Can I book with an advisor if I already know where I want to stay?",
+    question: "What is the booking process and payment schedule?",
     answer:
-      "Absolutely! Simply share the property name and your target dates. Your advisor will book your reservation through our VIP partner desks to ensure all complimentary amenities and personalized welcome gifts are attached to your stay.",
+      "Placeholder: After reviewing and approving your personalized proposal, a standard deposit confirms your reservation. The remaining balance is completed closer to your departure date via flexible milestones.",
   },
   {
-    question:
-      "Can Flyora advisors assist with flights, tours, and full itineraries?",
+    question: "What kind of support is provided during my journey?",
     answer:
-      "Yes. In addition to hotel bookings, advisors curate complete end-to-end itineraries including private airport transfers, curated day tours, restaurant reservations, and comprehensive travel coordination.",
+      "Placeholder: You receive 24/7 dedicated travel support via phone and WhatsApp throughout your trip, ensuring prompt assistance with itinerary questions, airport coordination, or unexpected needs.",
   },
 ];
 
+// =============================================================================
+// REUSABLE MINIMAL IMAGE PLACEHOLDER
+// =============================================================================
+function ImagePlaceholder({
+  label = "Image Placeholder",
+  aspect = "aspect-4/3",
+  className = "",
+}: {
+  label?: string;
+  aspect?: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`w-full ${aspect} bg-stone-200/90 border border-stone-300/80 rounded-md flex flex-col items-center justify-center text-stone-500 select-none p-4 text-center ${className}`}
+      aria-label={label}
+    >
+      <ImageIcon className="w-6 h-6 text-stone-400 mb-1.5" />
+      <span className="text-[11px] font-mono uppercase tracking-wider text-stone-500">
+        {label}
+      </span>
+    </div>
+  );
+}
+
+// =============================================================================
+// MAIN HOMEPAGE COMPONENT
+// =============================================================================
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAdvisorModalOpen, setIsAdvisorModalOpen] = useState(false);
@@ -193,23 +339,162 @@ export default function Home() {
     string | undefined
   >(undefined);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
-  const carouselRef = useRef<HTMLDivElement>(null);
+  const destinationsRef = useRef<HTMLDivElement>(null);
+  const carouselTrackRef = useRef<HTMLDivElement>(null);
+  const lenisRef = useRef<Lenis | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  // Initialize Lenis Smooth Scrolling and 1-viewport-height auto-scroll/snap
+  useEffect(() => {
+    const lenis = new Lenis({
+      duration: 1.2,
+      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+      smoothWheel: true,
+      touchMultiplier: 1.5,
+    });
+    lenisRef.current = lenis;
+
+    let rafId: number;
+    function raf(time: number) {
+      lenis.raf(time);
+      rafId = requestAnimationFrame(raf);
+    }
+    rafId = requestAnimationFrame(raf);
+
+    let isSnapping = false;
+    let touchStartY = 0;
+
+    const snapToDestinations = () => {
+      if (isSnapping) return;
+      isSnapping = true;
+      const target = destinationsRef.current;
+      const targetY = target
+        ? target.getBoundingClientRect().top + window.scrollY - 100
+        : window.innerHeight * 0.9;
+      lenis.scrollTo(targetY, {
+        duration: 1.2,
+        onComplete: () => {
+          setTimeout(() => {
+            isSnapping = false;
+          }, 150);
+        },
+      });
+    };
+
+    const snapToHero = () => {
+      if (isSnapping) return;
+      isSnapping = true;
+      lenis.scrollTo(0, {
+        duration: 1.2,
+        onComplete: () => {
+          setTimeout(() => {
+            isSnapping = false;
+          }, 150);
+        },
+      });
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const vh = window.innerHeight;
+
+      // When near top of hero and scrolling down slightly, auto-scroll 1 viewport height
+      if (scrollY < vh * 0.45 && e.deltaY > 4) {
+        e.preventDefault();
+        snapToDestinations();
+      }
+      // When at or near top of destinations section and scrolling up, auto-scroll back to hero
+      else if (scrollY >= vh * 0.55 && scrollY <= vh * 1.15 && e.deltaY < -4) {
+        e.preventDefault();
+        snapToHero();
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const vh = window.innerHeight;
+      const currentY = e.touches[0].clientY;
+      const deltaY = touchStartY - currentY; // positive = swipe up = scroll down
+
+      if (scrollY < vh * 0.45 && deltaY > 12) {
+        if (e.cancelable) e.preventDefault();
+        snapToDestinations();
+      } else if (scrollY >= vh * 0.55 && scrollY <= vh * 1.15 && deltaY < -12) {
+        if (e.cancelable) e.preventDefault();
+        snapToHero();
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const vh = window.innerHeight;
+
+      if (
+        scrollY < vh * 0.45 &&
+        (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ")
+      ) {
+        e.preventDefault();
+        snapToDestinations();
+      } else if (
+        scrollY >= vh * 0.55 &&
+        scrollY <= vh * 1.15 &&
+        (e.key === "ArrowUp" || e.key === "PageUp")
+      ) {
+        e.preventDefault();
+        snapToHero();
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      cancelAnimationFrame(rafId);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("keydown", handleKeyDown);
+      lenis.destroy();
+      lenisRef.current = null;
+    };
+  }, []);
+
+  const checkScroll = () => {
+    if (carouselTrackRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = carouselTrackRef.current;
+      setCanScrollLeft(scrollLeft > 8);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 8);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener("resize", checkScroll);
+    return () => window.removeEventListener("resize", checkScroll);
+  }, []);
+
+  const handleScroll = (direction: "left" | "right") => {
+    if (carouselTrackRef.current) {
+      const containerWidth = carouselTrackRef.current.clientWidth;
+      const scrollAmount =
+        containerWidth < 640 ? containerWidth * 0.8 : containerWidth * 0.5;
+      carouselTrackRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
 
   const openEnquiry = (destination?: string) => {
     setSelectedDestination(destination);
     setIsModalOpen(true);
-  };
-
-  const scrollLeft = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: -360, behavior: "smooth" });
-    }
-  };
-
-  const scrollRight = () => {
-    if (carouselRef.current) {
-      carouselRef.current.scrollBy({ left: 360, behavior: "smooth" });
-    }
   };
 
   const toggleFaq = (index: number) => {
@@ -218,7 +503,9 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#F9F3EC] text-[#1E1B18] font-sans selection:bg-[#463D34] selection:text-white">
-      {/* Top Floating White Navigation Pill with 5 Links */}
+      {/* ---------------------------------------------------------------------
+          NAVBAR: Preserved exactly as existing
+          --------------------------------------------------------------------- */}
       <Navbar
         isFixed={true}
         onOpenEnquiry={(service) => openEnquiry(service)}
@@ -226,11 +513,9 @@ export default function Home() {
         onBecomeAdvisor={() => setIsAdvisorModalOpen(true)}
       />
 
-      {/* =========================================================================
-          HERO SECTION: 100% exact match to  Tours reference website
-          Full-bleed video (/hero/hero-one.mp4), dark overlays, typography,
-          dual Sky Cyan wipe CTAs, mute/unmute control, and moving cloud-frame marquee
-          ========================================================================= */}
+      {/* ---------------------------------------------------------------------
+          HERO SECTION: Preserved exactly as existing
+          --------------------------------------------------------------------- */}
       <HeroSection
         videoSrc="/hero/hero-one.mp4?v=new"
         posterSrc="/hero/hero-poster.jpg"
@@ -239,550 +524,639 @@ export default function Home() {
         description="Custom journeys across India and the world, built around you since 2006."
         primaryCtaLabel="Start Planning"
         onPrimaryCtaClick={() => openEnquiry()}
+        onOpenEnquiry={(service) => openEnquiry(service)}
         secondaryCtaLabel="See Our Journeys"
         onSecondaryCtaClick={() => {
-          if (carouselRef.current) {
-            carouselRef.current.scrollIntoView({ behavior: "smooth" });
+          if (lenisRef.current) {
+            const target = destinationsRef.current;
+            const targetY = target
+              ? target.getBoundingClientRect().top + window.scrollY - 100
+              : window.innerHeight * 0.9;
+            lenisRef.current.scrollTo(targetY, { duration: 1.2 });
+          } else if (destinationsRef.current) {
+            destinationsRef.current.scrollIntoView({ behavior: "smooth" });
           }
         }}
       />
 
-      {/* =========================================================================
-          DESTINATION PHOTOGRAPHY CAROUSEL STRIP:
-          Exact matching visual cards from user screenshot with circular < and >
-          Elevated with relative z-10 and solid canvas to smoothly cover sticky hero
-          ========================================================================= */}
-      <div className="relative z-10 w-full bg-[#F9F3EC]">
-        <section className="relative w-full max-w-[1400px] mx-auto px-2 sm:px-4 pb-16 sm:pb-24">
-          {/* Floating Circular Navigation Arrows */}
-          <button
-            onClick={scrollLeft}
-            aria-label="Previous destinations"
-            className="absolute left-3 sm:left-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 hover:bg-white text-zinc-900 shadow-[0_4px_20px_rgba(0,0,0,0.18)] flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs border border-black/5"
-          >
-            <ChevronLeft className="w-5 h-5 stroke-[2.2]" />
-          </button>
+      {/* ---------------------------------------------------------------------
+          STACKING CONTENT SHEET:
+          Has z-10 and stacks on top of the sticky fixed hero as you scroll.
+          The clouds are pulled up over the hero video with negative margin and a transparent
+          backdrop so the video shows through, attached directly to the Featured Destinations!
+          --------------------------------------------------------------------- */}
+      <div className="relative z-10 w-full">
+        {/* Floating animated clouds marquee attached to top of Featured Destinations */}
+        <div className="relative -mt-[110px] sm:-mt-[150px] md:-mt-[180px] lg:-mt-[210px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
+          <div className="animate-marquee flex w-max will-change-transform">
+            {/* Set 1 */}
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-1.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-2.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-3.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-4.png"
+            />
+            {/* Set 2 (for seamless loop) */}
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-1.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-2.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-3.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-4.png"
+            />
+          </div>
 
-          <button
-            onClick={scrollRight}
-            aria-label="Next destinations"
-            className="absolute right-3 sm:right-6 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white/95 hover:bg-white text-zinc-900 shadow-[0_4px_20px_rgba(0,0,0,0.18)] flex items-center justify-center transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer backdrop-blur-xs border border-black/5"
-          >
-            <ChevronRight className="w-5 h-5 stroke-[2.2]" />
-          </button>
+          {/* Luminous gradient: completely transparent at top so hero video shines through, fading down to pure white */}
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0)_30%,rgba(255,255,255,0.25)_55%,rgba(255,255,255,0.85)_82%,#ffffff_100%)]" />
+        </div>
 
-          {/* Horizontal Carousel Track */}
-          <div
-            ref={carouselRef}
-            className="flex items-center gap-3 sm:gap-4 overflow-x-auto scroll-smooth py-2 px-4 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none]"
-          >
-            {CAROUSEL_DESTINATIONS.map((dest) => (
-              <div
-                key={dest.id}
-                onClick={() => openEnquiry(dest.title)}
-                className="group relative w-48 sm:w-60 md:w-64 aspect-4/3 sm:aspect-square shrink-0 rounded-lg sm:rounded-xl overflow-hidden cursor-pointer shadow-xs hover:shadow-lg transition-all duration-300"
-              >
-                <img
-                  src={dest.image}
-                  alt={dest.title}
-                  loading="lazy"
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
-                <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4 text-white">
-                  <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-wider text-white/80 block mb-0.5">
-                    {dest.category}
-                  </span>
-                  <p className="text-xs sm:text-sm font-semibold tracking-tight leading-snug line-clamp-1">
-                    {dest.title}
-                  </p>
+        {/* ===================================================================
+            SECTION 1: FEATURED DESTINATIONS (Matching Reference Design)
+            =================================================================== */}
+        <section
+          id="destinations"
+          ref={destinationsRef}
+          className="relative z-10 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20 lg:pb-24 bg-white border-b border-black/[0.06]"
+        >
+          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+            {/* Header: Left title + Right description & navigation arrows */}
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-12 mb-8 sm:mb-10 lg:mb-12">
+              <div className="max-w-xl">
+                <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2.5">
+                  FEATURED DESTINATIONS
+                </span>
+                <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#1E1A17] tracking-tight leading-[1.12]">
+                  Explore <br className="hidden sm:inline" />
+                  Destinations
+                </h2>
+              </div>
+
+              <div className="max-w-md flex flex-col items-start pt-0.5 sm:pt-1">
+                <p className="text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                  Discover handpicked international destinations crafted for
+                  unforgettable journeys and cultural immersion.
+                </p>
+
+                {/* Navigation arrows matching the reference image */}
+                <div className="flex items-center gap-2.5 mt-4 sm:mt-5">
+                  <button
+                    type="button"
+                    onClick={() => handleScroll("left")}
+                    disabled={!canScrollLeft}
+                    aria-label="Previous destination"
+                    className="w-10 h-10 rounded-full bg-[#FAF7F2] hover:bg-[#463D34] text-[#1E1A17] hover:text-white border border-black/[0.08] hover:border-[#463D34] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                  >
+                    <ArrowLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleScroll("right")}
+                    disabled={!canScrollRight}
+                    aria-label="Next destination"
+                    className="w-10 h-10 rounded-full bg-[#FAF7F2] hover:bg-[#463D34] text-[#1E1A17] hover:text-white border border-black/[0.08] hover:border-[#463D34] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
-            ))}
+            </div>
+
+            {/* Destination Cards Track */}
+            <div
+              ref={carouselTrackRef}
+              onScroll={checkScroll}
+              className="flex gap-3.5 sm:gap-4 lg:gap-4 xl:gap-5 overflow-x-auto scroll-smooth no-scrollbar pb-3 pt-1 px-1 -mx-1 snap-x snap-mandatory"
+            >
+              {FEATURED_DESTINATIONS.map((dest) => (
+                <div
+                  key={dest.id}
+                  onClick={() => openEnquiry(dest.name)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={`Explore ${dest.name}`}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      openEnquiry(dest.name);
+                    }
+                  }}
+                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-12px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-13px)] aspect-[1/2.5] rounded-[20px] lg:rounded-[22px] overflow-hidden cursor-pointer select-none snap-start shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.16)] transition-all duration-300 transform hover:-translate-y-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#463D34]"
+                >
+                  {/* Destination Card Image */}
+                  <img
+                    src={dest.image}
+                    alt={dest.name}
+                    loading="lazy"
+                    className="w-full h-full object-cover rounded-[20px] lg:rounded-[22px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
+                  />
+
+                  {/* Soft interactive hover gradient */}
+                  <div className="absolute inset-0 rounded-[20px] lg:rounded-[22px] bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+
+                  {/* Center frosted glass badge */}
+                  <div className="absolute inset-0 flex items-center justify-center p-3 pointer-events-none">
+                    <div className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 shadow-lg text-white font-medium text-xs sm:text-sm tracking-wide text-center">
+                      {dest.name}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
-      </div>
 
-      {/* =========================================================================
-          SECTION: HOW IT WORKS (Trip Planning Made Effortless)
-          ========================================================================= */}
-      <section
-        id="how-it-works"
-        className="py-16 sm:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
-      >
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-18">
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3">
-              EFFORTLESS TRIP PLANNING
-            </span>
-            <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
-              Planning your trip should feel as good as the getaway itself
-            </h2>
-            <p className="mt-4 text-sm sm:text-base text-[#5C534A] leading-relaxed">
-              From initial daydreaming to your final champagne toast, here is
-              how working with a Flyora travel advisor works.
-            </p>
-          </div>
+        {/* ===================================================================
+            SECTION 2: POPULAR HOLIDAY PACKAGES
+            =================================================================== */}
+        <PopularHolidayPackages
+          onOpenEnquiry={(pkgName) => openEnquiry(pkgName)}
+        />
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            {/* Step 1 */}
-            <div className="bg-white rounded-2xl p-7 sm:p-8 border border-black/[0.06] shadow-xs flex flex-col justify-between hover:shadow-md transition">
-              <div>
-                <span className="text-2xl sm:text-3xl font-serif text-[#463D34] block mb-4 font-normal">
-                  01
-                </span>
-                <h3 className="text-lg font-semibold text-[#1E1A17] mb-2 tracking-tight">
-                  Tell us your travel vision
-                </h3>
-                <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                  Fill out our quick 2-minute matching form with your
-                  destination, ideal dates, travel companions, and preferred
-                  style—whether it’s an intimate anniversary, a family
-                  expedition, or a solo sanctuary.
-                </p>
-              </div>
-              <div className="pt-6 mt-6 border-t border-zinc-100 flex items-center gap-2 text-xs font-semibold text-[#463D34]">
-                <Sparkles className="w-4 h-4 text-amber-600" />
-                <span>Takes less than 2 minutes</span>
-              </div>
-            </div>
-
-            {/* Step 2 */}
-            <div className="bg-white rounded-2xl p-7 sm:p-8 border border-black/[0.06] shadow-xs flex flex-col justify-between hover:shadow-md transition">
-              <div>
-                <span className="text-2xl sm:text-3xl font-serif text-[#463D34] block mb-4 font-normal">
-                  02
-                </span>
-                <h3 className="text-lg font-semibold text-[#1E1A17] mb-2 tracking-tight">
-                  Get matched with your specialist
-                </h3>
-                <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                  We hand-pair you with an accredited Flyora advisor whose
-                  destination expertise, personal taste, and direct hotel
-                  relationships match your exact trip profile.
-                </p>
-              </div>
-              <div className="pt-6 mt-6 border-t border-zinc-100 flex items-center gap-2 text-xs font-semibold text-[#463D34]">
-                <HeartHandshake className="w-4 h-4 text-emerald-600" />
-                <span>100% human, vetted coordinators</span>
-              </div>
-            </div>
-
-            {/* Step 3 */}
-            <div className="bg-white rounded-2xl p-7 sm:p-8 border border-black/[0.06] shadow-xs flex flex-col justify-between hover:shadow-md transition">
-              <div>
-                <span className="text-2xl sm:text-3xl font-serif text-[#463D34] block mb-4 font-normal">
-                  03
-                </span>
-                <h3 className="text-lg font-semibold text-[#1E1A17] mb-2 tracking-tight">
-                  Unlock VIP perks &amp; travel with ease
-                </h3>
-                <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                  Your advisor books preferred rates, secures complimentary room
-                  upgrades, daily breakfast, and resort credits, remaining your
-                  dedicated contact before and during travel.
-                </p>
-              </div>
-              <div className="pt-6 mt-6 border-t border-zinc-100 flex items-center gap-2 text-xs font-semibold text-[#463D34]">
-                <Gift className="w-4 h-4 text-rose-600" />
-                <span>VIP amenities at no added cost</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center mt-12 sm:mt-16">
-            <button
-              onClick={() => openEnquiry()}
-              className="px-8 py-3.5 rounded-sm bg-[#463D34] hover:bg-[#38312A] text-white text-xs font-semibold uppercase tracking-[0.14em] shadow-xs hover:shadow-md transition cursor-pointer"
-            >
-              START YOUR MATCH
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION: THE VIP PERKS YOU UNLOCK (Why Book With Flyora)
-          ========================================================================= */}
-      <section
-        id="perks"
-        className="py-16 sm:py-24 border-t border-black/[0.06] bg-[#F9F3EC]"
-      >
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-18">
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3">
-              PREFERRED HOTEL PARTNERSHIPS
-            </span>
-            <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
-              The Perks You Unlock
-            </h2>
-            <p className="mt-4 text-sm sm:text-base text-[#5C534A] leading-relaxed">
-              When booking through a Flyora advisor, you receive VIP treatment
-              at over 4,500 luxury hotels, resorts, and lodges worldwide.
-            </p>
-          </div>
-
-          {/* Perks Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="bg-white/80 backdrop-blur-xs rounded-2xl p-7 border border-black/[0.06] shadow-xs">
-              <div className="w-11 h-11 rounded-xl bg-[#F6F0E7] text-[#463D34] flex items-center justify-center mb-5">
-                <Sparkle className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-[#1E1A17] mb-2">
-                Room Upgrades Upon Arrival
-              </h3>
-              <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                Enjoy priority complimentary room or suite upgrades based on
-                availability upon check-in.
-              </p>
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-xs rounded-2xl p-7 border border-black/[0.06] shadow-xs">
-              <div className="w-11 h-11 rounded-xl bg-[#F6F0E7] text-[#463D34] flex items-center justify-center mb-5">
-                <Coffee className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-[#1E1A17] mb-2">
-                Daily Breakfast For Two
-              </h3>
-              <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                Complimentary full hot gourmet breakfast every morning of your
-                stay in the restaurant or via in-room dining.
-              </p>
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-xs rounded-2xl p-7 border border-black/[0.06] shadow-xs">
-              <div className="w-11 h-11 rounded-xl bg-[#F6F0E7] text-[#463D34] flex items-center justify-center mb-5">
-                <CreditCard className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-[#1E1A17] mb-2">
-                $100+ Hotel &amp; Resort Credit
-              </h3>
-              <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                Valuable credits per stay to apply towards signature dining, spa
-                rituals, golf, or resort excursions.
-              </p>
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-xs rounded-2xl p-7 border border-black/[0.06] shadow-xs">
-              <div className="w-11 h-11 rounded-xl bg-[#F6F0E7] text-[#463D34] flex items-center justify-center mb-5">
-                <Clock className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-[#1E1A17] mb-2">
-                Early Check-in &amp; Late Check-out
-              </h3>
-              <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                Maximize every vacation hour with flexible arrival and late
-                afternoon departure privileges.
-              </p>
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-xs rounded-2xl p-7 border border-black/[0.06] shadow-xs">
-              <div className="w-11 h-11 rounded-xl bg-[#F6F0E7] text-[#463D34] flex items-center justify-center mb-5">
-                <Gift className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-[#1E1A17] mb-2">
-                Custom Welcome Amenities
-              </h3>
-              <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                A personal greeting from the general manager, handwritten notes,
-                fine wine, or artisanal treats in your room.
-              </p>
-            </div>
-
-            <div className="bg-white/80 backdrop-blur-xs rounded-2xl p-7 border border-black/[0.06] shadow-xs">
-              <div className="w-11 h-11 rounded-xl bg-[#F6F0E7] text-[#463D34] flex items-center justify-center mb-5">
-                <ShieldCheck className="w-5 h-5" />
-              </div>
-              <h3 className="text-base font-bold text-[#1E1A17] mb-2">
-                Guaranteed Best Available Rates
-              </h3>
-              <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
-                You pay the standard public rate with zero booking markups,
-                unlocking hundreds of dollars in added complimentary value.
-              </p>
-            </div>
-          </div>
-
-          {/* Partner Brands Strip */}
-          <div className="mt-14 pt-10 border-t border-black/[0.06] text-center">
-            <p className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] mb-6">
-              RECOGNIZED PREFERRED PARTNER NETWORK
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs sm:text-sm font-serif tracking-[0.15em] text-[#554C43] uppercase">
-              <span className="hover:text-black transition">
-                Four Seasons Preferred Partner
+        {/* ===================================================================
+            SECTION 3: EXPLORE BY TRAVEL STYLE
+            =================================================================== */}
+        <section
+          id="travel-styles"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+                CATEGORIES
               </span>
-              <span>•</span>
-              <span className="hover:text-black transition">
-                Belmond Bellini Club
-              </span>
-              <span>•</span>
-              <span className="hover:text-black transition">
-                Rosewood Elite
-              </span>
-              <span>•</span>
-              <span className="hover:text-black transition">
-                Ritz-Carlton STARS
-              </span>
-              <span>•</span>
-              <span className="hover:text-black transition">Aman Resorts</span>
-              <span>•</span>
-              <span className="hover:text-black transition">
-                Mandarin Oriental Fan Club
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION: FEATURED ADVISORS SPOTLIGHT
-          ========================================================================= */}
-      <section className="py-16 sm:py-24 border-t border-black/[0.06] bg-[#FAF7F2]">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-12 sm:mb-16 gap-4">
-            <div>
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3">
-                CERTIFIED TRAVEL CURATORS
-              </span>
-              <h2 className="font-serif text-3xl sm:text-5xl font-normal text-[#1E1A17] tracking-tight">
-                Meet a few of our advisors
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+                Find Your Kind of Holiday
               </h2>
+              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                Whether seeking romance, family moments, or wild adventures,
+                discover journeys tailored around your travel style.
+              </p>
             </div>
-            <Link
-              href="/explore"
-              className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#463D34] hover:text-black transition"
-            >
-              <span>Explore All Advisors &amp; Guides</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {FEATURED_ADVISORS.map((adv, idx) => (
-              <div
-                key={idx}
-                className="bg-white rounded-2xl p-5 border border-black/[0.06] shadow-xs hover:shadow-md transition flex flex-col justify-between group"
-              >
-                <div>
-                  <div className="relative aspect-square rounded-xl overflow-hidden mb-4">
-                    <img
-                      src={adv.avatar}
-                      alt={adv.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute top-2.5 right-2.5 bg-white/90 backdrop-blur-xs px-2 py-0.5 rounded-full text-[10px] font-semibold text-zinc-900 flex items-center gap-1 shadow-xs">
-                      <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                      <span>{adv.rating}</span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
+              {TRAVEL_STYLES.map((style) => {
+                const IconComponent = style.icon;
+                return (
+                  <div
+                    key={style.id}
+                    onClick={() => openEnquiry(style.title)}
+                    className="bg-white rounded-xl border border-stone-200/80 p-5 flex flex-col items-center text-center justify-center hover:border-stone-400 transition cursor-pointer shadow-xs group"
+                  >
+                    <div className="w-12 h-12 rounded-lg bg-stone-100 flex items-center justify-center text-[#463D34] mb-3 group-hover:scale-105 transition-transform">
+                      <IconComponent className="w-5 h-5 stroke-[1.75]" />
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-semibold text-[#1E1A17] mb-1">
+                      {style.title}
+                    </h3>
+                    <p className="text-[11px] text-stone-500 leading-tight">
+                      {style.note}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 4: WHY CHOOSE FLYORA
+            =================================================================== */}
+        <section
+          id="why-choose"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+                THE FLYORA DIFFERENCE
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+                Why Travel with Flyora?
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                Experience personalized care, honest expertise, and seamless
+                service from our dedicated travel consultants.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {WHY_CHOOSE_FLYORA.map((block) => {
+                const IconComponent = block.icon;
+                return (
+                  <div
+                    key={block.id}
+                    className="bg-white rounded-xl border border-stone-200/80 p-6 flex flex-col justify-between shadow-xs"
+                  >
+                    <div>
+                      <div className="w-10 h-10 rounded-lg bg-stone-100 flex items-center justify-center text-[#463D34] mb-4">
+                        <IconComponent className="w-5 h-5 stroke-[1.75]" />
+                      </div>
+                      <h3 className="text-base font-semibold text-[#1E1A17] mb-2">
+                        {block.title}
+                      </h3>
+                      <p className="text-xs text-[#5C534A] leading-relaxed">
+                        {block.description}
+                      </p>
                     </div>
                   </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
 
-                  <h3 className="text-base font-bold text-[#1E1A17] tracking-tight">
-                    {adv.name}
+        {/* ===================================================================
+            SECTION 5: SIGNATURE EXPERIENCES
+            =================================================================== */}
+        <section
+          id="experiences"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+                CURATED MOMENTS
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+                Discover Extraordinary Experiences
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                Unique moments and curated activities that turn a holiday into a
+                lifetime memory.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+              {/* One Large Feature Placeholder */}
+              <div className="lg:col-span-2 bg-white rounded-xl border border-stone-200/80 p-6 flex flex-col justify-between shadow-xs">
+                <div>
+                  <ImagePlaceholder
+                    label="Signature Feature Placeholder (Large)"
+                    aspect="aspect-16/9"
+                    className="mb-5"
+                  />
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7167] block mb-1">
+                    FEATURED SIGNATURE EXPERIENCE
+                  </span>
+                  <h3 className="text-xl sm:text-2xl font-semibold text-[#1E1A17] mb-2.5">
+                    {SIGNATURE_FEATURE.title}
                   </h3>
-                  <div className="flex items-center gap-1 text-xs text-[#7A7167] mb-3">
-                    <MapPin className="w-3 h-3 text-[#463D34]" />
-                    <span>{adv.location}</span>
-                  </div>
-
-                  <div className="flex flex-wrap gap-1.5 mb-4">
-                    {adv.specialties.map((spec, sIdx) => (
-                      <span
-                        key={sIdx}
-                        className="text-[10px] font-medium px-2 py-0.5 rounded-full bg-[#F6F0E7] text-[#463D34]"
-                      >
-                        {spec}
-                      </span>
-                    ))}
-                  </div>
-
-                  <p className="text-xs text-[#5C534A] italic leading-relaxed mb-4">
-                    &ldquo;{adv.quote}&rdquo;
+                  <p className="text-sm text-[#5C534A] leading-relaxed">
+                    {SIGNATURE_FEATURE.description}
                   </p>
                 </div>
-
-                <button
-                  onClick={() => openEnquiry(`Advisor Match: ${adv.name}`)}
-                  className="w-full py-2.5 rounded-md bg-[#463D34] hover:bg-[#38312A] text-white text-[11px] font-semibold uppercase tracking-[0.12em] transition cursor-pointer"
-                >
-                  Match With {adv.name.split(" ")[0]}
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION: TRAVELER TESTIMONIALS
-          ========================================================================= */}
-      <section className="py-16 sm:py-20 border-t border-black/[0.06] bg-[#F9F3EC]">
-        <div className="max-w-6xl mx-auto px-5 sm:px-8">
-          <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3">
-              VERIFIED EXPERIENCES
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[#1E1A17] tracking-tight">
-              What travelers say
-            </h2>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white rounded-2xl p-6 sm:p-7 border border-black/[0.06] shadow-xs">
-              <div className="flex text-amber-500 mb-3 gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 fill-amber-400 text-amber-400"
-                  />
-                ))}
-              </div>
-              <p className="text-xs sm:text-sm text-[#463D34] leading-relaxed mb-6 italic">
-                &ldquo;Flyora matched us with Elena for our honeymoon in Amalfi.
-                Not only was our room upgraded to a sea-facing terrace at
-                Belmond, we received a handwritten note and champagne from the
-                GM. Flawless from start to finish.&rdquo;
-              </p>
-              <div className="border-t border-zinc-100 pt-3">
-                <p className="text-xs font-semibold text-[#1E1A17]">
-                  Claire &amp; Jonathan M.
-                </p>
-                <p className="text-[11px] text-[#7A7167]">Traveled to Italy</p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 sm:p-7 border border-black/[0.06] shadow-xs">
-              <div className="flex text-amber-500 mb-3 gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 fill-amber-400 text-amber-400"
-                  />
-                ))}
-              </div>
-              <p className="text-xs sm:text-sm text-[#463D34] leading-relaxed mb-6 italic">
-                &ldquo;I was skeptical that using an advisor wouldn&apos;t cost
-                extra, but the price was the same as the hotel website—plus we
-                had free daily breakfast and a $100 resort credit that paid for
-                dinner. I will never book hotels alone again.&rdquo;
-              </p>
-              <div className="border-t border-zinc-100 pt-3">
-                <p className="text-xs font-semibold text-[#1E1A17]">David S.</p>
-                <p className="text-[11px] text-[#7A7167]">
-                  Traveled to Maui, Hawaii
-                </p>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-2xl p-6 sm:p-7 border border-black/[0.06] shadow-xs">
-              <div className="flex text-amber-500 mb-3 gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-4 h-4 fill-amber-400 text-amber-400"
-                  />
-                ))}
-              </div>
-              <p className="text-xs sm:text-sm text-[#463D34] leading-relaxed mb-6 italic">
-                &ldquo;Kenji planned our 10-day trip across Tokyo, Hakone, and
-                Kyoto. The ryokan he reserved had private open-air hot spring
-                baths and breathtaking kaiseki dinners. An unforgettable family
-                adventure.&rdquo;
-              </p>
-              <div className="border-t border-zinc-100 pt-3">
-                <p className="text-xs font-semibold text-[#1E1A17]">
-                  The Harrison Family
-                </p>
-                <p className="text-[11px] text-[#7A7167]">Traveled to Japan</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* =========================================================================
-          SECTION: FREQUENTLY ASKED QUESTIONS (Interactive Accordion)
-          ========================================================================= */}
-      <section
-        id="faqs"
-        className="py-16 sm:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
-      >
-        <div className="max-w-4xl mx-auto px-5 sm:px-8">
-          <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3">
-              EVERYTHING YOU NEED TO KNOW
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl font-normal text-[#1E1A17] tracking-tight">
-              Frequently Asked Questions
-            </h2>
-          </div>
-
-          <div className="space-y-3.5">
-            {FAQS.map((faq, idx) => {
-              const isOpen = openFaqIndex === idx;
-              return (
-                <div
-                  key={idx}
-                  className="bg-white rounded-xl border border-black/[0.06] overflow-hidden transition shadow-xs"
-                >
+                <div className="mt-6 pt-4 border-t border-stone-100 flex items-center justify-between">
+                  <span className="text-xs font-semibold text-stone-500">
+                    Bespoke Itinerary Inclusion
+                  </span>
                   <button
-                    onClick={() => toggleFaq(idx)}
-                    className="w-full px-6 py-4.5 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-zinc-50/50 transition"
+                    type="button"
+                    onClick={() => openEnquiry(SIGNATURE_FEATURE.title)}
+                    className="px-4 py-2 bg-[#463D34] hover:bg-[#38312A] text-white text-xs font-semibold rounded-md transition cursor-pointer"
                   >
-                    <span className="text-sm sm:text-base font-semibold text-[#1E1A17]">
-                      {faq.question}
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-[#7A7167] shrink-0 transition-transform duration-200 ${
-                        isOpen ? "rotate-180 text-black" : ""
-                      }`}
-                    />
+                    Enquire Experience
                   </button>
-                  {isOpen && (
-                    <div className="px-6 pb-5 pt-1 text-xs sm:text-sm text-[#5C534A] leading-relaxed border-t border-zinc-100">
-                      {faq.answer}
-                    </div>
-                  )}
                 </div>
-              );
-            })}
+              </div>
+
+              {/* Two Smaller Experience Placeholders */}
+              <div className="lg:col-span-1 flex flex-col gap-6">
+                {SIGNATURE_SMALLER.map((exp) => (
+                  <div
+                    key={exp.id}
+                    className="bg-white rounded-xl border border-stone-200/80 p-5 flex flex-col justify-between flex-1 shadow-xs"
+                  >
+                    <div>
+                      <ImagePlaceholder
+                        label={`${exp.title} Placeholder`}
+                        aspect="aspect-16/10"
+                        className="mb-3.5"
+                      />
+                      <h3 className="text-base font-semibold text-[#1E1A17] mb-1.5">
+                        {exp.title}
+                      </h3>
+                      <p className="text-xs text-[#5C534A] leading-relaxed">
+                        {exp.description}
+                      </p>
+                    </div>
+                    <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between text-xs">
+                      <button
+                        type="button"
+                        onClick={() => openEnquiry(exp.title)}
+                        className="text-[#463D34] font-semibold hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>Learn More</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* =========================================================================
-          SECTION: FINAL BOTTOM CTA BANNER
-          ========================================================================= */}
-      <section className="py-20 sm:py-28 bg-[#463D34] text-white text-center px-5">
-        <div className="max-w-3xl mx-auto">
-          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-3">
-            YOUR NEXT GETAWAY STARTS HERE
-          </span>
-          <h2 className="font-serif text-3xl sm:text-5xl md:text-6xl font-normal mb-5 tracking-tight leading-[1.08]">
-            Find the perfect travel advisor for your next trip
-          </h2>
-          <p className="text-sm sm:text-base text-white/80 max-w-xl mx-auto mb-8 font-light leading-relaxed">
-            Connect with a handpicked specialist, unlock complimentary hotel
-            perks, and travel with total peace of mind.
-          </p>
-          <button
-            onClick={() => openEnquiry()}
-            className="px-9 py-4 rounded-sm bg-white hover:bg-[#FAF7F2] text-[#463D34] text-xs font-semibold uppercase tracking-[0.14em] shadow-lg hover:shadow-xl transition active:scale-[0.98] cursor-pointer"
-          >
-            GET MATCHED
-          </button>
-        </div>
-      </section>
+        {/* ===================================================================
+            SECTION 6: HOW IT WORKS
+            =================================================================== */}
+        <section
+          id="how-it-works"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+                TRIP PLANNING PROCESS
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+                Your Journey Starts Here
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                A simple, seamless three-step process from your first travel
+                idea to departure day.
+              </p>
+            </div>
 
-      {/* =========================================================================
-          LUXURY EDITORIAL FOOTER (Shared Reusable Component)
-          ========================================================================= */}
-      <Footer
-        onOpenEnquiry={(service) => openEnquiry(service)}
-        onBecomeAdvisor={() => setIsAdvisorModalOpen(true)}
-      />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+              {HOW_IT_WORKS_STEPS.map((step) => (
+                <div
+                  key={step.step}
+                  className="bg-white rounded-xl border border-stone-200/80 p-6 flex flex-col justify-between shadow-xs"
+                >
+                  <div>
+                    <span className="text-3xl font-serif text-[#463D34] font-normal block mb-4">
+                      {step.step}
+                    </span>
+                    <h3 className="text-lg font-semibold text-[#1E1A17] mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                  <div className="pt-4 mt-6 border-t border-stone-100 flex items-center gap-2 text-xs font-semibold text-[#463D34]">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Dedicated Coordinator Assistance</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
 
-      {/* Modals & Floating WhatsApp */}
+        {/* ===================================================================
+            SECTION 7: TRAVELLER TESTIMONIALS
+            =================================================================== */}
+        <section
+          id="testimonials"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+                CLIENT REVIEWS (PLACEHOLDER)
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+                Stories from Our Travellers
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                Read experiences and feedback from travellers who explored the
+                world with Flyora.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {TESTIMONIALS.map((t) => (
+                <div
+                  key={t.id}
+                  className="bg-white rounded-xl border border-stone-200/80 p-6 flex flex-col justify-between shadow-xs"
+                >
+                  <p className="text-xs sm:text-sm text-[#5C534A] italic leading-relaxed mb-6">
+                    {t.quote}
+                  </p>
+                  <div className="pt-4 border-t border-stone-100">
+                    <span className="text-xs font-semibold text-[#1E1A17] block">
+                      {t.customerName}
+                    </span>
+                    <span className="text-[11px] text-[#7A7167] block mt-0.5">
+                      {t.destination}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 8: TRAVEL INSPIRATION
+            =================================================================== */}
+        <section
+          id="inspiration"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+                ARTICLES &amp; GUIDES
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+                Travel Inspiration
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                Handy travel guides, destination highlights, and expert advice
+                to inspire your next adventure.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+              {INSPIRATION_ARTICLES.map((art) => (
+                <div
+                  key={art.id}
+                  className="bg-white rounded-xl border border-stone-200/80 p-5 flex flex-col justify-between shadow-xs hover:border-stone-400 transition"
+                >
+                  <div>
+                    <ImagePlaceholder
+                      label={`${art.title} Placeholder`}
+                      aspect="aspect-16/10"
+                      className="mb-4"
+                    />
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7167] block mb-1">
+                      {art.readTime}
+                    </span>
+                    <h3 className="text-base font-semibold text-[#1E1A17] mb-2">
+                      {art.title}
+                    </h3>
+                    <p className="text-xs text-[#5C534A] leading-relaxed">
+                      {art.description}
+                    </p>
+                  </div>
+                  <div className="mt-5 pt-3 border-t border-stone-100">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openEnquiry("Travel Inspiration: " + art.title)
+                      }
+                      className="text-xs font-semibold text-[#463D34] hover:underline flex items-center gap-1 cursor-pointer"
+                    >
+                      <span>Read More</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 9: FREQUENTLY ASKED QUESTIONS
+            =================================================================== */}
+        <section
+          id="faqs"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+        >
+          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+                HAVE QUESTIONS?
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+                Frequently Asked Questions
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                Clear answers regarding holiday packages, customization, and
+                travel support.
+              </p>
+            </div>
+
+            <div className="space-y-3.5">
+              {FAQS.map((faq, idx) => {
+                const isOpen = openFaqIndex === idx;
+                return (
+                  <div
+                    key={idx}
+                    className="bg-white rounded-xl border border-stone-200/80 overflow-hidden shadow-xs"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => toggleFaq(idx)}
+                      aria-expanded={isOpen}
+                      className="w-full px-5 py-4 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-stone-50/60 transition"
+                    >
+                      <span className="text-sm sm:text-base font-semibold text-[#1E1A17]">
+                        {faq.question}
+                      </span>
+                      <ChevronDown
+                        className={`w-4 h-4 text-[#7A7167] shrink-0 transition-transform duration-200 ${
+                          isOpen ? "rotate-180 text-black" : ""
+                        }`}
+                      />
+                    </button>
+                    {isOpen && (
+                      <div className="px-5 pb-5 pt-1 text-xs sm:text-sm text-[#5C534A] leading-relaxed border-t border-stone-100">
+                        {faq.answer}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 10: FINAL CALL TO ACTION
+            =================================================================== */}
+        <section
+          id="cta"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#463D34] text-white text-center px-4"
+        >
+          <div className="max-w-2xl mx-auto">
+            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-2">
+              START YOUR JOURNEY
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal mb-4 tracking-tight">
+              Let's Plan Your Next Journey
+            </h2>
+            <p className="text-sm sm:text-base text-white/80 max-w-xl mx-auto mb-8 font-light leading-relaxed">
+              Connect with our travel team to begin designing your tailor-made
+              holiday with expert guidance every step of the way.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
+              <button
+                type="button"
+                onClick={() => openEnquiry("Plan My Trip")}
+                className="w-full sm:w-auto px-7 py-3 rounded-md bg-white hover:bg-[#FAF7F2] text-[#463D34] text-xs font-semibold uppercase tracking-wider shadow-sm transition cursor-pointer"
+              >
+                Plan My Trip
+              </button>
+              <button
+                type="button"
+                onClick={() => openEnquiry("Contact Flyora")}
+                className="w-full sm:w-auto px-7 py-3 rounded-md bg-transparent hover:bg-white/10 text-white text-xs font-semibold uppercase tracking-wider border border-white/40 transition cursor-pointer"
+              >
+                Contact Flyora
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* ---------------------------------------------------------------------
+              FOOTER: Preserved editorial footer
+              --------------------------------------------------------------------- */}
+        <Footer
+          onOpenEnquiry={(service) => openEnquiry(service)}
+          onBecomeAdvisor={() => setIsAdvisorModalOpen(true)}
+        />
+      </div>
+
+      {/* ---------------------------------------------------------------------
+            MODALS: Preserved from existing layout
+            --------------------------------------------------------------------- */}
       <EnquiryModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}

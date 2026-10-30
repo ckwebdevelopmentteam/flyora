@@ -1,7 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Volume2, VolumeX, ArrowRight } from "lucide-react";
+import { Volume2, VolumeX } from "lucide-react";
+import { HeroSearchCard } from "./HeroSearchCard";
 
 export interface HeroSectionProps {
   eyebrow?: string;
@@ -16,6 +17,7 @@ export interface HeroSectionProps {
   onSecondaryCtaClick?: () => void;
   secondaryCtaHref?: string;
   onExploreClick?: () => void;
+  onOpenEnquiry?: (serviceOrDest?: string) => void;
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
@@ -30,6 +32,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   secondaryCtaLabel = "See Our Journeys",
   onSecondaryCtaClick,
   secondaryCtaHref = "#destinations",
+  onOpenEnquiry,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -164,13 +167,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   return (
     <div
       ref={trackRef}
-      className="relative w-full min-h-[175vh] md:min-h-[185vh] text-white"
+      className="sticky top-0 z-0 h-screen w-full text-white overflow-hidden"
     >
       {/* =========================================================================
-          HERO MAIN VIEWPORT: Sticky Pinned Viewport (Exact  Tours structure)
-          The video stays fixed at top: 0 while scrolling through the hero track
+          HERO MAIN VIEWPORT: Fixed Fullscreen Hero Viewport
           ========================================================================= */}
-      <section className="sticky top-0 z-0 flex h-screen w-full items-center justify-center overflow-hidden bg-[#F9F3EC]">
+      <section className="relative z-0 flex h-full w-full items-center justify-center overflow-hidden bg-[#F9F3EC]">
         {/* Background Video & Scrim Overlays */}
         <div className="absolute inset-0 animate-hero-zoom overflow-hidden">
           <video
@@ -207,84 +209,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <div
           style={{
             opacity: Math.max(0, 1 - progress * 2.8),
-            transform: `translate3d(0, -${progress * 140}px, 0)`,
+            transform: `translate3d(0, -${24 + progress * 140}px, 0)`,
           }}
-          className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8 pt-28 sm:pt-32 pb-24 sm:pb-32 flex flex-col items-center max-md:gap-4 gap-6 text-center select-none will-change-transform"
+          className="relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-6 md:px-8 pt-14 sm:pt-16 md:pt-20 pb-10 sm:pb-14 flex flex-col items-center gap-2 sm:gap-3 text-center select-none will-change-transform"
         >
           {/* Eyebrow Tagline */}
-          <span className="animate-hero-eyebrow font-heading max-md:text-[13px] text-base lg:text-lg text-white/90 tracking-[0.14em] uppercase font-light drop-shadow-sm">
+          <span className="animate-hero-eyebrow font-heading max-md:text-[12px] text-sm lg:text-base text-white/90 tracking-[0.14em] uppercase font-light drop-shadow-sm">
             {eyebrow}
           </span>
 
           {/* Main Editorial Heading */}
-          <h1 className="animate-hero-heading font-heading max-md:text-[42px] max-md:leading-none md:max-xl:text-[46px] md:max-xl:leading-[1.1] xl:max-2xl:text-[58px] xl:max-2xl:leading-[1.1] min-[1500px]:text-[66px] text-white whitespace-pre-line max-md:max-w-[400px] max-w-4xl lg:max-2xl:max-w-[640px] font-normal tracking-[-0.01em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
+          <h1 className="animate-hero-heading font-heading max-md:text-[34px] max-md:leading-[1.05] md:max-xl:text-[42px] md:max-xl:leading-[1.1] xl:text-[50px] xl:leading-[1.1] text-white whitespace-pre-line max-w-4xl font-normal tracking-[-0.01em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
             {title}
           </h1>
 
           {/* Subheading / Description */}
-          <p className="animate-hero-description max-md:text-[13px] max-md:leading-[1.4] text-sm sm:text-base md:text-[17px] leading-[1.5] max-md:max-w-[400px] max-w-3xl max-md:text-white/80 text-white/90 font-light max-md:px-4 drop-shadow-sm">
+          <p className="animate-hero-description max-md:text-[13px] max-md:leading-[1.4] text-sm sm:text-base leading-[1.5] max-w-2xl text-white/90 font-light max-md:px-4 drop-shadow-sm">
             {description}
           </p>
 
-          {/* Dual Action CTAs: Matching exact design from attached image */}
-          <div className="animate-hero-cta mt-4 sm:mt-6 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-6 w-full max-w-xl mx-auto">
-            {primaryCtaHref ? (
-              <a
-                href={primaryCtaHref}
-                onClick={handlePrimaryClick}
-                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-[#08302B] font-heading font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.12em] px-7 sm:px-9 py-3.5 sm:py-4 rounded-[8px] sm:rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.22)] hover:bg-[#FAFCFB] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 cursor-pointer whitespace-nowrap select-none"
-              >
-                <span>{primaryCtaLabel}</span>
-                <ArrowRight
-                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2] transition-transform duration-200 group-hover:translate-x-1 shrink-0"
-                  aria-hidden="true"
-                />
-              </a>
-            ) : (
-              <button
-                type="button"
-                onClick={handlePrimaryClick}
-                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-[#08302B] font-heading font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.12em] px-7 sm:px-9 py-3.5 sm:py-4 rounded-[8px] sm:rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.22)] hover:bg-[#FAFCFB] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 cursor-pointer whitespace-nowrap select-none"
-              >
-                <span>{primaryCtaLabel}</span>
-                <ArrowRight
-                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2] transition-transform duration-200 group-hover:translate-x-1 shrink-0"
-                  aria-hidden="true"
-                />
-              </button>
-            )}
-
-            {/* Vertical Divider Line between CTAs */}
-            <div
-              aria-hidden="true"
-              className="hidden sm:block w-[1px] h-11 bg-white/70 shrink-0"
+          {/* Luxury Search & Visa CTA Widget matching reference design */}
+          <div className="animate-hero-cta w-full mt-2 sm:mt-3">
+            <HeroSearchCard
+              onOpenEnquiry={onOpenEnquiry || onPrimaryCtaClick}
+              onExploreJourneys={onSecondaryCtaClick}
             />
-
-            {secondaryCtaHref ? (
-              <a
-                href={secondaryCtaHref}
-                onClick={handleSecondaryClick}
-                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-[#08302B] font-heading font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.12em] px-7 sm:px-9 py-3.5 sm:py-4 rounded-[8px] sm:rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.22)] hover:bg-[#FAFCFB] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 cursor-pointer whitespace-nowrap select-none"
-              >
-                <span>{secondaryCtaLabel}</span>
-                <ArrowRight
-                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2] transition-transform duration-200 group-hover:translate-x-1 shrink-0"
-                  aria-hidden="true"
-                />
-              </a>
-            ) : (
-              <button
-                type="button"
-                onClick={handleSecondaryClick}
-                className="group w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-[#08302B] font-heading font-semibold text-[13px] sm:text-[14px] uppercase tracking-[0.12em] px-7 sm:px-9 py-3.5 sm:py-4 rounded-[8px] sm:rounded-[10px] shadow-[0_4px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_8px_28px_rgba(0,0,0,0.22)] hover:bg-[#FAFCFB] hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.99] transition-all duration-200 cursor-pointer whitespace-nowrap select-none"
-              >
-                <span>{secondaryCtaLabel}</span>
-                <ArrowRight
-                  className="w-4 h-4 sm:w-4.5 sm:h-4.5 stroke-[2] transition-transform duration-200 group-hover:translate-x-1 shrink-0"
-                  aria-hidden="true"
-                />
-              </button>
-            )}
           </div>
         </div>
 
@@ -312,89 +261,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             />
           )}
         </button>
-
-        {/* =========================================================================
-            CLOUDE-FRAME CURTAIN:
-            Starts at the bottom of the sticky hero viewport.
-            As the user scrolls down, this cloud curtain sweeps UPWARDS across the hero
-            video from bottom to top, revealing the next section below seamlessly!
-            ========================================================================= */}
-        <div
-          style={{
-            transform: `translate3d(0, calc(100vh - 120px - ${progress * (viewportHeight + 40)}px), 0)`,
-          }}
-          className="absolute inset-x-0 top-0 pointer-events-none select-none will-change-transform z-20"
-          aria-hidden="true"
-        >
-          <div className="relative overflow-hidden leading-none text-[0px]">
-            <div className="animate-marquee flex w-max will-change-transform">
-              {/* Set 1 */}
-              <img
-                alt=""
-                width={1580}
-                height={440}
-                className="block shrink-0 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none"
-                src="/cloude-frame/Frame@1.5x-1.png"
-              />
-              <img
-                alt=""
-                width={1580}
-                height={440}
-                className="block shrink-0 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none"
-                src="/cloude-frame/Frame@1.5x-2.png"
-              />
-              <img
-                alt=""
-                width={1580}
-                height={440}
-                className="block shrink-0 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none"
-                src="/cloude-frame/Frame@1.5x-3.png"
-              />
-              <img
-                alt=""
-                width={1580}
-                height={440}
-                className="block shrink-0 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none"
-                src="/cloude-frame/Frame@1.5x-4.png"
-              />
-              {/* Set 2 (for seamless loop) */}
-              <img
-                alt=""
-                width={1580}
-                height={440}
-                className="block shrink-0 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none"
-                src="/cloude-frame/Frame@1.5x-1.png"
-              />
-              <img
-                alt=""
-                width={1580}
-                height={440}
-                className="block shrink-0 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none"
-                src="/cloude-frame/Frame@1.5x-2.png"
-              />
-              <img
-                alt=""
-                width={1580}
-                height={440}
-                className="block shrink-0 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none"
-                src="/cloude-frame/Frame@1.5x-3.png"
-              />
-              <img
-                alt=""
-                width={1580}
-                height={440}
-                className="block shrink-0 h-[140px] sm:h-[180px] md:h-[220px] lg:h-[240px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none"
-                src="/cloude-frame/Frame@1.5x-4.png"
-              />
-            </div>
-
-            {/* White luminous body enhancement for clouds */}
-            <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0.12)_18%,rgba(255,255,255,0.45)_45%,rgba(255,255,255,0.88)_70%,#ffffff_88%,#F9F3EC_100%)]" />
-          </div>
-
-          {/* Solid seamless background trailing below the clouds to cover the video as clouds ascend */}
-          <div className="w-full h-[150vh] bg-[#F9F3EC]" />
-        </div>
       </section>
     </div>
   );
