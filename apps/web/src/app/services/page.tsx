@@ -196,19 +196,21 @@ export default function ServicesPage() {
       badge: design?.badge || "Travel services",
     };
   });
-  const popularPackages = packages
-    .filter((p) => p.serviceId === HERO_SERVICES[activeServiceIndex]?.serviceId)
-    .map((p) => ({
-      ...p,
-      image: p.coverImageUrl || "/services/custom-holidays.jpg",
-      tag: p.isFeatured ? "Featured" : p.serviceName,
-      duration: `${p.durationDays} Days / ${p.durationNights} Nights`,
-      price: new Intl.NumberFormat("en-IN", {
-        style: "currency",
-        currency: "INR",
-        maximumFractionDigits: 0,
-      }).format(p.startingPrice),
-    }));
+  const holidayService = resolveService(services, "holiday-packages");
+  const holidayPackages = packages.filter(
+    (p) => p.serviceId === holidayService?.id,
+  );
+  const popularPackages = holidayPackages.map((p) => ({
+    ...p,
+    image: p.coverImageUrl || "/services/custom-holidays.jpg",
+    tag: p.isFeatured ? "Featured" : p.serviceName,
+    duration: `${p.durationDays} Days / ${p.durationNights} Nights`,
+    price: new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(p.startingPrice),
+  }));
   const topPickups = popularPackages.slice(0, 5).map((p, i) => ({
     ...p,
     colSpan: i === 0 ? "md:col-span-2" : "md:col-span-1",
@@ -216,13 +218,13 @@ export default function ServicesPage() {
   }));
   const pickupStats = [
     { value: services.length, label: "TRAVEL SERVICES" },
-    { value: packages.length, label: "PACKAGES" },
+    { value: holidayPackages.length, label: "PACKAGES" },
     {
-      value: new Set(packages.map((p) => p.destination)).size,
+      value: new Set(holidayPackages.map((p) => p.destination)).size,
       label: "DESTINATIONS",
     },
     {
-      value: packages.filter((p) => p.isFeatured).length,
+      value: holidayPackages.filter((p) => p.isFeatured).length,
       label: "FEATURED TRIPS",
     },
   ];
@@ -791,14 +793,13 @@ export default function ServicesPage() {
           </div>
 
           <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            {/* Header: Top Pickups For You */}
+            {/* Header: Top picks for you */}
             <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight text-[#1C1815]">
-                Top Pickups For You
+                Top picks for you
               </h2>
               <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto font-sans leading-relaxed">
-                Plan your perfect vacation with Flyora. Choose among
-                hand-curated, all-inclusive luxury offers!
+                Explore holiday packages for your next trip.
               </p>
             </div>
 
@@ -1052,8 +1053,8 @@ export default function ServicesPage() {
           services.length > 0 &&
           popularPackages.length === 0 && (
             <p role="status" className="px-6 py-10 text-center">
-              No packages are published for {activeService.name} yet. You can
-              still enquire above.
+              Holiday packages will be available soon. You can still send a
+              service enquiry above.
             </p>
           )}
         {/* 5. POPULAR PACKAGES & SERVICES GRID (Matching Reference Image "Popular Travel Packages") */}
@@ -1064,7 +1065,7 @@ export default function ServicesPage() {
           <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12">
             <div>
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
-                Popular Services &amp; Packages
+                Popular holiday packages
               </h2>
             </div>
             <p className="text-sm sm:text-base text-stone-600 max-w-md mt-2 sm:mt-0 font-sans leading-relaxed">

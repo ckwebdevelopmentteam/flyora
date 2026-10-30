@@ -1,6 +1,10 @@
 import { createHash } from "node:crypto";
 import { FastifyPluginAsync } from "fastify";
-import { createServiceSchema, updateServiceSchema } from "@flyora/validators";
+import {
+  createServiceSchema,
+  updateServiceSchema,
+  reorderServicesSchema,
+} from "@flyora/validators";
 import { requireRole } from "../../middleware/rbac";
 import { ServicesService } from "./services.service";
 
@@ -28,6 +32,11 @@ export const servicesRoutes: FastifyPluginAsync = async (fastify) => {
     reply: import("fastify").FastifyReply,
   ) => {
     const err = error as { code?: string; statusCode?: number };
+    if (err.code === "P2034" || err.statusCode === 409)
+      return reply.code(409).send({
+        error: "SERVICE_ORDER_CHANGED",
+        message: "The service list has changed. Refresh it and try again.",
+      });
     if (err.code === "P2002")
       return reply.code(409).send({
         message: "A service with this name or website address already exists.",
@@ -52,6 +61,19 @@ export const servicesRoutes: FastifyPluginAsync = async (fastify) => {
         statusCode: 201,
         data: await servicesService.createService(parsed.data),
       });
+    } catch (error) {
+      return handleWriteError(error, reply);
+    }
+  });
+  fastify.put("/order", { preHandler: adminOnly }, async (request, reply) => {
+    const parsed = reorderServicesSchema.safeParse(request.body);
+    if (!parsed.success)
+      return reply
+        .code(400)
+        .send({ message: "Choose each service once when saving the order." });
+    try {
+      await servicesService.reorderServices(parsed.data);
+      return { statusCode: 200, data: { success: true } };
     } catch (error) {
       return handleWriteError(error, reply);
     }

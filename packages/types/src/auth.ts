@@ -35,6 +35,7 @@ export interface ServiceSummary {
   minMarginPercent: number;
   description?: string | null;
   isActive?: boolean;
+  displayOrder?: number;
 }
 
 export interface AuthSession {

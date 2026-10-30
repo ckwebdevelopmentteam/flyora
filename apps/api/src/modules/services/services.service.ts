@@ -1,5 +1,6 @@
 import type {
   CreateServiceInput,
+  ReorderServicesInput,
   UpdateServiceInput,
 } from "@flyora/validators";
 import { FastifyInstance } from "fastify";
@@ -49,9 +50,21 @@ export class ServicesService {
         statusCode: 400,
         message: "Use a service name containing letters or numbers.",
       };
-    const service = await this.fastify.prisma.service.create({
-      data: { ...data, slug },
-    });
+    const service = await this.fastify.prisma.$transaction(
+      async (tx) => {
+        const last = await tx.service.aggregate({
+          _max: { displayOrder: true },
+        });
+        return tx.service.create({
+          data: {
+            ...data,
+            slug,
+            displayOrder: (last._max.displayOrder ?? -1) + 1,
+          },
+        });
+      },
+      { isolationLevel: "Serializable" },
+    );
     this.invalidate();
     return service;
   }
@@ -65,10 +78,46 @@ export class ServicesService {
     return service;
   }
 
+  async reorderServices({
+    serviceIds,
+    expectedServiceIds,
+  }: ReorderServicesInput) {
+    await this.fastify.prisma.$transaction(
+      async (tx) => {
+        const current = await tx.service.findMany({
+          select: { id: true },
+          orderBy: [
+            { displayOrder: "asc" },
+            { createdAt: "asc" },
+            { id: "asc" },
+          ],
+        });
+        const currentIds = current.map((service) => service.id);
+        const supplied = new Set(serviceIds);
+        if (
+          currentIds.length !== supplied.size ||
+          currentIds.some(
+            (id, index) =>
+              !supplied.has(id) || id !== expectedServiceIds[index],
+          ) ||
+          expectedServiceIds.length !== currentIds.length
+        ) {
+          throw { statusCode: 409, error: "SERVICE_ORDER_CHANGED" };
+        }
+        // A single transaction prevents partially saved orders and rejects concurrent edits.
+        for (const [displayOrder, id] of serviceIds.entries()) {
+          await tx.service.update({ where: { id }, data: { displayOrder } });
+        }
+      },
+      { isolationLevel: "Serializable" },
+    );
+    this.invalidate();
+  }
+
   private async readServices(activeOnly: boolean) {
     return this.fastify.prisma.service.findMany({
       where: activeOnly ? { isActive: true } : undefined,
-      orderBy: { name: "asc" },
+      orderBy: [{ displayOrder: "asc" }, { createdAt: "asc" }, { id: "asc" }],
       include: {
         _count: {
           select: {

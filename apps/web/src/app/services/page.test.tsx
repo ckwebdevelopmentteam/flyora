@@ -132,16 +132,23 @@ it("submits a real service enquiry and shows success only after the API acknowle
     numberOfKids: 2,
   });
 });
-it("selects legacy navbar hashes using the live service and filters packages when switching services", async () => {
+it("keeps holiday packages visible when the enquiry service changes", async () => {
   window.history.replaceState(null, "", "/services#visas");
   render(<ServicesPage />);
-  await screen.findByText(/No packages are published for Visa Assistance/);
-  expect(screen.queryByRole("link", { name: "View itinerary" })).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Holiday Packages" }));
+  await screen.findByRole("link", { name: "View itinerary" });
   expect(
-    await screen.findByRole("link", { name: "View itinerary" }),
+    screen.getByRole("heading", { name: "Visa Assistance", level: 1 }),
   ).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "Holiday Packages" }));
+  expect(screen.getByRole("link", { name: "View itinerary" })).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "Visa Assistance" }));
+  expect(screen.getByRole("link", { name: "View itinerary" })).toBeDefined();
+  fireEvent.click(screen.getByRole("button", { name: "Enquire Now" }));
+  expect(screen.getByRole("dialog").textContent).toBe(
+    `${holiday.id}:${pkg.id}`,
+  );
 });
+
 it("does not show sample packages on backend failure and can retry", async () => {
   const retry = async () => {
     vi.mocked(useServicesCatalog).mockReturnValue({

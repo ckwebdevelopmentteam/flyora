@@ -66,7 +66,9 @@ async function main() {
 
   const createdServices: Record<string, any> = {};
 
-  for (const s of servicesData) {
+  for (const [displayOrder, s] of [...servicesData]
+    .sort((a, b) => a.name.localeCompare(b.name))
+    .entries()) {
     const service = await prisma.service.upsert({
       where: { slug: s.slug },
       update: {
@@ -74,7 +76,7 @@ async function main() {
         minMarginPercent: s.minMarginPercent,
         description: s.description,
       },
-      create: s,
+      create: { ...s, displayOrder },
     });
     createdServices[s.slug] = service;
     console.log(`✅ Service seeded: ${s.name}`);

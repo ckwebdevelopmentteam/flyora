@@ -48,12 +48,15 @@ model Service {
   description      String?
   isActive         Boolean       @default(true)
   minMarginPercent Float         @default(10.0)
+  displayOrder     Int           @default(0)
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
   coordinators     UserService[]
   packages         Package[]
   leads            Lead[]
+
+  @@index([displayOrder, id])
 }
 
 model UserService {

@@ -5,9 +5,10 @@ import {
   createServiceSchema,
   type CreateServiceInput,
 } from "@flyora/validators";
-import { Plus, Search, Pencil, Loader2 } from "lucide-react";
+import { Plus, Search, Pencil, Loader2, ArrowUpDown } from "lucide-react";
 import { apiClient } from "../lib/apiClient";
 import { ApiError } from "../lib/apiClient";
+import { ServiceOrderModal } from "../components/services/ServiceOrderModal";
 import { Modal, FormError } from "../components/ui/Modal";
 
 export function ServicesPage() {
@@ -15,6 +16,7 @@ export function ServicesPage() {
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<ManagedService | "new" | null>(null);
   const [notice, setNotice] = useState("");
+  const [reordering, setReordering] = useState<ManagedService[] | null>(null);
   const {
     data: services = [],
     isPending,
@@ -47,16 +49,29 @@ export function ServicesPage() {
             team.
           </p>
         </div>
-        <button
-          className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white"
-          onClick={() => {
-            setNotice("");
-            setEditing("new");
-          }}
-        >
-          <Plus size={16} />
-          Add service
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              setNotice("");
+              setReordering(services);
+            }}
+            disabled={isPending || isError || services.length < 2}
+            className="inline-flex items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2.5 text-sm font-medium text-slate-700 disabled:opacity-40"
+          >
+            <ArrowUpDown size={16} />
+            Reorder
+          </button>
+          <button
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white"
+            onClick={() => {
+              setNotice("");
+              setEditing("new");
+            }}
+          >
+            <Plus size={16} />
+            Add service
+          </button>
+        </div>
       </div>
       {notice && (
         <p role="status" className="text-sm text-emerald-700">
@@ -140,6 +155,20 @@ export function ServicesPage() {
           )}
         </div>
       )}
+      {reordering && (
+        <ServiceOrderModal
+          services={reordering}
+          onClose={() => setReordering(null)}
+          onSaved={async () => {
+            setReordering(null);
+            setNotice("Service order saved.");
+            await Promise.all([
+              queryClient.invalidateQueries({ queryKey: ["managed-services"] }),
+              queryClient.invalidateQueries({ queryKey: ["services"] }),
+            ]);
+          }}
+        />
+      )}
       {editing && (
         <ServiceEditor
           key={editing === "new" ? "new" : editing.id}
@@ -162,7 +191,6 @@ function ServiceEditor({
 }) {
   const [name, setName] = useState(service?.name || "");
   const [description, setDescription] = useState(service?.description || "");
-  const [margin, setMargin] = useState(String(service?.minMarginPercent ?? 10));
   const [active, setActive] = useState(service?.isActive ?? true);
   const [error, setError] = useState("");
   const guard = useRef(false);
@@ -178,11 +206,10 @@ function ServiceEditor({
     const parsed = createServiceSchema.safeParse({
       name,
       description,
-      minMarginPercent: margin.trim() ? Number(margin) : NaN,
       isActive: active,
     });
     if (!parsed.success) {
-      setError("Enter a name and a minimum margin between 0 and 99%.");
+      setError(parsed.error.issues[0]?.message || "Check the service details.");
       return;
     }
     guard.current = true;
@@ -193,7 +220,9 @@ function ServiceEditor({
     } catch (err) {
       setError(
         err instanceof ApiError && err.statusCode === 409
-          ? "A service with this name already exists. Choose another name."
+          ? err.error === "SERVICE_ORDER_CHANGED"
+            ? "The service list has changed. Please try again."
+            : "A service with this name already exists. Choose another name."
           : "We couldn’t save the service. Please try again.",
       );
     } finally {
@@ -252,20 +281,6 @@ function ServiceEditor({
             onChange={(e) => setDescription(e.target.value)}
             className="mt-2 block w-full resize-y rounded-lg border border-slate-200 px-3 py-2.5 font-normal"
             placeholder="What can customers book or get help with?"
-          />
-        </label>
-        <label className="block text-sm font-medium">
-          Minimum quote margin (%)
-          <input
-            type="number"
-            required
-            min="0"
-            max="99"
-            step="0.1"
-            value={margin}
-            disabled={mutation.isPending}
-            onChange={(e) => setMargin(e.target.value)}
-            className="mt-2 block w-full rounded-lg border border-slate-200 px-3 py-2.5 font-normal"
           />
         </label>
         <label className="flex items-center gap-3 text-sm">

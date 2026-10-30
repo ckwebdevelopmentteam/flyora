@@ -51,6 +51,7 @@ it("creates a service with validated fields and refreshes service assignment cho
   const invalidate = vi.spyOn(client, "invalidateQueries");
   await screen.findByText("Holiday Packages");
   fireEvent.click(screen.getByRole("button", { name: "Add service" }));
+  expect(screen.queryByLabelText(/quote margin/i)).toBeNull();
   fireEvent.change(screen.getByLabelText("Service name"), {
     target: { value: "Rail journeys" },
   });
@@ -63,7 +64,6 @@ it("creates a service with validated fields and refreshes service assignment cho
   expect(apiClient.post).toHaveBeenCalledWith("/services", {
     name: "Rail journeys",
     description: "Scenic train trips",
-    minMarginPercent: 10,
     isActive: true,
   });
   expect(invalidate).toHaveBeenCalledWith({ queryKey: ["services"] });
