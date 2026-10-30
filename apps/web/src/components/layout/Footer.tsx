@@ -254,16 +254,11 @@ export const Footer: React.FC<FooterProps> = ({
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-black transition">
-                  Contact Us
-                </Link>
-              </li>
-              <li>
                 <Link
-                  href="/#why-choose"
+                  href="/#how-it-works"
                   className="hover:text-black transition"
                 >
-                  Why Flyora
+                  How It Works
                 </Link>
               </li>
               <li>

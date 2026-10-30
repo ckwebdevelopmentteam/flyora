@@ -13,8 +13,14 @@ import {
   Clock,
   MapPin,
   Compass,
+  Heart,
+  Users,
+  Palmtree,
+  Sparkles,
+  Mountain,
   ShieldCheck,
   Headphones,
+  CheckCircle2,
   CalendarCheck,
 } from "lucide-react";
 import { Navbar } from "../components/Navbar";
@@ -23,7 +29,6 @@ import { HeroSection } from "../components/HeroSection";
 import { EnquiryModal } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
-import { JourneyCTA } from "../components/JourneyCTA";
 import { PopularHolidayPackages } from "../components/PopularHolidayPackages";
 import InkOrbitTestimonials, {
   type InkTestimonial,
@@ -166,6 +171,46 @@ const POPULAR_PACKAGES = [
   },
 ];
 
+// Section 3: Explore by Travel Style (6 categories)
+const TRAVEL_STYLES = [
+  {
+    id: "style-honeymoon",
+    title: "Honeymoon Holidays",
+    icon: Heart,
+    note: "Romantic escapes & private villas",
+  },
+  {
+    id: "style-family",
+    title: "Family Holidays",
+    icon: Users,
+    note: "Tailored for all generations",
+  },
+  {
+    id: "style-adventure",
+    title: "Adventure Trips",
+    icon: Mountain,
+    note: "Trekking, safaris & expeditions",
+  },
+  {
+    id: "style-beach",
+    title: "Beach Holidays",
+    icon: Palmtree,
+    note: "Coastal retreats & island leisure",
+  },
+  {
+    id: "style-group",
+    title: "Group Tours",
+    icon: Compass,
+    note: "Curated itineraries & shared journeys",
+  },
+  {
+    id: "style-luxury",
+    title: "Luxury Holidays",
+    icon: Sparkles,
+    note: "Five-star stays & bespoke VIP perks",
+  },
+];
+
 // Section 4: Why Choose Flyora (4 blocks)
 const WHY_CHOOSE_FLYORA = [
   {
@@ -217,6 +262,53 @@ const SIGNATURE_SMALLER = [
     title: "Private Cultural Heritage Masterclass",
     description:
       "Immerse yourself in authentic traditions with local master artisans, private museum entries, and historian guides.",
+  },
+];
+
+// Section 6: How It Works (3 numbered steps)
+const HOW_IT_WORKS_STEPS = [
+  {
+    step: "01",
+    title: "Tell Us Your Travel Plans",
+    description:
+      "Share your destination wishlist, travel dates, companion details, and preferred style with our team.",
+  },
+  {
+    step: "02",
+    title: "Explore Your Options",
+    description:
+      "Review customized itinerary proposals, handpicked accommodation options, and transparent price estimates.",
+  },
+  {
+    step: "03",
+    title: "Prepare for Your Journey",
+    description:
+      "Finalize your booking, receive complete travel dossiers, and travel with dedicated 24/7 coordinator support.",
+  },
+];
+
+// Section 7: Traveller Testimonials (3 items)
+const TESTIMONIALS = [
+  {
+    id: "test-1",
+    quote:
+      "Placeholder Review: 'Our family vacation was planned to absolute perfection. Every hotel, driver, and private excursion ran smoothly without any hassle.'",
+    customerName: "Placeholder: David & Sarah M.",
+    destination: "Switzerland & Italy Tour",
+  },
+  {
+    id: "test-2",
+    quote:
+      "Placeholder Review: 'The attention to detail and personal hotel upgrades made our honeymoon unforgettable. Exceptional coordinator support from start to finish.'",
+    customerName: "Placeholder: Priya & Rohan K.",
+    destination: "Bali Luxury Escape",
+  },
+  {
+    id: "test-3",
+    quote:
+      "Placeholder Review: 'Transparent costs, responsive communication, and wonderful local guides. Flyora made international travel completely stress-free.'",
+    customerName: "Placeholder: Alexander T.",
+    destination: "Dubai & Abu Dhabi Holiday",
   },
 ];
 
@@ -308,7 +400,7 @@ export default function Home() {
   const [selectedDestination, setSelectedDestination] = useState<
     string | undefined
   >(undefined);
-  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const destinationsRef = useRef<HTMLDivElement>(null);
   const carouselTrackRef = useRef<HTMLDivElement>(null);
   const lenisRef = useRef<Lenis | null>(null);
@@ -365,8 +457,72 @@ export default function Home() {
       });
     };
 
+    const handleWheel = (e: WheelEvent) => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const vh = window.innerHeight;
+
+      // When near top of hero and scrolling down slightly, auto-scroll 1 viewport height
+      if (scrollY < vh * 0.45 && e.deltaY > 4) {
+        e.preventDefault();
+        snapToDestinations();
+      }
+      // When at or near top of destinations section and scrolling up, auto-scroll back to hero
+      else if (scrollY >= vh * 0.55 && scrollY <= vh * 1.15 && e.deltaY < -4) {
+        e.preventDefault();
+        snapToHero();
+      }
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const vh = window.innerHeight;
+      const currentY = e.touches[0].clientY;
+      const deltaY = touchStartY - currentY; // positive = swipe up = scroll down
+
+      if (scrollY < vh * 0.45 && deltaY > 12) {
+        if (e.cancelable) e.preventDefault();
+        snapToDestinations();
+      } else if (scrollY >= vh * 0.55 && scrollY <= vh * 1.15 && deltaY < -12) {
+        if (e.cancelable) e.preventDefault();
+        snapToHero();
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const scrollY = window.scrollY || window.pageYOffset;
+      const vh = window.innerHeight;
+
+      if (
+        scrollY < vh * 0.45 &&
+        (e.key === "ArrowDown" || e.key === "PageDown" || e.key === " ")
+      ) {
+        e.preventDefault();
+        snapToDestinations();
+      } else if (
+        scrollY >= vh * 0.55 &&
+        scrollY <= vh * 1.15 &&
+        (e.key === "ArrowUp" || e.key === "PageUp")
+      ) {
+        e.preventDefault();
+        snapToHero();
+      }
+    };
+
+    window.addEventListener("wheel", handleWheel, { passive: false });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: false });
+    window.addEventListener("keydown", handleKeyDown);
+
     return () => {
       cancelAnimationFrame(rafId);
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchmove", handleTouchMove);
+      window.removeEventListener("keydown", handleKeyDown);
       lenis.destroy();
       lenisRef.current = null;
     };
@@ -447,9 +603,11 @@ export default function Home() {
 
       {/* ---------------------------------------------------------------------
           STACKING CONTENT SHEET:
-          Has solid background and stacks cleanly below the hero.
+          Has z-10 and stacks on top of the sticky fixed hero as you scroll.
+          The clouds are pulled up over the hero video with negative margin and a transparent
+          backdrop so the video shows through, attached directly to the Featured Destinations!
           --------------------------------------------------------------------- */}
-      <div className="relative z-10 w-full bg-[#FAF7F2]">
+      <div className="relative z-10 w-full">
         {/* Floating animated clouds marquee attached to top of Featured Destinations */}
         <div className="relative -mt-[110px] sm:-mt-[150px] md:-mt-[180px] lg:-mt-[210px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
           <div className="animate-marquee flex w-max will-change-transform">
@@ -620,6 +778,52 @@ export default function Home() {
         />
 
         {/* ===================================================================
+            SECTION 3: EXPLORE BY TRAVEL STYLE
+            =================================================================== */}
+        <section
+          id="travel-styles"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+                CATEGORIES
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+                Find Your Kind of Holiday
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                Whether seeking romance, family moments, or wild adventures,
+                discover journeys tailored around your travel style.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4 sm:gap-5">
+              {TRAVEL_STYLES.map((style) => {
+                const IconComponent = style.icon;
+                return (
+                  <div
+                    key={style.id}
+                    onClick={() => openEnquiry(style.title)}
+                    className="bg-white rounded-xl border border-stone-200/80 p-5 flex flex-col items-center text-center justify-center hover:border-stone-400 transition cursor-pointer shadow-xs group"
+                  >
+                    <div className="w-12 h-12 rounded-lg bg-stone-100 flex items-center justify-center text-[#463D34] mb-3 group-hover:scale-105 transition-transform">
+                      <IconComponent className="w-5 h-5 stroke-[1.75]" />
+                    </div>
+                    <h3 className="text-xs sm:text-sm font-semibold text-[#1E1A17] mb-1">
+                      {style.title}
+                    </h3>
+                    <p className="text-[11px] text-stone-500 leading-tight">
+                      {style.note}
+                    </p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================================
             SECTION 4: WHY CHOOSE FLYORA
             =================================================================== */}
         <section
@@ -753,6 +957,54 @@ export default function Home() {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ===================================================================
+            SECTION 6: HOW IT WORKS
+            =================================================================== */}
+        <section
+          id="how-it-works"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
+        >
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+                TRIP PLANNING PROCESS
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+                Your Journey Starts Here
+              </h2>
+              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                A simple, seamless three-step process from your first travel
+                idea to departure day.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+              {HOW_IT_WORKS_STEPS.map((step) => (
+                <div
+                  key={step.step}
+                  className="bg-white rounded-xl border border-stone-200/80 p-6 flex flex-col justify-between shadow-xs"
+                >
+                  <div>
+                    <span className="text-3xl font-serif text-[#463D34] font-normal block mb-4">
+                      {step.step}
+                    </span>
+                    <h3 className="text-lg font-semibold text-[#1E1A17] mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed">
+                      {step.description}
+                    </p>
+                  </div>
+                  <div className="pt-4 mt-6 border-t border-stone-100 flex items-center gap-2 text-xs font-semibold text-[#463D34]">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Dedicated Coordinator Assistance</span>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
         </section>
@@ -915,7 +1167,39 @@ export default function Home() {
         {/* ===================================================================
             SECTION 10: FINAL CALL TO ACTION
             =================================================================== */}
-        <JourneyCTA onStart={() => openEnquiry()} />
+        <section
+          id="cta"
+          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#463D34] text-white text-center px-4"
+        >
+          <div className="max-w-2xl mx-auto">
+            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-2">
+              START YOUR JOURNEY
+            </span>
+            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal mb-4 tracking-tight">
+              Let's Plan Your Next Journey
+            </h2>
+            <p className="text-sm sm:text-base text-white/80 max-w-xl mx-auto mb-8 font-light leading-relaxed">
+              Connect with our travel team to begin designing your tailor-made
+              holiday with expert guidance every step of the way.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
+              <button
+                type="button"
+                onClick={() => openEnquiry("Plan My Trip")}
+                className="w-full sm:w-auto px-7 py-3 rounded-md bg-white hover:bg-[#FAF7F2] text-[#463D34] text-xs font-semibold uppercase tracking-wider shadow-sm transition cursor-pointer"
+              >
+                Plan My Trip
+              </button>
+              <button
+                type="button"
+                onClick={() => openEnquiry("Contact Flyora")}
+                className="w-full sm:w-auto px-7 py-3 rounded-md bg-transparent hover:bg-white/10 text-white text-xs font-semibold uppercase tracking-wider border border-white/40 transition cursor-pointer"
+              >
+                Contact Flyora
+              </button>
+            </div>
+          </div>
+        </section>
 
         {/* ---------------------------------------------------------------------
               FOOTER: Preserved editorial footer
