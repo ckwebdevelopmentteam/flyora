@@ -103,8 +103,8 @@ const SERVICES_DATA: ServiceMetadata[] = [
     id: "hajj-packages",
     label: "Hajj Packages",
     subtitle: "Spiritual Journeys",
-    imageSrc: "/services/hajj-packages.jpg",
-    imagePosition: "object-[66%_40%]",
+    imageSrc: "/services/umrah-packages.jpg",
+    imagePosition: "object-[82%_45%]",
     icon: MosqueIcon,
   },
   {
@@ -112,7 +112,7 @@ const SERVICES_DATA: ServiceMetadata[] = [
     label: "Custom Holidays",
     subtitle: "International & Local",
     imageSrc: "/services/custom-holidays.jpg",
-    imagePosition: "object-[75%_50%]",
+    imagePosition: "object-[72%_50%]",
     icon: VacationPlaneIcon,
   },
   {
@@ -120,7 +120,7 @@ const SERVICES_DATA: ServiceMetadata[] = [
     label: "Visa Assistance",
     subtitle: "Hassle-free Process",
     imageSrc: "/services/visa-assistance.jpg",
-    imagePosition: "object-[70%_50%]",
+    imagePosition: "object-[30%_55%]",
     icon: PassportIcon,
   },
   {
@@ -144,7 +144,7 @@ const SERVICES_DATA: ServiceMetadata[] = [
     label: "Bus Booking",
     subtitle: "Comfort Travel",
     imageSrc: "/services/bus-booking.jpg",
-    imagePosition: "object-[70%_50%]",
+    imagePosition: "object-[24%_65%]",
     icon: Bus,
   },
 ];
@@ -744,7 +744,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                   <img
                     src={service.imageSrc}
                     alt=""
-                    className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.32] sm:scale-[1.4] transition-transform duration-500 ease-out group-hover:scale-[1.48]`}
+                    className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.12] sm:scale-[1.18] transition-transform duration-500 ease-out group-hover:scale-[1.25]`}
                   />
 
                   {/* Contrast Scrims */}
