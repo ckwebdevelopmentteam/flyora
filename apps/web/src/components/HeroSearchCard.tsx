@@ -91,6 +91,7 @@ interface ServiceItem {
   label: string;
   subtitle: string;
   imageSrc: string;
+  imagePosition?: string;
   icon: React.ComponentType<{ className?: string }>;
   defaultOption: string;
   options: { name: string; subtitle?: string; flag?: string }[];
@@ -102,6 +103,7 @@ const SERVICES_DATA: ServiceItem[] = [
     label: "Hajj Packages",
     subtitle: "Spiritual Journeys",
     imageSrc: "/services/hajj-packages.jpg",
+    imagePosition: "object-[66%_40%]",
     icon: MosqueIcon,
     defaultOption: "Executive Non-Shifting (Mina A)",
     options: [
@@ -132,6 +134,7 @@ const SERVICES_DATA: ServiceItem[] = [
     label: "Custom Holidays",
     subtitle: "International & Local",
     imageSrc: "/services/custom-holidays.jpg",
+    imagePosition: "object-[75%_50%]",
     icon: VacationPlaneIcon,
     defaultOption: "Switzerland & The Alps",
     options: [
@@ -172,6 +175,7 @@ const SERVICES_DATA: ServiceItem[] = [
     label: "Visa Assistance",
     subtitle: "Hassle-free Process",
     imageSrc: "/services/visa-assistance.jpg",
+    imagePosition: "object-[70%_50%]",
     icon: PassportIcon,
     defaultOption: "Schengen Europe Visa",
     options: [
@@ -207,6 +211,7 @@ const SERVICES_DATA: ServiceItem[] = [
     label: "Flight Booking",
     subtitle: "Best Fares",
     imageSrc: "/services/flight-booking.jpg",
+    imagePosition: "object-[65%_45%]",
     icon: Plane,
     defaultOption: "International Round-Trip",
     options: [
@@ -237,6 +242,7 @@ const SERVICES_DATA: ServiceItem[] = [
     label: "Train Booking",
     subtitle: "Easy & Fast",
     imageSrc: "/services/train-booking.jpg",
+    imagePosition: "object-[70%_55%]",
     icon: Train,
     defaultOption: "Swiss Glacier Express & Eurail",
     options: [
@@ -267,6 +273,7 @@ const SERVICES_DATA: ServiceItem[] = [
     label: "Bus Booking",
     subtitle: "Comfort Travel",
     imageSrc: "/services/bus-booking.jpg",
+    imagePosition: "object-[70%_50%]",
     icon: Bus,
     defaultOption: "Intercity Multi-Axle Volvo",
     options: [
@@ -450,26 +457,26 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 onClick={() => handleCardClick(service.id)}
                 aria-pressed={isActive}
                 aria-label={`Select ${service.label}`}
-                className={`group relative shrink-0 w-[160px] sm:w-[172px] md:w-auto h-[92px] sm:h-[100px] md:h-[108px] rounded-[18px] sm:rounded-[20px] overflow-hidden transition-all duration-200 cursor-pointer text-left select-none p-3 sm:p-3.5 flex flex-col justify-between bg-neutral-950 ${
+                className={`group relative shrink-0 w-[172px] sm:w-[185px] md:w-auto h-[106px] sm:h-[116px] md:h-[124px] rounded-[20px] sm:rounded-[22px] overflow-hidden transition-all duration-200 cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-between bg-neutral-950 ${
                   isActive
                     ? "border-2 border-amber-400 ring-2 ring-amber-400/40 shadow-[0_8px_25px_rgba(245,158,11,0.45)] scale-[1.02] z-10"
                     : "border border-white/20 hover:border-white/50 hover:scale-[1.01] shadow-md hover:shadow-lg"
                 }`}
               >
-                {/* Full-bleed crisp background photo (1376x768 - zero white corner bleeding) */}
+                {/* Full-bleed crisp background photo with increased subject scale */}
                 <img
                   src={service.imageSrc}
                   alt=""
-                  className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-transform duration-500 group-hover:scale-105"
+                  className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.32] sm:scale-[1.4] pointer-events-none transition-transform duration-500 group-hover:scale-[1.48]`}
                 />
 
-                {/* Dark Contrast Scrims for 100% Text Readability */}
+                {/* Targeted Contrast Scrims: Text remains 100% legible while photo stays vivid & bright */}
                 {isActive ? (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-amber-950/40 to-amber-500/20 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-amber-950/25 to-amber-500/10 pointer-events-none" />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/25 pointer-events-none group-hover:via-black/40 transition-colors" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/75 via-black/30 to-transparent pointer-events-none group-hover:via-black/20 transition-colors" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/25 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
 
                 {/* Top Row: Crisp Vector Icon */}
                 <div className="relative z-10 flex items-center justify-between">
