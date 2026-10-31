@@ -80,6 +80,30 @@ describe("LeadDetailDrawer Quotations Integration (Dev 2)", () => {
 
   afterEach(cleanup);
 
+  it("shows the customer’s original message without interpreting HTML", async () => {
+    vi.mocked(quotesApi.fetchQuotationsForLead).mockResolvedValue([]);
+    render(
+      <LeadDetailDrawer
+        lead={{
+          ...mockLead,
+          customerNotes: "Please plan a Bali trip. <script>message</script>",
+        }}
+        activities={[]}
+        isOpen
+        onClose={vi.fn()}
+        onUpdateStatus={vi.fn()}
+        onAddNote={vi.fn()}
+      />,
+    );
+    expect(
+      await screen.findByRole("region", { name: "Customer message" }),
+    ).toBeTruthy();
+    expect(
+      screen.getByText("Please plan a Bali trip. <script>message</script>"),
+    ).toBeTruthy();
+    expect(document.querySelector("script")).toBeNull();
+  });
+
   it("renders prominent Create Quotation button and Quotations tab", async () => {
     vi.mocked(quotesApi.fetchQuotationsForLead).mockResolvedValue(mockQuotes);
 

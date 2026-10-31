@@ -205,17 +205,33 @@ export const Sidebar = ({
             );
           })}
         </nav>
-        <div className="sidebar-profile">
-          <span className="avatar">{user?.fullName?.charAt(0) || "F"}</span>
-          <div className={`min-w-0 ${collapsed ? "lg:hidden" : ""}`}>
-            <p className="text-sm font-medium truncate">
+        <Link
+          to="/account"
+          onClick={() => onClose()}
+          className="sidebar-profile hover:bg-slate-100/80 transition-colors cursor-pointer group"
+          title="Account settings"
+          aria-label="Account settings"
+        >
+          {user?.avatarUrl ? (
+            <img
+              src={user.avatarUrl}
+              alt={user.fullName || "User"}
+              className="w-8 h-8 rounded-md object-cover object-[center_20%] [image-rendering:-webkit-optimize-contrast] border border-zinc-200 shrink-0"
+            />
+          ) : (
+            <span className="avatar shrink-0">
+              {user?.fullName?.charAt(0) || "F"}
+            </span>
+          )}
+          <div className={`min-w-0 flex-1 ${collapsed ? "lg:hidden" : ""}`}>
+            <p className="text-sm font-medium truncate group-hover:text-black">
               {user?.fullName || "Flyora team"}
             </p>
             <p className="text-xs text-slate-500">
               {manager ? "Admin" : "Staff workspace"}
             </p>
           </div>
-        </div>
+        </Link>
       </aside>
     </>
   );

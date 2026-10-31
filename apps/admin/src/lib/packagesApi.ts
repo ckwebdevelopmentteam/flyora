@@ -119,7 +119,7 @@ export const packagesApi = {
   async getPresignedUploadUrl(
     filename: string,
     contentType: string,
-    folder: "packages" | "destinations" = "packages",
+    folder: "packages" | "destinations" | "avatars" = "packages",
   ): Promise<PresignedUploadResponse> {
     return apiClient.post<PresignedUploadResponse>("/storage/upload-url", {
       filename,

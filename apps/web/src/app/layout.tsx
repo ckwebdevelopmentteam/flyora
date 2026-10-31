@@ -27,7 +27,7 @@ const cormorant = Cormorant_Garamond({
 const leagueSpartan = League_Spartan({
   variable: "--font-spartan",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+  weight: "variable",
 });
 
 const poppins = Poppins({

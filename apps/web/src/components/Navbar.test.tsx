@@ -19,7 +19,9 @@ describe("Navbar Component", () => {
     render(<Navbar />);
 
     expect(screen.getByRole("link", { name: /about/i })).toBeDefined();
-    expect(screen.getByRole("link", { name: /contact/i })).toBeDefined();
+    expect(
+      screen.getByRole("link", { name: /contact/i }).getAttribute("href"),
+    ).toBe("/contact");
   });
 
   it("renders FLYORA brand logo", () => {

@@ -27,6 +27,7 @@ model User {
   passwordHash     String
   fullName         String
   phone            String?
+  avatarUrl        String?
   role             UserRole          @default(SERVICE_COORDINATOR)
   availability     StaffAvailability @default(AVAILABLE)
   isActive         Boolean           @default(true)
@@ -133,6 +134,7 @@ model Lead {
   claimedAt       DateTime?
   status          LeadStatus     @default(NEW)
   source          LeadSource     @default(WEBSITE_FORM)
+  customerNotes   String?        @db.Text
   travelDate      DateTime?
   numberOfAdults  Int            @default(1)
   numberOfKids    Int            @default(0)

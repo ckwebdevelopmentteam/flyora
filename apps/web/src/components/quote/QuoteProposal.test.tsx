@@ -55,7 +55,46 @@ describe("customer proposal", () => {
     expect(screen.getByText("₹1,19,500")).toBeTruthy();
     expect(screen.getByText("Daily breakfast")).toBeTruthy();
     expect(screen.getByText("Personal expenses")).toBeTruthy();
-    expect(screen.getAllByText("To be confirmed")).toHaveLength(2);
+    expect(screen.queryByText("To be confirmed")).toBeNull();
+  });
+  it("keeps the customer, price and advisor clear without inventing terms", () => {
+    show();
+    expect(screen.getByText("Prepared for")).toBeTruthy();
+    expect(screen.getByRole("complementary").textContent).toContain(
+      "Total price",
+    );
+    expect(screen.getAllByText("Sara Test")).toHaveLength(1);
+    expect(
+      screen.queryByText(/All applicable taxes included|No hidden charges/),
+    ).toBeNull();
+  });
+  it("omits empty inclusion lists and keeps long proposal content available", () => {
+    const data = quote();
+    show({
+      inclusions: [],
+      exclusions: [],
+      items: Array.from({ length: 30 }, (_, i) => ({
+        ...data.items[0],
+        id: `item-${i}`,
+        title: `Service ${i + 1}`,
+      })),
+    });
+    expect(
+      screen.queryByRole("region", { name: "What is included" }),
+    ).toBeNull();
+    expect(screen.getByText("Service 30")).toBeTruthy();
+    expect(
+      screen
+        .getByRole("region", { name: "Proposal details" })
+        .getAttribute("tabindex"),
+    ).toBe("0");
+  });
+  it("uses the quoted service as the title when a single-item quote has no trip title", () => {
+    const item = quote().items[0];
+    show({ items: [item] });
+    expect(screen.getByRole("heading", { level: 1 }).textContent).toBe(
+      item.title,
+    );
   });
   it("uses trip context when the public endpoint supplies it", () => {
     show({
@@ -73,7 +112,7 @@ describe("customer proposal", () => {
   it("provides assigned-coordinator WhatsApp intent and phone links without changing quote status", () => {
     show();
     const link = screen.getByRole("link", {
-      name: "Accept & Confirm via WhatsApp",
+      name: "Discuss & book",
     });
     const url = new URL(link.getAttribute("href")!);
     expect(url.hostname).toBe("wa.me");
@@ -83,23 +122,19 @@ describe("customer proposal", () => {
     );
     expect(url.searchParams.get("text")).not.toContain(fixture.data.shareToken);
     expect(
-      screen
-        .getByRole("link", { name: "Call Coordinator" })
-        .getAttribute("href"),
+      screen.getByRole("link", { name: "Call advisor" }).getAttribute("href"),
     ).toBe("tel:+919876543210");
   });
   it("expired quotes request an update rather than offering confirmation", () => {
     show({ validUntil: "2026-10-01T12:00:00Z", isExpired: true });
     expect(screen.getByRole("status").textContent).toContain(
-      "This quotation expired on 1 Oct 2026",
+      "Expired on 1 Oct 2026",
     );
-    expect(
-      screen.queryByRole("link", { name: "Accept & Confirm via WhatsApp" }),
-    ).toBeNull();
+    expect(screen.queryByRole("link", { name: "Discuss & book" })).toBeNull();
     expect(
       new URL(
         screen
-          .getByRole("link", { name: "Request an Updated Quote" })
+          .getByRole("link", { name: "Request new quote" })
           .getAttribute("href")!,
       ).searchParams.get("text"),
     ).toContain("updated quotation");
@@ -108,34 +143,28 @@ describe("customer proposal", () => {
     vi.useFakeTimers();
     vi.setSystemTime(now);
     show({ validUntil: new Date(now + 10000).toISOString() });
-    expect(
-      screen.getByRole("link", { name: "Accept & Confirm via WhatsApp" }),
-    ).toBeTruthy();
+    expect(screen.getByRole("link", { name: "Discuss & book" })).toBeTruthy();
     act(() => {
       vi.advanceTimersByTime(15000);
     });
+    expect(screen.queryByRole("link", { name: "Discuss & book" })).toBeNull();
     expect(
-      screen.queryByRole("link", { name: "Accept & Confirm via WhatsApp" }),
-    ).toBeNull();
-    expect(
-      screen.getByRole("link", { name: "Request an Updated Quote" }),
+      screen.getByRole("link", { name: "Request new quote" }),
     ).toBeTruthy();
   });
   it.each(["DRAFT", "REJECTED", "ACCEPTED"] as const)(
     "does not offer new acceptance for a %s quotation",
     (status) => {
       show({ status });
-      expect(
-        screen.queryByRole("link", { name: "Accept & Confirm via WhatsApp" }),
-      ).toBeNull();
+      expect(screen.queryByRole("link", { name: "Discuss & book" })).toBeNull();
       expect(
         screen.getByRole("link", {
           name:
             status === "DRAFT"
-              ? "Request the Final Quote"
+              ? "Request final quote"
               : status === "REJECTED"
-                ? "Request an Updated Quote"
-                : "Discuss Your Booking",
+                ? "Request new quote"
+                : "Discuss booking",
         }),
       ).toBeTruthy();
     },
@@ -143,9 +172,9 @@ describe("customer proposal", () => {
   it("never invents a number when coordinator contact is unavailable", () => {
     show({ coordinator: { fullName: "Sara Test", phone: null } });
     expect(screen.queryByRole("link", { name: /WhatsApp/ })).toBeNull();
-    expect(screen.queryByRole("link", { name: "Call Coordinator" })).toBeNull();
+    expect(screen.queryByRole("link", { name: "Call advisor" })).toBeNull();
     expect(
-      screen.getByText(/Please contact your Flyora coordinator/),
+      screen.getByText(/Contact your travel advisor to continue/),
     ).toBeTruthy();
   });
   it("prints only when explicitly requested", () => {
@@ -153,7 +182,7 @@ describe("customer proposal", () => {
     vi.stubGlobal("print", print);
     show();
     expect(print).not.toHaveBeenCalled();
-    fireEvent.click(screen.getByRole("button", { name: "Print / Save PDF" }));
+    fireEvent.click(screen.getByRole("button", { name: "Save / Print PDF" }));
     expect(print).toHaveBeenCalledOnce();
   });
   it("escapes customer and item text, never injecting HTML", () => {

@@ -81,7 +81,7 @@ const FALLBACK_PACKAGES: PackageSummary[] = [
 ];
 
 export default function ToursPage() {
-  const [packages, setPackages] = useState<PackageSummary[]>(FALLBACK_PACKAGES);
+  const [packages, setPackages] = useState<PackageSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [filters, setFilters] = useState<TourFilterState>(INITIAL_FILTERS);
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
@@ -110,10 +110,13 @@ export default function ToursPage() {
             json.data.items.length > 0
           ) {
             setPackages(json.data.items);
+            return;
           }
         }
+        setPackages(FALLBACK_PACKAGES);
       } catch {
         // Fallback pre-bundled packages used cleanly when API is offline
+        setPackages(FALLBACK_PACKAGES);
       } finally {
         setLoading(false);
       }
@@ -228,6 +231,7 @@ export default function ToursPage() {
           sortBy={filters.sortBy}
           onSortChange={(sortBy) => handleFilterChange({ sortBy })}
           onOpenMobileFilter={() => setMobileFilterOpen(true)}
+          isLoading={loading}
         />
 
         {/* 2-Column Catalog Grid */}
@@ -244,7 +248,32 @@ export default function ToursPage() {
 
           {/* Right Tour Cards Grid */}
           <div className="lg:col-span-3">
-            {filteredPackages.length > 0 ? (
+            {loading ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
+                {[1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="rounded-2xl border border-stone-200/80 bg-white overflow-hidden shadow-xs animate-pulse flex flex-col h-[520px]"
+                  >
+                    <div className="h-64 bg-stone-100" />
+                    <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                      <div className="space-y-3">
+                        <div className="h-5 bg-stone-100 rounded-md w-3/4" />
+                        <div className="h-3.5 bg-stone-100 rounded-md w-1/3" />
+                      </div>
+                      <div className="space-y-2">
+                        <div className="h-3.5 bg-stone-100 rounded-md w-full" />
+                        <div className="h-3.5 bg-stone-100 rounded-md w-2/3" />
+                      </div>
+                      <div className="pt-4 border-t border-stone-100 flex items-center justify-between">
+                        <div className="h-6 bg-stone-100 rounded-md w-24" />
+                        <div className="h-9 bg-stone-100 rounded-xl w-32" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : filteredPackages.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
                 {filteredPackages.map((pkg) => (
                   <TourCard
