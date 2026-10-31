@@ -125,6 +125,12 @@ export const ProximityLetters = forwardRef<
   const [fontReady, setFontReady] = useState(false);
 
   useEffect(() => {
+    if (
+      typeof window === "undefined" ||
+      typeof window.matchMedia !== "function"
+    ) {
+      return;
+    }
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const updatePreference = () => {
       reducedMotionRef.current = mediaQuery.matches;
