@@ -98,23 +98,30 @@ export const TourFilterSidebar: React.FC<TourFilterSidebarProps> = ({
           <span>Top Destinations</span>
         </div>
         <div className="space-y-2">
-          {availableDestinations.map((dest) => {
-            const isChecked = filters.selectedDestinations.includes(dest);
-            return (
-              <label
-                key={dest}
-                className="flex items-center gap-2.5 text-xs text-stone-600 hover:text-stone-900 cursor-pointer select-none py-0.5"
-              >
-                <input
-                  type="checkbox"
-                  checked={isChecked}
-                  onChange={() => toggleDestination(dest)}
-                  className="rounded border-stone-300 text-[#4A2E18] focus:ring-[#4A2E18] w-4 h-4 accent-[#4A2E18]"
-                />
-                <span>{dest}</span>
-              </label>
-            );
-          })}
+          {availableDestinations.length > 0 ? (
+            availableDestinations.map((dest) => {
+              const isChecked = filters.selectedDestinations.includes(dest);
+              return (
+                <label
+                  key={dest}
+                  className="flex items-center gap-2.5 text-xs text-stone-600 hover:text-stone-900 cursor-pointer select-none py-0.5"
+                >
+                  <input
+                    type="checkbox"
+                    checked={isChecked}
+                    onChange={() => toggleDestination(dest)}
+                    className="rounded border-stone-300 text-[#4A2E18] focus:ring-[#4A2E18] w-4 h-4 accent-[#4A2E18]"
+                  />
+                  <span>{dest}</span>
+                </label>
+              );
+            })
+          ) : (
+            <div className="space-y-2 py-1">
+              <div className="h-4 bg-stone-100 rounded-md animate-pulse w-20" />
+              <div className="h-4 bg-stone-100 rounded-md animate-pulse w-16" />
+            </div>
+          )}
         </div>
       </div>
 

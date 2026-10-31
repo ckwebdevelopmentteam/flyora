@@ -1,12 +1,12 @@
 import { FileQuestion, WifiOff } from "lucide-react";
 import { QuoteHeader } from "./QuoteProposal";
 import { QuoteRetry } from "./QuoteActions";
-import styles from "./QuoteProposal.module.css";
+import styles from "./ProposalDocument.module.css";
 
 export function QuoteNotFound() {
   return (
     <main className={styles.shell}>
-      <QuoteHeader />
+      <QuoteHeader proposal />
       <section className={styles.state}>
         <FileQuestion size={42} aria-hidden="true" />
         <h1>Quotation not found or link has expired</h1>
@@ -21,7 +21,7 @@ export function QuoteNotFound() {
 export function QuoteUnavailable() {
   return (
     <main className={styles.shell}>
-      <QuoteHeader />
+      <QuoteHeader proposal />
       <section className={styles.state}>
         <WifiOff size={42} aria-hidden="true" />
         <h1>We couldn’t load your quotation</h1>
@@ -37,7 +37,7 @@ export function QuoteUnavailable() {
 export function QuoteLoading() {
   return (
     <main className={styles.shell} aria-busy="true">
-      <QuoteHeader />
+      <QuoteHeader proposal />
       <div className={styles.body}>
         <p role="status" className={styles.intro}>
           Preparing your Flyora proposal…

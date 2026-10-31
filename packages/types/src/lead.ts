@@ -25,6 +25,7 @@ export interface LeadItem {
   claimedAt?: string | null;
   status: LeadStatus;
   source: LeadSource;
+  customerNotes?: string | null;
   travelDate?: string | null;
   numberOfAdults: number;
   numberOfKids: number;

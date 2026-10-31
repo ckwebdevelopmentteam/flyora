@@ -34,6 +34,7 @@ export class LeadsService {
       claimedAt: lead.claimedAt ? lead.claimedAt.toISOString() : null,
       status: lead.status,
       source: lead.source,
+      customerNotes: lead.customerNotes || null,
       travelDate: lead.travelDate ? lead.travelDate.toISOString() : null,
       numberOfAdults: lead.numberOfAdults,
       numberOfKids: lead.numberOfKids,
@@ -79,7 +80,7 @@ export class LeadsService {
       },
     });
 
-    if (!service) {
+    if (!service || !service.isActive) {
       throw {
         statusCode: 400,
         error: "Bad Request",
@@ -124,6 +125,7 @@ export class LeadsService {
         assignedToId: null, // Unassigned in Service Pool
         status: "NEW",
         source: "WEBSITE_FORM",
+        customerNotes: data.notes?.trim() || null,
         travelDate: data.travelDate ? new Date(data.travelDate) : null,
         numberOfAdults: data.numberOfAdults ?? 1,
         numberOfKids: data.numberOfKids ?? 0,
@@ -248,7 +250,11 @@ export class LeadsService {
     });
 
     return leads
-      .map((l) => this.formatLeadItem(l))
+      .map((lead) => {
+        const item = this.formatLeadItem(lead);
+        if (lead.assignedToId !== userId) delete item.customerNotes;
+        return item;
+      })
       .sort(
         (a, b) =>
           Number(!!a.assignedToId) - Number(!!b.assignedToId) ||

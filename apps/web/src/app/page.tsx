@@ -29,6 +29,7 @@ import { EnquiryModal } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
 import { PopularHolidayPackages } from "../components/PopularHolidayPackages";
+import { JourneyCTA } from "../components/JourneyCTA";
 
 // =============================================================================
 // PLACEHOLDER DATA STRUCTURES FOR HOMEPAGE SECTIONS
@@ -1108,41 +1109,9 @@ export default function Home() {
         </section>
 
         {/* ===================================================================
-            SECTION 10: FINAL CALL TO ACTION
+            SECTION 10: FINAL BOTTOM CTA BANNER
             =================================================================== */}
-        <section
-          id="cta"
-          className="py-12 sm:py-18 lg:py-24 border-t border-black/[0.06] bg-[#463D34] text-white text-center px-4 scroll-mt-20 sm:scroll-mt-24"
-        >
-          <div className="max-w-2xl mx-auto">
-            <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-2">
-              START YOUR JOURNEY
-            </span>
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal mb-3 sm:mb-4 tracking-tight">
-              Let&apos;s Plan Your Next Journey
-            </h2>
-            <p className="text-xs sm:text-sm md:text-base text-white/80 max-w-xl mx-auto mb-6 sm:mb-8 font-light leading-relaxed">
-              Connect with our travel team to begin designing your tailor-made
-              holiday with expert guidance every step of the way.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
-              <button
-                type="button"
-                onClick={() => openEnquiry("Plan My Trip")}
-                className="w-full sm:w-auto px-7 py-3 rounded-md bg-white hover:bg-[#FAF7F2] text-[#463D34] text-xs font-semibold uppercase tracking-wider shadow-sm transition cursor-pointer"
-              >
-                Plan My Trip
-              </button>
-              <button
-                type="button"
-                onClick={() => openEnquiry("Contact Flyora")}
-                className="w-full sm:w-auto px-7 py-3 rounded-md bg-transparent hover:bg-white/10 text-white text-xs font-semibold uppercase tracking-wider border border-white/40 transition cursor-pointer"
-              >
-                Contact Flyora
-              </button>
-            </div>
-          </div>
-        </section>
+        <JourneyCTA onStart={() => openEnquiry()} />
 
         {/* ---------------------------------------------------------------------
               FOOTER: Preserved editorial footer
