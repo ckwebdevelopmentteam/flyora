@@ -375,7 +375,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
 }) => {
   return (
     <div className={`relative ${className}`}>
-      <div className="flex items-center justify-between mb-1.5">
+      <div className="flex items-center justify-between mb-1">
         <label className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider select-none">
           {label}
         </label>
@@ -384,7 +384,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
       <button
         type="button"
         onClick={onToggle}
-        className={`w-full min-h-[50px] px-4 py-2.5 rounded-xl border text-left flex items-center justify-between gap-2.5 transition-all cursor-pointer bg-neutral-50/60 hover:bg-neutral-50 ${
+        className={`w-full h-[44px] sm:h-[46px] px-3.5 sm:px-4 rounded-xl border text-left flex items-center justify-between gap-2 transition-all cursor-pointer bg-neutral-50/60 hover:bg-neutral-50 ${
           isOpen
             ? "border-neutral-900 ring-1 ring-neutral-900/10 bg-white"
             : "border-neutral-200/90 hover:border-neutral-300"
@@ -683,7 +683,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - Dropdowns open downward with smooth luxury elevation.
           - Zero emojis, zero marketing fluff, zero redundant micro-copy.
           ======================================================================= */}
-      <div className="relative bg-white text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-5 sm:p-6 lg:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-neutral-200/80 text-left transition-all duration-300">
+      <div className="relative bg-white text-[#1E1A17] rounded-[22px] sm:rounded-[26px] p-4 sm:p-4.5 md:px-6 md:py-4 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-neutral-200/80 text-left transition-all duration-300">
         <form onSubmit={handleSubmit}>
           {/* ===================================================================
               CASE 1: FLIGHT BOOKING
@@ -1098,7 +1098,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           {/* ===================================================================
               UNIFIED CONTACT & ENQUIRY ACTION ROW
               =================================================================== */}
-          <div className="border-t border-neutral-100 mt-5 pt-5 flex flex-col md:flex-row items-center gap-3">
+          <div className="border-t border-neutral-100 mt-3.5 pt-3.5 flex flex-col md:flex-row items-center gap-2.5 sm:gap-3">
             {/* Lead Booker Name */}
             <div className="w-full md:w-1/3">
               <input
@@ -1106,7 +1106,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 placeholder="Lead Booker Name"
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
-                className="w-full h-[52px] px-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 focus:bg-white focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 text-sm font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none transition-all"
+                className="w-full h-[44px] sm:h-[46px] px-3.5 sm:px-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 focus:bg-white focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 text-sm font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none transition-all"
               />
             </div>
 
@@ -1117,14 +1117,14 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 placeholder={getPhonePlaceholder(activeTab)}
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
-                className="w-full h-[52px] px-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 focus:bg-white focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 text-sm font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none transition-all"
+                className="w-full h-[44px] sm:h-[46px] px-3.5 sm:px-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 focus:bg-white focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 text-sm font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none transition-all"
               />
             </div>
 
             {/* Primary Action Button */}
             <button
               type="submit"
-              className="w-full md:w-auto h-[52px] px-8 rounded-xl bg-neutral-900 hover:bg-black active:bg-neutral-950 text-white font-medium text-sm flex items-center justify-center gap-2.5 transition-all shadow-sm hover:shadow cursor-pointer whitespace-nowrap"
+              className="w-full md:w-auto h-[44px] sm:h-[46px] px-7 sm:px-8 rounded-xl bg-neutral-900 hover:bg-black active:bg-neutral-950 text-white font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow cursor-pointer whitespace-nowrap"
             >
               {isSubmitted ? (
                 <>
@@ -1140,27 +1140,6 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
             </button>
           </div>
         </form>
-
-        {/* Micro-Trust Footnote */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 mt-4 text-[11.5px] text-neutral-400 font-normal">
-          <div className="flex items-center gap-3">
-            <span>✓ 100% verified partner fares</span>
-            <span className="hidden sm:inline">•</span>
-            <span>✓ Zero hidden fees</span>
-            <span className="hidden sm:inline">•</span>
-            <span>✓ Dedicated travel advisor</span>
-          </div>
-          <a
-            href={`https://wa.me/919876543210?text=${encodeURIComponent(
-              `Hi Flyora Travels, I would like to enquire about ${activeService.label}.`,
-            )}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-neutral-600 hover:text-neutral-900 font-medium transition-colors cursor-pointer"
-          >
-            Direct WhatsApp chat →
-          </a>
-        </div>
       </div>
     </div>
   );
