@@ -450,7 +450,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 onClick={() => handleCardClick(service.id)}
                 aria-pressed={isActive}
                 aria-label={`Select ${service.label}`}
-                className={`group relative shrink-0 w-[156px] sm:w-[166px] md:w-auto h-[74px] sm:h-[80px] rounded-[16px] sm:rounded-[18px] overflow-hidden transition-all duration-200 cursor-pointer text-left select-none p-2.5 sm:p-3 flex flex-col justify-between bg-neutral-950 ${
+                className={`group relative shrink-0 w-[160px] sm:w-[172px] md:w-auto h-[92px] sm:h-[100px] md:h-[108px] rounded-[18px] sm:rounded-[20px] overflow-hidden transition-all duration-200 cursor-pointer text-left select-none p-3 sm:p-3.5 flex flex-col justify-between bg-neutral-950 ${
                   isActive
                     ? "border-2 border-amber-400 ring-2 ring-amber-400/40 shadow-[0_8px_25px_rgba(245,158,11,0.45)] scale-[1.02] z-10"
                     : "border border-white/20 hover:border-white/50 hover:scale-[1.01] shadow-md hover:shadow-lg"
@@ -474,30 +474,30 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 {/* Top Row: Crisp Vector Icon */}
                 <div className="relative z-10 flex items-center justify-between">
                   <div className="text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
-                    <IconComponent className="w-4 h-4 sm:w-[17px] sm:h-[17px]" />
+                    <IconComponent className="w-[18px] h-[18px] sm:w-5 sm:h-5" />
                   </div>
                 </div>
 
                 {/* Bottom Row: Crisp Vector Typography + Circular Action Arrow Pill */}
                 <div className="relative z-10 flex items-end justify-between gap-1.5 min-w-0">
                   <div className="min-w-0 pr-0.5">
-                    <div className="text-[12px] sm:text-[13px] font-bold text-white leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] truncate">
+                    <div className="text-[12.5px] sm:text-[13.5px] md:text-[14px] font-bold text-white leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] truncate">
                       {service.label}
                     </div>
-                    <div className="text-[10px] sm:text-[10.5px] font-medium text-white/85 leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] truncate mt-0.5">
+                    <div className="text-[10px] sm:text-[11px] md:text-[11.5px] font-medium text-white/85 leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] truncate mt-0.5 sm:mt-1">
                       {service.subtitle}
                     </div>
                   </div>
 
                   {/* Circular Action Arrow Pill */}
                   <div
-                    className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 shadow-md transition-transform duration-200 group-hover:translate-x-0.5 ${
+                    className={`w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 shadow-md transition-transform duration-200 group-hover:translate-x-0.5 ${
                       isActive
                         ? "bg-[#FDD8A5] text-[#1E1A17]"
                         : "bg-white text-[#1E1A17] opacity-95 group-hover:opacity-100"
                     }`}
                   >
-                    <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
                   </div>
                 </div>
               </button>
