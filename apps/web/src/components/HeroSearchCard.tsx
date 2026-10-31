@@ -2,9 +2,6 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Plane,
-  Train,
-  Bus,
   Tag,
   Calendar,
   User,
@@ -12,7 +9,6 @@ import {
   Send,
   Check,
   ChevronDown,
-  ChevronRight,
   Search,
   ArrowRight,
   ShieldCheck,
@@ -32,61 +28,23 @@ export type ServiceId =
   | "visa-assistance"
   | "flight-booking"
   | "train-booking"
-  | "bus-booking"
-  | "umrah-packages";
+  | "bus-booking";
 
-// Custom tailored icons matching reference design
-const MosqueIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.75"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12 2c0 2-2 3-2 5h4c0-2-2-3-2-5z" />
-    <path d="M4 10h16v11H4z" />
-    <path d="M9 21v-5a3 3 0 0 1 6 0v5" />
-    <path d="M2 13h2v8H2z" />
-    <path d="M20 13h2v8h-2z" />
-  </svg>
-);
-
-const PassportIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.75"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <rect x="5" y="3" width="14" height="18" rx="2" />
-    <circle cx="12" cy="11" r="3" />
-    <path d="M9 18h6" />
-  </svg>
-);
-
-interface ServiceCardItem {
+interface ServiceItem {
   id: ServiceId;
   label: string;
   subtitle: string;
-  imageSrc: string;
-  icon: React.ComponentType<{ className?: string }>;
+  cardImg: string;
   defaultOption: string;
   options: { name: string; subtitle?: string; flag?: string }[];
 }
 
-const SERVICES_CARDS: ServiceCardItem[] = [
+const SERVICES_DATA: ServiceItem[] = [
   {
     id: "hajj-packages",
     label: "Hajj Packages",
     subtitle: "Spiritual Journeys",
-    imageSrc: "/services/hajj-packages.jpg",
-    icon: MosqueIcon,
+    cardImg: "/services/card-hajj.png",
     defaultOption: "Executive Non-Shifting (Mina A)",
     options: [
       {
@@ -114,9 +72,8 @@ const SERVICES_CARDS: ServiceCardItem[] = [
   {
     id: "custom-holidays",
     label: "Custom Holidays",
-    subtitle: "International & Domestic",
-    imageSrc: "/services/custom-holidays.jpg",
-    icon: Plane,
+    subtitle: "International & Local",
+    cardImg: "/services/card-custom-holidays.png",
     defaultOption: "Switzerland & The Alps",
     options: [
       {
@@ -155,8 +112,7 @@ const SERVICES_CARDS: ServiceCardItem[] = [
     id: "visa-assistance",
     label: "Visa Assistance",
     subtitle: "Hassle-free Process",
-    imageSrc: "/services/visa-assistance.jpg",
-    icon: PassportIcon,
+    cardImg: "/services/card-visa.png",
     defaultOption: "Schengen Europe Visa",
     options: [
       {
@@ -190,8 +146,7 @@ const SERVICES_CARDS: ServiceCardItem[] = [
     id: "flight-booking",
     label: "Flight Booking",
     subtitle: "Best Fares",
-    imageSrc: "/services/flight-booking.jpg",
-    icon: Plane,
+    cardImg: "/services/card-flights.png",
     defaultOption: "International Round-Trip",
     options: [
       {
@@ -220,8 +175,7 @@ const SERVICES_CARDS: ServiceCardItem[] = [
     id: "train-booking",
     label: "Train Booking",
     subtitle: "Easy & Fast",
-    imageSrc: "/services/train-booking.jpg",
-    icon: Train,
+    cardImg: "/services/card-train.png",
     defaultOption: "Swiss Glacier Express & Eurail",
     options: [
       {
@@ -250,8 +204,7 @@ const SERVICES_CARDS: ServiceCardItem[] = [
     id: "bus-booking",
     label: "Bus Booking",
     subtitle: "Comfort Travel",
-    imageSrc: "/services/bus-booking.jpg",
-    icon: Bus,
+    cardImg: "/services/card-bus.png",
     defaultOption: "Intercity Multi-Axle Volvo",
     options: [
       {
@@ -268,36 +221,6 @@ const SERVICES_CARDS: ServiceCardItem[] = [
         name: "Scenic Hill Station Transfers",
         subtitle: "Shimla, Manali, Ooty, Munnar, Darjeeling",
         flag: "🏔️",
-      },
-    ],
-  },
-  {
-    id: "umrah-packages",
-    label: "Umrah Packages",
-    subtitle: "Blessed Journeys",
-    imageSrc: "/services/umrah-packages.jpg",
-    icon: MosqueIcon,
-    defaultOption: "Deluxe 5★ Haram View (15 Days)",
-    options: [
-      {
-        name: "Deluxe 5★ Clock Tower (15 Days)",
-        subtitle: "Swissôtel / Fairmont Makkah & Medina Oberoi",
-        flag: "🕋",
-      },
-      {
-        name: "Classic Executive Group (10 Days)",
-        subtitle: "Walking distance 350m with 3 full meals",
-        flag: "🌙",
-      },
-      {
-        name: "Ramadan Last 10 Days Special",
-        subtitle: "Laylatul Qadr spiritual itinerary & ziyaarat",
-        flag: "✨",
-      },
-      {
-        name: "Customized Private VIP Umrah",
-        subtitle: "Private luxury GMC Yukon transport & guide",
-        flag: "🕊️",
       },
     ],
   },
@@ -354,7 +277,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   onExploreJourneys,
   className = "",
 }) => {
-  // Active Tab state (defaults to Hajj Packages as in the user reference image)
+  // Active Tab state (defaults to Hajj Packages)
   const [activeTab, setActiveTab] = useState<ServiceId>("hajj-packages");
 
   // Form Fields state
@@ -380,18 +303,16 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   const cardsScrollRef = useRef<HTMLDivElement>(null);
 
   const activeService =
-    SERVICES_CARDS.find((s) => s.id === activeTab) || SERVICES_CARDS[0];
+    SERVICES_DATA.find((s) => s.id === activeTab) || SERVICES_DATA[0];
 
-  // Update selection when switching tabs
+  // Update selection when clicking a card
   const handleCardClick = (serviceId: ServiceId) => {
     setActiveTab(serviceId);
-    const service = SERVICES_CARDS.find((s) => s.id === serviceId);
+    const service = SERVICES_DATA.find((s) => s.id === serviceId);
     if (service) {
       setSelectedOption(service.defaultOption);
       if (serviceId === "hajj-packages") {
         setTravelDate("May - June 2027");
-      } else if (serviceId === "umrah-packages") {
-        setTravelDate("November 2026");
       }
     }
     setIsServiceOpen(false);
@@ -446,17 +367,16 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   );
 
   return (
-    <div className={`w-full max-w-[1140px] mx-auto select-none ${className}`}>
+    <div className={`w-full max-w-[1100px] mx-auto select-none ${className}`}>
       {/* =======================================================================
-          TOP SERVICE CARDS: 7 Miniature Service Cards matching Reference Mockup
+          TOP SERVICE CARDS: 6 Cards Exactly Matching the Reference Image
           ======================================================================= */}
       <div className="relative mb-3 sm:mb-4">
         <div
           ref={cardsScrollRef}
-          className="flex lg:grid lg:grid-cols-7 items-stretch gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar scroll-smooth px-1 py-1"
+          className="flex md:grid md:grid-cols-6 items-stretch gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar scroll-smooth px-1 py-1"
         >
-          {SERVICES_CARDS.map((service) => {
-            const IconComponent = service.icon;
+          {SERVICES_DATA.map((service) => {
             const isActive = activeTab === service.id;
 
             return (
@@ -464,57 +384,19 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 key={service.id}
                 type="button"
                 onClick={() => handleCardClick(service.id)}
-                className={`group relative shrink-0 w-[148px] sm:w-[158px] lg:w-auto h-[64px] sm:h-[68px] rounded-[16px] overflow-hidden text-left transition-all duration-200 cursor-pointer p-2 sm:p-2.5 flex items-center justify-between ${
+                aria-pressed={isActive}
+                aria-label={`Select ${service.label}`}
+                className={`group relative shrink-0 w-[152px] sm:w-[162px] md:w-auto rounded-[16px] sm:rounded-[18px] overflow-hidden transition-all duration-200 cursor-pointer ${
                   isActive
-                    ? "bg-gradient-to-r from-[#FFF5E5] via-[#FEEBD0] to-[#FED7AA] border-2 border-[#EAA236] shadow-[0_8px_24px_-4px_rgba(234,162,54,0.35)] scale-[1.02]"
-                    : "bg-white/95 hover:bg-white text-[#1C1815] border border-white/70 hover:border-white shadow-sm hover:shadow-md backdrop-blur-sm"
+                    ? "ring-2 ring-amber-400 ring-offset-2 ring-offset-black/30 shadow-[0_8px_25px_rgba(245,158,11,0.35)] scale-[1.03]"
+                    : "opacity-90 hover:opacity-100 hover:scale-[1.02] shadow-sm hover:shadow-md"
                 }`}
               >
-                {/* Background Photo with subtle gradient fade to left */}
-                <div className="absolute right-0 top-0 bottom-0 w-[38%] pointer-events-none overflow-hidden select-none">
-                  <img
-                    src={service.imageSrc}
-                    alt=""
-                    className="w-full h-full object-cover object-center"
-                  />
-                  <div
-                    className={`absolute inset-0 bg-gradient-to-r ${
-                      isActive
-                        ? "from-[#FFF5E5] via-[#FFF5E5]/50 to-transparent"
-                        : "from-white via-white/40 to-transparent"
-                    }`}
-                  />
-                </div>
-
-                {/* Left Side: Icon + Title + Subtitle */}
-                <div className="relative z-10 flex flex-col justify-center min-w-0 pr-1 max-w-[74%]">
-                  <IconComponent
-                    className={`w-3.5 h-3.5 sm:w-4 sm:h-4 mb-0.5 sm:mb-1 transition-transform duration-200 group-hover:scale-110 ${
-                      isActive ? "text-[#C05621]" : "text-[#1C1815]/80"
-                    }`}
-                  />
-                  <span className="text-[11px] sm:text-[11.5px] xl:text-[12px] font-bold text-[#1C1815] truncate leading-tight">
-                    {service.label}
-                  </span>
-                  <span
-                    className={`text-[9px] sm:text-[9.5px] truncate mt-0.5 leading-tight ${
-                      isActive ? "text-[#7B341E] font-medium" : "text-[#7A7167]"
-                    }`}
-                  >
-                    {service.subtitle}
-                  </span>
-                </div>
-
-                {/* Right Side: Circular Chevron Pill */}
-                <div
-                  className={`relative z-10 w-5 h-5 rounded-full bg-white shadow-xs flex items-center justify-center shrink-0 border transition-transform duration-200 group-hover:translate-x-0.5 ${
-                    isActive
-                      ? "border-[#EAA236]/40 text-[#7B341E]"
-                      : "border-black/5 text-[#1C1815]"
-                  }`}
-                >
-                  <ChevronRight className="w-3 h-3 text-[#1C1815]" />
-                </div>
+                <img
+                  src={service.cardImg}
+                  alt={service.label}
+                  className="w-full h-[66px] sm:h-[74px] object-cover object-center rounded-[16px] sm:rounded-[18px] block"
+                />
               </button>
             );
           })}
@@ -522,7 +404,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
       </div>
 
       {/* =======================================================================
-          MAIN WHITE CONCIERGE CARD: 2-Tier Architecture matching Reference Mockup
+          MAIN WHITE CONCIERGE CARD: 2-Tier Architecture matching Reference
           ======================================================================= */}
       <div className="relative bg-white text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-4 sm:p-5 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#EAE3D9] text-left transition-all duration-300">
         <form onSubmit={handleSubmit}>
