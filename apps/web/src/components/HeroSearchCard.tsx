@@ -178,11 +178,11 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
       {/* =======================================================================
           MAIN WHITE HERO SEARCH CARD: Sleek & Compact
           ======================================================================= */}
-      <div className="relative bg-white text-[#1E1A17] rounded-[22px] sm:rounded-[26px] md:rounded-[28px] px-4 py-3.5 sm:px-6 sm:py-4.5 md:px-7 md:py-5 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.30)] border border-neutral-100/90 text-left transition-all duration-300">
+      <div className="relative bg-white text-[#1E1A17] rounded-[20px] sm:rounded-[26px] md:rounded-[28px] px-3.5 py-3 sm:px-6 sm:py-4.5 md:px-7 md:py-5 shadow-[0_20px_50px_-10px_rgba(0,0,0,0.30)] border border-neutral-100/90 text-left transition-all duration-300">
         {/* Top Header: Title + Service Tabs */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-4 mb-2.5 sm:mb-3.5">
           <div className="flex items-center gap-2">
-            <h2 className="text-lg sm:text-xl md:text-[21px] font-bold text-[#1E1A17] tracking-tight leading-tight">
+            <h2 className="text-base sm:text-lg md:text-xl font-bold text-[#1E1A17] tracking-tight leading-tight">
               {activeTab === "visa" && "Get Your Visa"}
               {activeTab === "packages" && "Find Holiday Packages"}
               {activeTab === "custom" && "Design Custom Journey"}
@@ -194,7 +194,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab("visa")}
-              className={`px-3 sm:px-3.5 py-1 rounded-full text-[11px] sm:text-xs font-medium transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium transition-all cursor-pointer ${
                 activeTab === "visa"
                   ? "bg-[#1E1A17] text-white shadow-xs"
                   : "text-[#6B6058] hover:text-[#1E1A17]"
@@ -205,7 +205,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab("packages")}
-              className={`px-3 sm:px-3.5 py-1 rounded-full text-[11px] sm:text-xs font-medium transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium transition-all cursor-pointer ${
                 activeTab === "packages"
                   ? "bg-[#1E1A17] text-white shadow-xs"
                   : "text-[#6B6058] hover:text-[#1E1A17]"
@@ -216,7 +216,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
             <button
               type="button"
               onClick={() => setActiveTab("custom")}
-              className={`px-3 sm:px-3.5 py-1 rounded-full text-[11px] sm:text-xs font-medium transition-all cursor-pointer ${
+              className={`px-2.5 sm:px-3.5 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-medium transition-all cursor-pointer ${
                 activeTab === "custom"
                   ? "bg-[#1E1A17] text-white shadow-xs"
                   : "text-[#6B6058] hover:text-[#1E1A17]"
@@ -228,7 +228,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
         </div>
 
         {/* Input Fields & Action Button Row: Compact & Streamlined */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr_auto] gap-2.5 sm:gap-3 items-stretch">
+        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr_auto] gap-2 sm:gap-3 items-stretch">
           {/* FIELD 1: DESTINATION SELECTOR */}
           <div ref={destDropdownRef} className="relative">
             <button
@@ -237,7 +237,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 setIsDestOpen(!isDestOpen);
                 setIsDateOpen(false);
               }}
-              className={`w-full h-full min-h-[50px] sm:min-h-[54px] md:min-h-[56px] px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-[14px] sm:rounded-[16px] border text-left flex flex-col justify-center transition-all cursor-pointer bg-white ${
+              className={`w-full h-full min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-[12px] sm:rounded-[16px] border text-left flex flex-col justify-center transition-all cursor-pointer bg-white ${
                 isDestOpen
                   ? "border-[#1E1A17] ring-1 ring-[#1E1A17]/20 shadow-xs"
                   : "border-[#E5DFD7] hover:border-[#1E1A17]/40"
@@ -320,7 +320,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 setIsDateOpen(!isDateOpen);
                 setIsDestOpen(false);
               }}
-              className={`w-full h-full min-h-[50px] sm:min-h-[54px] md:min-h-[56px] px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-[14px] sm:rounded-[16px] border text-left flex flex-col justify-center transition-all cursor-pointer bg-white ${
+              className={`w-full h-full min-h-[46px] sm:min-h-[52px] md:min-h-[56px] px-3 py-1.5 sm:px-4 sm:py-2.5 rounded-[12px] sm:rounded-[16px] border text-left flex flex-col justify-center transition-all cursor-pointer bg-white ${
                 isDateOpen
                   ? "border-[#1E1A17] ring-1 ring-[#1E1A17]/20 shadow-xs"
                   : "border-[#E5DFD7] hover:border-[#1E1A17]/40"
@@ -376,7 +376,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           <button
             type="button"
             onClick={handleActionClick}
-            className="w-full md:w-auto min-h-[46px] sm:min-h-[54px] md:min-h-[56px] px-5 sm:px-7 rounded-[14px] sm:rounded-[16px] bg-[#1E1A17] hover:bg-[#342C25] text-white flex items-center justify-center gap-2 font-semibold text-xs sm:text-sm tracking-wide shadow-xs hover:shadow-sm transition-all active:scale-[0.98] cursor-pointer whitespace-nowrap"
+            className="w-full md:w-auto min-h-[42px] sm:min-h-[52px] md:min-h-[56px] px-4 sm:px-7 rounded-[12px] sm:rounded-[16px] bg-[#1E1A17] hover:bg-[#342C25] text-white flex items-center justify-center gap-2 font-semibold text-xs sm:text-sm tracking-wide shadow-xs hover:shadow-sm transition-all active:scale-[0.98] cursor-pointer whitespace-nowrap"
           >
             <Search className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.2] shrink-0" />
             <span>

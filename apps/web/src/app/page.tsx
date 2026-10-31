@@ -518,7 +518,6 @@ export default function Home() {
           --------------------------------------------------------------------- */}
       <HeroSection
         videoSrc="/hero/hero-one.mp4?v=new"
-        posterSrc="/hero/hero-poster.jpg"
         eyebrow="Flyora Tours & Travels, Est. 2006"
         title={"It’s not where you go,\nbut how you feel."}
         description="Custom journeys across India and the world, built around you since 2006."
@@ -619,23 +618,23 @@ export default function Home() {
         <section
           id="destinations"
           ref={destinationsRef}
-          className="relative z-10 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20 lg:pb-24 bg-white border-b border-black/[0.06]"
+          className="relative z-10 pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16 lg:pb-24 bg-white border-b border-black/[0.06] scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
             {/* Header: Left title + Right description & navigation arrows */}
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-12 mb-8 sm:mb-10 lg:mb-12">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6 lg:gap-12 mb-6 sm:mb-10 lg:mb-12">
               <div className="max-w-xl">
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2.5">
+                <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2 sm:mb-2.5">
                   FEATURED DESTINATIONS
                 </span>
-                <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#1E1A17] tracking-tight leading-[1.12]">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
                   Explore <br className="hidden sm:inline" />
                   Destinations
                 </h2>
               </div>
 
               <div className="max-w-md flex flex-col items-start pt-0.5 sm:pt-1">
-                <p className="text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                <p className="text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
                   Discover handpicked international destinations crafted for
                   unforgettable journeys and cultural immersion.
                 </p>
@@ -720,17 +719,17 @@ export default function Home() {
             =================================================================== */}
         <section
           id="travel-styles"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+          className="py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] bg-white scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+            <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12 lg:mb-16">
+              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
                 CATEGORIES
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
                 Find Your Kind of Holiday
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
                 Whether seeking romance, family moments, or wild adventures,
                 discover journeys tailored around your travel style.
               </p>
@@ -766,17 +765,17 @@ export default function Home() {
             =================================================================== */}
         <section
           id="why-choose"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
+          className="py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2] scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+            <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12 lg:mb-16">
+              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
                 THE FLYORA DIFFERENCE
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
                 Why Travel with Flyora?
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
                 Experience personalized care, honest expertise, and seamless
                 service from our dedicated travel consultants.
               </p>
@@ -813,17 +812,17 @@ export default function Home() {
             =================================================================== */}
         <section
           id="experiences"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+          className="py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] bg-white scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+            <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12 lg:mb-16">
+              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
                 CURATED MOMENTS
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
                 Discover Extraordinary Experiences
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
                 Unique moments and curated activities that turn a holiday into a
                 lifetime memory.
               </p>
@@ -904,17 +903,17 @@ export default function Home() {
             =================================================================== */}
         <section
           id="how-it-works"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
+          className="py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2] scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+            <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12 lg:mb-16">
+              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
                 TRIP PLANNING PROCESS
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
                 Your Journey Starts Here
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
                 A simple, seamless three-step process from your first travel
                 idea to departure day.
               </p>
@@ -952,17 +951,17 @@ export default function Home() {
             =================================================================== */}
         <section
           id="testimonials"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+          className="py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] bg-white scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+            <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12 lg:mb-16">
+              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
                 CLIENT REVIEWS (PLACEHOLDER)
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
                 Stories from Our Travellers
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
                 Read experiences and feedback from travellers who explored the
                 world with Flyora.
               </p>
@@ -996,17 +995,17 @@ export default function Home() {
             =================================================================== */}
         <section
           id="inspiration"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
+          className="py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] bg-[#FAF7F2] scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+            <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12 lg:mb-16">
+              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
                 ARTICLES &amp; GUIDES
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
                 Travel Inspiration
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
                 Handy travel guides, destination highlights, and expert advice
                 to inspire your next adventure.
               </p>
@@ -1057,17 +1056,17 @@ export default function Home() {
             =================================================================== */}
         <section
           id="faqs"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-white"
+          className="py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] bg-white scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
-              <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
+            <div className="text-center max-w-xl mx-auto mb-8 sm:mb-12 lg:mb-16">
+              <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2">
                 HAVE QUESTIONS?
               </span>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
+              <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight">
                 Frequently Asked Questions
               </h2>
-              <p className="mt-3 text-sm sm:text-base text-[#5C534A] leading-relaxed">
+              <p className="mt-2.5 sm:mt-3 text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
                 Clear answers regarding holiday packages, customization, and
                 travel support.
               </p>
@@ -1113,16 +1112,16 @@ export default function Home() {
             =================================================================== */}
         <section
           id="cta"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#463D34] text-white text-center px-4"
+          className="py-12 sm:py-18 lg:py-24 border-t border-black/[0.06] bg-[#463D34] text-white text-center px-4 scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-2xl mx-auto">
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-2">
+            <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-2">
               START YOUR JOURNEY
             </span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal mb-4 tracking-tight">
-              Let's Plan Your Next Journey
+            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal mb-3 sm:mb-4 tracking-tight">
+              Let&apos;s Plan Your Next Journey
             </h2>
-            <p className="text-sm sm:text-base text-white/80 max-w-xl mx-auto mb-8 font-light leading-relaxed">
+            <p className="text-xs sm:text-sm md:text-base text-white/80 max-w-xl mx-auto mb-6 sm:mb-8 font-light leading-relaxed">
               Connect with our travel team to begin designing your tailor-made
               holiday with expert guidance every step of the way.
             </p>

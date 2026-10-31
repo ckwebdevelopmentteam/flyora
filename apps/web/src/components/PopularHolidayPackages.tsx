@@ -3,28 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Cormorant_Garamond, Poppins, Space_Mono } from "next/font/google";
-
-const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["500", "600"],
-  display: "swap",
-});
-
-const poppins = Poppins({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-});
-
-const spaceMono = Space_Mono({
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-});
+import { ArrowRight, Clock, MapPin } from "lucide-react";
 
 // =============================================================================
-// PACKAGE DATA (Edit packages in this array)
+// PACKAGE DATA
 // =============================================================================
 export interface PackageItem {
   number: string;
@@ -109,73 +91,46 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
   return (
     <section
       id="packages"
-      className="w-full bg-[#FAF7F2] text-[#2E2723] pt-[120px] pb-[128px] px-6 sm:px-8 lg:px-12 border-t border-black/[0.06]"
-      style={{
-        backgroundColor: "#FAF7F2",
-      }}
+      className="w-full bg-[#FAF7F2] text-[#1E1A17] py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] scroll-mt-20 sm:scroll-mt-24"
     >
-      <div className="max-w-[1344px] mx-auto flex flex-wrap gap-y-[72px] gap-x-10 lg:gap-x-14 xl:gap-x-[64px] items-start">
+      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 flex flex-wrap gap-y-8 sm:gap-y-12 gap-x-10 lg:gap-x-14 xl:gap-x-16 items-start">
         {/* =================================================================
-            LEFT INFO COLUMN (Sticky desktop, full-width below 980px)
+            LEFT INFO COLUMN (Sticky on desktop, full-width below 980px)
             ================================================================= */}
-        <aside className="w-full min-[980px]:w-auto min-[980px]:flex-[1_1_280px] xl:min-[1200px]:flex-[1_1_340px] min-[980px]:max-w-[420px] static min-[980px]:sticky min-[980px]:top-[120px] self-start">
-          {/* Eyebrow Row */}
-          <div className="flex items-center gap-4">
-            <span
-              aria-hidden="true"
-              className="w-[44px] h-[1px] bg-[#6B6058] shrink-0"
-            />
-            <span
-              className={`${spaceMono.className} text-[14px] uppercase text-[#6B6058] tracking-[0.24em] font-normal`}
-            >
-              CURATED TRAVEL PACKAGES
-            </span>
-          </div>
+        <aside className="w-full min-[980px]:w-auto min-[980px]:flex-[1_1_280px] xl:min-[1200px]:flex-[1_1_320px] min-[980px]:max-w-[380px] static min-[980px]:sticky min-[980px]:top-[120px] self-start">
+          {/* Section Eyebrow (Consistent with entire website) */}
+          <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2 sm:mb-2.5">
+            CURATED TRAVEL PACKAGES
+          </span>
 
-          {/* Heading h2: exactly 3 lines ("Popular" / "Holiday" / "Packages") */}
-          <h2
-            className={`${cormorant.className} mt-7 text-[56px] min-[980px]:text-[72px] xl:min-[1200px]:text-[88px] font-medium text-[#2E2723] leading-[0.96] tracking-[-0.015em]`}
-          >
-            Popular
-            <br />
-            Holiday
-            <br />
-            Packages
+          {/* Section Heading (Consistent with entire website) */}
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
+            Popular <br className="hidden sm:inline" />
+            Holiday Packages
           </h2>
 
-          {/* Description Paragraph */}
-          <p
-            className={`${poppins.className} mt-8 text-[19px] text-[#5E544C] leading-[1.75] font-normal`}
-          >
+          {/* Section Description (Consistent with entire website) */}
+          <p className="mt-2.5 sm:mt-3.5 text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
             Browse our most popular holiday packages designed for comfort,
             luxury, and seamless itineraries.
           </p>
 
           {/* Index List */}
-          <div className="mt-10 border-t border-[#DDD3C7]">
+          <div className="mt-6 sm:mt-8 border-t border-black/[0.08]">
             {POPULAR_PACKAGES.map((pkg) => (
               <div
                 key={pkg.number}
-                className="py-4 border-b border-[#DDD3C7] flex items-center justify-between"
+                className="py-2.5 sm:py-3 border-b border-black/[0.06] flex items-center justify-between"
               >
-                {/* Left: number + country name */}
-                <div className="flex items-baseline gap-4 min-w-0 pr-2">
-                  <span
-                    className={`${spaceMono.className} text-[14px] text-[#6B6058] font-normal shrink-0`}
-                  >
+                <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 pr-2">
+                  <span className="text-xs font-mono text-[#7A7167] shrink-0">
                     {pkg.number}
                   </span>
-                  <span
-                    className={`${cormorant.className} text-[26px] font-medium text-[#2E2723] leading-none`}
-                  >
+                  <span className="text-xs sm:text-sm font-medium text-[#1E1A17] truncate">
                     {pkg.country}
                   </span>
                 </div>
-
-                {/* Right: duration text */}
-                <span
-                  className={`${poppins.className} text-[15px] text-[#6B6058] font-normal shrink-0`}
-                >
+                <span className="text-[11px] sm:text-xs text-[#7A7167] font-medium shrink-0">
                   {pkg.shortDuration}
                 </span>
               </div>
@@ -183,185 +138,99 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
           </div>
 
           {/* "View all packages" Link */}
-          <div className="mt-9">
+          <div className="mt-5 sm:mt-6">
             <Link
               href="/tours"
-              className={`group inline-flex items-center gap-3 text-[17px] font-medium text-[#2E2723] border-b border-[#2E2723] pb-1.5 transition-all duration-250 hover:gap-5 focus-visible:outline-3 focus-visible:outline-[#3F352F] focus-visible:outline-offset-3 ${poppins.className}`}
+              className="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#463D34] hover:text-[#1E1A17] transition"
             >
               <span>View all packages</span>
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="#2E2723"
-                strokeWidth="1.7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                aria-hidden="true"
-                className="shrink-0 transition-transform duration-250"
-              >
-                <line x1="5" y1="12" x2="19" y2="12" />
-                <polyline points="12 5 19 12 12 19" />
-              </svg>
+              <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
             </Link>
           </div>
         </aside>
 
         {/* =================================================================
-            RIGHT CARDS COLUMN (Three horizontal cards stacked vertically)
+            RIGHT CARDS COLUMN (Stacked cards with unified website typography)
             ================================================================= */}
-        <div className="flex-[2_1_480px] xl:min-[1200px]:flex-[2_1_640px] min-w-0 w-full flex flex-col gap-7">
+        <div className="flex-[2_1_480px] xl:min-[1200px]:flex-[2_1_640px] min-w-0 w-full flex flex-col gap-5 sm:gap-6">
           {POPULAR_PACKAGES.map((pkg) => (
             <article
               key={pkg.number}
-              className="group flex flex-wrap gap-y-2 gap-x-9 bg-white border border-[#EAE3D9] rounded-[36px] p-5 shadow-[0_24px_50px_-36px_rgba(63,53,47,0.3)] hover:-translate-y-1.5 hover:shadow-[0_36px_70px_-34px_rgba(63,53,47,0.38)] transition-all duration-450 ease-[cubic-bezier(0.2,0.8,0.2,1)]"
+              className="group flex flex-col sm:flex-row gap-4 sm:gap-7 bg-white border border-stone-200/90 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-xs hover:border-stone-300 hover:shadow-md transition-all duration-300"
             >
-              {/* CARD IMAGE AREA (Left Half) */}
+              {/* Card Image Area */}
               <div
-                className="flex-[1_1_280px] min-h-[340px] relative rounded-[24px] overflow-hidden flex flex-col items-center justify-center text-center select-none"
+                className="sm:w-[260px] md:w-[280px] lg:w-[300px] shrink-0 h-[190px] sm:h-auto min-h-[190px] sm:min-h-[220px] relative rounded-xl sm:rounded-2xl overflow-hidden select-none"
                 style={{
                   background: pkg.tintGradient,
                 }}
               >
-                {/* 8K Natural Photography Background */}
+                {/* 8K Natural Photography */}
                 {pkg.imageSrc ? (
                   <>
                     <Image
                       src={pkg.imageSrc}
                       alt={pkg.name}
                       fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 420px"
-                      className="object-cover rounded-[24px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
+                      sizes="(max-width: 640px) 100vw, 300px"
+                      className="object-cover rounded-xl sm:rounded-2xl transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
                       priority={pkg.number === "01"}
                     />
-                    {/* Atmospheric soft overlay for pristine badge and pill contrast */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/45 via-black/10 to-black/25 pointer-events-none rounded-[24px]" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/25 pointer-events-none rounded-xl sm:rounded-2xl" />
                   </>
                 ) : (
-                  /* Fallback Centered Image Icon & Photo Label */
-                  <div className="flex flex-col items-center justify-center gap-3.5 px-4 text-[#6B6058]">
-                    <svg
-                      width="40"
-                      height="40"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#6B6058"
-                      strokeWidth="1.3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
-                      <circle cx="8.5" cy="8.5" r="1.5" />
-                      <polyline points="21 15 16 10 5 21" />
-                    </svg>
-                    <span
-                      className={`${spaceMono.className} text-[12px] uppercase tracking-[0.16em] text-center text-[#6B6058] leading-tight`}
-                    >
+                  <div className="flex flex-col items-center justify-center gap-2 px-4 h-full text-[#7A7167]">
+                    <MapPin className="w-6 h-6 stroke-[1.5]" />
+                    <span className="text-[11px] font-mono uppercase tracking-[0.14em]">
                       {pkg.photoLabel}
                     </span>
                   </div>
                 )}
 
                 {/* Number Badge (top-left) */}
-                <div
-                  className={`absolute top-[18px] left-[18px] z-10 ${cormorant.className} text-[28px] font-semibold text-[#2E2723] leading-none bg-white/90 rounded-full px-4 pt-2 pb-1.5 shadow-sm backdrop-blur-xs`}
-                >
+                <div className="absolute top-3 left-3 z-10 text-[11px] font-mono font-semibold text-[#1E1A17] bg-white/90 backdrop-blur-md rounded-full px-2.5 py-1 shadow-xs border border-black/5">
                   {pkg.number}
                 </div>
 
                 {/* Duration Pill (bottom-left) */}
-                <div
-                  className={`absolute bottom-[18px] left-[18px] z-10 inline-flex items-center gap-2 ${poppins.className} text-[15px] font-medium text-[#2E2723] bg-white/95 rounded-full px-4 py-2.5 backdrop-blur-xs shadow-md`}
-                >
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="#2E2723"
-                    strokeWidth="1.8"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    aria-hidden="true"
-                    className="shrink-0"
-                  >
-                    <circle cx="12" cy="12" r="10" />
-                    <polyline points="12 6 12 12 16 14" />
-                  </svg>
+                <div className="absolute bottom-3 left-3 z-10 inline-flex items-center gap-1.5 text-xs font-medium text-[#1E1A17] bg-white/95 backdrop-blur-md rounded-full px-3 py-1 shadow-xs">
+                  <Clock className="w-3.5 h-3.5 text-[#7A7167]" />
                   <span>{pkg.duration}</span>
                 </div>
               </div>
 
-              {/* CARD CONTENT (Right Half) */}
-              <div className="flex-[1.3_1_320px] min-w-0 flex flex-col justify-between gap-7 pt-3.5 pr-4 pb-2.5 pl-1">
-                {/* Top Block */}
+              {/* Card Content Area */}
+              <div className="flex-1 min-w-0 flex flex-col justify-between py-0.5 sm:py-1">
                 <div>
-                  {/* Country Row */}
-                  <div className="inline-flex items-center gap-2 text-[#5E544C]">
-                    <svg
-                      width="17"
-                      height="17"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="#5E544C"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                      className="shrink-0"
-                    >
-                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                      <circle cx="12" cy="10" r="3" />
-                    </svg>
-                    <span
-                      className={`${poppins.className} text-[15px] font-medium text-[#5E544C]`}
-                    >
-                      {pkg.country}
-                    </span>
+                  {/* Destination Row */}
+                  <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-[0.16em] text-[#7A7167]">
+                    <MapPin className="w-3.5 h-3.5 text-[#7A7167]" />
+                    <span>{pkg.country}</span>
                   </div>
 
-                  {/* Name h3 */}
-                  <h3
-                    className={`${cormorant.className} mt-3.5 text-[40px] sm:text-[50px] font-medium text-[#2E2723] leading-[1.02] tracking-[-0.01em]`}
-                  >
+                  {/* Package Title */}
+                  <h3 className="font-serif mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-[26px] font-normal text-[#1E1A17] tracking-tight leading-tight">
                     {pkg.name}
                   </h3>
 
-                  {/* Description */}
-                  <p
-                    className={`${poppins.className} mt-4.5 text-[17px] sm:text-[18px] text-[#5E544C] leading-[1.7] font-normal`}
-                  >
+                  {/* Package Description (Unified with site descriptions) */}
+                  <p className="mt-1.5 sm:mt-2 text-xs sm:text-sm text-[#5C534A] leading-relaxed">
                     {pkg.description}
                   </p>
                 </div>
 
-                {/* Bottom Block */}
-                <div className="pt-6 border-t border-[#EAE3D9] flex flex-wrap items-end justify-between gap-5">
-                  {/* Estimated Price */}
+                {/* Bottom Bar: Estimated Price & CTA Button */}
+                <div className="mt-4 sm:mt-5 pt-3.5 sm:pt-4 border-t border-stone-100 flex flex-wrap items-center justify-between gap-3">
                   <div>
-                    <span
-                      className={`${spaceMono.className} text-[12px] uppercase tracking-[0.18em] text-[#6B6058] block`}
-                    >
+                    <span className="text-[10px] font-mono uppercase tracking-wider text-[#7A7167] block">
                       ESTIMATED PRICE
                     </span>
-                    <div className="mt-2 flex items-baseline gap-2 flex-wrap">
-                      <span
-                        className={`${poppins.className} text-[16px] text-[#5E544C]`}
-                      >
-                        From
-                      </span>
-                      <span
-                        className={`${cormorant.className} text-[46px] font-semibold text-[#2E2723] leading-none`}
-                      >
+                    <div className="flex items-baseline gap-1.5 mt-0.5">
+                      <span className="text-xs text-[#7A7167]">From</span>
+                      <span className="text-xl sm:text-2xl font-bold text-[#1E1A17] font-sans tracking-tight">
                         {pkg.price}
                       </span>
-                      <span
-                        className={`${poppins.className} text-[16px] text-[#5E544C]`}
-                      >
-                        per person
-                      </span>
+                      <span className="text-xs text-[#7A7167]">per person</span>
                     </div>
                   </div>
 
@@ -369,24 +238,10 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
                   <button
                     type="button"
                     onClick={() => onOpenEnquiry && onOpenEnquiry(pkg.name)}
-                    className={`group inline-flex items-center gap-2.5 hover:gap-4 bg-[#3F352F] hover:bg-[#2F2722] text-white text-[16px] font-medium px-7 py-4 rounded-full transition-all duration-250 focus-visible:outline-3 focus-visible:outline-[#3F352F] focus-visible:outline-offset-3 cursor-pointer select-none ${poppins.className}`}
+                    className="inline-flex items-center gap-2 bg-[#463D34] hover:bg-[#38312A] text-white text-xs font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded-full transition shadow-xs cursor-pointer active:scale-95"
                   >
                     <span>View Package</span>
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.8"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                      className="shrink-0 transition-transform duration-250"
-                    >
-                      <line x1="5" y1="12" x2="19" y2="12" />
-                      <polyline points="12 5 19 12 12 19" />
-                    </svg>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
