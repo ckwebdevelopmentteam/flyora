@@ -721,10 +721,10 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - Glowing white aura ONLY forms when hovering any card.
           - Full text is displayed with zero truncation.
           ======================================================================= */}
-      <div className="relative mb-3 sm:mb-4">
+      <div className="relative mb-2 -mt-4 sm:-mt-5">
         <div
           ref={cardsScrollRef}
-          className="flex md:grid md:grid-cols-6 items-stretch gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar scroll-smooth px-0.5 py-1"
+          className="flex md:grid md:grid-cols-6 items-stretch gap-2.5 sm:gap-3 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth px-2 pt-6 pb-4"
         >
           {SERVICES_DATA.map((service) => {
             const IconComponent = service.icon;
@@ -736,21 +736,28 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 onClick={() => handleCardClick(service.id)}
                 aria-pressed={activeTab === service.id}
                 aria-label={`Select ${service.label}`}
-                className="group relative shrink-0 w-[166px] sm:w-[178px] md:w-auto min-h-[116px] sm:min-h-[122px] md:h-[130px] rounded-[20px] sm:rounded-[22px] overflow-hidden transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-between bg-neutral-950 border border-white/20 hover:border-white hover:ring-2 hover:ring-white/60 hover:shadow-[0_0_30px_rgba(255,255,255,0.45)] hover:-translate-y-1 hover:scale-[1.02]"
+                className="group relative shrink-0 w-[166px] sm:w-[178px] md:w-auto min-h-[116px] sm:min-h-[122px] md:h-[130px] rounded-[20px] sm:rounded-[22px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-between bg-neutral-950 hover:-translate-y-1.5 hover:scale-[1.02] hover:z-30"
               >
-                {/* Full-bleed crisp background photo with increased subject scale */}
-                <img
-                  src={service.imageSrc}
-                  alt=""
-                  className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.32] sm:scale-[1.4] pointer-events-none transition-transform duration-500 ease-out group-hover:scale-[1.48]`}
-                />
+                {/* Inner clipped canvas for crisp photo & contrast scrims */}
+                <div className="absolute inset-0 rounded-[20px] sm:rounded-[22px] overflow-hidden pointer-events-none">
+                  {/* Full-bleed crisp background photo with increased subject scale */}
+                  <img
+                    src={service.imageSrc}
+                    alt=""
+                    className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.32] sm:scale-[1.4] transition-transform duration-500 ease-out group-hover:scale-[1.48]`}
+                  />
 
-                {/* Targeted Contrast Scrims */}
-                <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/35 to-transparent pointer-events-none group-hover:via-black/20 transition-colors" />
-                <div className="absolute inset-x-0 bottom-0 h-[68%] bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
+                  {/* Contrast Scrims */}
+                  <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-black/45 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/35 to-transparent group-hover:via-black/20 transition-colors" />
+                  <div className="absolute inset-x-0 bottom-0 h-[68%] bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                </div>
+
+                {/* Outer pristine border and hover white glowing aura on z-20 (never clipped) */}
+                <div className="absolute inset-0 rounded-[20px] sm:rounded-[22px] border border-white/20 transition-all duration-300 pointer-events-none z-20 group-hover:border-white group-hover:ring-2 group-hover:ring-white group-hover:shadow-[0_0_30px_rgba(255,255,255,0.65)]" />
 
                 {/* Top Row: Crisp Vector Icon + Circular Action Arrow Pill */}
-                <div className="relative z-10 flex items-center justify-between w-full">
+                <div className="relative z-30 flex items-center justify-between w-full">
                   <div className="text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
                     <IconComponent className="w-[19px] h-[19px] sm:w-[21px] sm:h-[21px]" />
                   </div>
@@ -762,7 +769,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 </div>
 
                 {/* Bottom Row: 100% Full Width Typography - No Truncation */}
-                <div className="relative z-10 w-full mt-2">
+                <div className="relative z-30 w-full mt-2">
                   <div className="text-[12.5px] sm:text-[13px] md:text-[13.5px] font-bold text-white leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words">
                     {service.label}
                   </div>
