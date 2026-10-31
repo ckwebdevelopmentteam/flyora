@@ -91,8 +91,24 @@ interface ServiceItem {
   imageSrc: string;
   imagePosition?: string;
   icon: React.ComponentType<{ className?: string }>;
+
+  // Dynamic Content for Input Box & Concierge Card
+  field1Label: string;
   defaultOption: string;
   options: { name: string; subtitle?: string; flag?: string }[];
+  searchPlaceholder: string;
+
+  field2Label: string;
+  defaultDate: string;
+  datePresets: { label: string; subtitle: string; value: string }[];
+
+  field3Label: string;
+  defaultGuests: string;
+  guestOptions: string[];
+
+  namePlaceholder: string;
+  phonePlaceholder: string;
+  ctaButtonText: string;
 }
 
 const SERVICES_DATA: ServiceItem[] = [
@@ -103,7 +119,9 @@ const SERVICES_DATA: ServiceItem[] = [
     imageSrc: "/services/hajj-packages.jpg",
     imagePosition: "object-[66%_40%]",
     icon: MosqueIcon,
+    field1Label: "Hajj Package Tier",
     defaultOption: "Executive Non-Shifting (Mina A)",
+    searchPlaceholder: "Search Mina A, Deluxe Shifting, Express...",
     options: [
       {
         name: "Executive Non-Shifting (Mina A)",
@@ -126,6 +144,36 @@ const SERVICES_DATA: ServiceItem[] = [
         flag: "🕊️",
       },
     ],
+    field2Label: "Hajj Season",
+    defaultDate: "May - June 2027",
+    datePresets: [
+      {
+        label: "May - June 2027",
+        subtitle: "Hajj Pilgrimage Months",
+        value: "May - June 2027",
+      },
+      {
+        label: "May - June 2028",
+        subtitle: "Advance Pilgrimage Registration",
+        value: "May - June 2028",
+      },
+      {
+        label: "Flexible Schedule",
+        subtitle: "Recommend best package tier",
+        value: "Flexible Schedule",
+      },
+    ],
+    field3Label: "Pilgrims / Party",
+    defaultGuests: "Couple (2 Adults)",
+    guestOptions: [
+      "Couple (2 Adults)",
+      "Solo Pilgrim (1 Male / Female)",
+      "Family (3 – 4 Pilgrims)",
+      "Large Group (5+ Pilgrims)",
+    ],
+    namePlaceholder: "Pilgrim / Lead Booker Name",
+    phonePlaceholder: "WhatsApp for Hajj Itinerary",
+    ctaButtonText: "Get Hajj Quote",
   },
   {
     id: "custom-holidays",
@@ -134,7 +182,9 @@ const SERVICES_DATA: ServiceItem[] = [
     imageSrc: "/services/custom-holidays.jpg",
     imagePosition: "object-[75%_50%]",
     icon: VacationPlaneIcon,
+    field1Label: "Holiday Destination",
     defaultOption: "Switzerland & The Alps",
+    searchPlaceholder: "Search Switzerland, Bali, Dubai, Japan...",
     options: [
       {
         name: "Switzerland & The Alps",
@@ -167,6 +217,47 @@ const SERVICES_DATA: ServiceItem[] = [
         flag: "🇲🇻",
       },
     ],
+    field2Label: "Travel Month",
+    defaultDate: "November 2026",
+    datePresets: [
+      {
+        label: "November 2026",
+        subtitle: "Autumn & Pre-Winter Getaways",
+        value: "November 2026",
+      },
+      {
+        label: "December 2026",
+        subtitle: "Winter Break & New Year Celebrations",
+        value: "December 2026",
+      },
+      {
+        label: "Jan - Feb 2027",
+        subtitle: "Fresh Start Journeys",
+        value: "Jan - Feb 2027",
+      },
+      {
+        label: "Spring 2027",
+        subtitle: "Cherry Blossoms & Mild Weather",
+        value: "Spring 2027",
+      },
+      {
+        label: "Flexible Dates",
+        subtitle: "Open to recommendations",
+        value: "Flexible Dates",
+      },
+    ],
+    field3Label: "Travelers / Party",
+    defaultGuests: "Couple (2 Adults)",
+    guestOptions: [
+      "Couple (2 Adults)",
+      "Solo Traveler (1 Adult)",
+      "Family (2 Adults, 2 Kids)",
+      "Small Group (3 – 5 Adults)",
+      "Large Group (6+ Travelers)",
+    ],
+    namePlaceholder: "Your Full Name",
+    phonePlaceholder: "WhatsApp for Holiday Itinerary",
+    ctaButtonText: "Plan My Holiday",
   },
   {
     id: "visa-assistance",
@@ -175,7 +266,9 @@ const SERVICES_DATA: ServiceItem[] = [
     imageSrc: "/services/visa-assistance.jpg",
     imagePosition: "object-[70%_50%]",
     icon: PassportIcon,
+    field1Label: "Visa Country / Type",
     defaultOption: "Schengen Europe Visa",
+    searchPlaceholder: "Search Schengen, UK, US, Dubai, Saudi...",
     options: [
       {
         name: "Schengen Europe (29 Countries)",
@@ -203,6 +296,41 @@ const SERVICES_DATA: ServiceItem[] = [
         flag: "🇸🇦",
       },
     ],
+    field2Label: "Expected Travel Date",
+    defaultDate: "Within 30 Days",
+    datePresets: [
+      {
+        label: "Express / Urgent (7–14 Days)",
+        subtitle: "Immediate biometric slot prep",
+        value: "Express (7-14 Days)",
+      },
+      {
+        label: "Within 30 Days",
+        subtitle: "Standard embassy timeline",
+        value: "Within 30 Days",
+      },
+      {
+        label: "Next 1 – 3 Months",
+        subtitle: "Advance planned vacation",
+        value: "Next 1-3 Months",
+      },
+      {
+        label: "Flexible / Exploring",
+        subtitle: "Document consultation first",
+        value: "Flexible Timeline",
+      },
+    ],
+    field3Label: "Visa Applicants",
+    defaultGuests: "Single Applicant (1 Person)",
+    guestOptions: [
+      "Single Applicant (1 Person)",
+      "Couple (2 Applicants)",
+      "Family (3 – 4 Applicants)",
+      "Corporate Group (5+ Applicants)",
+    ],
+    namePlaceholder: "Applicant Full Name",
+    phonePlaceholder: "WhatsApp for Document Checklist",
+    ctaButtonText: "Get Visa Assistance",
   },
   {
     id: "flight-booking",
@@ -211,7 +339,9 @@ const SERVICES_DATA: ServiceItem[] = [
     imageSrc: "/services/flight-booking.jpg",
     imagePosition: "object-[65%_45%]",
     icon: Plane,
+    field1Label: "Flight Route / Sector",
     defaultOption: "International Round-Trip",
+    searchPlaceholder: "Search International, Domestic, Middle East, Europe...",
     options: [
       {
         name: "International Business / Economy",
@@ -234,6 +364,42 @@ const SERVICES_DATA: ServiceItem[] = [
         flag: "🇪🇺",
       },
     ],
+    field2Label: "Departure Timeline",
+    defaultDate: "Next 7 – 14 Days",
+    datePresets: [
+      {
+        label: "Next 7 – 14 Days",
+        subtitle: "Instant corporate & family lock",
+        value: "Next 7-14 Days",
+      },
+      {
+        label: "Next 30 Days",
+        subtitle: "Economy & Business best fares",
+        value: "Next 30 Days",
+      },
+      {
+        label: "2 – 3 Months in Advance",
+        subtitle: "Lowest fare calendar guarantee",
+        value: "2-3 Months Out",
+      },
+      {
+        label: "Flexible Departure",
+        subtitle: "Best price across dates",
+        value: "Flexible Departure",
+      },
+    ],
+    field3Label: "Passengers & Class",
+    defaultGuests: "1 Adult (Economy Class)",
+    guestOptions: [
+      "1 Adult (Economy Class)",
+      "2 Adults (Economy Class)",
+      "2 Adults (Business Class)",
+      "Family (2 Adults, 2 Kids)",
+      "Group (5+ Passengers)",
+    ],
+    namePlaceholder: "Passenger / Booker Name",
+    phonePlaceholder: "WhatsApp for Instant Fare Locks",
+    ctaButtonText: "Find Best Fares",
   },
   {
     id: "train-booking",
@@ -242,7 +408,9 @@ const SERVICES_DATA: ServiceItem[] = [
     imageSrc: "/services/train-booking.jpg",
     imagePosition: "object-[70%_55%]",
     icon: Train,
+    field1Label: "Train Route / Service",
     defaultOption: "Swiss Glacier Express & Eurail",
+    searchPlaceholder: "Search Eurail, Palace on Wheels, Vande Bharat...",
     options: [
       {
         name: "Eurail & Swiss Panoramic Trains",
@@ -265,6 +433,41 @@ const SERVICES_DATA: ServiceItem[] = [
         flag: "🇯🇵",
       },
     ],
+    field2Label: "Journey Date",
+    defaultDate: "Next 14 Days",
+    datePresets: [
+      {
+        label: "Next 14 Days",
+        subtitle: "Immediate confirmed berths",
+        value: "Next 14 Days",
+      },
+      {
+        label: "Within 30 Days",
+        subtitle: "Panoramic trains & rail passes",
+        value: "Within 30 Days",
+      },
+      {
+        label: "Scenic Heritage Season",
+        subtitle: "Luxury heritage journeys",
+        value: "Next Season",
+      },
+      {
+        label: "Flexible Dates",
+        subtitle: "Check live seat quota",
+        value: "Flexible Dates",
+      },
+    ],
+    field3Label: "Passengers & Berths",
+    defaultGuests: "2 Passengers (1st AC / Executive)",
+    guestOptions: [
+      "2 Passengers (1st AC / Executive)",
+      "1 Solo Passenger",
+      "Family Cabin (4 Berths)",
+      "Group Tour (6+ Passengers)",
+    ],
+    namePlaceholder: "Passenger Full Name",
+    phonePlaceholder: "WhatsApp for Seat Confirmation",
+    ctaButtonText: "Check Train Seats",
   },
   {
     id: "bus-booking",
@@ -273,7 +476,9 @@ const SERVICES_DATA: ServiceItem[] = [
     imageSrc: "/services/bus-booking.jpg",
     imagePosition: "object-[70%_50%]",
     icon: Bus,
+    field1Label: "Bus Service / Charter",
     defaultOption: "Intercity Multi-Axle Volvo",
+    searchPlaceholder: "Search Volvo AC Sleeper, Private Charter Coach...",
     options: [
       {
         name: "Multi-Axle AC Sleeper Volvo",
@@ -291,52 +496,41 @@ const SERVICES_DATA: ServiceItem[] = [
         flag: "🏔️",
       },
     ],
-  },
-];
-
-const GUEST_OPTIONS = [
-  "Couple (2 Adults)",
-  "Solo Traveler (1 Adult)",
-  "Family (2 Adults, 2 Kids)",
-  "Small Group (3 – 5 Adults)",
-  "Large Group (6+ Travelers)",
-];
-
-const DATE_PRESETS = [
-  {
-    label: "May - June 2027",
-    subtitle: "Hajj Pilgrimage Months",
-    value: "May - June 2027",
-  },
-  {
-    label: "Immediate (Next 7–14 Days)",
-    subtitle: "Last-minute & Express Departures",
-    value: "Immediate Departures",
-  },
-  {
-    label: "November 2026",
-    subtitle: "Autumn & Pre-Winter Getaways",
-    value: "November 2026",
-  },
-  {
-    label: "December 2026",
-    subtitle: "Winter Break & New Year Celebrations",
-    value: "December 2026",
-  },
-  {
-    label: "Jan - Feb 2027",
-    subtitle: "Fresh Start Journeys",
-    value: "Jan - Feb 2027",
-  },
-  {
-    label: "Spring 2027",
-    subtitle: "Cherry Blossoms & Mild Weather",
-    value: "Spring 2027",
-  },
-  {
-    label: "Flexible Dates",
-    subtitle: "Open to recommendations",
-    value: "Flexible Dates",
+    field2Label: "Departure Timeline",
+    defaultDate: "Tonight / Tomorrow",
+    datePresets: [
+      {
+        label: "Tonight / Tomorrow",
+        subtitle: "Urgent departure & boarding pass",
+        value: "Tonight / Tomorrow",
+      },
+      {
+        label: "This Weekend",
+        subtitle: "Intercity weekend round-trip",
+        value: "This Weekend",
+      },
+      {
+        label: "Next 7 – 10 Days",
+        subtitle: "Advance sleeper reservation",
+        value: "Next 7-10 Days",
+      },
+      {
+        label: "Charter Event Dates",
+        subtitle: "Corporate & wedding transfers",
+        value: "Charter Event",
+      },
+    ],
+    field3Label: "Seats & Occupancy",
+    defaultGuests: "2 Sleeper Berths",
+    guestOptions: [
+      "2 Sleeper Berths",
+      "1 Single Berth",
+      "Full Luxury Coach Charter (35+ Seats)",
+      "Family (4 Seats)",
+    ],
+    namePlaceholder: "Passenger Contact Name",
+    phonePlaceholder: "WhatsApp for Ticket & Boarding Point",
+    ctaButtonText: "Book Bus Tickets",
   },
 ];
 
@@ -373,20 +567,20 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   const activeService =
     SERVICES_DATA.find((s) => s.id === activeTab) || SERVICES_DATA[0];
 
-  // Update selection when clicking a card
+  // Update selection dynamically when clicking a card
   const handleCardClick = (serviceId: ServiceId) => {
     setActiveTab(serviceId);
     const service = SERVICES_DATA.find((s) => s.id === serviceId);
     if (service) {
       setSelectedOption(service.defaultOption);
-      if (serviceId === "hajj-packages") {
-        setTravelDate("May - June 2027");
-      }
+      setTravelDate(service.defaultDate);
+      setGuestCount(service.defaultGuests);
     }
     setIsServiceOpen(false);
     setIsDateOpen(false);
     setIsGuestOpen(false);
     setIsSubmitted(false);
+    setSearchFilter("");
   };
 
   // Close dropdowns on outside click
@@ -437,12 +631,12 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   return (
     <div className={`w-full max-w-[1100px] mx-auto select-none ${className}`}>
       {/* =======================================================================
-          TOP SERVICE CARDS: 6 Cards Matching Reference Mockup with 100% Vector Precision
+          TOP SERVICE CARDS: 6 Cards with Full Text & Dynamic Interactive Hover
           ======================================================================= */}
       <div className="relative mb-3 sm:mb-4">
         <div
           ref={cardsScrollRef}
-          className="flex md:grid md:grid-cols-6 items-stretch gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar scroll-smooth px-0.5 py-1"
+          className="flex md:grid md:grid-cols-6 items-stretch gap-2.5 sm:gap-3 overflow-x-auto no-scrollbar scroll-smooth px-0.5 py-1"
         >
           {SERVICES_DATA.map((service) => {
             const IconComponent = service.icon;
@@ -455,54 +649,52 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 onClick={() => handleCardClick(service.id)}
                 aria-pressed={isActive}
                 aria-label={`Select ${service.label}`}
-                className={`group relative shrink-0 w-[172px] sm:w-[185px] md:w-auto h-[106px] sm:h-[116px] md:h-[124px] rounded-[20px] sm:rounded-[22px] overflow-hidden transition-all duration-200 cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-between bg-neutral-950 ${
+                className={`group relative shrink-0 w-[166px] sm:w-[178px] md:w-auto min-h-[116px] sm:min-h-[122px] md:h-[130px] rounded-[20px] sm:rounded-[22px] overflow-hidden transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-between bg-neutral-950 ${
                   isActive
-                    ? "border-2 border-amber-400 ring-2 ring-amber-400/40 shadow-[0_8px_25px_rgba(245,158,11,0.45)] scale-[1.02] z-10"
-                    : "border border-white/20 hover:border-white/50 hover:scale-[1.01] shadow-md hover:shadow-lg"
+                    ? "border-2 border-amber-400 ring-2 ring-amber-400/50 shadow-[0_12px_35px_rgba(245,158,11,0.5)] -translate-y-1 scale-[1.02] z-10"
+                    : "border border-white/20 hover:border-amber-300 hover:ring-2 hover:ring-amber-300/35 hover:scale-[1.02] hover:-translate-y-1 shadow-md hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]"
                 }`}
               >
                 {/* Full-bleed crisp background photo with increased subject scale */}
                 <img
                   src={service.imageSrc}
                   alt=""
-                  className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.32] sm:scale-[1.4] pointer-events-none transition-transform duration-500 group-hover:scale-[1.48]`}
+                  className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.32] sm:scale-[1.4] pointer-events-none transition-transform duration-500 ease-out group-hover:scale-[1.48]`}
                 />
 
-                {/* Targeted Contrast Scrims: Text remains 100% legible while photo stays vivid & bright */}
+                {/* Targeted Contrast Scrims */}
                 {isActive ? (
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-amber-950/25 to-amber-500/10 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/85 via-amber-950/30 to-amber-500/10 pointer-events-none" />
                 ) : (
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/75 via-black/30 to-transparent pointer-events-none group-hover:via-black/20 transition-colors" />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/35 to-transparent pointer-events-none group-hover:via-black/25 transition-colors" />
                 )}
-                <div className="absolute inset-x-0 bottom-0 h-[65%] bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
+                <div className="absolute inset-x-0 bottom-0 h-[68%] bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
 
-                {/* Top Row: Crisp Vector Icon */}
-                <div className="relative z-10 flex items-center justify-between">
+                {/* Top Row: Crisp Vector Icon + Circular Action Arrow Pill */}
+                <div className="relative z-10 flex items-center justify-between w-full">
                   <div className="text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
-                    <IconComponent className="w-[18px] h-[18px] sm:w-5 sm:h-5" />
-                  </div>
-                </div>
-
-                {/* Bottom Row: Crisp Vector Typography + Circular Action Arrow Pill */}
-                <div className="relative z-10 flex items-end justify-between gap-1.5 min-w-0">
-                  <div className="min-w-0 pr-0.5">
-                    <div className="text-[12.5px] sm:text-[13.5px] md:text-[14px] font-bold text-white leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] truncate">
-                      {service.label}
-                    </div>
-                    <div className="text-[10px] sm:text-[11px] md:text-[11.5px] font-medium text-white/85 leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] truncate mt-0.5 sm:mt-1">
-                      {service.subtitle}
-                    </div>
+                    <IconComponent className="w-[19px] h-[19px] sm:w-[21px] sm:h-[21px]" />
                   </div>
 
                   {/* Circular Action Arrow Pill */}
                   <div
-                    className={`w-6.5 h-6.5 sm:w-7 sm:h-7 rounded-full flex items-center justify-center shrink-0 shadow-md transition-transform duration-200 group-hover:translate-x-0.5 ${
+                    className={`w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center shrink-0 shadow-md transition-all duration-200 group-hover:translate-x-0.5 group-hover:bg-[#FDD8A5] group-hover:text-[#1E1A17] ${
                       isActive
                         ? "bg-[#FDD8A5] text-[#1E1A17]"
-                        : "bg-white text-[#1E1A17] opacity-95 group-hover:opacity-100"
+                        : "bg-white/95 text-[#1E1A17]"
                     }`}
                   >
-                    <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 stroke-[2.5]" />
+                    <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
+
+                {/* Bottom Row: 100% Full Width Typography - No Truncation */}
+                <div className="relative z-10 w-full mt-2">
+                  <div className="text-[12.5px] sm:text-[13px] md:text-[13.5px] font-bold text-white leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words">
+                    {service.label}
+                  </div>
+                  <div className="text-[10px] sm:text-[10.5px] md:text-[11px] font-medium text-white/90 leading-snug drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] whitespace-normal break-words mt-1">
+                    {service.subtitle}
                   </div>
                 </div>
               </button>
@@ -512,19 +704,19 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
       </div>
 
       {/* =======================================================================
-          MAIN WHITE CONCIERGE CARD: 2-Tier Architecture matching Reference
+          MAIN WHITE CONCIERGE CARD: Dynamically Adapts Content to Active Service
           ======================================================================= */}
       <div className="relative bg-white text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-4 sm:p-5 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#EAE3D9] text-left transition-all duration-300">
         <form onSubmit={handleSubmit}>
           {/* -------------------------------------------------------------------
-              ROW 1: THE 3 JOURNEY PARAMETER BOXES
+              ROW 1: THE 3 DYNAMIC PARAMETER BOXES (MATCHING ACTIVE SERVICE)
               ------------------------------------------------------------------- */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 items-stretch">
-            {/* FIELD 1: SELECTED SERVICE */}
+            {/* FIELD 1: DYNAMIC SERVICE OPTION / TIER / ROUTE */}
             <div ref={serviceRef} className="relative">
               <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.14em] text-[#7A7167] flex items-center gap-1.5 mb-1.5">
                 <Tag className="w-3 h-3 text-[#7A7167]" />
-                <span>Selected Service</span>
+                <span>{activeService.field1Label}</span>
               </span>
 
               <button
@@ -542,10 +734,10 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               >
                 <div className="min-w-0 pr-1">
                   <div className="text-xs sm:text-sm font-bold text-[#1E1A17] truncate leading-tight">
-                    {activeService.label}
+                    {selectedOption}
                   </div>
                   <div className="text-[11px] text-[#7A7167] font-normal truncate mt-0.5">
-                    {selectedOption}
+                    {activeService.label} • Selected
                   </div>
                 </div>
                 <ChevronDown
@@ -555,7 +747,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 />
               </button>
 
-              {/* Service & Option Dropdown (Opens Upward to guarantee visibility) */}
+              {/* Service & Option Dropdown */}
               {isServiceOpen && (
                 <div className="absolute left-0 bottom-[calc(100%+8px)] z-50 w-full sm:w-[360px] bg-white rounded-[18px] p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#E5DFD7] animate-in fade-in slide-in-from-bottom-2 duration-150">
                   <div className="p-2 border-b border-neutral-100 mb-1">
@@ -563,7 +755,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                       <Search className="w-3.5 h-3.5 text-[#7A7167] absolute left-2.5 pointer-events-none" />
                       <input
                         type="text"
-                        placeholder="Search package tier, route, or city..."
+                        placeholder={activeService.searchPlaceholder}
                         value={searchFilter}
                         onChange={(e) => setSearchFilter(e.target.value)}
                         className="w-full text-xs pl-8 pr-3 py-1.5 rounded-lg bg-[#FAF7F2] border border-transparent focus:border-[#1E1A17]/30 focus:outline-none text-[#1E1A17]"
@@ -612,11 +804,11 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               )}
             </div>
 
-            {/* FIELD 2: TRAVEL DATE */}
+            {/* FIELD 2: DYNAMIC TRAVEL DATE / SEASON */}
             <div ref={dateRef} className="relative">
               <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.14em] text-[#7A7167] flex items-center gap-1.5 mb-1.5">
                 <Calendar className="w-3 h-3 text-[#7A7167]" />
-                <span>Travel Date</span>
+                <span>{activeService.field2Label}</span>
               </span>
 
               <button
@@ -638,14 +830,14 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 <Calendar className="w-4 h-4 text-[#7A7167] shrink-0" />
               </button>
 
-              {/* Date Popover (Opens Upward) */}
+              {/* Date Popover */}
               {isDateOpen && (
-                <div className="absolute left-0 bottom-[calc(100%+8px)] z-50 w-full sm:w-[300px] bg-white rounded-[18px] p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#E5DFD7] animate-in fade-in slide-in-from-bottom-2 duration-150">
+                <div className="absolute left-0 bottom-[calc(100%+8px)] z-50 w-full sm:w-[320px] bg-white rounded-[18px] p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#E5DFD7] animate-in fade-in slide-in-from-bottom-2 duration-150">
                   <div className="px-2 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#7A7167] border-b border-neutral-100 mb-1">
-                    Select Departure Timeline
+                    Select {activeService.field2Label}
                   </div>
                   <div className="max-h-[220px] overflow-y-auto no-scrollbar space-y-1">
-                    {DATE_PRESETS.map((preset, idx) => (
+                    {activeService.datePresets.map((preset, idx) => (
                       <button
                         key={idx}
                         type="button"
@@ -673,11 +865,11 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               )}
             </div>
 
-            {/* FIELD 3: TRAVELERS */}
+            {/* FIELD 3: DYNAMIC PARTY / GUESTS / PASSENGERS */}
             <div ref={guestRef} className="relative">
               <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.14em] text-[#7A7167] flex items-center gap-1.5 mb-1.5">
                 <User className="w-3 h-3 text-[#7A7167]" />
-                <span>Travelers</span>
+                <span>{activeService.field3Label}</span>
               </span>
 
               <button
@@ -706,14 +898,14 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 />
               </button>
 
-              {/* Guests Dropdown (Opens Upward) */}
+              {/* Guests Dropdown */}
               {isGuestOpen && (
                 <div className="absolute left-0 bottom-[calc(100%+8px)] z-50 w-full sm:w-[280px] bg-white rounded-[18px] p-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#E5DFD7] animate-in fade-in slide-in-from-bottom-2 duration-150">
                   <div className="px-2 py-1.5 text-[10px] font-mono uppercase tracking-wider text-[#7A7167] border-b border-neutral-100 mb-1">
-                    Select Party Size
+                    Select {activeService.field3Label}
                   </div>
                   <div className="space-y-1">
-                    {GUEST_OPTIONS.map((opt, idx) => (
+                    {activeService.guestOptions.map((opt, idx) => (
                       <button
                         key={idx}
                         type="button"
@@ -738,34 +930,34 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           </div>
 
           {/* -------------------------------------------------------------------
-              ROW 2: CONTACT DETAILS & GET BEST QUOTE BUTTON
+              ROW 2: DYNAMIC CONTACT DETAILS & TAILORED ACTION BUTTON
               ------------------------------------------------------------------- */}
           <div className="mt-3.5 sm:mt-4 grid grid-cols-1 sm:grid-cols-[1fr_1.1fr_auto] gap-3 items-center">
-            {/* INPUT 1: FULL NAME */}
+            {/* INPUT 1: DYNAMIC NAME */}
             <div className="relative flex items-center min-h-[48px] sm:min-h-[52px] px-3.5 rounded-[14px] border border-[#E5DFD7] bg-white focus-within:border-[#1E1A17] focus-within:ring-1 focus-within:ring-[#1E1A17]/20 transition-all">
               <User className="w-4 h-4 text-[#9A9187] mr-2 shrink-0" />
               <input
                 type="text"
-                placeholder="Your Full Name"
+                placeholder={activeService.namePlaceholder}
                 value={customerName}
                 onChange={(e) => setCustomerName(e.target.value)}
                 className="w-full text-xs sm:text-sm font-medium text-[#1E1A17] placeholder:text-[#9A9187] focus:outline-none bg-transparent"
               />
             </div>
 
-            {/* INPUT 2: PHONE / WHATSAPP */}
+            {/* INPUT 2: DYNAMIC PHONE / WHATSAPP */}
             <div className="relative flex items-center min-h-[48px] sm:min-h-[52px] px-3.5 rounded-[14px] border border-[#E5DFD7] bg-white focus-within:border-[#1E1A17] focus-within:ring-1 focus-within:ring-[#1E1A17]/20 transition-all">
               <MessageCircle className="w-4 h-4 text-[#9A9187] mr-2 shrink-0" />
               <input
                 type="tel"
-                placeholder="WhatsApp / Phone Number"
+                placeholder={activeService.phonePlaceholder}
                 value={customerPhone}
                 onChange={(e) => setCustomerPhone(e.target.value)}
                 className="w-full text-xs sm:text-sm font-medium text-[#1E1A17] placeholder:text-[#9A9187] focus:outline-none bg-transparent"
               />
             </div>
 
-            {/* BUTTON: GET BEST QUOTE → */}
+            {/* BUTTON: DYNAMIC ACTION TEXT */}
             <button
               type="submit"
               className="w-full sm:w-auto min-h-[48px] sm:min-h-[52px] px-7 sm:px-9 rounded-[14px] bg-[#221D1A] hover:bg-[#342D28] active:bg-[#14110F] text-white flex items-center justify-center gap-2.5 font-semibold text-xs sm:text-sm tracking-wider uppercase shadow-xs hover:shadow-md transition-all active:scale-[0.98] cursor-pointer whitespace-nowrap"
@@ -778,7 +970,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               ) : (
                 <>
                   <Send className="w-3.5 h-3.5 text-amber-300 stroke-[2.2] shrink-0" />
-                  <span>Get Best Quote</span>
+                  <span>{activeService.ctaButtonText}</span>
                   <ArrowRight className="w-3.5 h-3.5 stroke-[2] shrink-0" />
                 </>
               )}
@@ -791,8 +983,8 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           <div className="mt-3 p-2.5 rounded-xl bg-emerald-50 border border-emerald-200/60 text-emerald-800 text-xs flex items-center justify-center gap-2 animate-in fade-in duration-200">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
             <span>
-              Thank you {customerName || "traveler"}! Our bespoke concierge
-              specialist will send your quote via WhatsApp shortly.
+              Thank you {customerName || "traveler"}! Our {activeService.label}{" "}
+              specialist will send your tailored quote via WhatsApp shortly.
             </span>
           </div>
         )}
