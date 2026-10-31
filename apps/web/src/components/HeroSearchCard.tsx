@@ -11,9 +11,7 @@ import {
   ChevronDown,
   Search,
   ArrowRight,
-  ShieldCheck,
   CheckCircle2,
-  Headphones,
   Plane,
   Train,
   Bus,
@@ -801,26 +799,9 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
       </div>
 
       {/* =======================================================================
-          BOTTOM FOOTNOTE: Trust & Direct WhatsApp Link matching Mockup
+          BOTTOM FOOTNOTE: Direct WhatsApp Link
           ======================================================================= */}
-      <div className="mt-3 px-2 flex flex-col sm:flex-row items-center justify-between gap-2 text-center sm:text-left text-white/95 text-xs drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-        <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2.5 sm:gap-3 text-[11.5px] sm:text-xs font-light tracking-wide">
-          <div className="inline-flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-            <span>100% Tailor-made</span>
-          </div>
-          <span className="text-white/40">|</span>
-          <div className="inline-flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-            <span>Certified Visa & Hajj Experts</span>
-          </div>
-          <span className="text-white/40">|</span>
-          <div className="inline-flex items-center gap-1.5">
-            <Headphones className="w-3.5 h-3.5 text-amber-300 shrink-0" />
-            <span>Instant Support</span>
-          </div>
-        </div>
-
+      <div className="mt-2.5 px-2 flex items-center justify-center text-center text-white/95 text-xs drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
         <a
           href={`https://wa.me/919876543210?text=${encodeURIComponent(
             `Hi Flyora Travels, I would like to enquire about ${activeService.label} (${selectedOption}) for ${guestCount} around ${travelDate}.`,
