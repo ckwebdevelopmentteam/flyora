@@ -14,7 +14,63 @@ import {
   ShieldCheck,
   CheckCircle2,
   Headphones,
+  Plane,
+  Train,
+  Bus,
 } from "lucide-react";
+
+// Pixel-perfect SVG icons matching the reference mockup
+const MosqueIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 3c-1.5 1.5-2 3-2 5h4c0-2-.5-3.5-2-5z" />
+    <path d="M4 10h16v11H4z" />
+    <path d="M9 21v-5a3 3 0 0 1 6 0v5" />
+    <path d="M2 13h2v8H2z" />
+    <path d="M20 13h2v8h-2z" />
+  </svg>
+);
+
+const PassportIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="5" y="3" width="14" height="18" rx="2" />
+    <circle cx="12" cy="10" r="2.5" />
+    <path d="M9 16h6" />
+  </svg>
+);
+
+const VacationPlaneIcon = ({
+  className = "w-4 h-4",
+}: {
+  className?: string;
+}) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z" />
+  </svg>
+);
 
 export interface HeroSearchCardProps {
   onOpenEnquiry?: (serviceOrDest?: string) => void;
@@ -34,7 +90,8 @@ interface ServiceItem {
   id: ServiceId;
   label: string;
   subtitle: string;
-  cardImg: string;
+  imageSrc: string;
+  icon: React.ComponentType<{ className?: string }>;
   defaultOption: string;
   options: { name: string; subtitle?: string; flag?: string }[];
 }
@@ -44,7 +101,8 @@ const SERVICES_DATA: ServiceItem[] = [
     id: "hajj-packages",
     label: "Hajj Packages",
     subtitle: "Spiritual Journeys",
-    cardImg: "/services/card-hajj.png",
+    imageSrc: "/services/hajj-packages.jpg",
+    icon: MosqueIcon,
     defaultOption: "Executive Non-Shifting (Mina A)",
     options: [
       {
@@ -73,7 +131,8 @@ const SERVICES_DATA: ServiceItem[] = [
     id: "custom-holidays",
     label: "Custom Holidays",
     subtitle: "International & Local",
-    cardImg: "/services/card-custom-holidays.png",
+    imageSrc: "/services/custom-holidays.jpg",
+    icon: VacationPlaneIcon,
     defaultOption: "Switzerland & The Alps",
     options: [
       {
@@ -112,7 +171,8 @@ const SERVICES_DATA: ServiceItem[] = [
     id: "visa-assistance",
     label: "Visa Assistance",
     subtitle: "Hassle-free Process",
-    cardImg: "/services/card-visa.png",
+    imageSrc: "/services/visa-assistance.jpg",
+    icon: PassportIcon,
     defaultOption: "Schengen Europe Visa",
     options: [
       {
@@ -146,7 +206,8 @@ const SERVICES_DATA: ServiceItem[] = [
     id: "flight-booking",
     label: "Flight Booking",
     subtitle: "Best Fares",
-    cardImg: "/services/card-flights.png",
+    imageSrc: "/services/flight-booking.jpg",
+    icon: Plane,
     defaultOption: "International Round-Trip",
     options: [
       {
@@ -175,7 +236,8 @@ const SERVICES_DATA: ServiceItem[] = [
     id: "train-booking",
     label: "Train Booking",
     subtitle: "Easy & Fast",
-    cardImg: "/services/card-train.png",
+    imageSrc: "/services/train-booking.jpg",
+    icon: Train,
     defaultOption: "Swiss Glacier Express & Eurail",
     options: [
       {
@@ -204,7 +266,8 @@ const SERVICES_DATA: ServiceItem[] = [
     id: "bus-booking",
     label: "Bus Booking",
     subtitle: "Comfort Travel",
-    cardImg: "/services/card-bus.png",
+    imageSrc: "/services/bus-booking.jpg",
+    icon: Bus,
     defaultOption: "Intercity Multi-Axle Volvo",
     options: [
       {
@@ -369,14 +432,15 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   return (
     <div className={`w-full max-w-[1100px] mx-auto select-none ${className}`}>
       {/* =======================================================================
-          TOP SERVICE CARDS: 6 Cards Exactly Matching the Reference Image
+          TOP SERVICE CARDS: 6 Cards Matching Reference Mockup with 100% Vector Precision
           ======================================================================= */}
       <div className="relative mb-3 sm:mb-4">
         <div
           ref={cardsScrollRef}
-          className="flex md:grid md:grid-cols-6 items-stretch gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar scroll-smooth px-1 py-1"
+          className="flex md:grid md:grid-cols-6 items-stretch gap-2 sm:gap-2.5 overflow-x-auto no-scrollbar scroll-smooth px-0.5 py-1"
         >
           {SERVICES_DATA.map((service) => {
+            const IconComponent = service.icon;
             const isActive = activeTab === service.id;
 
             return (
@@ -386,17 +450,56 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 onClick={() => handleCardClick(service.id)}
                 aria-pressed={isActive}
                 aria-label={`Select ${service.label}`}
-                className={`group relative shrink-0 w-[152px] sm:w-[162px] md:w-auto rounded-[16px] sm:rounded-[18px] overflow-hidden transition-all duration-200 cursor-pointer ${
+                className={`group relative shrink-0 w-[156px] sm:w-[166px] md:w-auto h-[74px] sm:h-[80px] rounded-[16px] sm:rounded-[18px] overflow-hidden transition-all duration-200 cursor-pointer text-left select-none p-2.5 sm:p-3 flex flex-col justify-between bg-neutral-950 ${
                   isActive
-                    ? "ring-2 ring-amber-400 ring-offset-2 ring-offset-black/30 shadow-[0_8px_25px_rgba(245,158,11,0.35)] scale-[1.03]"
-                    : "opacity-90 hover:opacity-100 hover:scale-[1.02] shadow-sm hover:shadow-md"
+                    ? "border-2 border-amber-400 ring-2 ring-amber-400/40 shadow-[0_8px_25px_rgba(245,158,11,0.45)] scale-[1.02] z-10"
+                    : "border border-white/20 hover:border-white/50 hover:scale-[1.01] shadow-md hover:shadow-lg"
                 }`}
               >
+                {/* Full-bleed crisp background photo (1376x768 - zero white corner bleeding) */}
                 <img
-                  src={service.cardImg}
-                  alt={service.label}
-                  className="w-full h-[66px] sm:h-[74px] object-cover object-center rounded-[16px] sm:rounded-[18px] block"
+                  src={service.imageSrc}
+                  alt=""
+                  className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none transition-transform duration-500 group-hover:scale-105"
                 />
+
+                {/* Dark Contrast Scrims for 100% Text Readability */}
+                {isActive ? (
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-amber-950/40 to-amber-500/20 pointer-events-none" />
+                ) : (
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-black/25 pointer-events-none group-hover:via-black/40 transition-colors" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/25 to-transparent pointer-events-none" />
+
+                {/* Top Row: Crisp Vector Icon */}
+                <div className="relative z-10 flex items-center justify-between">
+                  <div className="text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
+                    <IconComponent className="w-4 h-4 sm:w-[17px] sm:h-[17px]" />
+                  </div>
+                </div>
+
+                {/* Bottom Row: Crisp Vector Typography + Circular Action Arrow Pill */}
+                <div className="relative z-10 flex items-end justify-between gap-1.5 min-w-0">
+                  <div className="min-w-0 pr-0.5">
+                    <div className="text-[12px] sm:text-[13px] font-bold text-white leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] truncate">
+                      {service.label}
+                    </div>
+                    <div className="text-[10px] sm:text-[10.5px] font-medium text-white/85 leading-tight drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] truncate mt-0.5">
+                      {service.subtitle}
+                    </div>
+                  </div>
+
+                  {/* Circular Action Arrow Pill */}
+                  <div
+                    className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 shadow-md transition-transform duration-200 group-hover:translate-x-0.5 ${
+                      isActive
+                        ? "bg-[#FDD8A5] text-[#1E1A17]"
+                        : "bg-white text-[#1E1A17] opacity-95 group-hover:opacity-100"
+                    }`}
+                  >
+                    <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                  </div>
+                </div>
               </button>
             );
           })}
