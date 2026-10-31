@@ -201,7 +201,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Gentle white atmospheric glow at the bottom so clouds emerge bright and clean */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-48 sm:h-72 bg-gradient-to-t from-white/35 via-white/15 to-transparent pointer-events-none"
+            className="absolute inset-x-0 bottom-0 h-36 sm:h-52 bg-gradient-to-t from-white/35 via-white/15 to-transparent pointer-events-none"
           />
         </div>
 

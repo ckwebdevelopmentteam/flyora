@@ -547,35 +547,35 @@ export default function Home() {
           --------------------------------------------------------------------- */}
       <div className="relative z-10 w-full">
         {/* Floating animated clouds marquee attached to top of Featured Destinations */}
-        <div className="relative -mt-[110px] sm:-mt-[150px] md:-mt-[180px] lg:-mt-[210px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
+        <div className="relative -mt-[80px] sm:-mt-[110px] md:-mt-[135px] lg:-mt-[155px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
           <div className="animate-marquee flex w-max will-change-transform">
             {/* Set 1 */}
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-1.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-2.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-3.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-4.png"
             />
             {/* Set 2 (for seamless loop) */}
@@ -583,28 +583,28 @@ export default function Home() {
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-1.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-2.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-3.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-4.png"
             />
           </div>
