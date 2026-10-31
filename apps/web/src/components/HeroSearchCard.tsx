@@ -651,9 +651,9 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 aria-label={`Select ${service.label}`}
                 className={`group relative shrink-0 w-[166px] sm:w-[178px] md:w-auto min-h-[116px] sm:min-h-[122px] md:h-[130px] rounded-[20px] sm:rounded-[22px] overflow-hidden transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-between bg-neutral-950 ${
                   isActive
-                    ? "border-2 border-amber-400 ring-2 ring-amber-400/50 shadow-[0_12px_35px_rgba(245,158,11,0.5)] -translate-y-1 scale-[1.02] z-10"
-                    : "border border-white/20 hover:border-amber-300 hover:ring-2 hover:ring-amber-300/35 hover:scale-[1.02] hover:-translate-y-1 shadow-md hover:shadow-[0_12px_30px_rgba(0,0,0,0.6)]"
-                }`}
+                    ? "border-2 border-white/80 ring-1 ring-white/30 z-10"
+                    : "border border-white/20"
+                } hover:border-white hover:ring-2 hover:ring-white/60 hover:shadow-[0_0_30px_rgba(255,255,255,0.45)] hover:-translate-y-1 hover:scale-[1.02]`}
               >
                 {/* Full-bleed crisp background photo with increased subject scale */}
                 <img
@@ -663,11 +663,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 />
 
                 {/* Targeted Contrast Scrims */}
-                {isActive ? (
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/85 via-amber-950/30 to-amber-500/10 pointer-events-none" />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/35 to-transparent pointer-events-none group-hover:via-black/25 transition-colors" />
-                )}
+                <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/35 to-transparent pointer-events-none group-hover:via-black/20 transition-colors" />
                 <div className="absolute inset-x-0 bottom-0 h-[68%] bg-gradient-to-t from-black/85 via-black/40 to-transparent pointer-events-none" />
 
                 {/* Top Row: Crisp Vector Icon + Circular Action Arrow Pill */}
@@ -677,13 +673,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                   </div>
 
                   {/* Circular Action Arrow Pill */}
-                  <div
-                    className={`w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center shrink-0 shadow-md transition-all duration-200 group-hover:translate-x-0.5 group-hover:bg-[#FDD8A5] group-hover:text-[#1E1A17] ${
-                      isActive
-                        ? "bg-[#FDD8A5] text-[#1E1A17]"
-                        : "bg-white/95 text-[#1E1A17]"
-                    }`}
-                  >
+                  <div className="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center shrink-0 shadow-md bg-white text-[#1E1A17] transition-all duration-200 group-hover:translate-x-0.5 group-hover:shadow-[0_0_12px_rgba(255,255,255,0.7)]">
                     <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
                   </div>
                 </div>
