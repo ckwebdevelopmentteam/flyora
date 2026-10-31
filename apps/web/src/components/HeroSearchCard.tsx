@@ -712,7 +712,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full max-w-[1100px] mx-auto select-none ${className}`}
+      className={`w-full max-w-[1360px] mx-auto select-none ${className}`}
     >
       {/* =======================================================================
           TOP SERVICE CARDS:
@@ -720,11 +720,12 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - ALL cards share the exact identical neutral border (border-white/20).
           - Glowing white aura ONLY forms when hovering any card.
           - Full text is displayed with zero truncation.
+          - Sized luxuriously to arrange along the exact same length as the navbar.
           ======================================================================= */}
-      <div className="relative mb-2 -mt-4 sm:-mt-5">
+      <div className="relative mb-2.5 -mt-4 sm:-mt-5">
         <div
           ref={cardsScrollRef}
-          className="flex md:grid md:grid-cols-6 items-stretch gap-2.5 sm:gap-3 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth px-2 pt-6 pb-4"
+          className="flex md:grid md:grid-cols-6 items-stretch gap-2.5 sm:gap-3 lg:gap-3.5 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth px-1 md:px-0 pt-7 pb-5"
         >
           {SERVICES_DATA.map((service) => {
             const IconComponent = service.icon;
@@ -736,39 +737,38 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 onClick={() => handleCardClick(service.id)}
                 aria-pressed={activeTab === service.id}
                 aria-label={`Select ${service.label}`}
-                className="group relative shrink-0 w-[166px] sm:w-[178px] md:w-auto min-h-[116px] sm:min-h-[122px] md:h-[130px] rounded-[20px] sm:rounded-[22px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-between bg-neutral-950 hover:-translate-y-1.5 hover:scale-[1.02] hover:z-30"
+                className="group relative shrink-0 w-[190px] sm:w-[210px] md:w-auto min-h-[165px] sm:min-h-[180px] md:h-[200px] lg:h-[210px] rounded-[22px] sm:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-4 sm:p-5 flex flex-col justify-between bg-neutral-950 hover:-translate-y-2 hover:scale-[1.02] hover:z-30"
               >
                 {/* Inner clipped canvas for crisp photo & contrast scrims */}
-                <div className="absolute inset-0 rounded-[20px] sm:rounded-[22px] overflow-hidden pointer-events-none">
-                  {/* Full-bleed crisp background photo with increased subject scale */}
+                <div className="absolute inset-0 rounded-[22px] sm:rounded-[26px] overflow-hidden pointer-events-none">
+                  {/* Full-bleed crisp background photo with optimal framing */}
                   <img
                     src={service.imageSrc}
                     alt=""
-                    className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.12] sm:scale-[1.18] transition-transform duration-500 ease-out group-hover:scale-[1.25]`}
+                    className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.05] sm:scale-[1.08] transition-transform duration-500 ease-out group-hover:scale-[1.14]`}
                   />
 
-                  {/* Contrast Scrims */}
-                  <div className="absolute inset-x-0 top-0 h-10 bg-gradient-to-b from-black/45 via-black/20 to-transparent" />
-                  <div className="absolute inset-0 bg-gradient-to-tr from-black/80 via-black/35 to-transparent group-hover:via-black/20 transition-colors" />
-                  <div className="absolute inset-x-0 bottom-0 h-[68%] bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                  {/* Contrast Scrims: softened so photo colors and subject content are vivid & clearly visible */}
+                  <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-black/50 via-black/20 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
                 </div>
 
                 {/* Outer pristine border and hover white glowing aura on z-20 (never clipped) */}
-                <div className="absolute inset-0 rounded-[20px] sm:rounded-[22px] border border-white/20 transition-all duration-300 pointer-events-none z-20 group-hover:border-white group-hover:ring-2 group-hover:ring-white group-hover:shadow-[0_0_30px_rgba(255,255,255,0.65)]" />
+                <div className="absolute inset-0 rounded-[22px] sm:rounded-[26px] border border-white/20 transition-all duration-300 pointer-events-none z-20 group-hover:border-white group-hover:ring-2 group-hover:ring-white group-hover:shadow-[0_0_30px_rgba(255,255,255,0.65)]" />
 
                 {/* Top Row: Crisp Vector Icon */}
                 <div className="relative z-30 flex items-center justify-start w-full">
-                  <div className="text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
-                    <IconComponent className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
+                  <div className="text-white drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
+                    <IconComponent className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px]" />
                   </div>
                 </div>
 
                 {/* Bottom Row: 100% Full Width Typography - No Truncation */}
-                <div className="relative z-30 w-full mt-2">
-                  <div className="text-[12.5px] sm:text-[13px] md:text-[13.5px] font-bold text-white leading-tight drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words">
+                <div className="relative z-30 w-full mt-auto">
+                  <div className="text-[14px] sm:text-[15px] md:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] whitespace-normal break-words">
                     {service.label}
                   </div>
-                  <div className="text-[10px] sm:text-[10.5px] md:text-[11px] font-medium text-white/90 leading-snug drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)] whitespace-normal break-words mt-1">
+                  <div className="text-[11.5px] sm:text-[12px] md:text-[12.5px] font-medium text-white/95 leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words mt-1.5">
                     {service.subtitle}
                   </div>
                 </div>
@@ -785,7 +785,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
             Buses: From/To/Date/Seats; Visa: Country/Passport/Date/Applicants;
             Hajj: Tier/Season/Pilgrims; Holidays: Destination/Month/Travelers).
           ======================================================================= */}
-      <div className="relative bg-white text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-4 sm:p-5 md:p-6 shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#EAE3D9] text-left transition-all duration-300">
+      <div className="relative bg-white text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-4 sm:p-5 md:p-6 lg:p-7 shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-[#EAE3D9] text-left transition-all duration-300">
         <form onSubmit={handleSubmit}>
           {/* ===================================================================
               CASE 1: FLIGHT BOOKING INPUT BOXES

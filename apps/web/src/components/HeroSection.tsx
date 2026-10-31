@@ -211,7 +211,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             opacity: Math.max(0, 1 - progress * 2.8),
             transform: `translate3d(0, -${24 + progress * 140}px, 0)`,
           }}
-          className="relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none will-change-transform"
+          className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-5 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none will-change-transform"
         >
           {/* Eyebrow Tagline */}
           <span className="animate-hero-eyebrow font-heading text-xs sm:text-sm lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">
