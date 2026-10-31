@@ -756,15 +756,10 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 {/* Outer pristine border and hover white glowing aura on z-20 (never clipped) */}
                 <div className="absolute inset-0 rounded-[20px] sm:rounded-[22px] border border-white/20 transition-all duration-300 pointer-events-none z-20 group-hover:border-white group-hover:ring-2 group-hover:ring-white group-hover:shadow-[0_0_30px_rgba(255,255,255,0.65)]" />
 
-                {/* Top Row: Crisp Vector Icon + Circular Action Arrow Pill */}
-                <div className="relative z-30 flex items-center justify-between w-full">
+                {/* Top Row: Crisp Vector Icon */}
+                <div className="relative z-30 flex items-center justify-start w-full">
                   <div className="text-white drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
-                    <IconComponent className="w-[19px] h-[19px] sm:w-[21px] sm:h-[21px]" />
-                  </div>
-
-                  {/* Circular Action Arrow Pill */}
-                  <div className="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-full flex items-center justify-center shrink-0 shadow-md bg-white text-[#1E1A17] transition-all duration-200 group-hover:translate-x-0.5 group-hover:shadow-[0_0_12px_rgba(255,255,255,0.7)]">
-                    <ArrowRight className="w-3.5 h-3.5 stroke-[2.5]" />
+                    <IconComponent className="w-[20px] h-[20px] sm:w-[22px] sm:h-[22px]" />
                   </div>
                 </div>
 
