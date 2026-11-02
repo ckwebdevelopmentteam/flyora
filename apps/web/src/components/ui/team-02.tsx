@@ -199,9 +199,14 @@ const Team: React.FC<TeamProps> = ({
               }}
               className="max-w-xl mx-auto flex flex-col items-center justify-center text-center gap-4"
             >
-              {/* <Badge variant={"outline"} className="border-none px-3 py-1 h-auto text-sm"> */}
-              {/* {badge} */}
-              {/* </Badge> */}
+              {badge && (
+                <Badge
+                  variant={"outline"}
+                  className="border-none px-3 py-1 h-auto text-sm"
+                >
+                  {badge}
+                </Badge>
+              )}
               <div className="flex flex-col items-center justify-center gap-3">
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight text-foreground">
                   {title}

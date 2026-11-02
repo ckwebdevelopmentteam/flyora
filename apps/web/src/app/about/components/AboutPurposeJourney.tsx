@@ -13,6 +13,90 @@ interface AboutPurposeJourneyProps {
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
+interface StageState {
+  opacity: number;
+  filter: string;
+  transform: string;
+  pointerEvents: "auto" | "none";
+}
+
+const computeDarkStage = (
+  progress: number,
+  enterStart: number,
+  enterEnd: number,
+  holdEnd: number,
+  lagTransitionEnd: number,
+  lagEnd: number,
+  exitEnd: number,
+): StageState => {
+  if (progress < enterStart) {
+    return {
+      opacity: 0,
+      filter: "none",
+      transform: "translateY(28px)",
+      pointerEvents: "none",
+    };
+  }
+
+  if (progress < enterEnd) {
+    const t =
+      enterEnd > enterStart
+        ? (progress - enterStart) / (enterEnd - enterStart)
+        : 1;
+    return {
+      opacity: t,
+      filter: "none",
+      transform: `translateY(${(1 - t) * 28}px)`,
+      pointerEvents: t > 0.8 ? "auto" : "none",
+    };
+  }
+
+  if (progress <= holdEnd) {
+    return {
+      opacity: 1,
+      filter: "none",
+      transform: "translateY(0px)",
+      pointerEvents: "auto",
+    };
+  }
+
+  if (progress <= lagTransitionEnd) {
+    const t = (progress - holdEnd) / (lagTransitionEnd - holdEnd);
+    return {
+      opacity: 1 - t * 0.45,
+      filter: `saturate(${1 - t * 0.65}) brightness(${1 - t * 0.25})`,
+      transform: `translateY(${-t * 14}px)`,
+      pointerEvents: "none",
+    };
+  }
+
+  if (progress <= lagEnd) {
+    return {
+      opacity: 0.55,
+      filter: "saturate(0.35) brightness(0.75)",
+      transform: "translateY(-14px)",
+      pointerEvents: "none",
+    };
+  }
+
+  if (progress <= exitEnd) {
+    const t = (progress - lagEnd) / (exitEnd - lagEnd);
+    return {
+      opacity: Math.max(0, 0.55 * (1 - t)),
+      filter: "saturate(0.35) brightness(0.75)",
+      transform: `translateY(${-14 - t * 24}px)`,
+      pointerEvents: "none",
+    };
+  }
+
+  return {
+    opacity: 0,
+    filter: "none",
+    transform: "translateY(-38px)",
+    pointerEvents: "none",
+  };
+};
+
 export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
   data,
 }) => {
@@ -48,25 +132,38 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
     };
   }, []);
 
-  // Carefully timed scroll-lag narrative sequence across 560vh:
-  // - Scene 1 ("OUR PURPOSE"): holds from 0 to 0.18, crossfades out to 0.24 (~110vh scroll time)
-  // - Scene 2 ("WHAT WE OFFER"): holds from 0.24 to 0.44, crossfades out to 0.48 (~120vh scroll time)
-  // - Scene 3 ("HOW WE PLAN OUR JOURNEYS"): fades in 0.46 -> 0.52, HOLDS FULLY VISIBLE & INTERACTIVE from 0.52 to 0.78 (~120vh clean scroll time)
-  // - White Curtain Handoff: The white section begins entering from the bottom at ~0.78 and smoothly rises over Scene 3 until 1.0!
-  const purposeOpacity = clamp((0.24 - progress) / 0.08);
-  const impactOpacity = clamp(
-    Math.min((progress - 0.2) / 0.06, (0.48 - progress) / 0.06),
+  // Carefully calibrated 2-scroll rhythm with half-shadow color-less lag hold:
+  // - Scene 1 ("OUR PURPOSE"): holds 0 to 0.12, 1st scroll lags (dim/desaturate) to 0.25, 2nd scroll exits to 0.32
+  // - Scene 2 ("WHAT WE OFFER"): enters 0.24, holds 0.31 to 0.44, 1st scroll lags to 0.57, 2nd scroll exits to 0.64
+  // - Scene 3 ("HOW WE PLAN OUR JOURNEYS"): enters 0.57, holds 0.64 to 0.78, 1st scroll lags to 0.85, white curtain rises from 0.85 to 1.0!
+  const purposeStage = computeDarkStage(progress, 0, 0, 0.12, 0.18, 0.25, 0.32);
+  const offerStage = computeDarkStage(
+    progress,
+    0.24,
+    0.31,
+    0.44,
+    0.5,
+    0.57,
+    0.64,
   );
-  const journeyOpacity = clamp((progress - 0.46) / 0.06);
+  const journeyStage = computeDarkStage(
+    progress,
+    0.57,
+    0.64,
+    0.78,
+    0.84,
+    0.9,
+    1.0,
+  );
 
-  // Subtle parallax lag transforms
-  const scene3ImageLag = (progress - 0.64) * -35;
-  const scene3TextLag = (progress - 0.64) * -15;
+  // Subtle parallax lag transforms for Scene 3
+  const scene3ImageLag = (progress - 0.71) * -35;
+  const scene3TextLag = (progress - 0.71) * -15;
 
   return (
     <section
       ref={sectionRef}
-      className="relative h-[560vh] bg-[#2A2733]"
+      className="relative h-[780vh] bg-[#2A2733]"
       aria-label="Our Purpose and Approach"
     >
       <div className="sticky top-0 h-[100svh] min-h-[640px] overflow-hidden bg-[#2A2733] text-white">
@@ -132,13 +229,14 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
 
         {/* Scene 1: OUR PURPOSE Heading */}
         <div
-          className="absolute inset-0 flex items-center justify-center px-6 text-center transition-[opacity,transform] duration-700 ease-out"
+          className="absolute inset-0 flex items-center justify-center px-6 text-center transition-[opacity,transform,filter] duration-300 ease-out"
           style={{
-            opacity: purposeOpacity,
-            transform: "translateY(" + progress * -42 + "px)",
-            pointerEvents: purposeOpacity > 0.8 ? "auto" : "none",
+            opacity: purposeStage.opacity,
+            filter: purposeStage.filter,
+            transform: purposeStage.transform,
+            pointerEvents: purposeStage.pointerEvents,
           }}
-          aria-hidden={purposeOpacity < 0.05}
+          aria-hidden={purposeStage.opacity < 0.05}
         >
           <div className="max-w-4xl">
             <p className="font-heading text-[56px] font-bold leading-none tracking-[0.015em] text-[#5BC3A6] sm:text-[84px] lg:text-[112px]">
@@ -151,17 +249,24 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
         </div>
 
         {/* Scene 2: What We Offer with Variable Text Proximity */}
-        <AboutWhatWeOffer opacity={impactOpacity} progress={progress} />
+        <AboutWhatWeOffer
+          opacity={offerStage.opacity}
+          filter={offerStage.filter}
+          transform={offerStage.transform}
+          pointerEvents={offerStage.pointerEvents}
+          progress={progress}
+        />
 
         {/* Scene 3: HOW WE PLAN OUR JOURNEYS (Matching exact UI from screenshot, with dedicated hold scroll time & lag effect) */}
         <div
-          className="absolute inset-0 grid grid-rows-[42%_58%] transition-opacity duration-700 ease-out lg:grid-cols-2 lg:grid-rows-1"
+          className="absolute inset-0 grid grid-rows-[42%_58%] transition-[opacity,transform,filter] duration-300 ease-out lg:grid-cols-2 lg:grid-rows-1"
           style={{
-            opacity: journeyOpacity,
-            pointerEvents:
-              journeyOpacity > 0.9 && progress < 0.86 ? "auto" : "none",
+            opacity: journeyStage.opacity,
+            filter: journeyStage.filter,
+            transform: journeyStage.transform,
+            pointerEvents: journeyStage.pointerEvents,
           }}
-          aria-hidden={journeyOpacity < 0.05}
+          aria-hidden={journeyStage.opacity < 0.05}
         >
           <div className="relative overflow-hidden">
             <div

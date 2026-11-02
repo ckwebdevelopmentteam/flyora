@@ -24,8 +24,92 @@ interface AboutValuesExperienceProps {
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
 
-const stageOpacity = (progress: number, start: number, end: number) =>
-  clamp(Math.min((progress - start) / 0.1, (end - progress) / 0.1));
+interface StageState {
+  opacity: number;
+  filter: string;
+  transform: string;
+  pointerEvents: "auto" | "none";
+}
+
+const computeLightStage = (
+  progress: number,
+  enterStart: number,
+  enterEnd: number,
+  holdEnd: number,
+  lagTransitionEnd: number,
+  lagEnd: number,
+  exitEnd: number,
+): StageState => {
+  if (progress < enterStart) {
+    return {
+      opacity: 0,
+      filter: "none",
+      transform: "translateY(28px)",
+      pointerEvents: "none",
+    };
+  }
+
+  if (progress < enterEnd) {
+    const t =
+      enterEnd > enterStart
+        ? (progress - enterStart) / (enterEnd - enterStart)
+        : 1;
+    return {
+      opacity: t,
+      filter: "none",
+      transform: `translateY(${(1 - t) * 28}px)`,
+      pointerEvents: t > 0.8 ? "auto" : "none",
+    };
+  }
+
+  if (progress <= holdEnd) {
+    return {
+      opacity: 1,
+      filter: "none",
+      transform: "translateY(0px)",
+      pointerEvents: "auto",
+    };
+  }
+
+  // First scroll: Lag state ("not gone full half shodow colour less")
+  if (progress <= lagTransitionEnd) {
+    const t = (progress - holdEnd) / (lagTransitionEnd - holdEnd);
+    return {
+      opacity: 1 - t * 0.45,
+      filter: `grayscale(${t * 0.45}) brightness(${1 - t * 0.18}) contrast(${1 - t * 0.1})`,
+      transform: `translateY(${-t * 14}px)`,
+      pointerEvents: "none",
+    };
+  }
+
+  // Lag hold: Stays visible for comfortable scroll before next section
+  if (progress <= lagEnd) {
+    return {
+      opacity: 0.55,
+      filter: "grayscale(0.45) brightness(0.82) contrast(0.9)",
+      transform: "translateY(-14px)",
+      pointerEvents: "none",
+    };
+  }
+
+  // Second scroll: Exiting as next section enters
+  if (progress <= exitEnd) {
+    const t = (progress - lagEnd) / (exitEnd - lagEnd);
+    return {
+      opacity: Math.max(0, 0.55 * (1 - t)),
+      filter: "grayscale(0.45) brightness(0.82) contrast(0.9)",
+      transform: `translateY(${-14 - t * 24}px)`,
+      pointerEvents: "none",
+    };
+  }
+
+  return {
+    opacity: 0,
+    filter: "none",
+    transform: "translateY(-38px)",
+    pointerEvents: "none",
+  };
+};
 
 export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
   approach,
@@ -65,14 +149,29 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
     };
   }, []);
 
-  // The white surface enters first. Only after it has reached the top and
-  // scrolling continues does the existing mission scene reveal itself.
-  const missionOpacity = clamp(
-    Math.min((progress - 0.02) / 0.1, (0.38 - progress) / 0.1),
+  // Carefully calibrated 2-scroll rhythm with lag hold:
+  // - Scene 1 ("OUR MISSION"): enters 0.0 to 0.04, holds 0.04 to 0.18, 1st scroll lags to 0.33, 2nd scroll exits to 0.40
+  // - Scene 2 ("MEET OUR TEAM"): enters 0.33, holds 0.41 to 0.55, 1st scroll lags to 0.69, 2nd scroll exits to 0.76
+  // - Scene 3 ("OUR VALUES"): enters 0.70, header settles, then 3 cards stagger in from 0.76 to 0.94 and hold stable!
+  const missionStage = computeLightStage(
+    progress,
+    0,
+    0.04,
+    0.18,
+    0.25,
+    0.33,
+    0.4,
   );
-  const partnersOpacity = stageOpacity(progress, 0.24, 0.64);
-  // Let the Values title settle before introducing each card in turn.
-  const valuesOpacity = clamp((progress - 0.64) / 0.1);
+  const teamStage = computeLightStage(
+    progress,
+    0.33,
+    0.41,
+    0.55,
+    0.62,
+    0.69,
+    0.76,
+  );
+  const valuesHeaderOpacity = clamp((progress - 0.7) / 0.07);
   const cards = approach.items.slice(0, 3);
 
   const values = [
@@ -114,13 +213,14 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
 
         <div
           ref={missionStageRef}
-          className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center transition-[opacity,transform] duration-700 ease-out"
+          className="absolute inset-0 z-10 flex items-center justify-center px-6 text-center transition-[opacity,transform,filter] duration-300 ease-out"
           style={{
-            opacity: missionOpacity,
-            transform: "translateY(" + (1 - missionOpacity) * 30 + "px)",
-            pointerEvents: missionOpacity > 0.8 ? "auto" : "none",
+            opacity: missionStage.opacity,
+            filter: missionStage.filter,
+            transform: missionStage.transform,
+            pointerEvents: missionStage.pointerEvents,
           }}
-          aria-hidden={missionOpacity < 0.05}
+          aria-hidden={missionStage.opacity < 0.05}
         >
           <div className="max-w-5xl w-full">
             <h2 className="font-heading text-[30px] font-bold uppercase leading-[1.18] tracking-[0.07em] sm:text-[43px] lg:text-[57px] text-[#29231F]">
@@ -146,13 +246,14 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
         </div>
 
         <div
-          className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-8 transition-[opacity,transform] duration-700 ease-out sm:px-8 lg:px-12"
+          className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-8 transition-[opacity,transform,filter] duration-300 ease-out sm:px-8 lg:px-12"
           style={{
-            opacity: partnersOpacity,
-            transform: "translateY(" + (1 - partnersOpacity) * 34 + "px)",
-            pointerEvents: partnersOpacity > 0.85 ? "auto" : "none",
+            opacity: teamStage.opacity,
+            filter: teamStage.filter,
+            transform: teamStage.transform,
+            pointerEvents: teamStage.pointerEvents,
           }}
-          aria-hidden={partnersOpacity < 0.05}
+          aria-hidden={teamStage.opacity < 0.05}
         >
           <div className="mx-auto w-full max-w-7xl my-auto">
             <Team
@@ -189,12 +290,12 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
         </div>
 
         <div
-          className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-8 transition-opacity duration-700 ease-out sm:px-8 lg:px-12"
+          className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-8 transition-[opacity,transform] duration-300 ease-out sm:px-8 lg:px-12"
           style={{
-            opacity: valuesOpacity,
-            pointerEvents: valuesOpacity > 0.95 ? "auto" : "none",
+            opacity: valuesHeaderOpacity,
+            pointerEvents: valuesHeaderOpacity > 0.8 ? "auto" : "none",
           }}
-          aria-hidden={valuesOpacity < 0.05}
+          aria-hidden={valuesHeaderOpacity < 0.05}
         >
           <div className="mx-auto w-full max-w-7xl my-auto">
             <p className="font-serif text-[52px] font-bold leading-none tracking-tight text-[#4FAF9F] sm:text-[76px] lg:text-[96px]">
@@ -208,16 +309,16 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
             <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-3 lg:mt-10 lg:gap-7">
               {values.map((value, index) => {
                 const cardOpacity = clamp(
-                  (progress - (0.8 + index * 0.07)) / 0.06,
+                  (progress - (0.76 + index * 0.06)) / 0.06,
                 );
 
                 return (
                   <article
                     key={value.title}
-                    className="min-h-[275px] bg-[#463D34] p-7 text-[#F9F5EF] shadow-[0_18px_40px_rgba(70,61,52,0.18)] transition-[opacity,transform] duration-700 ease-out sm:p-8"
+                    className="min-h-[275px] bg-[#463D34] p-7 text-[#F9F5EF] shadow-[0_18px_40px_rgba(70,61,52,0.18)] transition-[opacity,transform] duration-300 ease-out sm:p-8"
                     style={{
                       opacity: cardOpacity,
-                      transform: "translateY(" + (1 - cardOpacity) * 42 + "px)",
+                      transform: "translateY(" + (1 - cardOpacity) * 32 + "px)",
                     }}
                   >
                     <p
