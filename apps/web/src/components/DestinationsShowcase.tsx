@@ -154,42 +154,39 @@ export function DestinationsShowcase({
           style={{ backgroundImage: `url('/showcase/domestic-bg.jpg')` }}
         />
 
-        {/* White overlay effect setup to soften the background image and make cards pop */}
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-[1.5px] pointer-events-none" />
+        {/* Darkening base overlay matching reference design */}
+        <div className="absolute inset-0 bg-black/45 pointer-events-none" />
 
-        {/* Luminous soft white highlight behind the cards */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-full lg:w-2/3 h-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.4)_0%,rgba(255,255,255,0.15)_50%,transparent_80%)] pointer-events-none" />
+        {/* Deep left contrast gradient ensuring white editorial typography and buttons are crystal clear */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/50 to-black/25 pointer-events-none" />
 
-        {/* Left side contrast gradient ensuring typography and buttons are crystal clear */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent pointer-events-none" />
+        {/* Subtle top & bottom vignette */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50 pointer-events-none" />
       </div>
 
       {/* Main Showcase Content with 105px padding on both sides and 10px padding bottom */}
       <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start pt-8 lg:pt-6 pb-[10px]">
-        {/* Top-Right Category Switcher matching reference UI */}
-        <div className="w-full flex justify-end items-center mb-4 lg:mb-3 shrink-0">
-          <div className="inline-flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+        {/* Top-Right Category Switcher with three big vertical lines matching Explore destination */}
+        <div className="w-full flex justify-end items-center mb-5 lg:mb-4 shrink-0">
+          <div className="inline-flex items-center border-l border-r border-white/60 text-xs sm:text-sm tracking-wide">
             <button
               type="button"
               onClick={() => handleCategoryChange("International")}
-              className={`cursor-pointer transition-all duration-200 ${
+              className={`cursor-pointer transition-all duration-200 px-5 sm:px-6 py-2 sm:py-2.5 border-r border-white/60 font-normal ${
                 activeCategory === "International"
-                  ? "bg-white text-black px-4 py-1.5 rounded-[2px] font-medium shadow-sm"
-                  : "text-white/80 hover:text-white px-3 py-1.5 font-medium"
+                  ? "bg-white text-black font-semibold shadow-sm"
+                  : "text-white/80 hover:text-white hover:bg-white/10"
               }`}
             >
               International Destination
             </button>
-            <span className="text-white/40 text-xs sm:text-sm select-none">
-              |
-            </span>
             <button
               type="button"
               onClick={() => handleCategoryChange("Domestic")}
-              className={`cursor-pointer transition-all duration-200 ${
+              className={`cursor-pointer transition-all duration-200 px-5 sm:px-6 py-2 sm:py-2.5 font-normal ${
                 activeCategory === "Domestic"
-                  ? "bg-white text-black px-4 py-1.5 rounded-[2px] font-medium shadow-sm"
-                  : "text-white/80 hover:text-white px-3 py-1.5 font-medium"
+                  ? "bg-white text-black font-semibold shadow-sm"
+                  : "text-white/80 hover:text-white hover:bg-white/10"
               }`}
             >
               Domestic Destination
@@ -272,25 +269,9 @@ export function DestinationsShowcase({
               footerRight={
                 <a
                   href="/tours"
-                  className="inline-flex items-center gap-1.5 text-white/90 hover:text-white text-xs sm:text-sm font-medium tracking-wide transition-all group py-1 px-3 rounded-full hover:bg-white/10 select-none cursor-pointer"
+                  className="text-xs sm:text-sm font-normal text-white/85 hover:text-white transition-colors duration-200 tracking-wide select-none hover:underline underline-offset-4 drop-shadow-sm cursor-pointer whitespace-nowrap"
                 >
-                  <span className="hover:underline underline-offset-4">
-                    View all destinations
-                  </span>
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="transition-transform duration-200 group-hover:translate-x-1"
-                  >
-                    <path d="M5 12h14" />
-                    <path d="m12 5 7 7-7 7" />
-                  </svg>
+                  View all destinations
                 </a>
               }
               background="transparent"

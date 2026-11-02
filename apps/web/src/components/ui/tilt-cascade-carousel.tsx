@@ -216,6 +216,13 @@ const CSS =
   ".tcc-dot[aria-current]{width:28px;opacity:1}" +
   ".tcc-count{font-size:13px;font-variant-numeric:tabular-nums}" +
   ".tcc-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}" +
+  ".tcc-bottom-bar{position:absolute;bottom:16px;left:50%;transform:translateX(-50%);width:100%;max-width:calc(var(--tcc-s)*2.05);display:flex;align-items:center;justify-content:space-between;padding:0 8px;z-index:150;pointer-events:none}" +
+  "@media (min-width:1024px){.tcc-bottom-bar{left:calc(50% - var(--tcc-s)*0.5);transform:none;width:calc(var(--tcc-s)*2.05);padding:0}}" +
+  ".tcc-dual-arrows{display:inline-flex;align-items:center;border:1px solid rgba(255,255,255,0.22);background:rgba(0,0,0,0.45);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);border-radius:2px;overflow:hidden;pointer-events:auto;box-shadow:0 2px 8px rgba(0,0,0,0.25)}" +
+  ".tcc-dual-btn{width:40px;height:38px;padding:0;margin:0;border:0;background:none;color:#ffffff;display:grid;place-items:center;cursor:pointer;transition:background-color 0.2s}" +
+  ".tcc-dual-btn:hover{background:rgba(255,255,255,0.18)}" +
+  ".tcc-dual-btn:disabled{opacity:0.3;cursor:default}" +
+  ".tcc-dual-btn-prev{border-right:1px solid rgba(255,255,255,0.22)}" +
   "@media (prefers-reduced-motion:reduce){" +
   ".tcc-title,.tcc-cap,.tcc-dot,.tcc-btn{transition:none}}";
 
@@ -223,8 +230,8 @@ const CSS =
 function Chevron({ dir }: { dir: -1 | 1 }) {
   return (
     <svg
-      width="24"
-      height="24"
+      width="20"
+      height="20"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
@@ -738,34 +745,11 @@ export default function TiltCascadeCarousel({
       </div>
 
       {controls && n > 1 ? (
-        <div
-          style={{
-            position: "absolute",
-            bottom: "16px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "18px",
-            zIndex: 150,
-            width: "max-content",
-            maxWidth: "96%",
-          }}
-        >
-          <div
-            className="tcc-controls"
-            data-tcc-controls=""
-            style={{
-              position: "relative",
-              bottom: "auto",
-              left: "auto",
-              transform: "none",
-            }}
-          >
+        <div className="tcc-bottom-bar">
+          <div className="tcc-dual-arrows" data-tcc-controls="">
             <button
               type="button"
-              className="tcc-btn"
+              className="tcc-dual-btn tcc-dual-btn-prev"
               aria-label="Previous slide"
               disabled={atStart}
               onClick={() => {
@@ -775,30 +759,9 @@ export default function TiltCascadeCarousel({
             >
               <Chevron dir={-1} />
             </button>
-            <div className="tcc-dots">
-              {manyDots ? (
-                <span className="tcc-count">
-                  {pad(active + 1)} / {pad(n)}
-                </span>
-              ) : (
-                items.map((item, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className="tcc-dot"
-                    aria-label={"Go to slide " + (i + 1) + ": " + item.title}
-                    aria-current={i === active ? "true" : undefined}
-                    onClick={() => {
-                      setStopped(true);
-                      goTo(i);
-                    }}
-                  />
-                ))
-              )}
-            </div>
             <button
               type="button"
-              className="tcc-btn"
+              className="tcc-dual-btn"
               aria-label="Next slide"
               disabled={atEnd}
               onClick={() => {
@@ -811,7 +774,13 @@ export default function TiltCascadeCarousel({
           </div>
 
           {footerRight ? (
-            <div style={{ display: "flex", alignItems: "center" }}>
+            <div
+              style={{
+                pointerEvents: "auto",
+                display: "flex",
+                alignItems: "center",
+              }}
+            >
               {footerRight}
             </div>
           ) : null}
