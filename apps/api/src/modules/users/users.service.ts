@@ -26,6 +26,7 @@ export class UsersService {
       role: u.role,
       availability: u.availability,
       isActive: u.isActive,
+      avatarUrl: u.avatarUrl || null,
       services: u.services.map((s) => ({
         id: s.id,
         userId: s.userId,
@@ -101,6 +102,7 @@ export class UsersService {
       role: user.role,
       availability: user.availability,
       isActive: user.isActive,
+      avatarUrl: user.avatarUrl || null,
       services: user.services.map((s) => ({
         id: s.id,
         userId: s.userId,
@@ -177,5 +179,62 @@ export class UsersService {
         availability: true,
       },
     });
+  }
+
+  async updateProfile(
+    userId: string,
+    input: { phone?: string | null; avatarUrl?: string | null },
+  ): Promise<UserProfile> {
+    const user = await this.fastify.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const updatedUser = await this.fastify.prisma.user.update({
+      where: { id: userId },
+      data: {
+        ...(input.phone !== undefined
+          ? { phone: input.phone?.trim() || null }
+          : {}),
+        ...(input.avatarUrl !== undefined
+          ? { avatarUrl: input.avatarUrl || null }
+          : {}),
+      },
+      include: {
+        services: {
+          include: {
+            service: true,
+          },
+        },
+      },
+    });
+
+    return {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      fullName: updatedUser.fullName,
+      phone: updatedUser.phone,
+      avatarUrl: updatedUser.avatarUrl || null,
+      role: updatedUser.role,
+      availability: updatedUser.availability,
+      isActive: updatedUser.isActive,
+      services: updatedUser.services.map((s) => ({
+        id: s.id,
+        userId: s.userId,
+        serviceId: s.serviceId,
+        isPrimary: s.isPrimary,
+        service: {
+          id: s.service.id,
+          name: s.service.name,
+          slug: s.service.slug,
+          minMarginPercent: s.service.minMarginPercent,
+        },
+      })),
+      createdAt: updatedUser.createdAt.toISOString(),
+      updatedAt: updatedUser.updatedAt.toISOString(),
+    };
   }
 }

@@ -18,6 +18,7 @@ import { PackageBuilderPage } from "./pages/PackageBuilderPage";
 import { CoordinatorLeadsPage } from "./pages/leads/CoordinatorLeadsPage";
 import { MasterLeadsPage } from "./pages/admin/MasterLeadsPage";
 import { BookingsPage } from "./pages/bookings/BookingsPage";
+import { AccountPage } from "./pages/account/AccountPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -69,6 +70,7 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<AdminLayout />}>
               <Route index element={<DashboardPage />} />
+              <Route path="account" element={<AccountPage />} />
 
               {/* Tour Packages Catalog (Management and Content) */}
               <Route

@@ -15,6 +15,7 @@ export interface UserProfile {
   role: UserRole;
   availability: StaffAvailability;
   isActive: boolean;
+  avatarUrl?: string | null;
   services?: UserServiceMapping[];
   createdAt: string;
   updatedAt: string;

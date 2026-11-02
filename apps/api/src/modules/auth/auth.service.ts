@@ -66,6 +66,7 @@ export class AuthService {
       role: user.role,
       availability: user.availability,
       isActive: user.isActive,
+      avatarUrl: user.avatarUrl || null,
       services: user.services.map((s) => ({
         id: s.id,
         userId: s.userId,

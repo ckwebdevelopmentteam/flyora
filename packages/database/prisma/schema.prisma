@@ -27,6 +27,7 @@ model User {
   passwordHash     String
   fullName         String
   phone            String?
+  avatarUrl        String?
   role             UserRole          @default(SERVICE_COORDINATOR)
   availability     StaffAvailability @default(AVAILABLE)
   isActive         Boolean           @default(true)
