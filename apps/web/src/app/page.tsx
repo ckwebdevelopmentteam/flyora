@@ -16,6 +16,7 @@ import { DestinationsShowcase } from "../components/DestinationsShowcase";
 import InkOrbitTestimonials, {
   type InkTestimonial,
 } from "@/components/ui/ink-orbit-testimonials";
+import { JourneyCTA } from "../components/JourneyCTA";
 
 // Verified Traveler Testimonials for InkOrbitTestimonials
 const TRAVEL_TESTIMONIALS: InkTestimonial[] = [
@@ -341,7 +342,6 @@ export default function Home() {
           --------------------------------------------------------------------- */}
       <HeroSection
         videoSrc="/hero/hero-one.mp4?v=new"
-        posterSrc="/hero/hero-poster.jpg"
         eyebrow="Flyora Tours & Travels, Est. 2006"
         title={"It’s not where you go,\nbut how you feel."}
         description="Custom journeys across India and the world, built around you since 2006."
@@ -370,35 +370,35 @@ export default function Home() {
           --------------------------------------------------------------------- */}
       <div className="relative z-10 w-full">
         {/* Floating animated clouds marquee attached to top of Featured Destinations */}
-        <div className="relative -mt-[110px] sm:-mt-[150px] md:-mt-[180px] lg:-mt-[210px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
+        <div className="relative -mt-[80px] sm:-mt-[110px] md:-mt-[135px] lg:-mt-[155px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
           <div className="animate-marquee flex w-max will-change-transform">
             {/* Set 1 */}
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-1.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-2.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-3.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-4.png"
             />
             {/* Set 2 (for seamless loop) */}
@@ -406,28 +406,28 @@ export default function Home() {
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-1.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-2.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-3.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[120px] sm:h-[160px] md:h-[190px] lg:h-[220px] w-auto -mr-[70px] sm:-mr-[90px] md:-mr-[110px] lg:-mr-[120px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-4.png"
             />
           </div>
@@ -442,23 +442,23 @@ export default function Home() {
         <section
           id="destinations"
           ref={destinationsRef}
-          className="relative z-10 pt-20 sm:pt-24 lg:pt-28 pb-16 sm:pb-20 lg:pb-24 bg-white border-b border-black/[0.06]"
+          className="relative z-10 pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16 lg:pb-24 bg-white border-b border-black/[0.06] scroll-mt-20 sm:scroll-mt-24"
         >
           <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
             {/* Header: Left title + Right description & navigation arrows */}
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 lg:gap-12 mb-8 sm:mb-10 lg:mb-12">
+            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6 lg:gap-12 mb-6 sm:mb-10 lg:mb-12">
               <div className="max-w-xl">
-                <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2.5">
+                <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2 sm:mb-2.5">
                   FEATURED DESTINATIONS
                 </span>
-                <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#1E1A17] tracking-tight leading-[1.12]">
+                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
                   Explore <br className="hidden sm:inline" />
                   Destinations
                 </h2>
               </div>
 
               <div className="max-w-md flex flex-col items-start pt-0.5 sm:pt-1">
-                <p className="text-sm sm:text-base text-[#5C534A] leading-relaxed">
+                <p className="text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
                   Discover handpicked international destinations crafted for
                   unforgettable journeys and cultural immersion.
                 </p>
@@ -637,41 +637,9 @@ export default function Home() {
         </section>
 
         {/* ===================================================================
-            SECTION 10: FINAL CALL TO ACTION
+            SECTION 10: FINAL BOTTOM CTA BANNER
             =================================================================== */}
-        <section
-          id="cta"
-          className="py-16 sm:py-20 lg:py-24 border-t border-black/[0.06] bg-[#463D34] text-white text-center px-4"
-        >
-          <div className="max-w-2xl mx-auto">
-            <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-2">
-              START YOUR JOURNEY
-            </span>
-            <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-normal mb-4 tracking-tight">
-              Let's Plan Your Next Journey
-            </h2>
-            <p className="text-sm sm:text-base text-white/80 max-w-xl mx-auto mb-8 font-light leading-relaxed">
-              Connect with our travel team to begin designing your tailor-made
-              holiday with expert guidance every step of the way.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5">
-              <button
-                type="button"
-                onClick={() => openEnquiry("Plan My Trip")}
-                className="w-full sm:w-auto px-7 py-3 rounded-md bg-white hover:bg-[#FAF7F2] text-[#463D34] text-xs font-semibold uppercase tracking-wider shadow-sm transition cursor-pointer"
-              >
-                Plan My Trip
-              </button>
-              <button
-                type="button"
-                onClick={() => openEnquiry("Contact Flyora")}
-                className="w-full sm:w-auto px-7 py-3 rounded-md bg-transparent hover:bg-white/10 text-white text-xs font-semibold uppercase tracking-wider border border-white/40 transition cursor-pointer"
-              >
-                Contact Flyora
-              </button>
-            </div>
-          </div>
-        </section>
+        <JourneyCTA onStart={() => openEnquiry()} />
 
         {/* ---------------------------------------------------------------------
               FOOTER: Preserved editorial footer
