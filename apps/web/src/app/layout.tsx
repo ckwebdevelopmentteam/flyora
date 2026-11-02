@@ -5,6 +5,7 @@ import {
   Cormorant_Garamond,
   League_Spartan,
   Poppins,
+  Space_Mono,
 } from "next/font/google";
 import "./globals.css";
 
@@ -36,6 +37,12 @@ const poppins = Poppins({
   weight: ["300", "400", "500", "600", "700"],
 });
 
+const spaceMono = Space_Mono({
+  variable: "--font-space-mono",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
 export const metadata: Metadata = {
   title: "Flyora | Find the Perfect Travel Advisor For You",
   description:
@@ -50,7 +57,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${leagueSpartan.variable} ${poppins.variable}`}
+      className={`${geistSans.variable} ${geistMono.variable} ${cormorant.variable} ${leagueSpartan.variable} ${poppins.variable} ${spaceMono.variable}`}
     >
       <body>{children}</body>
     </html>
