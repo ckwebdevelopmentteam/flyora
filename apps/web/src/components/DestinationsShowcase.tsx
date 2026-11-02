@@ -165,9 +165,9 @@ export function DestinationsShowcase({
       </div>
 
       {/* Main Showcase Content with 105px padding on both sides and 10px padding bottom */}
-      <div className="relative z-10 w-full h-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start pt-8 lg:pt-6 pb-[10px]">
+      <div className="relative z-10 w-full flex-1 flex flex-col justify-start px-6 sm:px-10 lg:px-[105px] pt-8 lg:pt-6 pb-[10px]">
         {/* Top-Right Category Switcher matching reference UI */}
-        <div className="w-full flex justify-end items-center mb-4 lg:mb-3">
+        <div className="w-full flex justify-end items-center mb-4 lg:mb-3 shrink-0">
           <div className="inline-flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
             <button
               type="button"
@@ -198,7 +198,7 @@ export function DestinationsShowcase({
         </div>
 
         {/* Main Content Columns */}
-        <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 xl:gap-16">
+        <div className="w-full flex-1 flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 xl:gap-16">
           {/* =================================================================
               LEFT COLUMN: Active Destination Details
               ================================================================= */}
@@ -251,7 +251,7 @@ export function DestinationsShowcase({
           {/* =================================================================
               RIGHT COLUMN: TiltCascadeCarousel (Taller portrait cards)
               ================================================================= */}
-          <div className="w-full lg:flex-1 h-[530px] sm:h-[570px] lg:h-[590px] flex items-center justify-center min-w-0">
+          <div className="w-full lg:flex-1 h-full min-h-[530px] sm:min-h-[570px] lg:min-h-[590px] flex items-center justify-center min-w-0">
             <TiltCascadeCarousel
               key={activeCategory}
               items={carouselItems}
