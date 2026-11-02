@@ -748,7 +748,7 @@ export default function TiltCascadeCarousel({
             alignItems: "center",
             justifyContent: "center",
             gap: "18px",
-            zIndex: 10,
+            zIndex: 150,
             width: "max-content",
             maxWidth: "96%",
           }}
