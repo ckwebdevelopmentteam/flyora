@@ -164,8 +164,8 @@ export function DestinationsShowcase({
         <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent pointer-events-none" />
       </div>
 
-      {/* Main Showcase Content with 105px padding on both sides */}
-      <div className="relative z-10 w-full h-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start pt-8 lg:pt-6 pb-12 sm:pb-16 lg:pb-18">
+      {/* Main Showcase Content with 105px padding on both sides and 10px padding bottom */}
+      <div className="relative z-10 w-full h-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start pt-8 lg:pt-6 pb-[10px]">
         {/* Top-Right Category Switcher matching reference UI */}
         <div className="w-full flex justify-end items-center mb-4 lg:mb-3">
           <div className="inline-flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
