@@ -847,16 +847,16 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 </div>
 
                 {/* 3. ROW 3: Preferred Travel Date & Number of Travellers */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3.5 sm:gap-4">
                   {/* Preferred Travel Date */}
-                  <div>
+                  <div className="sm:col-span-5">
                     <label
                       htmlFor="enquiry-travelDate"
                       className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2"
                     >
                       Preferred Travel Date
                     </label>
-                    <div className="relative rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-4 py-3 sm:py-3.5 gap-2.5 cursor-pointer">
+                    <div className="relative rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-4 py-2.5 sm:py-3 gap-2.5 cursor-pointer h-[46px] sm:h-[50px]">
                       <Calendar className="w-4 h-4 text-neutral-400 shrink-0 pointer-events-none" />
                       <input
                         type={formData.travelDate ? "date" : "text"}
@@ -884,14 +884,14 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                   </div>
 
                   {/* Number of Travellers Split Component with direct number typing */}
-                  <div>
+                  <div className="sm:col-span-7">
                     <label className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2">
                       Number of Travellers
                     </label>
-                    <div className="rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 transition-all flex items-center divide-x divide-neutral-200 py-1.5 sm:py-2">
+                    <div className="rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 transition-all flex items-center divide-x divide-neutral-200 overflow-hidden h-[46px] sm:h-[50px]">
                       {/* Adults (12+) */}
-                      <div className="flex-1 flex items-center justify-between px-3.5 sm:px-4 py-1 gap-2">
-                        <div className="flex items-center gap-2 min-w-0">
+                      <div className="flex-1 flex items-center justify-between px-3 sm:px-3.5 py-1 gap-2 min-w-0">
+                        <div className="flex items-center gap-1.5 min-w-0 truncate">
                           <Users className="w-4 h-4 text-neutral-400 shrink-0" />
                           <label
                             htmlFor="enquiry-numberOfAdults"
@@ -909,15 +909,15 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                           value={adultsInput}
                           onChange={handleAdultsChange}
                           onBlur={handleAdultsBlur}
-                          className="w-12 sm:w-14 text-center font-semibold text-xs sm:text-[13.5px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E4D3A]/20 border border-neutral-200 focus:border-[#1E4D3A] rounded-xl py-1 sm:py-1.5 px-2 outline-none transition cursor-text"
+                          className="w-9 sm:w-10 text-center font-semibold text-xs sm:text-[13px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E4D3A]/20 border border-neutral-200 focus:border-[#1E4D3A] rounded-lg py-1 px-1 outline-none transition cursor-text shrink-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                       </div>
 
                       {/* Children (0–11) */}
-                      <div className="flex-1 flex items-center justify-between px-3.5 sm:px-4 py-1 gap-2">
+                      <div className="flex-1 flex items-center justify-between px-3 sm:px-3.5 py-1 gap-2 min-w-0">
                         <label
                           htmlFor="enquiry-numberOfKids"
-                          className="text-xs sm:text-[13px] font-medium text-neutral-700 truncate pl-1 cursor-pointer"
+                          className="text-xs sm:text-[13px] font-medium text-neutral-700 truncate pl-0.5 cursor-pointer"
                         >
                           Children (0–11)
                         </label>
@@ -930,7 +930,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                           value={kidsInput}
                           onChange={handleKidsChange}
                           onBlur={handleKidsBlur}
-                          className="w-12 sm:w-14 text-center font-semibold text-xs sm:text-[13.5px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E4D3A]/20 border border-neutral-200 focus:border-[#1E4D3A] rounded-xl py-1 sm:py-1.5 px-2 outline-none transition cursor-text"
+                          className="w-9 sm:w-10 text-center font-semibold text-xs sm:text-[13px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E4D3A]/20 border border-neutral-200 focus:border-[#1E4D3A] rounded-lg py-1 px-1 outline-none transition cursor-text shrink-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                       </div>
                     </div>
