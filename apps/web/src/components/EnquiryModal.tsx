@@ -810,25 +810,25 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                               });
                             }
                           }}
-                          className={`flex items-center justify-between px-4 sm:px-4.5 py-3.5 sm:py-4 rounded-2xl transition-all duration-200 cursor-pointer select-none text-left border ${
+                          className={`group flex items-center justify-between px-4 sm:px-4.5 py-3.5 sm:py-4 rounded-2xl transition-all duration-300 ease-in-out cursor-pointer select-none text-left border active:scale-[0.98] ${
                             isSelected
-                              ? "border-[#1E4D3A] bg-[#F0F7F4]/60 shadow-xs ring-1 ring-[#1E4D3A]"
-                              : "border-neutral-200 bg-white hover:bg-neutral-50 hover:border-neutral-300"
+                              ? "border-[#1E4D3A] bg-[#E3F2E9] hover:bg-[#D0EADB] hover:border-[#13382C] text-[#1E4D3A] shadow-xs hover:shadow-[0_4px_16px_rgba(30,77,58,0.14)] ring-1 ring-[#1E4D3A]"
+                              : "border-neutral-200 bg-white hover:bg-[#F2F8F4] hover:border-[#1E4D3A]/40 hover:text-neutral-900 hover:shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
                           }`}
                         >
                           <div className="flex items-center gap-3 min-w-0 pr-1">
                             <IconComponent
-                              className={`w-5 h-5 shrink-0 transition-colors ${
+                              className={`w-5 h-5 shrink-0 transition-all duration-300 ${
                                 isSelected
-                                  ? "text-[#1E4D3A]"
-                                  : "text-neutral-700"
+                                  ? "text-[#1E4D3A] group-hover:scale-105"
+                                  : "text-neutral-700 group-hover:text-[#1E4D3A] group-hover:scale-105"
                               }`}
                             />
                             <span
-                              className={`text-[13px] sm:text-[13.5px] font-medium truncate ${
+                              className={`text-[13px] sm:text-[13.5px] font-medium truncate transition-colors duration-300 ${
                                 isSelected
                                   ? "text-[#1E4D3A] font-semibold"
-                                  : "text-neutral-800"
+                                  : "text-neutral-800 group-hover:text-neutral-950"
                               }`}
                             >
                               {def.label}
@@ -836,7 +836,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                           </div>
 
                           {isSelected && (
-                            <div className="w-4 h-4 rounded-full bg-[#1E4D3A] text-white flex items-center justify-center shrink-0 ml-1.5">
+                            <div className="w-4 h-4 rounded-full bg-[#1E4D3A] text-white flex items-center justify-center shrink-0 ml-1.5 transition-transform duration-300 group-hover:scale-110 animate-in zoom-in-75 duration-200">
                               <CheckCircle2 className="w-3.5 h-3.5 fill-current text-white stroke-[#1E4D3A]" />
                             </div>
                           )}
