@@ -2,24 +2,18 @@
 
 import React, { useState, useRef, useEffect } from "react";
 import {
-  Tag,
-  Calendar,
-  User,
-  MessageCircle,
-  Send,
+  CalendarDays,
+  Users,
   Check,
   ChevronDown,
-  Search,
   ArrowRight,
-  ArrowLeftRight,
-  CheckCircle2,
   Plane,
   Train,
   Bus,
   PlaneTakeoff,
-  PlaneLanding,
   MapPin,
   Compass,
+  CheckCircle2,
 } from "lucide-react";
 
 // Pixel-perfect SVG icons matching the reference mockup
@@ -159,20 +153,12 @@ interface OptionItem {
 }
 
 // 1. Flights
-const FLIGHT_ORIGINS: OptionItem[] = [
-  { label: "Mumbai (BOM)", sub: "Chhatrapati Shivaji Maharaj Intl" },
-  { label: "New Delhi (DEL)", sub: "Indira Gandhi International" },
-  { label: "Bengaluru (BLR)", sub: "Kempegowda International" },
-  { label: "Hyderabad (HYD)", sub: "Rajiv Gandhi International" },
-  { label: "Dubai (DXB)", sub: "Dubai International Airport" },
-];
-
-const FLIGHT_DESTINATIONS: OptionItem[] = [
-  { label: "Dubai (DXB)", sub: "United Arab Emirates" },
-  { label: "London (LHR)", sub: "Heathrow Airport, UK" },
-  { label: "Singapore (SIN)", sub: "Changi International" },
-  { label: "Jeddah (JED)", sub: "King Abdulaziz Intl, Saudi Arabia" },
-  { label: "Bangkok (BKK)", sub: "Suvarnabhumi Airport, Thailand" },
+const POPULAR_FLIGHT_ROUTES: OptionItem[] = [
+  { label: "Mumbai (BOM) → Dubai (DXB)", sub: "Non-stop daily flights" },
+  { label: "New Delhi (DEL) → London (LHR)", sub: "Direct premium carrier" },
+  { label: "Bengaluru (BLR) → Singapore (SIN)", sub: "Changi direct gateway" },
+  { label: "Mumbai (BOM) → Jeddah (JED)", sub: "Hajj & Umrah connection" },
+  { label: "New Delhi (DEL) → Bangkok (BKK)", sub: "Southeast Asia direct" },
 ];
 
 const FLIGHT_DATES: OptionItem[] = [
@@ -193,20 +179,21 @@ const FLIGHT_CLASSES: OptionItem[] = [
 ];
 
 // 2. Trains
-const TRAIN_ORIGINS: OptionItem[] = [
-  { label: "New Delhi (NDLS)", sub: "New Delhi Railway Station" },
-  { label: "Mumbai Central (MMCT)", sub: "Mumbai Central Terminus" },
-  { label: "Howrah Junction (HWH)", sub: "Kolkata Railway Station" },
-  { label: "KSR Bengaluru (SBC)", sub: "Bengaluru City Junction" },
-  { label: "Chennai Central (MAS)", sub: "Dr. MGR Central" },
-];
-
-const TRAIN_DESTINATIONS: OptionItem[] = [
-  { label: "Mumbai Central (MMCT)", sub: "Mumbai Central Terminus" },
-  { label: "Madgaon, Goa (MAO)", sub: "Konkan Railway Terminus" },
-  { label: "Varanasi Junction (BSB)", sub: "Varanasi Cantt Station" },
-  { label: "Jaipur Junction (JP)", sub: "Pink City Railway Station" },
-  { label: "Agra Cantt (AGC)", sub: "Taj Express Route" },
+const POPULAR_TRAIN_ROUTES: OptionItem[] = [
+  {
+    label: "New Delhi → Mumbai Central",
+    sub: "Vande Bharat & Rajdhani Express",
+  },
+  {
+    label: "Mumbai Central → Goa (Madgaon)",
+    sub: "Tejas & Konkan Kanya Express",
+  },
+  { label: "New Delhi → Varanasi Cantt", sub: "Vande Bharat Superfast" },
+  {
+    label: "Bengaluru (SBC) → Chennai Central",
+    sub: "Shatabdi & Vande Bharat",
+  },
+  { label: "New Delhi → Jaipur Junction", sub: "Ajmer Shatabdi Express" },
 ];
 
 const TRAIN_DATES: OptionItem[] = [
@@ -225,20 +212,18 @@ const TRAIN_CLASSES: OptionItem[] = [
 ];
 
 // 3. Buses
-const BUS_ORIGINS: OptionItem[] = [
-  { label: "Bangalore", sub: "Majestic / Electronic City" },
-  { label: "Mumbai", sub: "Borivali / Dadar / Vashi" },
-  { label: "Pune", sub: "Swargate / Hinjawadi" },
-  { label: "Hyderabad", sub: "Gachibowli / Ameerpet" },
-  { label: "Delhi", sub: "Kashmiri Gate / Anand Vihar" },
-];
-
-const BUS_DESTINATIONS: OptionItem[] = [
-  { label: "Goa", sub: "Panjim / Mapusa" },
-  { label: "Manali", sub: "Mall Road Private Stand" },
-  { label: "Shimla", sub: "Victory Tunnel Stand" },
-  { label: "Ooty", sub: "Central Bus Stand" },
-  { label: "Jaipur", sub: "Sindhi Camp Stand" },
+const POPULAR_BUS_ROUTES: OptionItem[] = [
+  {
+    label: "Bangalore → Goa (Panjim)",
+    sub: "Luxury Volvo Multi-Axle Sleeper",
+  },
+  { label: "Mumbai → Pune (Swargate)", sub: "Express AC Shivneri & Scania" },
+  { label: "Delhi → Manali (Mall Road)", sub: "Volvo B11R Semi-Sleeper" },
+  { label: "Hyderabad → Bangalore", sub: "Overnight Luxury AC Sleeper" },
+  {
+    label: "Delhi → Jaipur (Sindhi Camp)",
+    sub: "Expressway AC Mercedes Benz",
+  },
 ];
 
 const BUS_DATES: OptionItem[] = [
@@ -268,13 +253,6 @@ const VISA_COUNTRIES: OptionItem[] = [
   { label: "Singapore", sub: "Fast Tourist E-Visa" },
 ];
 
-const VISA_PASSPORTS: OptionItem[] = [
-  { label: "Indian Passport" },
-  { label: "US / UK / EU Passport" },
-  { label: "GCC / Middle East Passport" },
-  { label: "Other Nationality Passport" },
-];
-
 const VISA_DATES: OptionItem[] = [
   { label: "Express (Within 14 Days)", sub: "Urgent slot assistance" },
   { label: "Within 30 Days", sub: "Standard embassy timeline" },
@@ -289,37 +267,19 @@ const VISA_APPLICANTS: OptionItem[] = [
   { label: "Corporate Group (5+ Applicants)" },
 ];
 
-// 5. Hajj Packages
-const HAJJ_TIERS: OptionItem[] = [
-  {
-    label: "Executive Non-Shifting (Mina A)",
-    sub: "5-Star Makkah hotel & VIP Mina tents",
-  },
-  {
-    label: "Deluxe Shifting (30 Days)",
-    sub: "Full season with Azizia transit",
-  },
-  {
-    label: "Express Hajj (14 Days)",
-    sub: "Executive short duration pilgrimage",
-  },
-  {
-    label: "VIP Private Pilgrimage",
-    sub: "Dedicated scholar & private transport",
-  },
-];
-
+// 5. Hajj Packages - Exact match to user design mockup:
+// "Travel Period: May – Jun 2027" | "Travellers: 2 Adults"
 const HAJJ_SEASONS: OptionItem[] = [
-  { label: "May - June 2027", sub: "Upcoming Hajj pilgrimage season" },
-  { label: "May - June 2028", sub: "Advance pilgrimage registration" },
-  { label: "Flexible Schedule", sub: "Recommend best package tier" },
+  { label: "May – Jun 2027", sub: "Upcoming Hajj pilgrimage season" },
+  { label: "May – Jun 2028", sub: "Advance pilgrimage registration" },
+  { label: "Flexible Dates", sub: "Consult with pilgrimage curator" },
 ];
 
 const HAJJ_PILGRIMS: OptionItem[] = [
-  { label: "Couple (2 Adults)" },
-  { label: "Solo Pilgrim (1 Person)" },
-  { label: "Family (3–4 Pilgrims)" },
-  { label: "Private Group (5+ Pilgrims)" },
+  { label: "2 Adults", sub: "Couple / Dual pilgrims" },
+  { label: "1 Adult", sub: "Solo pilgrim" },
+  { label: "Family (3–4 Pilgrims)", sub: "Quad sharing accommodation" },
+  { label: "Private Group (5+ Pilgrims)", sub: "Custom group arrangement" },
 ];
 
 // 6. Custom Holidays
@@ -333,76 +293,78 @@ const HOLIDAY_DESTINATIONS: OptionItem[] = [
 ];
 
 const HOLIDAY_MONTHS: OptionItem[] = [
-  { label: "November 2026", sub: "Autumn getaways" },
-  { label: "December 2026", sub: "Festive & new year" },
-  { label: "Jan – Feb 2027", sub: "Winter escapes" },
-  { label: "Flexible Dates", sub: "Year-round availability" },
+  { label: "Nov – Dec 2026", sub: "Festive & new year getaways" },
+  { label: "Jan – Feb 2027", sub: "Winter escapes & alpine snow" },
+  { label: "March – April 2027", sub: "Spring blossoms & pleasant climate" },
+  { label: "Flexible Dates", sub: "Year-round bespoke availability" },
 ];
 
 const HOLIDAY_TRAVELERS: OptionItem[] = [
-  { label: "Couple (2 Adults)" },
-  { label: "Solo Traveler" },
-  { label: "Family (3–4 Guests)" },
-  { label: "Private Group (5+ Guests)" },
+  { label: "2 Adults", sub: "Couple / Dual travelers" },
+  { label: "Solo Traveler", sub: "Single luxury journey" },
+  { label: "Family (3–4 Guests)", sub: "Private suite / villa" },
+  { label: "Private Group (5+ Guests)", sub: "Bespoke chartered itinerary" },
 ];
 
 // ---------------------------------------------------------------------------
-// MINIMAL REUSABLE SELECT FIELD (Apple / Linear / Airbnb quality)
+// LUXURY ARTISAN FIELD (Matching Exact Reference Screenshot)
 // ---------------------------------------------------------------------------
 
-interface SelectFieldProps {
+interface ConciergePillFieldProps {
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string;
   isOpen: boolean;
   onToggle: () => void;
   options: OptionItem[];
   onSelect: (val: string) => void;
-  className?: string;
   dropdownWidth?: string;
-  headerRight?: React.ReactNode;
 }
 
-const SelectField: React.FC<SelectFieldProps> = ({
+const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
+  icon: IconComponent,
   label,
   value,
   isOpen,
   onToggle,
   options,
   onSelect,
-  className = "",
-  dropdownWidth = "w-full sm:w-[300px]",
-  headerRight,
+  dropdownWidth = "w-72 sm:w-80",
 }) => {
   return (
-    <div className={`relative ${className}`}>
-      <div className="flex items-center justify-between mb-1">
-        <label className="text-[11px] font-semibold text-neutral-400 uppercase tracking-wider select-none">
-          {label}
-        </label>
-        {headerRight}
-      </div>
+    <div className="relative">
       <button
         type="button"
         onClick={onToggle}
-        className={`w-full h-[44px] sm:h-[46px] px-3.5 sm:px-4 rounded-xl border text-left flex items-center justify-between gap-2 transition-all cursor-pointer bg-neutral-50/60 hover:bg-neutral-50 ${
-          isOpen
-            ? "border-neutral-900 ring-1 ring-neutral-900/10 bg-white"
-            : "border-neutral-200/90 hover:border-neutral-300"
-        }`}
+        className="flex items-center gap-3 sm:gap-3.5 group cursor-pointer text-left focus:outline-none transition-transform duration-150 active:scale-[0.99] py-1 select-none"
       >
-        <span className="text-[14px] font-semibold text-neutral-900 truncate leading-tight">
-          {value}
-        </span>
-        <ChevronDown
-          className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform duration-200 ${
-            isOpen ? "rotate-180 text-neutral-800" : ""
-          }`}
-        />
+        {/* Soft Circular Icon Container - Exact background from user mockup */}
+        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#F4F1EA] group-hover:bg-[#EAE5DC] flex items-center justify-center shrink-0 transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
+          <IconComponent className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-[#2C241E] stroke-[1.6]" />
+        </div>
+
+        {/* Text Block: Label on top, Value + Chevron below */}
+        <div className="flex flex-col min-w-0 pr-1">
+          <span className="text-[11.5px] sm:text-[12px] text-[#78716A] font-normal leading-tight mb-0.5 select-none truncate">
+            {label}
+          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[14.5px] sm:text-[15.5px] font-semibold text-[#1C1917] tracking-tight leading-tight group-hover:text-[#6e4f23] transition-colors truncate">
+              {value}
+            </span>
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-[#78716A] group-hover:text-[#1C1917] shrink-0 transition-transform duration-200 ${
+                isOpen ? "rotate-180 text-[#6e4f23]" : ""
+              }`}
+            />
+          </div>
+        </div>
       </button>
 
+      {/* Downward luxury dropdown */}
       {isOpen && (
         <div
-          className={`absolute left-0 top-[calc(100%+6px)] z-50 ${dropdownWidth} bg-white rounded-2xl p-1.5 shadow-[0_16px_40px_rgba(0,0,0,0.12)] border border-neutral-200/90 animate-in fade-in slide-in-from-top-1 duration-150 max-h-[260px] overflow-y-auto no-scrollbar`}
+          className={`absolute left-0 top-[calc(100%+12px)] z-50 ${dropdownWidth} bg-white rounded-2xl p-1.5 shadow-[0_20px_45px_rgba(0,0,0,0.16)] border border-neutral-200/90 animate-in fade-in slide-in-from-top-1 duration-150 max-h-[280px] overflow-y-auto no-scrollbar`}
         >
           {options.map((opt, idx) => {
             const isSelected = value === opt.label;
@@ -411,16 +373,14 @@ const SelectField: React.FC<SelectFieldProps> = ({
                 key={idx}
                 type="button"
                 onClick={() => onSelect(opt.label)}
-                className={`w-full px-3 py-2.5 rounded-xl text-left flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
+                className={`w-full px-3.5 py-2.5 rounded-xl text-left flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
                   isSelected
-                    ? "bg-neutral-100 font-semibold"
-                    : "hover:bg-neutral-50 font-normal"
+                    ? "bg-[#F4F1EA] text-[#6e4f23] font-semibold"
+                    : "hover:bg-neutral-50 text-neutral-800 font-normal"
                 }`}
               >
                 <div className="min-w-0 pr-1">
-                  <div className="text-[13.5px] text-neutral-900 truncate">
-                    {opt.label}
-                  </div>
+                  <div className="text-[13.5px] truncate">{opt.label}</div>
                   {opt.sub && (
                     <div className="text-[11px] text-neutral-400 truncate mt-0.5">
                       {opt.sub}
@@ -428,7 +388,7 @@ const SelectField: React.FC<SelectFieldProps> = ({
                   )}
                 </div>
                 {isSelected && (
-                  <Check className="w-3.5 h-3.5 text-neutral-900 shrink-0" />
+                  <Check className="w-3.5 h-3.5 text-[#6e4f23] shrink-0" />
                 )}
               </button>
             );
@@ -448,9 +408,14 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   const [activeTab, setActiveTab] = useState<ServiceId>("hajj-packages");
 
   // Route-based states (Flights, Trains, Buses)
-  const [fromLocation, setFromLocation] = useState<string>("Mumbai (BOM)");
-  const [toLocation, setToLocation] = useState<string>("Dubai (DXB)");
-  const [routeDate, setRouteDate] = useState<string>("15 Nov 2026");
+  const [flightRoute, setFlightRoute] = useState<string>(
+    "Mumbai (BOM) → Dubai (DXB)",
+  );
+  const [trainRoute, setTrainRoute] = useState<string>(
+    "New Delhi → Mumbai Central",
+  );
+  const [busRoute, setBusRoute] = useState<string>("Bangalore → Goa (Panjim)");
+  const [routeDate, setRouteDate] = useState<string>("This Weekend");
   const [routeClassOrSeats, setRouteClassOrSeats] =
     useState<string>("1 Adult, Economy");
 
@@ -458,24 +423,22 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   const [visaCountry, setVisaCountry] = useState<string>(
     "Schengen Europe (29 Countries)",
   );
-  const [passportCountry, setPassportCountry] =
-    useState<string>("Indian Passport");
   const [visaDate, setVisaDate] = useState<string>("Within 30 Days");
   const [visaApplicants, setVisaApplicants] = useState<string>(
     "Single Applicant (1 Person)",
   );
 
-  // Package / Holiday states (Hajj, Custom Holidays)
-  const [selectedPackage, setSelectedPackage] = useState<string>(
-    "Executive Non-Shifting (Mina A)",
+  // Custom Holidays states
+  const [holidayDest, setHolidayDest] = useState<string>(
+    "Switzerland & The Alps",
   );
-  const [packageDate, setPackageDate] = useState<string>("May - June 2027");
-  const [packageGuests, setPackageGuests] =
-    useState<string>("Couple (2 Adults)");
+  const [holidayMonth, setHolidayMonth] = useState<string>("Nov – Dec 2026");
+  const [holidayTravelers, setHolidayTravelers] = useState<string>("2 Adults");
 
-  // Shared Contact Details
-  const [customerName, setCustomerName] = useState<string>("");
-  const [customerPhone, setCustomerPhone] = useState<string>("");
+  // Hajj states - EXACT MATCH TO IMAGE:
+  // "Travel Period": "May – Jun 2027" | "Travellers": "2 Adults"
+  const [hajjSeason, setHajjSeason] = useState<string>("May – Jun 2027");
+  const [hajjPilgrims, setHajjPilgrims] = useState<string>("2 Adults");
 
   // Popover / Dropdown Manager (only 1 open at a time)
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
@@ -484,50 +447,35 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsScrollRef = useRef<HTMLDivElement>(null);
 
-  const activeService =
-    SERVICES_DATA.find((s) => s.id === activeTab) || SERVICES_DATA[0];
-
   const handleCardClick = (serviceId: ServiceId) => {
     setActiveTab(serviceId);
     setOpenDropdown(null);
     setIsSubmitted(false);
 
     if (serviceId === "flight-booking") {
-      setFromLocation("Mumbai (BOM)");
-      setToLocation("Dubai (DXB)");
-      setRouteDate("15 Nov 2026");
+      setFlightRoute("Mumbai (BOM) → Dubai (DXB)");
+      setRouteDate("This Weekend");
       setRouteClassOrSeats("1 Adult, Economy");
     } else if (serviceId === "train-booking") {
-      setFromLocation("New Delhi (NDLS)");
-      setToLocation("Mumbai Central (MMCT)");
+      setTrainRoute("New Delhi → Mumbai Central");
       setRouteDate("18 Nov 2026");
       setRouteClassOrSeats("1st AC (1A) Confirmed");
     } else if (serviceId === "bus-booking") {
-      setFromLocation("Bangalore");
-      setToLocation("Goa");
+      setBusRoute("Bangalore → Goa (Panjim)");
       setRouteDate("Tonight / Tomorrow");
       setRouteClassOrSeats("2 Sleeper Berths (Volvo AC)");
     } else if (serviceId === "visa-assistance") {
       setVisaCountry("Schengen Europe (29 Countries)");
-      setPassportCountry("Indian Passport");
       setVisaDate("Within 30 Days");
       setVisaApplicants("Single Applicant (1 Person)");
     } else if (serviceId === "hajj-packages") {
-      setSelectedPackage("Executive Non-Shifting (Mina A)");
-      setPackageDate("May - June 2027");
-      setPackageGuests("Couple (2 Adults)");
+      setHajjSeason("May – Jun 2027");
+      setHajjPilgrims("2 Adults");
     } else if (serviceId === "custom-holidays") {
-      setSelectedPackage("Switzerland & The Alps");
-      setPackageDate("December 2026");
-      setPackageGuests("Couple (2 Adults)");
+      setHolidayDest("Switzerland & The Alps");
+      setHolidayMonth("Nov – Dec 2026");
+      setHolidayTravelers("2 Adults");
     }
-  };
-
-  const handleSwapLocations = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const temp = fromLocation;
-    setFromLocation(toLocation);
-    setToLocation(temp);
   };
 
   useEffect(() => {
@@ -543,24 +491,23 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleRequestQuote = (e?: React.MouseEvent) => {
+    if (e) e.preventDefault();
 
     let enquirySummary = "";
-    if (
-      activeTab === "flight-booking" ||
-      activeTab === "train-booking" ||
-      activeTab === "bus-booking"
-    ) {
-      enquirySummary = `${activeService.label}: ${fromLocation} → ${toLocation} | Date: ${routeDate} | Passengers/Seats: ${routeClassOrSeats}`;
+    if (activeTab === "hajj-packages") {
+      enquirySummary = `Hajj Packages | Travel Period: ${hajjSeason} | Travellers: ${hajjPilgrims}`;
+    } else if (activeTab === "custom-holidays") {
+      enquirySummary = `Custom Holidays to ${holidayDest} | Travel Period: ${holidayMonth} | Travellers: ${holidayTravelers}`;
     } else if (activeTab === "visa-assistance") {
-      enquirySummary = `Visa Assistance: ${visaCountry} (${passportCountry}) | Travel: ${visaDate} | Applicants: ${visaApplicants}`;
-    } else {
-      enquirySummary = `${activeService.label}: ${selectedPackage} | Timeline: ${packageDate} | Travelers: ${packageGuests}`;
+      enquirySummary = `Visa Assistance: ${visaCountry} | Timeline: ${visaDate} | Applicants: ${visaApplicants}`;
+    } else if (activeTab === "flight-booking") {
+      enquirySummary = `Flight Booking: ${flightRoute} | Departure: ${routeDate} | Passengers: ${routeClassOrSeats}`;
+    } else if (activeTab === "train-booking") {
+      enquirySummary = `Train Booking: ${trainRoute} | Date: ${routeDate} | Class: ${routeClassOrSeats}`;
+    } else if (activeTab === "bus-booking") {
+      enquirySummary = `Bus Booking: ${busRoute} | Date: ${routeDate} | Seats: ${routeClassOrSeats}`;
     }
-
-    if (customerName) enquirySummary += ` | Name: ${customerName}`;
-    if (customerPhone) enquirySummary += ` | Phone: ${customerPhone}`;
 
     if (onOpenEnquiry) {
       onOpenEnquiry(enquirySummary);
@@ -570,42 +517,6 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
     setTimeout(() => {
       setIsSubmitted(false);
     }, 4500);
-  };
-
-  const getPhonePlaceholder = (id: ServiceId) => {
-    switch (id) {
-      case "flight-booking":
-        return "WhatsApp Number for Fare Alerts";
-      case "train-booking":
-        return "WhatsApp Number for Seat Alerts";
-      case "bus-booking":
-        return "WhatsApp Number for Boarding Details";
-      case "visa-assistance":
-        return "WhatsApp Number for Document Checklist";
-      case "hajj-packages":
-        return "WhatsApp Number for Hajj Itinerary";
-      case "custom-holidays":
-      default:
-        return "WhatsApp Number for Holiday Itinerary";
-    }
-  };
-
-  const getCtaText = (id: ServiceId) => {
-    switch (id) {
-      case "flight-booking":
-        return "Search Flights";
-      case "train-booking":
-        return "Check Train Seats";
-      case "bus-booking":
-        return "Search Buses";
-      case "visa-assistance":
-        return "Get Visa Checklist";
-      case "hajj-packages":
-        return "Get Hajj Quote";
-      case "custom-holidays":
-      default:
-        return "Plan My Holiday";
-    }
   };
 
   return (
@@ -621,7 +532,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - Full text is displayed with zero truncation.
           - Sized luxuriously to arrange along the exact same length as the navbar.
           ======================================================================= */}
-      <div className="relative mb-2.5 -mt-4 sm:-mt-5">
+      <div className="relative mb-3.5 -mt-4 sm:-mt-5">
         <div
           ref={cardsScrollRef}
           className="flex md:grid md:grid-cols-6 items-stretch gap-2.5 sm:gap-3 lg:gap-3.5 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth px-1 md:px-0 pt-7 pb-5"
@@ -678,468 +589,364 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
       </div>
 
       {/* =======================================================================
-          MAIN CONCIERGE CARD (Minimal, refined & bespoke UI/UX):
-          - Clear, understated typography.
-          - Dropdowns open downward with smooth luxury elevation.
-          - Zero emojis, zero marketing fluff, zero redundant micro-copy.
+          2. MAIN ADAPTIVE SEARCH BAR - EXACT MATCH TO REFERENCE DESIGN:
+          - Ultra-clean rounded luxury pill card with warm cream `#FAF8F5` surface.
+          - Soft circular icon badges `#F4F1EA`.
+          - Downward dropdowns with artisan typography.
+          - Rich warm cognac / walnut brown `#6e4f23` "Request a Quote ->" pill button.
           ======================================================================= */}
-      <div className="relative bg-white text-[#1E1A17] rounded-[22px] sm:rounded-[26px] p-4 sm:p-4.5 md:px-6 md:py-4 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-neutral-200/80 text-left transition-all duration-300">
-        <form onSubmit={handleSubmit}>
-          {/* ===================================================================
-              CASE 1: FLIGHT BOOKING
-              =================================================================== */}
-          {activeTab === "flight-booking" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-stretch">
-              <SelectField
-                label="Flying From"
-                value={fromLocation}
-                isOpen={openDropdown === "flight-from"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "flight-from" ? null : "flight-from",
-                  )
-                }
-                options={FLIGHT_ORIGINS}
-                onSelect={(val) => {
-                  setFromLocation(val);
-                  setOpenDropdown(null);
-                }}
-                headerRight={
-                  <button
-                    type="button"
-                    onClick={handleSwapLocations}
-                    title="Swap Locations"
-                    className="p-1 rounded-md text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors cursor-pointer"
-                  >
-                    <ArrowLeftRight className="w-3.5 h-3.5" />
-                  </button>
-                }
-              />
-              <SelectField
-                label="Flying To"
-                value={toLocation}
-                isOpen={openDropdown === "flight-to"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "flight-to" ? null : "flight-to",
-                  )
-                }
-                options={FLIGHT_DESTINATIONS}
-                onSelect={(val) => {
-                  setToLocation(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Departure Date"
-                value={routeDate}
-                isOpen={openDropdown === "flight-date"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "flight-date" ? null : "flight-date",
-                  )
-                }
-                options={FLIGHT_DATES}
-                onSelect={(val) => {
-                  setRouteDate(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Travelers & Class"
-                value={routeClassOrSeats}
-                isOpen={openDropdown === "flight-class"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "flight-class" ? null : "flight-class",
-                  )
-                }
-                options={FLIGHT_CLASSES}
-                onSelect={(val) => {
-                  setRouteClassOrSeats(val);
-                  setOpenDropdown(null);
-                }}
-              />
-            </div>
-          )}
+      <div className="relative w-full bg-[#FAF8F5] text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-3 sm:px-8 sm:py-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-stone-200/60 transition-all duration-300">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
+          {/* Active Service Fields Group */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 divide-y sm:divide-y-0 divide-[#E5E0D5]/50">
+            {/* CASE 1: HAJJ PACKAGES (Exact match to reference design mockup) */}
+            {activeTab === "hajj-packages" && (
+              <>
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Travel Period"
+                  value={hajjSeason}
+                  isOpen={openDropdown === "hajj-season"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "hajj-season" ? null : "hajj-season",
+                    )
+                  }
+                  options={HAJJ_SEASONS}
+                  onSelect={(val) => {
+                    setHajjSeason(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={Users}
+                  label="Travellers"
+                  value={hajjPilgrims}
+                  isOpen={openDropdown === "hajj-pilgrims"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "hajj-pilgrims" ? null : "hajj-pilgrims",
+                    )
+                  }
+                  options={HAJJ_PILGRIMS}
+                  onSelect={(val) => {
+                    setHajjPilgrims(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+              </>
+            )}
 
-          {/* ===================================================================
-              CASE 2: TRAIN BOOKING
-              =================================================================== */}
-          {activeTab === "train-booking" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-stretch">
-              <SelectField
-                label="From Station"
-                value={fromLocation}
-                isOpen={openDropdown === "train-from"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "train-from" ? null : "train-from",
-                  )
-                }
-                options={TRAIN_ORIGINS}
-                onSelect={(val) => {
-                  setFromLocation(val);
-                  setOpenDropdown(null);
-                }}
-                headerRight={
-                  <button
-                    type="button"
-                    onClick={handleSwapLocations}
-                    title="Swap Stations"
-                    className="p-1 rounded-md text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors cursor-pointer"
-                  >
-                    <ArrowLeftRight className="w-3.5 h-3.5" />
-                  </button>
-                }
-              />
-              <SelectField
-                label="To Station"
-                value={toLocation}
-                isOpen={openDropdown === "train-to"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "train-to" ? null : "train-to",
-                  )
-                }
-                options={TRAIN_DESTINATIONS}
-                onSelect={(val) => {
-                  setToLocation(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Travel Date"
-                value={routeDate}
-                isOpen={openDropdown === "train-date"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "train-date" ? null : "train-date",
-                  )
-                }
-                options={TRAIN_DATES}
-                onSelect={(val) => {
-                  setRouteDate(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Class"
-                value={routeClassOrSeats}
-                isOpen={openDropdown === "train-class"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "train-class" ? null : "train-class",
-                  )
-                }
-                options={TRAIN_CLASSES}
-                onSelect={(val) => {
-                  setRouteClassOrSeats(val);
-                  setOpenDropdown(null);
-                }}
-              />
-            </div>
-          )}
+            {/* CASE 2: CUSTOM HOLIDAYS */}
+            {activeTab === "custom-holidays" && (
+              <>
+                <ConciergePillField
+                  icon={Compass}
+                  label="Destination"
+                  value={holidayDest}
+                  isOpen={openDropdown === "holiday-dest"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "holiday-dest" ? null : "holiday-dest",
+                    )
+                  }
+                  options={HOLIDAY_DESTINATIONS}
+                  onSelect={(val) => {
+                    setHolidayDest(val);
+                    setOpenDropdown(null);
+                  }}
+                  dropdownWidth="w-72 sm:w-80"
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Travel Period"
+                  value={holidayMonth}
+                  isOpen={openDropdown === "holiday-month"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "holiday-month" ? null : "holiday-month",
+                    )
+                  }
+                  options={HOLIDAY_MONTHS}
+                  onSelect={(val) => {
+                    setHolidayMonth(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={Users}
+                  label="Travellers"
+                  value={holidayTravelers}
+                  isOpen={openDropdown === "holiday-travelers"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "holiday-travelers"
+                        ? null
+                        : "holiday-travelers",
+                    )
+                  }
+                  options={HOLIDAY_TRAVELERS}
+                  onSelect={(val) => {
+                    setHolidayTravelers(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+              </>
+            )}
 
-          {/* ===================================================================
-              CASE 3: BUS BOOKING
-              =================================================================== */}
-          {activeTab === "bus-booking" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-stretch">
-              <SelectField
-                label="From City"
-                value={fromLocation}
-                isOpen={openDropdown === "bus-from"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "bus-from" ? null : "bus-from",
-                  )
-                }
-                options={BUS_ORIGINS}
-                onSelect={(val) => {
-                  setFromLocation(val);
-                  setOpenDropdown(null);
-                }}
-                headerRight={
-                  <button
-                    type="button"
-                    onClick={handleSwapLocations}
-                    title="Swap Cities"
-                    className="p-1 rounded-md text-neutral-400 hover:text-neutral-900 hover:bg-neutral-100 transition-colors cursor-pointer"
-                  >
-                    <ArrowLeftRight className="w-3.5 h-3.5" />
-                  </button>
-                }
-              />
-              <SelectField
-                label="To City"
-                value={toLocation}
-                isOpen={openDropdown === "bus-to"}
-                onToggle={() =>
-                  setOpenDropdown(openDropdown === "bus-to" ? null : "bus-to")
-                }
-                options={BUS_DESTINATIONS}
-                onSelect={(val) => {
-                  setToLocation(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Travel Date"
-                value={routeDate}
-                isOpen={openDropdown === "bus-date"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "bus-date" ? null : "bus-date",
-                  )
-                }
-                options={BUS_DATES}
-                onSelect={(val) => {
-                  setRouteDate(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Seat Type"
-                value={routeClassOrSeats}
-                isOpen={openDropdown === "bus-seats"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "bus-seats" ? null : "bus-seats",
-                  )
-                }
-                options={BUS_SEATS}
-                onSelect={(val) => {
-                  setRouteClassOrSeats(val);
-                  setOpenDropdown(null);
-                }}
-              />
-            </div>
-          )}
+            {/* CASE 3: VISA ASSISTANCE */}
+            {activeTab === "visa-assistance" && (
+              <>
+                <ConciergePillField
+                  icon={PassportIcon}
+                  label="Destination Country"
+                  value={visaCountry}
+                  isOpen={openDropdown === "visa-country"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "visa-country" ? null : "visa-country",
+                    )
+                  }
+                  options={VISA_COUNTRIES}
+                  onSelect={(val) => {
+                    setVisaCountry(val);
+                    setOpenDropdown(null);
+                  }}
+                  dropdownWidth="w-72 sm:w-80"
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Travel Timeline"
+                  value={visaDate}
+                  isOpen={openDropdown === "visa-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "visa-date" ? null : "visa-date",
+                    )
+                  }
+                  options={VISA_DATES}
+                  onSelect={(val) => {
+                    setVisaDate(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={Users}
+                  label="Applicants"
+                  value={visaApplicants}
+                  isOpen={openDropdown === "visa-applicants"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "visa-applicants"
+                        ? null
+                        : "visa-applicants",
+                    )
+                  }
+                  options={VISA_APPLICANTS}
+                  onSelect={(val) => {
+                    setVisaApplicants(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+              </>
+            )}
 
-          {/* ===================================================================
-              CASE 4: VISA ASSISTANCE
-              =================================================================== */}
-          {activeTab === "visa-assistance" && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 items-stretch">
-              <SelectField
-                label="Destination Country"
-                value={visaCountry}
-                isOpen={openDropdown === "visa-country"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "visa-country" ? null : "visa-country",
-                  )
-                }
-                options={VISA_COUNTRIES}
-                onSelect={(val) => {
-                  setVisaCountry(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Passport"
-                value={passportCountry}
-                isOpen={openDropdown === "visa-passport"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "visa-passport" ? null : "visa-passport",
-                  )
-                }
-                options={VISA_PASSPORTS}
-                onSelect={(val) => {
-                  setPassportCountry(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Travel Timeline"
-                value={visaDate}
-                isOpen={openDropdown === "visa-date"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "visa-date" ? null : "visa-date",
-                  )
-                }
-                options={VISA_DATES}
-                onSelect={(val) => {
-                  setVisaDate(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Applicants"
-                value={visaApplicants}
-                isOpen={openDropdown === "visa-applicants"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "visa-applicants"
-                      ? null
-                      : "visa-applicants",
-                  )
-                }
-                options={VISA_APPLICANTS}
-                onSelect={(val) => {
-                  setVisaApplicants(val);
-                  setOpenDropdown(null);
-                }}
-              />
-            </div>
-          )}
+            {/* CASE 4: FLIGHT BOOKING */}
+            {activeTab === "flight-booking" && (
+              <>
+                <ConciergePillField
+                  icon={PlaneTakeoff}
+                  label="Flight Route"
+                  value={flightRoute}
+                  isOpen={openDropdown === "flight-route"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "flight-route" ? null : "flight-route",
+                    )
+                  }
+                  options={POPULAR_FLIGHT_ROUTES}
+                  onSelect={(val) => {
+                    setFlightRoute(val);
+                    setOpenDropdown(null);
+                  }}
+                  dropdownWidth="w-72 sm:w-88"
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Departure Date"
+                  value={routeDate}
+                  isOpen={openDropdown === "flight-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "flight-date" ? null : "flight-date",
+                    )
+                  }
+                  options={FLIGHT_DATES}
+                  onSelect={(val) => {
+                    setRouteDate(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={Users}
+                  label="Passengers & Class"
+                  value={routeClassOrSeats}
+                  isOpen={openDropdown === "flight-class"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "flight-class" ? null : "flight-class",
+                    )
+                  }
+                  options={FLIGHT_CLASSES}
+                  onSelect={(val) => {
+                    setRouteClassOrSeats(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+              </>
+            )}
 
-          {/* ===================================================================
-              CASE 5: HAJJ PACKAGES
-              =================================================================== */}
-          {activeTab === "hajj-packages" && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-stretch">
-              <SelectField
-                label="Package Tier"
-                value={selectedPackage}
-                isOpen={openDropdown === "hajj-tier"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "hajj-tier" ? null : "hajj-tier",
-                  )
-                }
-                options={HAJJ_TIERS}
-                onSelect={(val) => {
-                  setSelectedPackage(val);
-                  setOpenDropdown(null);
-                }}
-                dropdownWidth="w-full sm:w-[340px]"
-              />
-              <SelectField
-                label="Season"
-                value={packageDate}
-                isOpen={openDropdown === "hajj-season"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "hajj-season" ? null : "hajj-season",
-                  )
-                }
-                options={HAJJ_SEASONS}
-                onSelect={(val) => {
-                  setPackageDate(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Pilgrims / Party"
-                value={packageGuests}
-                isOpen={openDropdown === "hajj-guests"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "hajj-guests" ? null : "hajj-guests",
-                  )
-                }
-                options={HAJJ_PILGRIMS}
-                onSelect={(val) => {
-                  setPackageGuests(val);
-                  setOpenDropdown(null);
-                }}
-              />
-            </div>
-          )}
+            {/* CASE 5: TRAIN BOOKING */}
+            {activeTab === "train-booking" && (
+              <>
+                <ConciergePillField
+                  icon={Train}
+                  label="Train Route"
+                  value={trainRoute}
+                  isOpen={openDropdown === "train-route"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "train-route" ? null : "train-route",
+                    )
+                  }
+                  options={POPULAR_TRAIN_ROUTES}
+                  onSelect={(val) => {
+                    setTrainRoute(val);
+                    setOpenDropdown(null);
+                  }}
+                  dropdownWidth="w-72 sm:w-88"
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Travel Date"
+                  value={routeDate}
+                  isOpen={openDropdown === "train-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "train-date" ? null : "train-date",
+                    )
+                  }
+                  options={TRAIN_DATES}
+                  onSelect={(val) => {
+                    setRouteDate(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={Users}
+                  label="Travel Class"
+                  value={routeClassOrSeats}
+                  isOpen={openDropdown === "train-class"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "train-class" ? null : "train-class",
+                    )
+                  }
+                  options={TRAIN_CLASSES}
+                  onSelect={(val) => {
+                    setRouteClassOrSeats(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+              </>
+            )}
 
-          {/* ===================================================================
-              CASE 6: CUSTOM HOLIDAYS
-              =================================================================== */}
-          {activeTab === "custom-holidays" && (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 items-stretch">
-              <SelectField
-                label="Destination"
-                value={selectedPackage}
-                isOpen={openDropdown === "holiday-dest"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "holiday-dest" ? null : "holiday-dest",
-                  )
-                }
-                options={HOLIDAY_DESTINATIONS}
-                onSelect={(val) => {
-                  setSelectedPackage(val);
-                  setOpenDropdown(null);
-                }}
-                dropdownWidth="w-full sm:w-[340px]"
-              />
-              <SelectField
-                label="Travel Month"
-                value={packageDate}
-                isOpen={openDropdown === "holiday-month"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "holiday-month" ? null : "holiday-month",
-                  )
-                }
-                options={HOLIDAY_MONTHS}
-                onSelect={(val) => {
-                  setPackageDate(val);
-                  setOpenDropdown(null);
-                }}
-              />
-              <SelectField
-                label="Travelers"
-                value={packageGuests}
-                isOpen={openDropdown === "holiday-guests"}
-                onToggle={() =>
-                  setOpenDropdown(
-                    openDropdown === "holiday-guests" ? null : "holiday-guests",
-                  )
-                }
-                options={HOLIDAY_TRAVELERS}
-                onSelect={(val) => {
-                  setPackageGuests(val);
-                  setOpenDropdown(null);
-                }}
-              />
-            </div>
-          )}
-
-          {/* ===================================================================
-              UNIFIED CONTACT & ENQUIRY ACTION ROW
-              =================================================================== */}
-          <div className="border-t border-neutral-100 mt-3.5 pt-3.5 flex flex-col md:flex-row items-center gap-2.5 sm:gap-3">
-            {/* Lead Booker Name */}
-            <div className="w-full md:w-1/3">
-              <input
-                type="text"
-                placeholder="Lead Booker Name"
-                value={customerName}
-                onChange={(e) => setCustomerName(e.target.value)}
-                className="w-full h-[44px] sm:h-[46px] px-3.5 sm:px-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 focus:bg-white focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 text-sm font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none transition-all"
-              />
-            </div>
-
-            {/* WhatsApp Phone Number */}
-            <div className="w-full md:flex-1">
-              <input
-                type="tel"
-                placeholder={getPhonePlaceholder(activeTab)}
-                value={customerPhone}
-                onChange={(e) => setCustomerPhone(e.target.value)}
-                className="w-full h-[44px] sm:h-[46px] px-3.5 sm:px-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 focus:bg-white focus:border-neutral-900 focus:ring-1 focus:ring-neutral-900/10 text-sm font-medium text-neutral-900 placeholder:text-neutral-400 focus:outline-none transition-all"
-              />
-            </div>
-
-            {/* Primary Action Button */}
-            <button
-              type="submit"
-              className="w-full md:w-auto h-[44px] sm:h-[46px] px-7 sm:px-8 rounded-xl bg-neutral-900 hover:bg-black active:bg-neutral-950 text-white font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow cursor-pointer whitespace-nowrap"
-            >
-              {isSubmitted ? (
-                <>
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-                  <span className="text-emerald-200">Enquiry Received</span>
-                </>
-              ) : (
-                <>
-                  <span>{getCtaText(activeTab)}</span>
-                  <ArrowRight className="w-4 h-4 text-white/70" />
-                </>
-              )}
-            </button>
+            {/* CASE 6: BUS BOOKING */}
+            {activeTab === "bus-booking" && (
+              <>
+                <ConciergePillField
+                  icon={Bus}
+                  label="Bus Route"
+                  value={busRoute}
+                  isOpen={openDropdown === "bus-route"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "bus-route" ? null : "bus-route",
+                    )
+                  }
+                  options={POPULAR_BUS_ROUTES}
+                  onSelect={(val) => {
+                    setBusRoute(val);
+                    setOpenDropdown(null);
+                  }}
+                  dropdownWidth="w-72 sm:w-88"
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Travel Date"
+                  value={routeDate}
+                  isOpen={openDropdown === "bus-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "bus-date" ? null : "bus-date",
+                    )
+                  }
+                  options={BUS_DATES}
+                  onSelect={(val) => {
+                    setRouteDate(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={Users}
+                  label="Seat Preference"
+                  value={routeClassOrSeats}
+                  isOpen={openDropdown === "bus-seats"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "bus-seats" ? null : "bus-seats",
+                    )
+                  }
+                  options={BUS_SEATS}
+                  onSelect={(val) => {
+                    setRouteClassOrSeats(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+              </>
+            )}
           </div>
-        </form>
+
+          {/* Luxury Rounded-Full Action Button ("Request a Quote ->") */}
+          <button
+            type="button"
+            onClick={handleRequestQuote}
+            className="w-full sm:w-auto h-[48px] sm:h-[52px] px-7 sm:px-8 rounded-full bg-[#6e4f23] hover:bg-[#5b401c] active:bg-[#4d3617] text-white font-medium text-[14.5px] sm:text-[15px] flex items-center justify-center gap-2 transition-all shadow-[0_4px_16px_rgba(110,79,35,0.28)] hover:shadow-[0_6px_22px_rgba(110,79,35,0.4)] cursor-pointer whitespace-nowrap shrink-0 sm:ml-auto select-none"
+          >
+            {isSubmitted ? (
+              <>
+                <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                <span>Quote Requested</span>
+              </>
+            ) : (
+              <>
+                <span>Request a Quote</span>
+                <ArrowRight className="w-4 h-4 text-white shrink-0" />
+              </>
+            )}
+          </button>
+        </div>
       </div>
     </div>
   );
