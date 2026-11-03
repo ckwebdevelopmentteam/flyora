@@ -143,8 +143,13 @@ export function DestinationsShowcase({
           className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out ${
             activeCategory === "International" ? "opacity-100" : "opacity-0"
           }`}
-          style={{ backgroundImage: `url('/showcase/international-bg.jpg')` }}
-        />
+          style={{ backgroundImage: `url('/home/heifiltower.png')` }}
+        >
+          {/* Darkening shade so it matches the domestic image contrast */}
+          <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+          {/* Subtle left-side contrast gradient for white text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/25 via-black/10 to-transparent pointer-events-none" />
+        </div>
 
         {/* Domestic Background (with subtle additional darkening) */}
         <div
@@ -165,11 +170,11 @@ export function DestinationsShowcase({
       <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start pt-10 lg:pt-8 pb-[10px]">
         {/* Top-Right Category Switcher: 4 lines total (each button has 2 vertical lines: border-l & border-r) */}
         <div className="w-full flex justify-end items-center mb-5 lg:mb-4 shrink-0">
-          <div className="inline-flex items-center gap-3 sm:gap-4 text-xs sm:text-sm tracking-wide">
+          <div className="inline-flex items-center gap-3 sm:gap-4 text-sm sm:text-base tracking-wide">
             <button
               type="button"
               onClick={() => handleCategoryChange("International")}
-              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-5 sm:px-6 py-2 sm:py-2.5 border-l border-r ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
                 activeCategory === "International"
                   ? "bg-white text-black font-semibold shadow-sm border-white"
                   : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
@@ -178,7 +183,7 @@ export function DestinationsShowcase({
               {activeCategory !== "International" && (
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 bg-[#463D34] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
               )}
               <span className="relative z-10 tracking-wide">
@@ -188,7 +193,7 @@ export function DestinationsShowcase({
             <button
               type="button"
               onClick={() => handleCategoryChange("Domestic")}
-              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-5 sm:px-6 py-2 sm:py-2.5 border-l border-r ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
                 activeCategory === "Domestic"
                   ? "bg-white text-black font-semibold shadow-sm border-white"
                   : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
@@ -197,7 +202,7 @@ export function DestinationsShowcase({
               {activeCategory !== "Domestic" && (
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 bg-[#463D34] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
               )}
               <span className="relative z-10 tracking-wide">
@@ -240,7 +245,7 @@ export function DestinationsShowcase({
               {current.description}
             </p>
 
-            {/* Editorial Button with sliding brown background fill hover effect (100% Tailwind) */}
+            {/* Editorial Button with sliding blue background fill hover effect (100% Tailwind) */}
             <div>
               <button
                 type="button"
@@ -253,7 +258,7 @@ export function DestinationsShowcase({
               >
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 bg-[#463D34] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
                 <span className="relative z-10 tracking-wide group-hover:tracking-wider transition-all duration-200">
                   Explore the destination
@@ -290,7 +295,7 @@ export function DestinationsShowcase({
                 >
                   <span
                     aria-hidden="true"
-                    className="absolute inset-0 bg-[#463D34] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                   />
                   <span className="relative z-10 tracking-wide group-hover:tracking-wider transition-all duration-200">
                     View all destinations

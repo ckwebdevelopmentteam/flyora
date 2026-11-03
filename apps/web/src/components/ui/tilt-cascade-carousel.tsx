@@ -739,7 +739,7 @@ export default function TiltCascadeCarousel({
 
       {controls && n > 1 ? (
         <div
-          className="absolute bottom-3.5 left-4 lg:left-5 xl:left-6 inline-flex items-center gap-[15px] z-[150] pointer-events-auto"
+          className="absolute bottom-3.5 left-[83px] lg:left-[89px] xl:left-[93px] inline-flex items-center gap-[15px] z-[150] pointer-events-auto"
           data-tcc-controls=""
         >
           <button
@@ -754,7 +754,7 @@ export default function TiltCascadeCarousel({
           >
             <span
               aria-hidden="true"
-              className="absolute inset-0 bg-[#463D34] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+              className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
             />
             <span className="relative z-10 flex items-center justify-center">
               <Chevron dir={-1} />
@@ -772,7 +772,7 @@ export default function TiltCascadeCarousel({
           >
             <span
               aria-hidden="true"
-              className="absolute inset-0 bg-[#463D34] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+              className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
             />
             <span className="relative z-10 flex items-center justify-center">
               <Chevron dir={1} />
