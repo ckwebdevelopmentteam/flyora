@@ -9,7 +9,16 @@ import {
   MessageCircle,
   Users,
   AlertCircle,
-  Compass,
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  Plane,
+  Bus,
+  Train,
+  Luggage,
+  Package,
+  PenLine,
 } from "lucide-react";
 import type { PublicEnquiryInput } from "@flyora/validators";
 import type { ServiceSummary } from "@flyora/types";
@@ -22,6 +31,66 @@ interface EnquiryModalProps {
   defaultPackageId?: string;
   packageTitle?: string;
 }
+
+// Custom Passport Icon matching the reference design in media_1793685416686_e324fab2.jpg
+const PassportIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <rect x="5" y="3" width="14" height="18" rx="2" />
+    <circle cx="12" cy="11" r="3.2" />
+    <path d="M8.5 11h7" />
+    <path d="M12 7.8v6.4" />
+    <line x1="9" y1="17.5" x2="15" y2="17.5" />
+  </svg>
+);
+
+// 6 Target travel services from reference design
+const SERVICE_DEFINITIONS = [
+  {
+    key: "flight",
+    label: "Flight Booking",
+    icon: Plane,
+    matchKeywords: ["flight", "corporate-flight", "flights"],
+  },
+  {
+    key: "bus",
+    label: "Bus Booking",
+    icon: Bus,
+    matchKeywords: ["bus", "buses"],
+  },
+  {
+    key: "train",
+    label: "Train Booking",
+    icon: Train,
+    matchKeywords: ["train", "trains"],
+  },
+  {
+    key: "visa",
+    label: "Visa Assistance",
+    icon: PassportIcon,
+    matchKeywords: ["visa", "visas"],
+  },
+  {
+    key: "holiday",
+    label: "Holiday Package",
+    icon: Luggage,
+    matchKeywords: ["holiday", "holidays", "custom", "tour"],
+  },
+  {
+    key: "hajj",
+    label: "Hajj Package",
+    icon: Package,
+    matchKeywords: ["hajj", "umrah", "pilgrimage"],
+  },
+];
 
 export const EnquiryModal: React.FC<EnquiryModalProps> = (props) =>
   props.isOpen ? (
@@ -45,9 +114,11 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
   const submitting = useRef(false);
   const dialog = useRef<HTMLDialogElement>(null);
   const submission = useRef<AbortController | null>(null);
+
   const close = () => {
     if (!submitting.current) onClose();
   };
+
   useEffect(() => {
     const element = dialog.current;
     const previousFocus = document.activeElement as HTMLElement | null;
@@ -68,7 +139,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     travelDate: "",
     numberOfAdults: 1,
     numberOfKids: 0,
-    notes: "",
+    notes: packageTitle && packageTitle.includes("|") ? packageTitle : "",
   });
 
   const [validationErrors, setValidationErrors] = useState<
@@ -112,18 +183,63 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
           )
         )
           throw new Error("Services are unavailable. Please try again.");
+
         if (!controller.signal.aborted) {
           setServices(data.data);
+
+          // Find initial service matching defaultServiceId, packageTitle, or fallback
+          let initialId = defaultServiceId || "";
+          if (!initialId && packageTitle && typeof packageTitle === "string") {
+            const titleLower = packageTitle.toLowerCase();
+            // Match keywords intelligently
+            const found = data.data.find((s: ServiceSummary) => {
+              const nameLower = s.name.toLowerCase();
+              const slugLower = (s.slug || "").toLowerCase();
+              if (titleLower.includes("hajj") || titleLower.includes("umrah")) {
+                return (
+                  nameLower.includes("hajj") ||
+                  nameLower.includes("umrah") ||
+                  slugLower.includes("hajj")
+                );
+              }
+              if (titleLower.includes("holiday")) {
+                return (
+                  nameLower.includes("holiday") || slugLower.includes("holiday")
+                );
+              }
+              if (titleLower.includes("flight")) {
+                return (
+                  nameLower.includes("flight") || slugLower.includes("flight")
+                );
+              }
+              if (titleLower.includes("visa")) {
+                return nameLower.includes("visa") || slugLower.includes("visa");
+              }
+              if (titleLower.includes("bus")) {
+                return nameLower.includes("bus") || slugLower.includes("bus");
+              }
+              if (titleLower.includes("train")) {
+                return (
+                  nameLower.includes("train") || slugLower.includes("train")
+                );
+              }
+              return (
+                titleLower.includes(nameLower) || titleLower.includes(slugLower)
+              );
+            });
+            if (found) initialId = found.id;
+          }
+
+          if (
+            !initialId ||
+            !data.data.some((s: ServiceSummary) => s.id === initialId)
+          ) {
+            initialId = defaultPackageId ? "" : data.data[0].id;
+          }
+
           setFormData((prev) => ({
             ...prev,
-            serviceId: data.data.some(
-              (s: ServiceSummary) =>
-                s.id === (prev.serviceId || defaultServiceId),
-            )
-              ? prev.serviceId || defaultServiceId
-              : defaultPackageId
-                ? ""
-                : data.data[0].id,
+            serviceId: prev.serviceId || initialId,
           }));
         }
       } catch {
@@ -137,7 +253,14 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     }
     void loadServices();
     return () => controller.abort();
-  }, [isOpen, apiUrl, defaultServiceId, defaultPackageId, serviceAttempt]);
+  }, [
+    isOpen,
+    apiUrl,
+    defaultServiceId,
+    defaultPackageId,
+    serviceAttempt,
+    packageTitle,
+  ]);
 
   if (!isOpen) return null;
 
@@ -152,7 +275,9 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
       ...formData,
       fullName: formData.fullName?.trim(),
       email: formData.email?.trim(),
+      phone: formData.phone?.trim(),
     });
+
     if (!result.success) {
       const fieldErrors: Record<string, string> = {};
       result.error.errors.forEach((err) => {
@@ -167,6 +292,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
       setValidationErrors({ serviceId: "Please select an available service" });
       return;
     }
+
     submitting.current = true;
     setIsSubmitting(true);
     submission.current = new AbortController();
@@ -202,12 +328,13 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
         throw new Error(
           "We could not confirm your enquiry. Please contact us before submitting again.",
         );
+
       setSubmissionSuccess({
         leadId: responseData.data.leadId,
         message:
           typeof responseData.data.message === "string"
             ? responseData.data.message
-            : "Your enquiry has been received. Our specialist will contact you shortly.",
+            : "Your enquiry has been received. Our team will get in touch with the best options for you shortly.",
       });
     } catch (err: unknown) {
       if (submission.current?.signal.aborted) return;
@@ -240,6 +367,20 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
       : "Hi Flyora Travels, I need help with a travel enquiry.",
   );
 
+  // Helper to map card definition to backend service ID
+  const getServiceForCard = (def: (typeof SERVICE_DEFINITIONS)[0]) => {
+    if (!services.length) return null;
+    return (
+      services.find((s) =>
+        def.matchKeywords.some(
+          (kw) =>
+            s.name.toLowerCase().includes(kw) ||
+            (s.slug || "").toLowerCase().includes(kw),
+        ),
+      ) || null
+    );
+  };
+
   return (
     <dialog
       ref={dialog}
@@ -248,100 +389,125 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
         event.preventDefault();
         close();
       }}
-      className="fixed inset-0 m-auto w-full max-w-lg max-h-[92vh] p-0 rounded-2xl bg-transparent backdrop:bg-black/60"
+      className="fixed inset-0 m-auto w-[92vw] max-w-2xl max-h-[92vh] p-0 rounded-[28px] sm:rounded-[34px] bg-transparent backdrop:bg-black/60 backdrop:backdrop-blur-sm shadow-[0_25px_70px_rgba(0,0,0,0.35)] border-0"
     >
-      <div className="bg-white rounded-2xl shadow-2xl border border-zinc-200 max-w-lg w-full overflow-hidden flex flex-col max-h-[92vh]">
-        {/* Header */}
-        <div className="px-6 py-4 border-b border-zinc-100 flex items-center justify-between bg-[#FAFAF9]">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center">
-              <Compass className="w-4 h-4" />
-            </div>
-            <div>
-              <h3
-                id="enquiry-title"
-                className="text-sm font-semibold text-zinc-900 tracking-tight"
-              >
-                {packageTitle
-                  ? `Enquire: ${packageTitle}`
-                  : "Plan Your Journey with Flyora"}
-              </h3>
-              <p className="text-[11px] text-zinc-500 font-mono">
-                Tell us about your travel plans
-              </p>
-            </div>
+      <div className="bg-white rounded-[28px] sm:rounded-[34px] shadow-2xl border border-neutral-100 w-full overflow-hidden flex flex-col max-h-[92vh]">
+        {/* Header matching exact user uploaded mockup in media_1793685416686_e324fab2.jpg */}
+        <div className="relative pt-7 px-6 sm:px-8 pb-4 bg-white flex items-start justify-between gap-4">
+          <div className="max-w-md">
+            <h3
+              id="enquiry-title"
+              className="text-[22px] sm:text-[26px] font-bold text-neutral-900 tracking-tight leading-tight font-sans"
+            >
+              Plan Your Trip with Us
+            </h3>
+            <p className="text-xs sm:text-[13.5px] text-neutral-500 font-normal leading-relaxed mt-1.5">
+              Tell us your travel plans and our team will get in touch with the
+              best options for you.
+            </p>
           </div>
-          <button
-            aria-label="Close enquiry"
-            disabled={isSubmitting}
-            onClick={handleReset}
-            className="p-1.5 rounded-full text-zinc-400 hover:text-zinc-700 hover:bg-zinc-200/50 transition"
-          >
-            <X className="w-4 h-4" />
-          </button>
+
+          <div className="flex items-center gap-3 shrink-0">
+            {/* Triple Overlapping Destination Circular Avatars */}
+            <div
+              className="flex items-center -space-x-3.5 select-none"
+              aria-hidden="true"
+            >
+              <img
+                src="/services/hajj-packages.jpg"
+                alt=""
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
+              />
+              <img
+                src="/destinations/maldives_hd.jpg"
+                alt=""
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
+              />
+              <img
+                src="/destinations/dubai_hd.jpg"
+                alt=""
+                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
+              />
+            </div>
+
+            {/* Close Button */}
+            <button
+              type="button"
+              aria-label="Close enquiry"
+              disabled={isSubmitting}
+              onClick={handleReset}
+              className="p-1.5 sm:p-2 rounded-full text-neutral-400 hover:text-neutral-800 hover:bg-neutral-100 transition-colors cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto flex-1">
+        {/* Content Body */}
+        <div className="px-6 sm:px-8 pb-7 overflow-y-auto flex-1 no-scrollbar">
           {submissionSuccess ? (
             /* Success State */
-            <div className="text-center py-6 animate-in zoom-in-95 duration-200">
-              <div className="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="text-center py-8 animate-in zoom-in-95 duration-200">
+              <div className="w-14 h-14 bg-[#F0F7F4] text-[#1E4D3A] rounded-full flex items-center justify-center mx-auto mb-4 border border-[#1E4D3A]/20">
                 <CheckCircle2 className="w-8 h-8" />
               </div>
-              <h4 className="text-2xl font-sans font-bold text-zinc-900 mb-1">
+              <h4 className="text-2xl font-bold text-neutral-900 mb-1.5 font-sans">
                 Enquiry Done!
               </h4>
-              <p className="text-sm font-sans text-zinc-700 mb-4 max-w-sm mx-auto leading-relaxed">
+              <p className="text-sm text-neutral-600 mb-5 max-w-sm mx-auto leading-relaxed">
                 {submissionSuccess.message}
               </p>
 
-              <div className="p-3 bg-zinc-50 rounded-none border border-zinc-200 mb-6 inline-block">
-                <span className="text-[11px] font-mono text-zinc-500 uppercase tracking-wider block mb-1">
+              <div className="p-3 bg-neutral-50 rounded-2xl border border-neutral-200 mb-6 inline-block">
+                <span className="text-[11px] font-mono text-neutral-500 uppercase tracking-wider block mb-1">
                   Enquiry Reference ID
                 </span>
-                <span className="text-sm font-mono font-bold text-zinc-900">
+                <span className="text-sm font-mono font-bold text-neutral-900">
                   {submissionSuccess.leadId}
                 </span>
               </div>
 
-              <div className="flex flex-col gap-2.5">
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 max-w-sm mx-auto">
                 {whatsappUrl && (
                   <a
                     href={whatsappUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full py-2.5 px-4 rounded-none bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition"
+                    className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-[#25D366] hover:bg-[#20ba59] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition"
                   >
                     <MessageCircle className="w-4 h-4 fill-current" />
-                    Chat Directly on WhatsApp
+                    Chat on WhatsApp
                   </a>
                 )}
                 <button
                   type="button"
                   onClick={handleReset}
-                  className="w-full py-2.5 px-4 rounded-none border border-zinc-800 bg-white text-zinc-800 hover:bg-zinc-900 hover:text-white text-xs font-semibold uppercase tracking-wider transition cursor-pointer"
+                  className="w-full sm:flex-1 py-3 px-4 rounded-xl border border-neutral-300 bg-white text-neutral-800 hover:bg-neutral-50 text-xs font-semibold transition cursor-pointer"
                 >
                   Close Window
                 </button>
               </div>
             </div>
           ) : (
-            /* Form State */
-            <form onSubmit={handleSubmit} className="space-y-4">
+            /* Form State matching reference design */
+            <form onSubmit={handleSubmit} className="space-y-4 pt-1">
               <fieldset disabled={isSubmitting} className="space-y-4 min-w-0">
                 {servicesError && (
-                  <div role="alert" className="text-sm text-rose-700">
+                  <div
+                    role="alert"
+                    className="text-xs text-rose-700 bg-rose-50 p-3 rounded-xl border border-rose-200"
+                  >
                     {servicesError}{" "}
                     <button
                       type="button"
                       onClick={() => setServiceAttempt((n) => n + 1)}
-                      className="underline"
+                      className="underline font-semibold cursor-pointer"
                     >
                       Retry loading services
                     </button>
                   </div>
                 )}
+
                 {serverError && (
                   <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 shrink-0" />
@@ -362,7 +528,10 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 )}
 
                 {Object.keys(validationErrors).length > 0 && (
-                  <div role="alert" className="text-xs text-rose-700">
+                  <div
+                    role="alert"
+                    className="text-xs text-rose-700 bg-rose-50/80 p-2.5 rounded-xl border border-rose-100"
+                  >
                     {Object.entries(validationErrors).map(
                       ([field, message]) => (
                         <p
@@ -384,78 +553,43 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                     )}
                   </div>
                 )}
-                {/* Service Selection */}
-                <div>
-                  <label
-                    htmlFor="enquiry-serviceId"
-                    className="block text-xs font-medium text-zinc-700 mb-1"
-                  >
-                    Travel Service Needed *
-                  </label>
-                  <select
-                    id="enquiry-serviceId"
-                    aria-describedby={
-                      validationErrors.serviceId
-                        ? "enquiry-serviceId-error"
-                        : undefined
-                    }
-                    aria-invalid={!!validationErrors.serviceId}
-                    value={formData.serviceId}
-                    onChange={(e) =>
-                      setFormData({ ...formData, serviceId: e.target.value })
-                    }
-                    disabled={
-                      isLoadingServices || !!defaultPackageId || !!servicesError
-                    }
-                    className="w-full px-3 py-2 rounded-xl border border-zinc-300 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition"
-                  >
-                    <option value="">Select a service</option>
-                    {isLoadingServices ? (
-                      <option>Loading available services...</option>
-                    ) : (
-                      services.map((srv) => (
-                        <option key={srv.id} value={srv.id}>
-                          {srv.name}
-                        </option>
-                      ))
-                    )}
-                  </select>
-                  {validationErrors.serviceId && (
-                    <p
-                      id="enquiry-serviceId-error"
-                      className="text-[11px] text-rose-600 mt-1"
-                    >
-                      {validationErrors.serviceId}
-                    </p>
-                  )}
-                </div>
 
-                {/* Full Name & Phone */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* 1. ROW 1: Full Name, Email Address, and Phone / WhatsApp */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  {/* Full Name */}
                   <div>
                     <label
                       htmlFor="enquiry-fullName"
-                      className="block text-xs font-medium text-zinc-700 mb-1"
+                      className="block text-xs font-semibold text-neutral-800 mb-1.5"
                     >
-                      Full Name *
+                      Full Name <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Rahul Sharma"
-                      autoComplete="name"
-                      id="enquiry-fullName"
-                      aria-describedby={
+                    <div
+                      className={`relative rounded-xl sm:rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3 py-2.5 sm:py-3 gap-2 ${
                         validationErrors.fullName
-                          ? "enquiry-fullName-error"
-                          : undefined
-                      }
-                      aria-invalid={!!validationErrors.fullName}
-                      value={formData.fullName}
-                      onChange={(e) =>
-                        setFormData({ ...formData, fullName: e.target.value })
-                      }
-                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition placeholder:text-zinc-400"
-                    />
+                          ? "border-rose-400 focus-within:border-rose-500"
+                          : "border-neutral-200 focus-within:border-[#1E4D3A]"
+                      }`}
+                    >
+                      <User className="w-4 h-4 text-neutral-400 shrink-0" />
+                      <input
+                        type="text"
+                        id="enquiry-fullName"
+                        autoComplete="name"
+                        placeholder="Enter full name"
+                        aria-describedby={
+                          validationErrors.fullName
+                            ? "enquiry-fullName-error"
+                            : undefined
+                        }
+                        aria-invalid={!!validationErrors.fullName}
+                        value={formData.fullName}
+                        onChange={(e) =>
+                          setFormData({ ...formData, fullName: e.target.value })
+                        }
+                        className="w-full text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal"
+                      />
+                    </div>
                     {validationErrors.fullName && (
                       <p
                         id="enquiry-fullName-error"
@@ -466,34 +600,86 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                     )}
                   </div>
 
+                  {/* Email Address */}
+                  <div>
+                    <label
+                      htmlFor="enquiry-email"
+                      className="block text-xs font-semibold text-neutral-800 mb-1.5"
+                    >
+                      Email Address
+                    </label>
+                    <div
+                      className={`relative rounded-xl sm:rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3 py-2.5 sm:py-3 gap-2 ${
+                        validationErrors.email
+                          ? "border-rose-400 focus-within:border-rose-500"
+                          : "border-neutral-200 focus-within:border-[#1E4D3A]"
+                      }`}
+                    >
+                      <Mail className="w-4 h-4 text-neutral-400 shrink-0" />
+                      <input
+                        type="email"
+                        id="enquiry-email"
+                        autoComplete="email"
+                        placeholder="Enter email address"
+                        aria-describedby={
+                          validationErrors.email
+                            ? "enquiry-email-error"
+                            : undefined
+                        }
+                        aria-invalid={!!validationErrors.email}
+                        value={formData.email || ""}
+                        onChange={(e) =>
+                          setFormData({ ...formData, email: e.target.value })
+                        }
+                        className="w-full text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal"
+                      />
+                    </div>
+                    {validationErrors.email && (
+                      <p
+                        id="enquiry-email-error"
+                        className="text-[11px] text-rose-600 mt-1"
+                      >
+                        {validationErrors.email}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Phone / WhatsApp Number */}
                   <div>
                     <label
                       htmlFor="enquiry-phone"
-                      className="block text-xs font-medium text-zinc-700 mb-1"
+                      className="block text-xs font-semibold text-neutral-800 mb-1.5"
                     >
-                      Phone / WhatsApp Number *
+                      Phone / WhatsApp Number{" "}
+                      <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="tel"
-                      inputMode="numeric"
-                      autoComplete="tel-national"
-                      placeholder="10-digit number"
-                      id="enquiry-phone"
-                      aria-describedby={
+                    <div
+                      className={`relative rounded-xl sm:rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3 py-2.5 sm:py-3 gap-2 ${
                         validationErrors.phone
-                          ? "enquiry-phone-error"
-                          : undefined
-                      }
-                      aria-invalid={!!validationErrors.phone}
-                      value={formData.phone}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          phone: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition placeholder:text-zinc-400 font-mono"
-                    />
+                          ? "border-rose-400 focus-within:border-rose-500"
+                          : "border-neutral-200 focus-within:border-[#1E4D3A]"
+                      }`}
+                    >
+                      <Phone className="w-4 h-4 text-neutral-400 shrink-0" />
+                      <input
+                        type="tel"
+                        id="enquiry-phone"
+                        inputMode="numeric"
+                        autoComplete="tel"
+                        placeholder="10-digit number"
+                        aria-describedby={
+                          validationErrors.phone
+                            ? "enquiry-phone-error"
+                            : undefined
+                        }
+                        aria-invalid={!!validationErrors.phone}
+                        value={formData.phone}
+                        onChange={(e) =>
+                          setFormData({ ...formData, phone: e.target.value })
+                        }
+                        className="w-full text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal"
+                      />
+                    </div>
                     {validationErrors.phone && (
                       <p
                         id="enquiry-phone-error"
@@ -505,59 +691,111 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                   </div>
                 </div>
 
-                {/* Email & Date */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label
-                      htmlFor="enquiry-email"
-                      className="block text-xs font-medium text-zinc-700 mb-1"
-                    >
-                      Email Address (Optional)
-                    </label>
-                    <input
-                      type="email"
-                      autoComplete="email"
-                      placeholder="name@example.com"
-                      id="enquiry-email"
-                      aria-describedby={
-                        validationErrors.email
-                          ? "enquiry-email-error"
-                          : undefined
-                      }
-                      aria-invalid={!!validationErrors.email}
-                      value={formData.email || ""}
-                      onChange={(e) =>
-                        setFormData({ ...formData, email: e.target.value })
-                      }
-                      className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition placeholder:text-zinc-400"
-                    />
-                    {validationErrors.email && (
-                      <p
-                        id="enquiry-email-error"
-                        className="text-[11px] text-rose-600 mt-1"
-                      >
-                        {validationErrors.email}
-                      </p>
-                    )}
-                  </div>
+                {/* 2. ROW 2: Travel Service * (Exact 6-service grid matching reference) */}
+                <div>
+                  <label className="block text-xs font-semibold text-neutral-800 mb-1.5">
+                    Travel Service <span className="text-red-500">*</span>
+                  </label>
 
+                  {/* Hidden accessible select for screen-readers & test verification */}
+                  <select
+                    id="enquiry-serviceId"
+                    value={formData.serviceId}
+                    onChange={(e) =>
+                      setFormData({ ...formData, serviceId: e.target.value })
+                    }
+                    className="sr-only"
+                    aria-label="Travel Service Needed"
+                  >
+                    <option value="">Select a service</option>
+                    {services.map((srv) => (
+                      <option key={srv.id} value={srv.id}>
+                        {srv.name}
+                      </option>
+                    ))}
+                  </select>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                    {SERVICE_DEFINITIONS.map((def) => {
+                      const IconComponent = def.icon;
+                      const matchedService = getServiceForCard(def);
+                      const isSelected =
+                        matchedService &&
+                        formData.serviceId === matchedService.id;
+
+                      return (
+                        <button
+                          key={def.key}
+                          type="button"
+                          onClick={() => {
+                            if (matchedService) {
+                              setFormData({
+                                ...formData,
+                                serviceId: matchedService.id,
+                              });
+                            }
+                          }}
+                          className={`flex items-center justify-between px-3 sm:px-3.5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl transition-all duration-200 cursor-pointer select-none text-left border ${
+                            isSelected
+                              ? "border-[#1E4D3A] bg-[#F0F7F4]/50 shadow-xs"
+                              : "border-neutral-200 bg-white hover:bg-neutral-50 hover:border-neutral-300"
+                          }`}
+                        >
+                          <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                            <IconComponent
+                              className={`w-[18px] h-[18px] shrink-0 transition-colors ${
+                                isSelected
+                                  ? "text-[#1E4D3A]"
+                                  : "text-neutral-700"
+                              }`}
+                            />
+                            <span
+                              className={`text-xs sm:text-[13px] font-medium truncate ${
+                                isSelected
+                                  ? "text-[#1E4D3A] font-semibold"
+                                  : "text-neutral-800"
+                              }`}
+                            >
+                              {def.label}
+                            </span>
+                          </div>
+
+                          {isSelected && (
+                            <div className="w-4 h-4 rounded-full bg-[#1E4D3A] text-white flex items-center justify-center shrink-0 ml-1">
+                              <CheckCircle2 className="w-3.5 h-3.5 fill-current text-white stroke-[#1E4D3A]" />
+                            </div>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* 3. ROW 3: Preferred Travel Date & Number of Travellers */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {/* Preferred Travel Date */}
                   <div>
                     <label
                       htmlFor="enquiry-travelDate"
-                      className="block text-xs font-medium text-zinc-700 mb-1"
+                      className="block text-xs font-semibold text-neutral-800 mb-1.5"
                     >
-                      Expected Travel Date
+                      Preferred Travel Date
                     </label>
-                    <div className="relative">
+                    <div className="relative rounded-xl sm:rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3.5 py-2.5 sm:py-3 gap-2.5 cursor-pointer">
+                      <Calendar className="w-4 h-4 text-neutral-400 shrink-0 pointer-events-none" />
                       <input
-                        type="date"
+                        type={formData.travelDate ? "date" : "text"}
+                        onFocus={(e) => {
+                          e.target.type = "date";
+                          try {
+                            e.target.showPicker?.();
+                          } catch {}
+                        }}
+                        onBlur={(e) => {
+                          if (!e.target.value) e.target.type = "text";
+                        }}
                         id="enquiry-travelDate"
-                        aria-describedby={
-                          validationErrors.travelDate
-                            ? "enquiry-travelDate-error"
-                            : undefined
-                        }
-                        aria-invalid={!!validationErrors.travelDate}
+                        placeholder="Select travel date"
                         value={formData.travelDate || ""}
                         onChange={(e) =>
                           setFormData({
@@ -565,121 +803,129 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                             travelDate: e.target.value,
                           })
                         }
-                        className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition"
+                        className="w-full text-xs sm:text-[13.5px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal cursor-pointer"
                       />
+                    </div>
+                  </div>
+
+                  {/* Number of Travellers Split Component */}
+                  <div>
+                    <label className="block text-xs font-semibold text-neutral-800 mb-1.5">
+                      Number of Travellers
+                    </label>
+                    <div className="rounded-xl sm:rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 transition-all flex items-center divide-x divide-neutral-200 py-1">
+                      {/* Adults (12+) */}
+                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 gap-1.5">
+                        <div className="flex items-center gap-1.5 min-w-0">
+                          <Users className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
+                          <span className="text-[11.5px] sm:text-xs font-medium text-neutral-700 truncate">
+                            Adults (12+)
+                          </span>
+                        </div>
+                        <select
+                          aria-label="Adults (12+ yrs)"
+                          id="enquiry-numberOfAdults"
+                          value={formData.numberOfAdults ?? 1}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              numberOfAdults: Number(e.target.value),
+                            })
+                          }
+                          className="bg-transparent text-xs sm:text-[13px] font-semibold text-neutral-900 outline-none cursor-pointer pr-1"
+                        >
+                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map((n) => (
+                            <option key={n} value={n}>
+                              {n}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+
+                      {/* Children (0–11) */}
+                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 gap-1.5">
+                        <span className="text-[11.5px] sm:text-xs font-medium text-neutral-700 truncate pl-1">
+                          Children (0–11)
+                        </span>
+                        <select
+                          aria-label="Children (0-11 yrs)"
+                          id="enquiry-numberOfKids"
+                          value={formData.numberOfKids ?? 0}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              numberOfKids: Number(e.target.value),
+                            })
+                          }
+                          className="bg-transparent text-xs sm:text-[13px] font-semibold text-neutral-900 outline-none cursor-pointer pr-1"
+                        >
+                          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
+                            <option key={n} value={n}>
+                              {n}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   </div>
                 </div>
 
-                {/* Passengers (Adults & Kids) */}
-                <div className="grid grid-cols-2 gap-3 p-3 bg-zinc-50 rounded-xl border border-zinc-200">
-                  <div>
-                    <label
-                      htmlFor="enquiry-numberOfAdults"
-                      className="block text-[11px] font-medium text-zinc-600 mb-1 flex items-center gap-1"
-                    >
-                      <Users className="w-3 h-3" /> Adults (12+ yrs)
-                    </label>
-                    <input
-                      type="number"
-                      min={1}
-                      max={50}
-                      step={1}
-                      id="enquiry-numberOfAdults"
-                      aria-describedby={
-                        validationErrors.numberOfAdults
-                          ? "enquiry-numberOfAdults-error"
-                          : undefined
-                      }
-                      aria-invalid={!!validationErrors.numberOfAdults}
-                      value={formData.numberOfAdults ?? 1}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          numberOfAdults: Number(e.target.value),
-                        })
-                      }
-                      className="w-full px-3 py-1.5 rounded-lg border border-zinc-300 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900"
-                    />
-                  </div>
-
-                  <div>
-                    <label
-                      htmlFor="enquiry-numberOfKids"
-                      className="block text-[11px] font-medium text-zinc-600 mb-1 flex items-center gap-1"
-                    >
-                      <Users className="w-3 h-3" /> Children (0-11 yrs)
-                    </label>
-                    <input
-                      type="number"
-                      min={0}
-                      max={20}
-                      step={1}
-                      id="enquiry-numberOfKids"
-                      aria-describedby={
-                        validationErrors.numberOfKids
-                          ? "enquiry-numberOfKids-error"
-                          : undefined
-                      }
-                      aria-invalid={!!validationErrors.numberOfKids}
-                      value={formData.numberOfKids || 0}
-                      onChange={(e) =>
-                        setFormData({
-                          ...formData,
-                          numberOfKids: Number(e.target.value),
-                        })
-                      }
-                      className="w-full px-3 py-1.5 rounded-lg border border-zinc-300 bg-white text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900"
-                    />
-                  </div>
-                </div>
-
-                {/* Special Requests / Notes */}
+                {/* 4. ROW 4: Special Requests (Optional) */}
                 <div>
                   <label
                     htmlFor="enquiry-notes"
-                    className="block text-xs font-medium text-zinc-700 mb-1"
+                    className="block text-xs font-semibold text-neutral-800 mb-1.5"
                   >
-                    Special Preferences or Itinerary Requests
+                    Special Requests (Optional)
                   </label>
-                  <textarea
-                    rows={3}
-                    maxLength={1000}
-                    placeholder="e.g. Need 4-star hotel in Bur Dubai, Burj Khalifa top floor tickets, vegetarian meal preferences..."
-                    id="enquiry-notes"
-                    aria-describedby={
-                      validationErrors.notes ? "enquiry-notes-error" : undefined
-                    }
-                    aria-invalid={!!validationErrors.notes}
-                    value={formData.notes || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, notes: e.target.value })
-                    }
-                    className="w-full px-3 py-2 rounded-xl border border-zinc-300 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900 transition placeholder:text-zinc-400"
-                  ></textarea>
+                  <div className="rounded-xl sm:rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all p-3 flex items-start gap-2.5">
+                    <PenLine className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
+                    <textarea
+                      rows={3}
+                      id="enquiry-notes"
+                      maxLength={1000}
+                      aria-label="Special Preferences or Itinerary Requests"
+                      placeholder="Tell us about your destination, preferences or any specific requirements..."
+                      value={formData.notes || ""}
+                      onChange={(e) =>
+                        setFormData({ ...formData, notes: e.target.value })
+                      }
+                      className="w-full text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none resize-none font-normal leading-relaxed"
+                    />
+                  </div>
                 </div>
 
-                {/* Submit Button */}
-                <div className="pt-2">
+                {/* 5. FOOTER: Cancel and Send Enquiry Buttons */}
+                <div className="pt-3 border-t border-neutral-100 flex items-center justify-end gap-3 mt-5">
+                  <button
+                    type="button"
+                    disabled={isSubmitting}
+                    onClick={handleReset}
+                    className="px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+
                   <button
                     type="submit"
+                    aria-label="Submit Travel Enquiry"
                     disabled={
                       isSubmitting ||
                       isLoadingServices ||
                       !!servicesError ||
                       services.length === 0
                     }
-                    className="w-full py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition disabled:opacity-60 cursor-pointer"
+                    className="px-6 sm:px-7 py-2.5 sm:py-3 rounded-full bg-[#13382C] hover:bg-[#0E2920] text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-60 active:scale-95"
                   >
                     {isSubmitting ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" />
-                        Connecting with Travel Coordinator...
+                        <span>Connecting...</span>
                       </>
                     ) : (
                       <>
-                        <Send className="w-3.5 h-3.5" />
-                        Submit Travel Enquiry
+                        <Send className="w-4 h-4" />
+                        <span>Send Enquiry</span>
                       </>
                     )}
                   </button>
