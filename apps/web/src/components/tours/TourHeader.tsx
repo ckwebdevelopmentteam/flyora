@@ -28,14 +28,14 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
           Home
         </Link>
         <ChevronRight className="w-3 h-3 text-stone-300" />
-        <span className="text-[#4A2E18] font-medium">Tour Packages</span>
+        <span className="text-[#002f89] font-medium">Tour Packages</span>
       </nav>
 
       {/* Main Title & Subtitle */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-1.5 max-w-3xl">
-          {/* <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5EBE6] text-[#4A2E18] text-[11px] font-semibold tracking-wider uppercase font-mono">
-            <Sparkles className="w-3 h-3 text-[#4A2E18]" />
+          {/* <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-[#002f89] text-[11px] font-semibold tracking-wider uppercase font-mono">
+            <Sparkles className="w-3 h-3 text-[#002f89]" />
             <span>Curated Luxury Catalog</span>
           </div> */}
           <h1 className="text-2xl sm:text-3xl md:text-5xl font-semibold text-stone-900 tracking-tight">
@@ -71,7 +71,7 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
                 onChange={(e) =>
                   onSortChange(e.target.value as TourFilterState["sortBy"])
                 }
-                className="appearance-none pl-3 pr-8 py-2 text-xs font-medium rounded-xl border border-stone-200 bg-white text-stone-800 focus:outline-hidden focus:border-[#4A2E18] cursor-pointer shadow-xs"
+                className="appearance-none pl-3 pr-8 py-2 text-xs font-medium rounded-xl border border-stone-200 bg-white text-stone-800 focus:outline-hidden focus:border-[#002f89] cursor-pointer shadow-xs"
               >
                 <option value="recommended">Recommended</option>
                 <option value="price-asc">Price: Low to High</option>

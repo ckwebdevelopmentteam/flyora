@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
-import TiltCascadeCarousel, {
-  type TiltCascadeItem,
-} from "@/components/ui/tilt-cascade-carousel";
+import { motion, AnimatePresence } from "motion/react";
+import { StraightCardsCarousel } from "@/components/ui/straight-cards-carousel";
 
 export interface ShowcaseDestination {
   id: string;
@@ -23,7 +22,7 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     title: "Hot air balloon at sunrise.",
     description:
       "Drift peacefully above breathtaking landscapes as the first rays of sunlight paint the sky in vibrant shades of gold and orange. A sunrise hot air balloon ride offers unforgettable panoramic views and a truly magical start to your day.",
-    src: "https://images.unsplash.com/photo-1570939274717-7eda259b50ed?q=80&w=800&auto=format&fit=crop",
+    src: "https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?q=80&w=800&auto=format&fit=crop",
   },
   {
     id: "dest-amalfi",
@@ -105,16 +104,13 @@ export function DestinationsShowcase({
     "International" | "Domestic"
   >("International");
   const [activeIndex, setActiveIndex] = useState(0);
-  const [, startTransition] = useTransition();
 
   const filteredDestinations = SHOWCASE_DESTINATIONS.filter(
     (d) => d.category === activeCategory,
   );
 
   const handleIndexChange = (index: number) => {
-    startTransition(() => {
-      setActiveIndex(index);
-    });
+    setActiveIndex(index);
   };
 
   const handleCategoryChange = (category: "International" | "Domestic") => {
@@ -124,17 +120,10 @@ export function DestinationsShowcase({
 
   const current = filteredDestinations[activeIndex] || filteredDestinations[0];
 
-  const carouselItems: TiltCascadeItem[] = filteredDestinations.map((d) => ({
-    title: d.location,
-    caption: d.title,
-    src: d.src,
-    alt: `${d.location} - ${d.title}`,
-  }));
-
   return (
     <section
       id="destination-packages"
-      className={`relative w-full overflow-hidden flex flex-col justify-start ${className}`}
+      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 ${className}`}
     >
       {/* Background Images Layer */}
       <div className="absolute inset-0 pointer-events-none">
@@ -166,8 +155,8 @@ export function DestinationsShowcase({
         <div className="absolute inset-0 bg-black/10 pointer-events-none" />
       </div>
 
-      {/* Main Showcase Content with 105px padding on both sides and 10px padding bottom */}
-      <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start pt-10 lg:pt-8 pb-[10px]">
+      {/* Main Showcase Content with 105px horizontal padding and symmetrical top/bottom gaps */}
+      <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start py-12 lg:py-14">
         {/* Top-Right Category Switcher: 4 lines total (each button has 2 vertical lines: border-l & border-r) */}
         <div className="w-full flex justify-end items-center mb-5 lg:mb-4 shrink-0">
           <div className="inline-flex items-center gap-3 sm:gap-4 text-sm sm:text-base tracking-wide">
@@ -183,7 +172,7 @@ export function DestinationsShowcase({
               {activeCategory !== "International" && (
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
               )}
               <span className="relative z-10 tracking-wide">
@@ -202,7 +191,7 @@ export function DestinationsShowcase({
               {activeCategory !== "Domestic" && (
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
               )}
               <span className="relative z-10 tracking-wide">
@@ -215,35 +204,40 @@ export function DestinationsShowcase({
         {/* Main Content Columns */}
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 xl:gap-16">
           {/* =================================================================
-              LEFT COLUMN: Active Destination Details
+              LEFT COLUMN: Active Destination Details (Smooth Fade & Slide)
               ================================================================= */}
           <div className="w-full lg:w-[420px] xl:w-[480px] shrink-0 flex flex-col justify-center text-left">
-            {/* Category / Location Eyebrow */}
-            <div className="flex items-center gap-2 mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]">
-              <span className="text-xs uppercase tracking-[0.2em] font-mono text-white/90">
-                {current.category} Tour
-              </span>
-              <span className="text-white/60">•</span>
-              <span className="text-sm sm:text-base text-white font-medium tracking-wide">
-                {current.location}
-              </span>
-            </div>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`dest-info-${current.id}`}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -12 }}
+                transition={{ duration: 0.35, ease: [0.25, 1, 0.5, 1] }}
+                className="flex flex-col"
+              >
+                {/* Category / Location Eyebrow */}
+                <div className="flex items-center gap-2 mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]">
+                  <span className="text-xs uppercase tracking-[0.2em] font-mono text-white/90">
+                    {current.category} Tour
+                  </span>
+                  <span className="text-white/60">•</span>
+                  <span className="text-sm sm:text-base text-white font-medium tracking-wide">
+                    {current.location}
+                  </span>
+                </div>
 
-            {/* Main Heading Title */}
-            <h2
-              key={`title-${current.id}`}
-              className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 transition-all duration-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"
-            >
-              {current.title}
-            </h2>
+                {/* Main Heading Title */}
+                <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+                  {current.title}
+                </h2>
 
-            {/* Description Text */}
-            <p
-              key={`desc-${current.id}`}
-              className="text-sm sm:text-base text-white leading-relaxed mb-8 max-w-lg font-light transition-all duration-300 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]"
-            >
-              {current.description}
-            </p>
+                {/* Description Text */}
+                <p className="text-sm sm:text-base text-white leading-relaxed mb-8 max-w-lg font-light drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+                  {current.description}
+                </p>
+              </motion.div>
+            </AnimatePresence>
 
             {/* Editorial Button with sliding blue background fill hover effect (100% Tailwind) */}
             <div>
@@ -258,7 +252,7 @@ export function DestinationsShowcase({
               >
                 <span
                   aria-hidden="true"
-                  className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
                 <span className="relative z-10 tracking-wide group-hover:tracking-wider transition-all duration-200">
                   Explore the destination
@@ -268,26 +262,19 @@ export function DestinationsShowcase({
           </div>
 
           {/* =================================================================
-              RIGHT COLUMN: TiltCascadeCarousel (Taller portrait cards)
+              RIGHT COLUMN: StraightCardsCarousel (Smooth 60fps Spring Slide)
               ================================================================= */}
-          <div className="w-full lg:flex-1 h-[530px] sm:h-[570px] lg:h-[590px] flex items-center justify-center min-w-0">
-            <TiltCascadeCarousel
+          <div className="w-full lg:flex-1 min-w-0">
+            <StraightCardsCarousel
               key={activeCategory}
-              items={carouselItems}
-              height="100%"
-              slideSize="clamp(235px, 20vw, 295px)"
-              aspectRatio="3/4"
-              angle={18}
-              drop={0.25}
-              inactiveScale={0.72}
-              radius={20}
-              bounce={0.2}
-              duration={0.75}
-              loop={true}
-              autoplay={0}
-              titles={false}
-              captions={false}
-              controls={true}
+              items={filteredDestinations}
+              activeIndex={activeIndex}
+              onIndexChange={handleIndexChange}
+              onSelectLead={(item) =>
+                onOpenEnquiry
+                  ? onOpenEnquiry(`${item.location}: ${item.title}`)
+                  : undefined
+              }
               footerRight={
                 <a
                   href="/tours"
@@ -295,26 +282,13 @@ export function DestinationsShowcase({
                 >
                   <span
                     aria-hidden="true"
-                    className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                   />
                   <span className="relative z-10 tracking-wide group-hover:tracking-wider transition-all duration-200">
                     View all destinations
                   </span>
                 </a>
               }
-              background="transparent"
-              color="#ffffff"
-              index={activeIndex}
-              onIndexChange={handleIndexChange}
-              onSelect={(item, i) =>
-                onOpenEnquiry
-                  ? onOpenEnquiry(
-                      `${filteredDestinations[i]?.location || item.title}`,
-                    )
-                  : undefined
-              }
-              ariaLabel="International and Domestic Tour Packages Carousel"
-              className="w-full"
             />
           </div>
         </div>

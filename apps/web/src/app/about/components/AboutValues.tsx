@@ -20,9 +20,9 @@ export const AboutValues: React.FC<AboutApproachProps> = ({ data }) => {
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-14 sm:mb-18">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FAF7F2] border border-black/[0.06] text-[#6B6156] text-[10.5px] font-sans font-medium uppercase tracking-[0.2em] mb-4">
-            <span className="text-[9px] text-[#463D34]">♥</span>
+            <span className="text-[9px] text-[#002f89]">♥</span>
             <span>{data.eyebrow}</span>
-            <span className="text-[9px] text-[#463D34]">♥</span>
+            <span className="text-[9px] text-[#002f89]">♥</span>
           </div>
 
           <h2 className="font-serif text-[32px] sm:text-[44px] lg:text-[48px] font-normal tracking-tight text-[#1C1815] leading-[1.12]">
@@ -39,7 +39,7 @@ export const AboutValues: React.FC<AboutApproachProps> = ({ data }) => {
               return (
                 <div
                   key={item.id}
-                  className={`rounded-2xl transition-all duration-300 overflow-hidden border ${
+                  className={`rounded-[8px] transition-all duration-300 overflow-hidden border ${
                     isOpen
                       ? "bg-[#181E24] text-white border-[#181E24] shadow-md"
                       : "bg-[#FAF7F2]/70 text-[#1C1815] border-black/[0.06] hover:bg-[#FAF7F2]"
@@ -87,7 +87,7 @@ export const AboutValues: React.FC<AboutApproachProps> = ({ data }) => {
 
           {/* Right Column: Serene Rounded Visual */}
           <div className="lg:col-span-5">
-            <div className="relative h-[340px] sm:h-[400px] lg:h-[440px] w-full rounded-[28px] sm:rounded-[36px] overflow-hidden border border-black/[0.07] shadow-sm bg-[#EFE9DF]">
+            <div className="relative h-[340px] sm:h-[400px] lg:h-[440px] w-full rounded-[8px] overflow-hidden border border-black/[0.07] shadow-sm bg-[#EFE9DF]">
               <Image
                 src={data.companionImage.src}
                 alt={data.companionImage.alt}

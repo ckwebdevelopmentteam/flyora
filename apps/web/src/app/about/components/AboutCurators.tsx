@@ -34,9 +34,9 @@ export const AboutCurators: React.FC<AboutCuratorsProps> = ({
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-16">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-black/[0.06] text-[#6B6156] text-[10.5px] font-sans font-medium uppercase tracking-[0.2em] mb-4">
-            <span className="text-[9px] text-[#463D34]">♥</span>
+            <span className="text-[9px] text-[#002f89]">♥</span>
             <span>{data.eyebrow}</span>
-            <span className="text-[9px] text-[#463D34]">♥</span>
+            <span className="text-[9px] text-[#002f89]">♥</span>
           </div>
 
           <h2 className="font-serif text-[32px] sm:text-[42px] font-normal tracking-tight text-[#1C1815]">
@@ -84,7 +84,7 @@ export const AboutCurators: React.FC<AboutCuratorsProps> = ({
               <button
                 type="button"
                 onClick={() => onOpenEnquiry && onOpenEnquiry()}
-                className="mt-3 text-[11px] font-medium text-[#463D34] hover:underline cursor-pointer"
+                className="mt-3 text-[11px] font-medium text-[#002f89] hover:underline cursor-pointer"
               >
                 Plan with {curator.name.split(" ")[0]} →
               </button>

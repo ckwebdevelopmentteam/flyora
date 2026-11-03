@@ -36,7 +36,7 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
   const whatsappUrl = `https://wa.me/919876543210?text=${whatsappText}`;
 
   return (
-    <div className="group bg-white border border-stone-200/90 hover:border-[#4A2E18]/40 hover:shadow-xl hover:shadow-stone-200/50 rounded-2xl overflow-hidden transition-all duration-300 flex flex-col h-full">
+    <div className="group bg-white border border-stone-200/90 hover:border-[#002f89]/40 hover:shadow-xl hover:shadow-stone-200/50 rounded-[8px] overflow-hidden transition-all duration-300 flex flex-col h-full">
       {/* Photo Container */}
       <div className="relative aspect-16/10 w-full overflow-hidden bg-stone-100">
         <img
@@ -53,13 +53,13 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
         <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
           {/* Destination Badge */}
           <span className="bg-white/95 backdrop-blur-md text-stone-900 text-[11px] font-medium px-3 py-1 rounded-full shadow-xs flex items-center gap-1.5">
-            <MapPin className="w-3 h-3 text-[#4A2E18]" />
+            <MapPin className="w-3 h-3 text-[#002f89]" />
             <span>{destinationShort}</span>
           </span>
 
-          {/* Duration Badge in Coffee Brown */}
-          <span className="bg-[#4A2E18] text-white text-[11px] font-mono font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
-            <Clock className="w-3 h-3 text-[#E6D5C7]" />
+          {/* Duration Badge in Brand Blue */}
+          <span className="bg-[#002f89] text-white text-[11px] font-mono font-bold px-3 py-1 rounded-full shadow-sm flex items-center gap-1.5">
+            <Clock className="w-3 h-3 text-blue-200" />
             <span>
               {pkg.durationNights}N / {pkg.durationDays}D
             </span>
@@ -89,7 +89,7 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
           <div>
             <Link
               href={`/tours/${pkg.slug}`}
-              className="text-base sm:text-lg font-bold text-stone-900 group-hover:text-[#4A2E18] transition line-clamp-1"
+              className="text-base sm:text-lg font-bold text-stone-900 group-hover:text-[#002f89] transition line-clamp-1"
             >
               {pkg.title}
             </Link>
@@ -102,19 +102,19 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
           {/* Inclusion Pills (Thrillophilia style) */}
           <div className="grid grid-cols-2 gap-2 pt-1 border-t border-stone-100">
             <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Plane className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
+              <Plane className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
               <span className="truncate">Flights Included</span>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Building2 className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
+              <Building2 className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
               <span className="truncate">4★/5★ Luxury Stay</span>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Car className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
+              <Car className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
               <span className="truncate">Private Transfers</span>
             </div>
             <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Utensils className="w-3.5 h-3.5 text-[#4A2E18] shrink-0" />
+              <Utensils className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
               <span className="truncate">Daily Breakfast</span>
             </div>
           </div>
@@ -140,22 +140,22 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
 
             <button
               onClick={() => onCustomize(pkg.id, pkg.title)}
-              className="text-xs font-semibold text-[#4A2E18] hover:text-[#38200F] hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-[#002f89] hover:opacity-80 hover:underline flex items-center gap-1"
             >
-              <Sparkles className="w-3 h-3 text-[#4A2E18]" />
+              <Sparkles className="w-3 h-3 text-[#002f89]" />
               <span>Customize</span>
             </button>
           </div>
 
           {/* Action Row */}
           <div className="grid grid-cols-2 gap-2 pt-1">
-            {/* View Itinerary Button in Coffee Brown */}
+            {/* View Itinerary Button in Brand Blue */}
             <Link
               href={`/tours/${pkg.slug}`}
-              className="w-full py-2.5 px-3 rounded-xl bg-[#4A2E18] hover:bg-[#38200F] active:scale-98 text-white text-xs font-semibold text-center shadow-xs transition flex items-center justify-center gap-1.5"
+              className="w-full py-2.5 px-3 rounded-xl bg-[#002f89] hover:bg-[#00246b] active:scale-98 text-white text-xs font-semibold text-center shadow-xs transition flex items-center justify-center gap-1.5"
             >
               <span>View Itinerary</span>
-              <ArrowRight className="w-3.5 h-3.5 text-[#E6D5C7]" />
+              <ArrowRight className="w-3.5 h-3.5 text-blue-200" />
             </Link>
 
             {/* Direct WhatsApp Action */}

@@ -14,9 +14,9 @@ export const AboutTransition: React.FC<AboutTransitionProps> = ({ data }) => {
         <div className="max-w-4xl mx-auto flex flex-col items-center">
           {/* Eyebrow with Hearts matching reference: ♥ A GENTLE PLACE TO BEGIN ♥ */}
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FAF7F2] border border-black/[0.06] text-[#6B6156] text-[11px] font-sans font-medium uppercase tracking-[0.2em] mb-6">
-            <span className="text-[9px] text-[#463D34]">♥</span>
+            <span className="text-[9px] text-[#002f89]">♥</span>
             <span>{data.eyebrow}</span>
-            <span className="text-[9px] text-[#463D34]">♥</span>
+            <span className="text-[9px] text-[#002f89]">♥</span>
           </div>
 
           {/* Large Two-Tone Editorial Serif Heading */}

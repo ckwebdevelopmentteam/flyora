@@ -636,10 +636,10 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 onClick={() => handleCardClick(service.id)}
                 aria-pressed={activeTab === service.id}
                 aria-label={`Select ${service.label}`}
-                className="group relative shrink-0 w-[190px] sm:w-[210px] md:w-auto min-h-[165px] sm:min-h-[180px] md:h-[200px] lg:h-[210px] rounded-[22px] sm:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-4 sm:p-5 flex flex-col justify-between bg-neutral-950 hover:-translate-y-2 hover:scale-[1.02] hover:z-30"
+                className="group relative shrink-0 w-[190px] sm:w-[210px] md:w-auto min-h-[165px] sm:min-h-[180px] md:h-[200px] lg:h-[210px] rounded-[8px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-4 sm:p-5 flex flex-col justify-between bg-neutral-950 hover:-translate-y-2 hover:scale-[1.02] hover:z-30"
               >
                 {/* Inner clipped canvas for crisp photo & contrast scrims */}
-                <div className="absolute inset-0 rounded-[22px] sm:rounded-[26px] overflow-hidden pointer-events-none">
+                <div className="absolute inset-0 rounded-[8px] overflow-hidden pointer-events-none">
                   {/* Full-bleed crisp background photo with optimal framing */}
                   <img
                     src={service.imageSrc}
@@ -653,7 +653,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                 </div>
 
                 {/* Outer pristine border and hover white glowing aura on z-20 (never clipped) */}
-                <div className="absolute inset-0 rounded-[22px] sm:rounded-[26px] border border-white/20 transition-all duration-300 pointer-events-none z-20 group-hover:border-white group-hover:ring-2 group-hover:ring-white group-hover:shadow-[0_0_30px_rgba(255,255,255,0.65)]" />
+                <div className="absolute inset-0 rounded-[8px] border border-white/20 transition-all duration-300 pointer-events-none z-20 group-hover:border-white group-hover:ring-2 group-hover:ring-white group-hover:shadow-[0_0_30px_rgba(255,255,255,0.65)]" />
 
                 {/* Top Row: Crisp Vector Icon */}
                 <div className="relative z-30 flex items-center justify-start w-full">
@@ -683,7 +683,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - Dropdowns open downward with smooth luxury elevation.
           - Zero emojis, zero marketing fluff, zero redundant micro-copy.
           ======================================================================= */}
-      <div className="relative bg-white text-[#1E1A17] rounded-[22px] sm:rounded-[26px] p-4 sm:p-4.5 md:px-6 md:py-4 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-neutral-200/80 text-left transition-all duration-300">
+      <div className="relative bg-white text-[#1E1A17] rounded-[8px] p-4 sm:p-4.5 md:px-6 md:py-4 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-neutral-200/80 text-left transition-all duration-300">
         <form onSubmit={handleSubmit}>
           {/* ===================================================================
               CASE 1: FLIGHT BOOKING
@@ -1124,7 +1124,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
             {/* Primary Action Button */}
             <button
               type="submit"
-              className="w-full md:w-auto h-[44px] sm:h-[46px] px-7 sm:px-8 rounded-xl bg-neutral-900 hover:bg-black active:bg-neutral-950 text-white font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow cursor-pointer whitespace-nowrap"
+              className="w-full md:w-auto h-[44px] sm:h-[46px] px-7 sm:px-8 rounded-xl bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-medium text-sm flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow cursor-pointer whitespace-nowrap"
             >
               {isSubmitted ? (
                 <>

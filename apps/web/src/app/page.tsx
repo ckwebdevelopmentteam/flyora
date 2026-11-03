@@ -4,14 +4,20 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
-import { Plus, ArrowRight, ArrowLeft } from "lucide-react";
+import {
+  Plus,
+  ArrowRight,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { HeroSection } from "../components/HeroSection";
 import { EnquiryModal } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
-import { PopularHolidayPackages } from "../components/PopularHolidayPackages";
+import CarouselCards from "@/components/ui/carousel-cards";
 import { DestinationsShowcase } from "../components/DestinationsShowcase";
 import InkOrbitTestimonials, {
   type InkTestimonial,
@@ -326,7 +332,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F3EC] text-[#1E1B18] font-sans selection:bg-[#463D34] selection:text-white">
+    <div className="min-h-screen bg-[#F9F3EC] text-[#1E1B18] font-sans selection:bg-[#002f89] selection:text-white">
       {/* ---------------------------------------------------------------------
           NAVBAR: Preserved exactly as existing
           --------------------------------------------------------------------- */}
@@ -463,25 +469,37 @@ export default function Home() {
                   unforgettable journeys and cultural immersion.
                 </p>
 
-                {/* Navigation arrows matching the reference image */}
+                {/* Navigation arrows matching destination sharp button style */}
                 <div className="flex items-center gap-2.5 mt-4 sm:mt-5">
                   <button
                     type="button"
                     onClick={() => handleScroll("left")}
                     disabled={!canScrollLeft}
                     aria-label="Previous destination"
-                    className="w-10 h-10 rounded-full bg-[#FAF7F2] hover:bg-[#463D34] text-[#1E1A17] hover:text-white border border-black/[0.08] hover:border-[#463D34] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                    className="group relative overflow-hidden w-10 h-10 rounded-[2px] bg-[#FAF7F2] text-[#1E1A17] hover:text-white border border-black/[0.1] hover:border-transparent grid place-items-center transition-all duration-300 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    />
+                    <span className="relative z-10 flex items-center justify-center">
+                      <ChevronLeft className="w-4 h-4 stroke-[2.4]" />
+                    </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleScroll("right")}
                     disabled={!canScrollRight}
                     aria-label="Next destination"
-                    className="w-10 h-10 rounded-full bg-[#FAF7F2] hover:bg-[#463D34] text-[#1E1A17] hover:text-white border border-black/[0.08] hover:border-[#463D34] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                    className="group relative overflow-hidden w-10 h-10 rounded-[2px] bg-[#FAF7F2] text-[#1E1A17] hover:text-white border border-black/[0.1] hover:border-transparent grid place-items-center transition-all duration-300 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
                   >
-                    <ArrowRight className="w-4 h-4" />
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    />
+                    <span className="relative z-10 flex items-center justify-center">
+                      <ChevronRight className="w-4 h-4 stroke-[2.4]" />
+                    </span>
                   </button>
                 </div>
               </div>
@@ -506,18 +524,18 @@ export default function Home() {
                       openEnquiry(dest.name);
                     }
                   }}
-                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-12px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-13px)] aspect-[1/2.5] rounded-[20px] lg:rounded-[22px] overflow-hidden cursor-pointer select-none snap-start shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.16)] transition-all duration-300 transform hover:-translate-y-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#463D34]"
+                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-12px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-13px)] aspect-[1/2.5] rounded-[8px] overflow-hidden cursor-pointer select-none snap-start shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.16)] transition-all duration-300 transform hover:-translate-y-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89]"
                 >
                   {/* Destination Card Image */}
                   <img
                     src={dest.image}
                     alt={dest.name}
                     loading="lazy"
-                    className="w-full h-full object-cover rounded-[20px] lg:rounded-[22px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
+                    className="w-full h-full object-cover rounded-[8px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
                   />
 
                   {/* Soft interactive hover gradient */}
-                  <div className="absolute inset-0 rounded-[20px] lg:rounded-[22px] bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 rounded-[8px] bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                   {/* Center frosted glass badge */}
                   <div className="absolute inset-0 flex items-center justify-center p-3 pointer-events-none">
@@ -532,11 +550,9 @@ export default function Home() {
         </section>
 
         {/* ===================================================================
-            SECTION 2: POPULAR HOLIDAY PACKAGES
+            SECTION 2: CAROUSEL EXPERIENCES
             =================================================================== */}
-        <PopularHolidayPackages
-          onOpenEnquiry={(pkgName) => openEnquiry(pkgName)}
-        />
+        <CarouselCards />
 
         {/* ===================================================================
             SECTION: DESTINATIONS SHOWCASE (International & Domestic Tour Packages)
@@ -566,7 +582,7 @@ export default function Home() {
             =================================================================== */}
         <section
           id="faqs"
-          className="py-16 sm:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
+          className="py-16 sm:py-24 border-t border-black/[0.06] bg-white"
         >
           <div className="max-w-3xl mx-auto px-5 sm:px-8">
             <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
@@ -628,7 +644,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => openEnquiry("General Question / FAQ Support")}
-                className="mt-6 inline-flex items-center justify-center px-8 py-2.5 rounded-full border border-[#1E1A17] text-xs sm:text-sm font-medium text-[#1E1A17] hover:bg-[#1E1A17] hover:text-white transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs"
+                className="mt-6 inline-flex items-center justify-center px-8 py-2.5 rounded-md border border-[#002f89] bg-[#002f89] hover:bg-[#00246b] text-xs sm:text-sm font-medium text-white transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs active:scale-95"
               >
                 Contact
               </button>

@@ -227,7 +227,7 @@ export const AboutHero: React.FC<AboutHeroProps> = ({
                 {/* Text Links for Navigation */}
                 <Link
                   href={data.primaryCta.href}
-                  className="inline-flex items-center gap-1.5 text-xs sm:text-[13px] font-spartan font-bold text-[#144A72] hover:text-[#EC1C54] uppercase tracking-wider underline underline-offset-4 ml-1 transition-colors"
+                  className="inline-flex items-center gap-1.5 text-xs sm:text-[13px] font-spartan font-bold text-[#002f89] hover:text-[#00246b] uppercase tracking-wider underline underline-offset-4 ml-1 transition-colors"
                 >
                   <span>{data.primaryCta.label}</span>
                   <ArrowUpRight className="w-3.5 h-3.5" />

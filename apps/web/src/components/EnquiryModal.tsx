@@ -669,7 +669,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                       !!servicesError ||
                       services.length === 0
                     }
-                    className="w-full py-2.5 px-4 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition disabled:opacity-60 cursor-pointer"
+                    className="w-full py-2.5 px-4 rounded-xl bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold flex items-center justify-center gap-2 shadow-sm transition disabled:opacity-60 cursor-pointer"
                   >
                     {isSubmitting ? (
                       <>
