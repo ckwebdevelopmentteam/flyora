@@ -201,7 +201,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Gentle white atmospheric glow at the bottom so clouds emerge bright and clean */}
           <div
             aria-hidden="true"
-            className="absolute inset-x-0 bottom-0 h-36 sm:h-52 bg-gradient-to-t from-white/35 via-white/15 to-transparent pointer-events-none"
+            className="absolute inset-x-0 bottom-0 h-24 sm:h-36 bg-gradient-to-t from-white/35 via-white/15 to-transparent pointer-events-none"
           />
         </div>
 
@@ -213,28 +213,28 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-1.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-2.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-3.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-4.png"
             />
             {/* Set 2 (for seamless loop) */}
@@ -242,28 +242,28 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-1.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-2.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-3.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-4.png"
             />
           </div>
