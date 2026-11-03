@@ -19,7 +19,10 @@ import { cn } from "@/lib/utils";
 
 interface AboutWhatWeOfferProps {
   opacity: number;
-  progress: number;
+  progress?: number;
+  filter?: string;
+  transform?: string;
+  pointerEvents?: "auto" | "none";
 }
 
 interface FeatureItem {
@@ -131,14 +134,18 @@ const OFFER_TABS: OfferTab[] = [
 
 export const AboutWhatWeOffer: React.FC<AboutWhatWeOfferProps> = ({
   opacity,
+  filter,
+  transform,
+  pointerEvents,
 }) => {
   return (
     <div
-      className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 lg:px-8 transition-[opacity,transform] duration-700 ease-out"
+      className="absolute inset-0 flex items-center justify-center px-4 sm:px-6 lg:px-8 transition-[opacity,transform,filter] duration-300 ease-out"
       style={{
         opacity,
-        transform: `translateY(${(0.5 - opacity) * 30}px)`,
-        pointerEvents: opacity > 0.8 ? "auto" : "none",
+        filter: filter || undefined,
+        transform: transform || `translateY(${(0.5 - opacity) * 30}px)`,
+        pointerEvents: pointerEvents || (opacity > 0.8 ? "auto" : "none"),
       }}
       aria-hidden={opacity < 0.05}
     >
