@@ -142,6 +142,75 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     notes: packageTitle && packageTitle.includes("|") ? packageTitle : "",
   });
 
+  const [adultsInput, setAdultsInput] = useState(
+    String(formData.numberOfAdults ?? 1),
+  );
+  const [kidsInput, setKidsInput] = useState(
+    String(formData.numberOfKids ?? 0),
+  );
+
+  useEffect(() => {
+    setAdultsInput(String(formData.numberOfAdults ?? 1));
+  }, [formData.numberOfAdults]);
+
+  useEffect(() => {
+    setKidsInput(String(formData.numberOfKids ?? 0));
+  }, [formData.numberOfKids]);
+
+  const handleAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (/^\d*$/.test(val)) {
+      setAdultsInput(val);
+      if (val !== "") {
+        const parsed = parseInt(val, 10);
+        if (!isNaN(parsed)) {
+          setFormData((prev) => ({ ...prev, numberOfAdults: parsed }));
+        }
+      }
+    }
+  };
+
+  const handleAdultsBlur = () => {
+    const parsed = parseInt(adultsInput, 10);
+    const clamped = isNaN(parsed) || parsed < 1 ? 1 : Math.min(50, parsed);
+    setAdultsInput(String(clamped));
+    setFormData((prev) => ({ ...prev, numberOfAdults: clamped }));
+  };
+
+  const handleKidsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    if (/^\d*$/.test(val)) {
+      setKidsInput(val);
+      if (val !== "") {
+        const parsed = parseInt(val, 10);
+        if (!isNaN(parsed)) {
+          setFormData((prev) => ({ ...prev, numberOfKids: parsed }));
+        }
+      }
+    }
+  };
+
+  const handleKidsBlur = () => {
+    const parsed = parseInt(kidsInput, 10);
+    const clamped = isNaN(parsed) || parsed < 0 ? 0 : Math.min(20, parsed);
+    setKidsInput(String(clamped));
+    setFormData((prev) => ({ ...prev, numberOfKids: clamped }));
+  };
+
+  const stepAdults = (delta: number) => {
+    const current = formData.numberOfAdults ?? 1;
+    const next = Math.min(50, Math.max(1, current + delta));
+    setAdultsInput(String(next));
+    setFormData((prev) => ({ ...prev, numberOfAdults: next }));
+  };
+
+  const stepKids = (delta: number) => {
+    const current = formData.numberOfKids ?? 0;
+    const next = Math.min(20, Math.max(0, current + delta));
+    setKidsInput(String(next));
+    setFormData((prev) => ({ ...prev, numberOfKids: next }));
+  };
+
   const [validationErrors, setValidationErrors] = useState<
     Record<string, string>
   >({});
@@ -389,7 +458,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
         event.preventDefault();
         close();
       }}
-      className="fixed inset-0 m-auto w-[94vw] max-w-[820px] max-h-[92vh] p-0 rounded-[30px] sm:rounded-[36px] bg-transparent backdrop:bg-black/60 backdrop:backdrop-blur-sm shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-0"
+      className="fixed inset-0 m-auto w-[94vw] max-w-[840px] max-h-[92vh] p-0 rounded-[30px] sm:rounded-[36px] bg-transparent backdrop:bg-black/60 backdrop:backdrop-blur-sm shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-0"
     >
       <div className="bg-white rounded-[30px] sm:rounded-[36px] shadow-2xl border border-neutral-100 w-full overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header matching exact user uploaded mockup in media_1793685416686_e324fab2.jpg */}
@@ -778,7 +847,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 </div>
 
                 {/* 3. ROW 3: Preferred Travel Date & Number of Travellers */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                   {/* Preferred Travel Date */}
                   <div>
                     <label
@@ -814,63 +883,55 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                     </div>
                   </div>
 
-                  {/* Number of Travellers Split Component */}
+                  {/* Number of Travellers Split Component with direct number typing */}
                   <div>
                     <label className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2">
                       Number of Travellers
                     </label>
                     <div className="rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 transition-all flex items-center divide-x divide-neutral-200 py-1.5 sm:py-2">
                       {/* Adults (12+) */}
-                      <div className="flex-1 flex items-center justify-between px-3.5 sm:px-4 py-1.5 gap-2">
+                      <div className="flex-1 flex items-center justify-between px-3.5 sm:px-4 py-1 gap-2">
                         <div className="flex items-center gap-2 min-w-0">
                           <Users className="w-4 h-4 text-neutral-400 shrink-0" />
-                          <span className="text-xs sm:text-[13px] font-medium text-neutral-700 truncate">
+                          <label
+                            htmlFor="enquiry-numberOfAdults"
+                            className="text-xs sm:text-[13px] font-medium text-neutral-700 truncate cursor-pointer"
+                          >
                             Adults (12+)
-                          </span>
+                          </label>
                         </div>
-                        <select
-                          aria-label="Adults (12+ yrs)"
+                        <input
+                          type="number"
                           id="enquiry-numberOfAdults"
-                          value={formData.numberOfAdults ?? 1}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              numberOfAdults: Number(e.target.value),
-                            })
-                          }
-                          className="bg-transparent text-xs sm:text-[13.5px] font-semibold text-neutral-900 outline-none cursor-pointer pr-1"
-                        >
-                          {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map((n) => (
-                            <option key={n} value={n}>
-                              {n}
-                            </option>
-                          ))}
-                        </select>
+                          aria-label="Adults (12+ yrs)"
+                          min={1}
+                          max={50}
+                          value={adultsInput}
+                          onChange={handleAdultsChange}
+                          onBlur={handleAdultsBlur}
+                          className="w-12 sm:w-14 text-center font-semibold text-xs sm:text-[13.5px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E4D3A]/20 border border-neutral-200 focus:border-[#1E4D3A] rounded-xl py-1 sm:py-1.5 px-2 outline-none transition cursor-text"
+                        />
                       </div>
 
                       {/* Children (0–11) */}
-                      <div className="flex-1 flex items-center justify-between px-3.5 sm:px-4 py-1.5 gap-2">
-                        <span className="text-xs sm:text-[13px] font-medium text-neutral-700 truncate pl-1">
-                          Children (0–11)
-                        </span>
-                        <select
-                          aria-label="Children (0-11 yrs)"
-                          id="enquiry-numberOfKids"
-                          value={formData.numberOfKids ?? 0}
-                          onChange={(e) =>
-                            setFormData({
-                              ...formData,
-                              numberOfKids: Number(e.target.value),
-                            })
-                          }
-                          className="bg-transparent text-xs sm:text-[13.5px] font-semibold text-neutral-900 outline-none cursor-pointer pr-1"
+                      <div className="flex-1 flex items-center justify-between px-3.5 sm:px-4 py-1 gap-2">
+                        <label
+                          htmlFor="enquiry-numberOfKids"
+                          className="text-xs sm:text-[13px] font-medium text-neutral-700 truncate pl-1 cursor-pointer"
                         >
-                          {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
-                            <option key={n} value={n}>
-                              {n}
-                            </option>
-                          ))}
-                        </select>
+                          Children (0–11)
+                        </label>
+                        <input
+                          type="number"
+                          id="enquiry-numberOfKids"
+                          aria-label="Children (0-11 yrs)"
+                          min={0}
+                          max={20}
+                          value={kidsInput}
+                          onChange={handleKidsChange}
+                          onBlur={handleKidsBlur}
+                          className="w-12 sm:w-14 text-center font-semibold text-xs sm:text-[13.5px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E4D3A]/20 border border-neutral-200 focus:border-[#1E4D3A] rounded-xl py-1 sm:py-1.5 px-2 outline-none transition cursor-text"
+                        />
                       </div>
                     </div>
                   </div>
