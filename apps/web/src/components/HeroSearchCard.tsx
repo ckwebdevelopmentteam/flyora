@@ -144,7 +144,7 @@ const SERVICES_DATA: ServiceMetadata[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// SERVICE-SPECIFIC OPTIONS (Minimalist, Curated & Clean)
+// SERVICE-SPECIFIC OPTIONS (Curated & Clean)
 // ---------------------------------------------------------------------------
 
 interface OptionItem {
@@ -153,12 +153,20 @@ interface OptionItem {
 }
 
 // 1. Flights
-const POPULAR_FLIGHT_ROUTES: OptionItem[] = [
-  { label: "Mumbai (BOM) → Dubai (DXB)", sub: "Non-stop daily flights" },
-  { label: "New Delhi (DEL) → London (LHR)", sub: "Direct premium carrier" },
-  { label: "Bengaluru (BLR) → Singapore (SIN)", sub: "Changi direct gateway" },
-  { label: "Mumbai (BOM) → Jeddah (JED)", sub: "Hajj & Umrah connection" },
-  { label: "New Delhi (DEL) → Bangkok (BKK)", sub: "Southeast Asia direct" },
+const FLIGHT_ORIGINS: OptionItem[] = [
+  { label: "Mumbai (BOM)", sub: "Chhatrapati Shivaji Maharaj Intl" },
+  { label: "New Delhi (DEL)", sub: "Indira Gandhi International" },
+  { label: "Bengaluru (BLR)", sub: "Kempegowda International" },
+  { label: "Hyderabad (HYD)", sub: "Rajiv Gandhi International" },
+  { label: "Dubai (DXB)", sub: "Dubai International Airport" },
+];
+
+const FLIGHT_DESTINATIONS: OptionItem[] = [
+  { label: "Dubai (DXB)", sub: "United Arab Emirates" },
+  { label: "London (LHR)", sub: "Heathrow Airport, UK" },
+  { label: "Singapore (SIN)", sub: "Changi International" },
+  { label: "Jeddah (JED)", sub: "King Abdulaziz Intl, Saudi Arabia" },
+  { label: "Bangkok (BKK)", sub: "Suvarnabhumi Airport, Thailand" },
 ];
 
 const FLIGHT_DATES: OptionItem[] = [
@@ -179,21 +187,20 @@ const FLIGHT_CLASSES: OptionItem[] = [
 ];
 
 // 2. Trains
-const POPULAR_TRAIN_ROUTES: OptionItem[] = [
-  {
-    label: "New Delhi → Mumbai Central",
-    sub: "Vande Bharat & Rajdhani Express",
-  },
-  {
-    label: "Mumbai Central → Goa (Madgaon)",
-    sub: "Tejas & Konkan Kanya Express",
-  },
-  { label: "New Delhi → Varanasi Cantt", sub: "Vande Bharat Superfast" },
-  {
-    label: "Bengaluru (SBC) → Chennai Central",
-    sub: "Shatabdi & Vande Bharat",
-  },
-  { label: "New Delhi → Jaipur Junction", sub: "Ajmer Shatabdi Express" },
+const TRAIN_ORIGINS: OptionItem[] = [
+  { label: "New Delhi (NDLS)", sub: "New Delhi Railway Station" },
+  { label: "Mumbai Central (MMCT)", sub: "Mumbai Central Terminus" },
+  { label: "Howrah Junction (HWH)", sub: "Kolkata Railway Station" },
+  { label: "KSR Bengaluru (SBC)", sub: "Bengaluru City Junction" },
+  { label: "Chennai Central (MAS)", sub: "Dr. MGR Central" },
+];
+
+const TRAIN_DESTINATIONS: OptionItem[] = [
+  { label: "Mumbai Central (MMCT)", sub: "Mumbai Central Terminus" },
+  { label: "Madgaon, Goa (MAO)", sub: "Konkan Railway Terminus" },
+  { label: "Varanasi Junction (BSB)", sub: "Varanasi Cantt Station" },
+  { label: "Jaipur Junction (JP)", sub: "Pink City Railway Station" },
+  { label: "Agra Cantt (AGC)", sub: "Taj Express Route" },
 ];
 
 const TRAIN_DATES: OptionItem[] = [
@@ -212,18 +219,20 @@ const TRAIN_CLASSES: OptionItem[] = [
 ];
 
 // 3. Buses
-const POPULAR_BUS_ROUTES: OptionItem[] = [
-  {
-    label: "Bangalore → Goa (Panjim)",
-    sub: "Luxury Volvo Multi-Axle Sleeper",
-  },
-  { label: "Mumbai → Pune (Swargate)", sub: "Express AC Shivneri & Scania" },
-  { label: "Delhi → Manali (Mall Road)", sub: "Volvo B11R Semi-Sleeper" },
-  { label: "Hyderabad → Bangalore", sub: "Overnight Luxury AC Sleeper" },
-  {
-    label: "Delhi → Jaipur (Sindhi Camp)",
-    sub: "Expressway AC Mercedes Benz",
-  },
+const BUS_ORIGINS: OptionItem[] = [
+  { label: "Bangalore", sub: "Majestic / Electronic City" },
+  { label: "Mumbai", sub: "Borivali / Dadar / Vashi" },
+  { label: "Pune", sub: "Swargate / Hinjawadi" },
+  { label: "Hyderabad", sub: "Gachibowli / Ameerpet" },
+  { label: "Delhi", sub: "Kashmiri Gate / Anand Vihar" },
+];
+
+const BUS_DESTINATIONS: OptionItem[] = [
+  { label: "Goa (Panjim)", sub: "Panjim / Mapusa" },
+  { label: "Manali", sub: "Mall Road Private Stand" },
+  { label: "Shimla", sub: "Victory Tunnel Stand" },
+  { label: "Ooty", sub: "Central Bus Stand" },
+  { label: "Jaipur", sub: "Sindhi Camp Stand" },
 ];
 
 const BUS_DATES: OptionItem[] = [
@@ -267,8 +276,26 @@ const VISA_APPLICANTS: OptionItem[] = [
   { label: "Corporate Group (5+ Applicants)" },
 ];
 
-// 5. Hajj Packages - Exact match to user design mockup:
-// "Travel Period: May – Jun 2027" | "Travellers: 2 Adults"
+// 5. Hajj Packages
+const HAJJ_TIERS: OptionItem[] = [
+  {
+    label: "Executive Non-Shifting (Mina A)",
+    sub: "5★ Makkah hotel & VIP air-conditioned Mina tents",
+  },
+  {
+    label: "Deluxe Shifting (30 Days)",
+    sub: "Full season with Azizia transit & 5★ Haram frontage",
+  },
+  {
+    label: "Express Hajj (14 Days)",
+    sub: "Executive short duration for working professionals",
+  },
+  {
+    label: "VIP Private Pilgrimage",
+    sub: "Dedicated Islamic scholar & private transport",
+  },
+];
+
 const HAJJ_SEASONS: OptionItem[] = [
   { label: "May – Jun 2027", sub: "Upcoming Hajj pilgrimage season" },
   { label: "May – Jun 2028", sub: "Advance pilgrimage registration" },
@@ -307,7 +334,7 @@ const HOLIDAY_TRAVELERS: OptionItem[] = [
 ];
 
 // ---------------------------------------------------------------------------
-// LUXURY ARTISAN FIELD (Matching Exact Reference Screenshot)
+// LUXURY ARTISAN PILL FIELD
 // ---------------------------------------------------------------------------
 
 interface ConciergePillFieldProps {
@@ -319,6 +346,7 @@ interface ConciergePillFieldProps {
   options: OptionItem[];
   onSelect: (val: string) => void;
   dropdownWidth?: string;
+  className?: string;
 }
 
 const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
@@ -330,13 +358,14 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
   options,
   onSelect,
   dropdownWidth = "w-72 sm:w-80",
+  className = "flex-1 min-w-0",
 }) => {
   return (
-    <div className="relative">
+    <div className={`relative ${className}`}>
       <button
         type="button"
         onClick={onToggle}
-        className="flex items-center gap-3 sm:gap-3.5 group cursor-pointer text-left focus:outline-none transition-transform duration-150 active:scale-[0.99] py-1 select-none"
+        className="w-full flex items-center gap-3 sm:gap-3.5 group cursor-pointer text-left focus:outline-none transition-transform duration-150 active:scale-[0.99] py-1 select-none px-2 sm:px-3 rounded-2xl hover:bg-black/[0.02]"
       >
         {/* Soft Circular Icon Container - Exact background from user mockup */}
         <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#F4F1EA] group-hover:bg-[#EAE5DC] flex items-center justify-center shrink-0 transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
@@ -344,17 +373,17 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
         </div>
 
         {/* Text Block: Label on top, Value + Chevron below */}
-        <div className="flex flex-col min-w-0 pr-1">
+        <div className="flex flex-col min-w-0 flex-1 pr-1">
           <span className="text-[11.5px] sm:text-[12px] text-[#78716A] font-normal leading-tight mb-0.5 select-none truncate">
             {label}
           </span>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[14.5px] sm:text-[15.5px] font-semibold text-[#1C1917] tracking-tight leading-tight group-hover:text-[#6e4f23] transition-colors truncate">
+          <div className="flex items-center justify-between gap-1.5 w-full">
+            <span className="text-[14px] sm:text-[15px] font-semibold text-[#1C1917] tracking-tight leading-tight group-hover:text-[#38312B] transition-colors truncate">
               {value}
             </span>
             <ChevronDown
               className={`w-3.5 h-3.5 text-[#78716A] group-hover:text-[#1C1917] shrink-0 transition-transform duration-200 ${
-                isOpen ? "rotate-180 text-[#6e4f23]" : ""
+                isOpen ? "rotate-180 text-[#38312B]" : ""
               }`}
             />
           </div>
@@ -375,7 +404,7 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
                 onClick={() => onSelect(opt.label)}
                 className={`w-full px-3.5 py-2.5 rounded-xl text-left flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
                   isSelected
-                    ? "bg-[#F4F1EA] text-[#6e4f23] font-semibold"
+                    ? "bg-[#F4F1EA] text-[#38312B] font-semibold"
                     : "hover:bg-neutral-50 text-neutral-800 font-normal"
                 }`}
               >
@@ -388,7 +417,7 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
                   )}
                 </div>
                 {isSelected && (
-                  <Check className="w-3.5 h-3.5 text-[#6e4f23] shrink-0" />
+                  <Check className="w-3.5 h-3.5 text-[#38312B] shrink-0" />
                 )}
               </button>
             );
@@ -408,13 +437,12 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   const [activeTab, setActiveTab] = useState<ServiceId>("hajj-packages");
 
   // Route-based states (Flights, Trains, Buses)
-  const [flightRoute, setFlightRoute] = useState<string>(
-    "Mumbai (BOM) → Dubai (DXB)",
-  );
-  const [trainRoute, setTrainRoute] = useState<string>(
-    "New Delhi → Mumbai Central",
-  );
-  const [busRoute, setBusRoute] = useState<string>("Bangalore → Goa (Panjim)");
+  const [flightFrom, setFlightFrom] = useState<string>("Mumbai (BOM)");
+  const [flightTo, setFlightTo] = useState<string>("Dubai (DXB)");
+  const [trainFrom, setTrainFrom] = useState<string>("New Delhi (NDLS)");
+  const [trainTo, setTrainTo] = useState<string>("Mumbai Central (MMCT)");
+  const [busFrom, setBusFrom] = useState<string>("Bangalore");
+  const [busTo, setBusTo] = useState<string>("Goa (Panjim)");
   const [routeDate, setRouteDate] = useState<string>("This Weekend");
   const [routeClassOrSeats, setRouteClassOrSeats] =
     useState<string>("1 Adult, Economy");
@@ -435,8 +463,10 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   const [holidayMonth, setHolidayMonth] = useState<string>("Nov – Dec 2026");
   const [holidayTravelers, setHolidayTravelers] = useState<string>("2 Adults");
 
-  // Hajj states - EXACT MATCH TO IMAGE:
-  // "Travel Period": "May – Jun 2027" | "Travellers": "2 Adults"
+  // Hajj states
+  const [hajjTier, setHajjTier] = useState<string>(
+    "Executive Non-Shifting (Mina A)",
+  );
   const [hajjSeason, setHajjSeason] = useState<string>("May – Jun 2027");
   const [hajjPilgrims, setHajjPilgrims] = useState<string>("2 Adults");
 
@@ -453,15 +483,18 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
     setIsSubmitted(false);
 
     if (serviceId === "flight-booking") {
-      setFlightRoute("Mumbai (BOM) → Dubai (DXB)");
+      setFlightFrom("Mumbai (BOM)");
+      setFlightTo("Dubai (DXB)");
       setRouteDate("This Weekend");
       setRouteClassOrSeats("1 Adult, Economy");
     } else if (serviceId === "train-booking") {
-      setTrainRoute("New Delhi → Mumbai Central");
+      setTrainFrom("New Delhi (NDLS)");
+      setTrainTo("Mumbai Central (MMCT)");
       setRouteDate("18 Nov 2026");
       setRouteClassOrSeats("1st AC (1A) Confirmed");
     } else if (serviceId === "bus-booking") {
-      setBusRoute("Bangalore → Goa (Panjim)");
+      setBusFrom("Bangalore");
+      setBusTo("Goa (Panjim)");
       setRouteDate("Tonight / Tomorrow");
       setRouteClassOrSeats("2 Sleeper Berths (Volvo AC)");
     } else if (serviceId === "visa-assistance") {
@@ -469,6 +502,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
       setVisaDate("Within 30 Days");
       setVisaApplicants("Single Applicant (1 Person)");
     } else if (serviceId === "hajj-packages") {
+      setHajjTier("Executive Non-Shifting (Mina A)");
       setHajjSeason("May – Jun 2027");
       setHajjPilgrims("2 Adults");
     } else if (serviceId === "custom-holidays") {
@@ -496,17 +530,17 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
 
     let enquirySummary = "";
     if (activeTab === "hajj-packages") {
-      enquirySummary = `Hajj Packages | Travel Period: ${hajjSeason} | Travellers: ${hajjPilgrims}`;
+      enquirySummary = `Hajj Packages | Tier: ${hajjTier} | Season: ${hajjSeason} | Party: ${hajjPilgrims}`;
     } else if (activeTab === "custom-holidays") {
-      enquirySummary = `Custom Holidays to ${holidayDest} | Travel Period: ${holidayMonth} | Travellers: ${holidayTravelers}`;
+      enquirySummary = `Custom Holidays to ${holidayDest} | Season: ${holidayMonth} | Guests: ${holidayTravelers}`;
     } else if (activeTab === "visa-assistance") {
       enquirySummary = `Visa Assistance: ${visaCountry} | Timeline: ${visaDate} | Applicants: ${visaApplicants}`;
     } else if (activeTab === "flight-booking") {
-      enquirySummary = `Flight Booking: ${flightRoute} | Departure: ${routeDate} | Passengers: ${routeClassOrSeats}`;
+      enquirySummary = `Flight: ${flightFrom} → ${flightTo} | Date: ${routeDate} | Passengers: ${routeClassOrSeats}`;
     } else if (activeTab === "train-booking") {
-      enquirySummary = `Train Booking: ${trainRoute} | Date: ${routeDate} | Class: ${routeClassOrSeats}`;
+      enquirySummary = `Train: ${trainFrom} → ${trainTo} | Date: ${routeDate} | Class: ${routeClassOrSeats}`;
     } else if (activeTab === "bus-booking") {
-      enquirySummary = `Bus Booking: ${busRoute} | Date: ${routeDate} | Seats: ${routeClassOrSeats}`;
+      enquirySummary = `Bus: ${busFrom} → ${busTo} | Date: ${routeDate} | Seats: ${routeClassOrSeats}`;
     }
 
     if (onOpenEnquiry) {
@@ -526,11 +560,9 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
     >
       {/* =======================================================================
           TOP SERVICE CARDS:
-          - Absolutely ZERO fixed aura / ring / glow on the first card at rest.
-          - ALL cards share the exact identical neutral border (border-white/20).
-          - Glowing white aura ONLY forms when hovering any card.
-          - Full text is displayed with zero truncation.
-          - Sized luxuriously to arrange along the exact same length as the navbar.
+          - Active card is highlighted with luminous white border & subtle lift.
+          - Sized luxuriously along the exact same length as navbar and search bar.
+          - Glowing white aura on hover.
           ======================================================================= */}
       <div className="relative mb-3.5 -mt-4 sm:-mt-5">
         <div
@@ -539,41 +571,49 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
         >
           {SERVICES_DATA.map((service) => {
             const IconComponent = service.icon;
+            const isActive = activeTab === service.id;
 
             return (
               <button
                 key={service.id}
                 type="button"
                 onClick={() => handleCardClick(service.id)}
-                aria-pressed={activeTab === service.id}
+                aria-pressed={isActive}
                 aria-label={`Select ${service.label}`}
-                className="group relative shrink-0 w-[190px] sm:w-[210px] md:w-auto min-h-[165px] sm:min-h-[180px] md:h-[200px] lg:h-[210px] rounded-[22px] sm:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-4 sm:p-5 flex flex-col justify-between bg-neutral-950 hover:-translate-y-2 hover:scale-[1.02] hover:z-30"
+                className={`group relative shrink-0 w-[190px] sm:w-[210px] md:w-auto min-h-[165px] sm:min-h-[180px] md:h-[200px] lg:h-[210px] rounded-[22px] sm:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-4 sm:p-5 flex flex-col justify-between bg-neutral-950 ${
+                  isActive
+                    ? "-translate-y-1.5 scale-[1.02] z-20 shadow-[0_16px_36px_rgba(0,0,0,0.5)]"
+                    : "hover:-translate-y-2 hover:scale-[1.02] hover:z-30 opacity-90 hover:opacity-100"
+                }`}
               >
                 {/* Inner clipped canvas for crisp photo & contrast scrims */}
                 <div className="absolute inset-0 rounded-[22px] sm:rounded-[26px] overflow-hidden pointer-events-none">
-                  {/* Full-bleed crisp background photo with optimal framing */}
                   <img
                     src={service.imageSrc}
                     alt=""
                     className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.05] sm:scale-[1.08] transition-transform duration-500 ease-out group-hover:scale-[1.14]`}
                   />
-
-                  {/* Contrast Scrims: softened so photo colors and subject content are vivid & clearly visible */}
                   <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-black/50 via-black/20 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
                 </div>
 
-                {/* Outer pristine border and hover white glowing aura on z-20 (never clipped) */}
-                <div className="absolute inset-0 rounded-[22px] sm:rounded-[26px] border border-white/20 transition-all duration-300 pointer-events-none z-20 group-hover:border-white group-hover:ring-2 group-hover:ring-white group-hover:shadow-[0_0_30px_rgba(255,255,255,0.65)]" />
+                {/* Outer border: Active luminous white ring or subtle neutral with hover glow */}
+                <div
+                  className={`absolute inset-0 rounded-[22px] sm:rounded-[26px] transition-all duration-300 pointer-events-none z-20 ${
+                    isActive
+                      ? "border-2 border-white ring-2 ring-white/60 shadow-[0_0_26px_rgba(255,255,255,0.65)]"
+                      : "border border-white/20 group-hover:border-white group-hover:ring-2 group-hover:ring-white group-hover:shadow-[0_0_24px_rgba(255,255,255,0.5)]"
+                  }`}
+                />
 
-                {/* Top Row: Crisp Vector Icon */}
+                {/* Top Row: Vector Icon */}
                 <div className="relative z-30 flex items-center justify-start w-full">
                   <div className="text-white drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
                     <IconComponent className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px]" />
                   </div>
                 </div>
 
-                {/* Bottom Row: 100% Full Width Typography - No Truncation */}
+                {/* Bottom Row: Typography */}
                 <div className="relative z-30 w-full mt-auto">
                   <div className="text-[14px] sm:text-[15px] md:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] whitespace-normal break-words">
                     {service.label}
@@ -589,19 +629,37 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
       </div>
 
       {/* =======================================================================
-          2. MAIN ADAPTIVE SEARCH BAR - EXACT MATCH TO REFERENCE DESIGN:
-          - Ultra-clean rounded luxury pill card with warm cream `#FAF8F5` surface.
-          - Soft circular icon badges `#F4F1EA`.
-          - Downward dropdowns with artisan typography.
-          - Rich warm cognac / walnut brown `#6e4f23` "Request a Quote ->" pill button.
+          2. MAIN ADAPTIVE SEARCH BAR - SYNCED WITH HOME SCREEN:
+          - Spans the full width seamlessly with balanced, distributed fields.
+          - Luxury frosted surface matching navbar glassmorphism.
+          - Soft circular icon badges (#F4F1EA).
+          - Brand dark charcoal/bronze (#38312B) "Request a Quote ->" pill button.
           ======================================================================= */}
-      <div className="relative w-full bg-[#FAF8F5] text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-3 sm:px-8 sm:py-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-stone-200/60 transition-all duration-300">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4">
-          {/* Active Service Fields Group */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-0 divide-y sm:divide-y-0 divide-[#E5E0D5]/50">
-            {/* CASE 1: HAJJ PACKAGES (Exact match to reference design mockup) */}
+      <div className="relative w-full bg-[#FAF8F5]/95 backdrop-blur-md text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.16)] border border-white/80 transition-all duration-300">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-2">
+          {/* Active Service Fields Group - evenly distributed across width */}
+          <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-[#E5E0D5]/50 min-w-0">
+            {/* CASE 1: HAJJ PACKAGES */}
             {activeTab === "hajj-packages" && (
               <>
+                <ConciergePillField
+                  icon={MosqueIcon}
+                  label="Package Tier"
+                  value={hajjTier}
+                  isOpen={openDropdown === "hajj-tier"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "hajj-tier" ? null : "hajj-tier",
+                    )
+                  }
+                  options={HAJJ_TIERS}
+                  onSelect={(val) => {
+                    setHajjTier(val);
+                    setOpenDropdown(null);
+                  }}
+                  dropdownWidth="w-72 sm:w-88"
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={CalendarDays}
                   label="Travel Period"
@@ -618,7 +676,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                     setOpenDropdown(null);
                   }}
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={Users}
                   label="Travellers"
@@ -658,7 +716,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                   }}
                   dropdownWidth="w-72 sm:w-80"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={CalendarDays}
                   label="Travel Period"
@@ -675,7 +733,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                     setOpenDropdown(null);
                   }}
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={Users}
                   label="Travellers"
@@ -717,7 +775,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                   }}
                   dropdownWidth="w-72 sm:w-80"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={CalendarDays}
                   label="Travel Timeline"
@@ -734,7 +792,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                     setOpenDropdown(null);
                   }}
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={Users}
                   label="Applicants"
@@ -761,22 +819,38 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               <>
                 <ConciergePillField
                   icon={PlaneTakeoff}
-                  label="Flight Route"
-                  value={flightRoute}
-                  isOpen={openDropdown === "flight-route"}
+                  label="Flying From"
+                  value={flightFrom}
+                  isOpen={openDropdown === "flight-from"}
                   onToggle={() =>
                     setOpenDropdown(
-                      openDropdown === "flight-route" ? null : "flight-route",
+                      openDropdown === "flight-from" ? null : "flight-from",
                     )
                   }
-                  options={POPULAR_FLIGHT_ROUTES}
+                  options={FLIGHT_ORIGINS}
                   onSelect={(val) => {
-                    setFlightRoute(val);
+                    setFlightFrom(val);
                     setOpenDropdown(null);
                   }}
-                  dropdownWidth="w-72 sm:w-88"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={Plane}
+                  label="Flying To"
+                  value={flightTo}
+                  isOpen={openDropdown === "flight-to"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "flight-to" ? null : "flight-to",
+                    )
+                  }
+                  options={FLIGHT_DESTINATIONS}
+                  onSelect={(val) => {
+                    setFlightTo(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={CalendarDays}
                   label="Departure Date"
@@ -793,7 +867,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                     setOpenDropdown(null);
                   }}
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={Users}
                   label="Passengers & Class"
@@ -818,22 +892,38 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               <>
                 <ConciergePillField
                   icon={Train}
-                  label="Train Route"
-                  value={trainRoute}
-                  isOpen={openDropdown === "train-route"}
+                  label="From Station"
+                  value={trainFrom}
+                  isOpen={openDropdown === "train-from"}
                   onToggle={() =>
                     setOpenDropdown(
-                      openDropdown === "train-route" ? null : "train-route",
+                      openDropdown === "train-from" ? null : "train-from",
                     )
                   }
-                  options={POPULAR_TRAIN_ROUTES}
+                  options={TRAIN_ORIGINS}
                   onSelect={(val) => {
-                    setTrainRoute(val);
+                    setTrainFrom(val);
                     setOpenDropdown(null);
                   }}
-                  dropdownWidth="w-72 sm:w-88"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={Train}
+                  label="To Station"
+                  value={trainTo}
+                  isOpen={openDropdown === "train-to"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "train-to" ? null : "train-to",
+                    )
+                  }
+                  options={TRAIN_DESTINATIONS}
+                  onSelect={(val) => {
+                    setTrainTo(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={CalendarDays}
                   label="Travel Date"
@@ -850,7 +940,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                     setOpenDropdown(null);
                   }}
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={Users}
                   label="Travel Class"
@@ -875,22 +965,36 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               <>
                 <ConciergePillField
                   icon={Bus}
-                  label="Bus Route"
-                  value={busRoute}
-                  isOpen={openDropdown === "bus-route"}
+                  label="From City"
+                  value={busFrom}
+                  isOpen={openDropdown === "bus-from"}
                   onToggle={() =>
                     setOpenDropdown(
-                      openDropdown === "bus-route" ? null : "bus-route",
+                      openDropdown === "bus-from" ? null : "bus-from",
                     )
                   }
-                  options={POPULAR_BUS_ROUTES}
+                  options={BUS_ORIGINS}
                   onSelect={(val) => {
-                    setBusRoute(val);
+                    setBusFrom(val);
                     setOpenDropdown(null);
                   }}
-                  dropdownWidth="w-72 sm:w-88"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <ConciergePillField
+                  icon={Bus}
+                  label="To City"
+                  value={busTo}
+                  isOpen={openDropdown === "bus-to"}
+                  onToggle={() =>
+                    setOpenDropdown(openDropdown === "bus-to" ? null : "bus-to")
+                  }
+                  options={BUS_DESTINATIONS}
+                  onSelect={(val) => {
+                    setBusTo(val);
+                    setOpenDropdown(null);
+                  }}
+                />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={CalendarDays}
                   label="Travel Date"
@@ -907,7 +1011,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                     setOpenDropdown(null);
                   }}
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-4 sm:mx-6 lg:mx-8 shrink-0 hidden sm:block" />
+                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
                 <ConciergePillField
                   icon={Users}
                   label="Seat Preference"
@@ -928,11 +1032,11 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
             )}
           </div>
 
-          {/* Luxury Rounded-Full Action Button ("Request a Quote ->") */}
+          {/* Luxury Brand Action Button ("Request a Quote ->") */}
           <button
             type="button"
             onClick={handleRequestQuote}
-            className="w-full sm:w-auto h-[48px] sm:h-[52px] px-7 sm:px-8 rounded-full bg-[#6e4f23] hover:bg-[#5b401c] active:bg-[#4d3617] text-white font-medium text-[14.5px] sm:text-[15px] flex items-center justify-center gap-2 transition-all shadow-[0_4px_16px_rgba(110,79,35,0.28)] hover:shadow-[0_6px_22px_rgba(110,79,35,0.4)] cursor-pointer whitespace-nowrap shrink-0 sm:ml-auto select-none"
+            className="w-full sm:w-auto h-[48px] sm:h-[52px] px-8 sm:px-9 rounded-full bg-[#38312B] hover:bg-[#27211C] active:bg-[#1E1915] text-white font-medium text-[14.5px] sm:text-[15px] flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_16px_rgba(56,49,43,0.35)] hover:shadow-[0_6px_22px_rgba(56,49,43,0.5)] cursor-pointer whitespace-nowrap shrink-0 sm:ml-4 select-none"
           >
             {isSubmitted ? (
               <>
