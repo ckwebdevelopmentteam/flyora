@@ -390,10 +390,10 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
         </div>
       </button>
 
-      {/* Downward luxury dropdown */}
+      {/* Upward luxury dropdown (always fully visible above search bar and clouds) */}
       {isOpen && (
         <div
-          className={`absolute left-0 top-[calc(100%+12px)] z-50 ${dropdownWidth} bg-white rounded-2xl p-1.5 shadow-[0_20px_45px_rgba(0,0,0,0.16)] border border-neutral-200/90 animate-in fade-in slide-in-from-top-1 duration-150 max-h-[280px] overflow-y-auto no-scrollbar`}
+          className={`absolute left-0 bottom-[calc(100%+12px)] z-50 ${dropdownWidth} bg-white rounded-2xl p-2 shadow-[0_24px_55px_rgba(0,0,0,0.25),0_6px_20px_rgba(0,0,0,0.12)] border border-neutral-200/90 animate-in fade-in slide-in-from-bottom-2 duration-150 max-h-[300px] overflow-y-auto no-scrollbar`}
         >
           {options.map((opt, idx) => {
             const isSelected = value === opt.label;
@@ -635,7 +635,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - Soft circular icon badges (#F4F1EA).
           - Brand dark charcoal/bronze (#38312B) "Request a Quote ->" pill button.
           ======================================================================= */}
-      <div className="relative w-full bg-[#FAF8F5]/95 backdrop-blur-md text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.16)] border border-white/80 transition-all duration-300">
+      <div className="relative z-40 w-full bg-[#FAF8F5]/95 backdrop-blur-md text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.16)] border border-white/80 transition-all duration-300">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-2">
           {/* Active Service Fields Group - evenly distributed across width */}
           <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-[#E5E0D5]/50 min-w-0">

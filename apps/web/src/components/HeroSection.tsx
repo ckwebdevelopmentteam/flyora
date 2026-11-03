@@ -205,13 +205,80 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           />
         </div>
 
+        {/* Floating animated clouds marquee across the bottom of the hero (z-10, behind hero content UI) */}
+        <div className="absolute inset-x-0 bottom-0 overflow-hidden leading-none text-[0px] pointer-events-none select-none z-10">
+          <div className="animate-marquee flex w-max will-change-transform">
+            {/* Set 1 */}
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-1.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-2.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-3.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-4.png"
+            />
+            {/* Set 2 (for seamless loop) */}
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-1.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-2.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-3.png"
+            />
+            <img
+              alt=""
+              width={1580}
+              height={440}
+              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              src="/cloude-frame/Frame@1.5x-4.png"
+            />
+          </div>
+
+          {/* Luminous gradient: completely transparent at top so hero video shines through, fading down to pure white */}
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0)_30%,rgba(255,255,255,0.25)_55%,rgba(255,255,255,0.85)_82%,#ffffff_100%)]" />
+        </div>
+
         {/* Hero Content Container: softly drifts up and fades as user scrolls down */}
         <div
           style={{
             opacity: Math.max(0, 1 - progress * 2.8),
             transform: `translate3d(0, -${24 + progress * 140}px, 0)`,
           }}
-          className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-5 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none will-change-transform"
+          className="relative z-30 w-full max-w-[1360px] mx-auto px-4 sm:px-5 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none will-change-transform"
         >
           {/* Eyebrow Tagline */}
           <span className="animate-hero-eyebrow font-heading text-xs sm:text-sm lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">

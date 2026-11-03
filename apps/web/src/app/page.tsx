@@ -541,78 +541,11 @@ export default function Home() {
 
       {/* ---------------------------------------------------------------------
           STACKING CONTENT SHEET:
-          Has z-10 and stacks on top of the sticky fixed hero as you scroll.
-          The clouds are pulled up over the hero video with negative margin and a transparent
-          backdrop so the video shows through, attached directly to the Featured Destinations!
+          Has z-20 and stacks on top of the sticky fixed hero as you scroll.
+          The animated clouds are integrated directly at the base of HeroSection (z-10),
+          so the search bar and dropdowns (z-30) remain 100% visible and un-obscured.
           --------------------------------------------------------------------- */}
-      <div className="relative z-10 w-full">
-        {/* Floating animated clouds marquee attached to top of Featured Destinations */}
-        <div className="relative -mt-[80px] sm:-mt-[110px] md:-mt-[135px] lg:-mt-[155px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
-          <div className="animate-marquee flex w-max will-change-transform">
-            {/* Set 1 */}
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-1.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-2.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-3.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-4.png"
-            />
-            {/* Set 2 (for seamless loop) */}
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-1.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-2.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-3.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-4.png"
-            />
-          </div>
-
-          {/* Luminous gradient: completely transparent at top so hero video shines through, fading down to pure white */}
-          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0)_30%,rgba(255,255,255,0.25)_55%,rgba(255,255,255,0.85)_82%,#ffffff_100%)]" />
-        </div>
-
+      <div className="relative z-20 w-full">
         {/* ===================================================================
             SECTION 1: FEATURED DESTINATIONS (Matching Reference Design)
             =================================================================== */}
