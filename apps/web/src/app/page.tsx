@@ -444,7 +444,7 @@ export default function Home() {
           ref={destinationsRef}
           className="relative z-10 pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16 lg:pb-24 bg-white border-b border-black/[0.06] scroll-mt-20 sm:scroll-mt-24"
         >
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10">
+          <div className="w-full px-6 sm:px-10 lg:px-[105px]">
             {/* Header: Left title + Right description & navigation arrows */}
             <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6 lg:gap-12 mb-6 sm:mb-10 lg:mb-12">
               <div className="max-w-xl">

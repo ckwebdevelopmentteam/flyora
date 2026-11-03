@@ -134,7 +134,7 @@ export function DestinationsShowcase({
   return (
     <section
       id="destination-packages"
-      className={`relative w-full min-h-[84vh] lg:min-h-[86vh] overflow-hidden flex flex-col justify-start ${className}`}
+      className={`relative w-full overflow-hidden flex flex-col justify-start ${className}`}
     >
       {/* Background Images Layer */}
       <div className="absolute inset-0 pointer-events-none">
@@ -143,56 +143,71 @@ export function DestinationsShowcase({
           className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out ${
             activeCategory === "International" ? "opacity-100" : "opacity-0"
           }`}
-          style={{ backgroundImage: `url('/showcase/international-bg.jpg')` }}
-        />
+          style={{ backgroundImage: `url('/home/heifiltower.png')` }}
+        >
+          {/* Darkening shade so it matches the domestic image contrast */}
+          <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+          {/* Subtle left-side contrast gradient for white text legibility */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/25 via-black/10 to-transparent pointer-events-none" />
+        </div>
 
-        {/* Domestic Background */}
+        {/* Domestic Background (with subtle additional darkening) */}
         <div
           className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out ${
             activeCategory === "Domestic" ? "opacity-100" : "opacity-0"
           }`}
           style={{ backgroundImage: `url('/showcase/domestic-bg.jpg')` }}
-        />
+        >
+          {/* Subtle extra darkening specifically for domestic image */}
+          <div className="absolute inset-0 bg-black/20 pointer-events-none" />
+        </div>
 
-        {/* White overlay effect setup to soften the background image and make cards pop */}
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-[1.5px] pointer-events-none" />
-
-        {/* Luminous soft white highlight behind the cards */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-full lg:w-2/3 h-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.4)_0%,rgba(255,255,255,0.15)_50%,transparent_80%)] pointer-events-none" />
-
-        {/* Left side contrast gradient ensuring typography and buttons are crystal clear */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent pointer-events-none" />
+        {/* Exactly 10% overlay so original vibrant image colors shine through naturally */}
+        <div className="absolute inset-0 bg-black/10 pointer-events-none" />
       </div>
 
-      {/* Main Showcase Content with 105px padding on both sides */}
-      <div className="relative z-10 w-full h-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start pt-8 lg:pt-6 pb-12 sm:pb-16 lg:pb-18">
-        {/* Top-Right Category Switcher matching reference UI */}
-        <div className="w-full flex justify-end items-center mb-4 lg:mb-3">
-          <div className="inline-flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+      {/* Main Showcase Content with 105px padding on both sides and 10px padding bottom */}
+      <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start pt-10 lg:pt-8 pb-[10px]">
+        {/* Top-Right Category Switcher: 4 lines total (each button has 2 vertical lines: border-l & border-r) */}
+        <div className="w-full flex justify-end items-center mb-5 lg:mb-4 shrink-0">
+          <div className="inline-flex items-center gap-3 sm:gap-4 text-sm sm:text-base tracking-wide">
             <button
               type="button"
               onClick={() => handleCategoryChange("International")}
-              className={`cursor-pointer transition-all duration-200 ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
                 activeCategory === "International"
-                  ? "bg-white text-black px-4 py-1.5 rounded-[2px] font-medium shadow-sm"
-                  : "text-white/80 hover:text-white px-3 py-1.5 font-medium"
+                  ? "bg-white text-black font-semibold shadow-sm border-white"
+                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
               }`}
             >
-              International Destination
+              {activeCategory !== "International" && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
+              <span className="relative z-10 tracking-wide">
+                International Destination
+              </span>
             </button>
-            <span className="text-white/40 text-xs sm:text-sm select-none">
-              |
-            </span>
             <button
               type="button"
               onClick={() => handleCategoryChange("Domestic")}
-              className={`cursor-pointer transition-all duration-200 ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
                 activeCategory === "Domestic"
-                  ? "bg-white text-black px-4 py-1.5 rounded-[2px] font-medium shadow-sm"
-                  : "text-white/80 hover:text-white px-3 py-1.5 font-medium"
+                  ? "bg-white text-black font-semibold shadow-sm border-white"
+                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
               }`}
             >
-              Domestic Destination
+              {activeCategory !== "Domestic" && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
+              <span className="relative z-10 tracking-wide">
+                Domestic Destination
+              </span>
             </button>
           </div>
         </div>
@@ -204,12 +219,12 @@ export function DestinationsShowcase({
               ================================================================= */}
           <div className="w-full lg:w-[420px] xl:w-[480px] shrink-0 flex flex-col justify-center text-left">
             {/* Category / Location Eyebrow */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs uppercase tracking-[0.2em] font-mono text-white/70">
+            <div className="flex items-center gap-2 mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]">
+              <span className="text-xs uppercase tracking-[0.2em] font-mono text-white/90">
                 {current.category} Tour
               </span>
-              <span className="text-white/40">•</span>
-              <span className="text-sm sm:text-base text-white/90 font-medium tracking-wide">
+              <span className="text-white/60">•</span>
+              <span className="text-sm sm:text-base text-white font-medium tracking-wide">
                 {current.location}
               </span>
             </div>
@@ -217,7 +232,7 @@ export function DestinationsShowcase({
             {/* Main Heading Title */}
             <h2
               key={`title-${current.id}`}
-              className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 transition-all duration-300 drop-shadow-sm"
+              className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 transition-all duration-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]"
             >
               {current.title}
             </h2>
@@ -225,12 +240,12 @@ export function DestinationsShowcase({
             {/* Description Text */}
             <p
               key={`desc-${current.id}`}
-              className="text-sm sm:text-base text-white/80 leading-relaxed mb-8 max-w-lg font-light transition-all duration-300 drop-shadow-sm"
+              className="text-sm sm:text-base text-white leading-relaxed mb-8 max-w-lg font-light transition-all duration-300 drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]"
             >
               {current.description}
             </p>
 
-            {/* Editorial Button */}
+            {/* Editorial Button with sliding blue background fill hover effect (100% Tailwind) */}
             <div>
               <button
                 type="button"
@@ -239,9 +254,13 @@ export function DestinationsShowcase({
                     ? onOpenEnquiry(`${current.location}: ${current.title}`)
                     : undefined
                 }
-                className="inline-flex items-center px-6 py-2.5 border-l border-r border-white/60 hover:border-white text-white font-normal text-sm sm:text-base transition-all cursor-pointer group bg-transparent hover:bg-white/10"
+                className="group relative overflow-hidden inline-flex items-center px-6 py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] shadow-sm"
               >
-                <span className="tracking-wide group-hover:tracking-wider transition-all duration-200">
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+                <span className="relative z-10 tracking-wide group-hover:tracking-wider transition-all duration-200">
                   Explore the destination
                 </span>
               </button>
@@ -272,25 +291,15 @@ export function DestinationsShowcase({
               footerRight={
                 <a
                   href="/tours"
-                  className="inline-flex items-center gap-1.5 text-white/90 hover:text-white text-xs sm:text-sm font-medium tracking-wide transition-all group py-1 px-3 rounded-full hover:bg-white/10 select-none cursor-pointer"
+                  className="group relative overflow-hidden inline-flex items-center px-6 py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base tracking-wide transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] select-none whitespace-nowrap shadow-sm"
                 >
-                  <span className="hover:underline underline-offset-4">
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  />
+                  <span className="relative z-10 tracking-wide group-hover:tracking-wider transition-all duration-200">
                     View all destinations
                   </span>
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="transition-transform duration-200 group-hover:translate-x-1"
-                  >
-                    <path d="M5 12h14" />
-                    <path d="m12 5 7 7-7 7" />
-                  </svg>
                 </a>
               }
               background="transparent"

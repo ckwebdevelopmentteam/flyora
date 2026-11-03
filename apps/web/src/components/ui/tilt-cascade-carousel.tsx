@@ -181,7 +181,7 @@ const CSS =
   ".tcc-root:focus-visible{box-shadow:inset 0 0 0 2px var(--color-primary,#171717)}" +
   ".tcc-root[data-dragging]{cursor:grabbing}" +
   ".tcc-root[data-dragging] .tcc-slide{cursor:grabbing}" +
-  ".tcc-stage{position:relative;aspect-ratio:var(--tcc-aspect,3/4);margin-top:-1.75rem}" +
+  ".tcc-stage{position:relative;aspect-ratio:var(--tcc-aspect,3/4);margin-top:-2.75rem}" +
   ".tcc-slide{position:absolute;inset:0;margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;" +
   "cursor:pointer;will-change:transform;transform-origin:50% 50%;-webkit-tap-highlight-color:transparent}" +
   ".tcc-slide:focus-visible{outline:none}" +
@@ -223,12 +223,12 @@ const CSS =
 function Chevron({ dir }: { dir: -1 | 1 }) {
   return (
     <svg
-      width="24"
-      height="24"
+      width="26"
+      height="26"
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="2.4"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
@@ -739,82 +739,51 @@ export default function TiltCascadeCarousel({
 
       {controls && n > 1 ? (
         <div
-          style={{
-            position: "absolute",
-            bottom: "16px",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: "18px",
-            zIndex: 10,
-            width: "max-content",
-            maxWidth: "96%",
-          }}
+          className="absolute bottom-3.5 left-[83px] lg:left-[89px] xl:left-[93px] inline-flex items-center gap-[15px] z-[150] pointer-events-auto"
+          data-tcc-controls=""
         >
-          <div
-            className="tcc-controls"
-            data-tcc-controls=""
-            style={{
-              position: "relative",
-              bottom: "auto",
-              left: "auto",
-              transform: "none",
+          <button
+            type="button"
+            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-[2px] text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 disabled:opacity-30 disabled:cursor-default shadow-md"
+            aria-label="Previous slide"
+            disabled={atStart}
+            onClick={() => {
+              setStopped(true);
+              step(-1);
             }}
           >
-            <button
-              type="button"
-              className="tcc-btn"
-              aria-label="Previous slide"
-              disabled={atStart}
-              onClick={() => {
-                setStopped(true);
-                step(-1);
-              }}
-            >
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+            />
+            <span className="relative z-10 flex items-center justify-center">
               <Chevron dir={-1} />
-            </button>
-            <div className="tcc-dots">
-              {manyDots ? (
-                <span className="tcc-count">
-                  {pad(active + 1)} / {pad(n)}
-                </span>
-              ) : (
-                items.map((item, i) => (
-                  <button
-                    key={i}
-                    type="button"
-                    className="tcc-dot"
-                    aria-label={"Go to slide " + (i + 1) + ": " + item.title}
-                    aria-current={i === active ? "true" : undefined}
-                    onClick={() => {
-                      setStopped(true);
-                      goTo(i);
-                    }}
-                  />
-                ))
-              )}
-            </div>
-            <button
-              type="button"
-              className="tcc-btn"
-              aria-label="Next slide"
-              disabled={atEnd}
-              onClick={() => {
-                setStopped(true);
-                step(1);
-              }}
-            >
+            </span>
+          </button>
+          <button
+            type="button"
+            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-[2px] text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 disabled:opacity-30 disabled:cursor-default shadow-md"
+            aria-label="Next slide"
+            disabled={atEnd}
+            onClick={() => {
+              setStopped(true);
+              step(1);
+            }}
+          >
+            <span
+              aria-hidden="true"
+              className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+            />
+            <span className="relative z-10 flex items-center justify-center">
               <Chevron dir={1} />
-            </button>
-          </div>
+            </span>
+          </button>
+        </div>
+      ) : null}
 
-          {footerRight ? (
-            <div style={{ display: "flex", alignItems: "center" }}>
-              {footerRight}
-            </div>
-          ) : null}
+      {footerRight ? (
+        <div className="absolute bottom-3.5 left-1/2 -translate-x-1/2 z-[150] pointer-events-auto flex items-center">
+          {footerRight}
         </div>
       ) : null}
 
