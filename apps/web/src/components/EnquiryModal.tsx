@@ -5,6 +5,7 @@ import {
   X,
   Send,
   Loader2,
+  Check,
   CheckCircle2,
   MessageCircle,
   Users,
@@ -640,10 +641,10 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                       Full Name <span className="text-red-500">*</span>
                     </label>
                     <div
-                      className={`relative rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3.5 sm:px-4 py-3 sm:py-3.5 gap-2.5 ${
+                      className={`relative rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E1A17]/10 transition-all flex items-center px-3.5 sm:px-4 py-3 sm:py-3.5 gap-2.5 ${
                         validationErrors.fullName
                           ? "border-rose-400 focus-within:border-rose-500"
-                          : "border-neutral-200 focus-within:border-[#1E4D3A]"
+                          : "border-neutral-200 focus-within:border-[#1E1A17]"
                       }`}
                     >
                       <User className="w-4 h-4 text-neutral-400 shrink-0" />
@@ -684,10 +685,10 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                       Email Address
                     </label>
                     <div
-                      className={`relative rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3.5 sm:px-4 py-3 sm:py-3.5 gap-2.5 ${
+                      className={`relative rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E1A17]/10 transition-all flex items-center px-3.5 sm:px-4 py-3 sm:py-3.5 gap-2.5 ${
                         validationErrors.email
                           ? "border-rose-400 focus-within:border-rose-500"
-                          : "border-neutral-200 focus-within:border-[#1E4D3A]"
+                          : "border-neutral-200 focus-within:border-[#1E1A17]"
                       }`}
                     >
                       <Mail className="w-4 h-4 text-neutral-400 shrink-0" />
@@ -729,10 +730,10 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                       <span className="text-red-500">*</span>
                     </label>
                     <div
-                      className={`relative rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3.5 sm:px-4 py-3 sm:py-3.5 gap-2.5 ${
+                      className={`relative rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E1A17]/10 transition-all flex items-center px-3.5 sm:px-4 py-3 sm:py-3.5 gap-2.5 ${
                         validationErrors.phone
                           ? "border-rose-400 focus-within:border-rose-500"
-                          : "border-neutral-200 focus-within:border-[#1E4D3A]"
+                          : "border-neutral-200 focus-within:border-[#1E1A17]"
                       }`}
                     >
                       <Phone className="w-4 h-4 text-neutral-400 shrink-0" />
@@ -812,22 +813,22 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                           }}
                           className={`group flex items-center justify-between px-4 sm:px-4.5 py-3.5 sm:py-4 rounded-2xl transition-all duration-300 ease-in-out cursor-pointer select-none text-left border active:scale-[0.98] ${
                             isSelected
-                              ? "border-[#1E4D3A] bg-[#E3F2E9] hover:bg-[#D0EADB] hover:border-[#13382C] text-[#1E4D3A] shadow-xs hover:shadow-[0_4px_16px_rgba(30,77,58,0.14)] ring-1 ring-[#1E4D3A]"
-                              : "border-neutral-200 bg-white hover:bg-[#F2F8F4] hover:border-[#1E4D3A]/40 hover:text-neutral-900 hover:shadow-[0_2px_10px_rgba(0,0,0,0.05)]"
+                              ? "bg-[#1E1A17] text-white border-[#1E1A17] hover:bg-[#2F2924] hover:border-[#2F2924] shadow-md"
+                              : "bg-white text-neutral-800 border-neutral-200 hover:bg-[#F5F2EB] hover:border-neutral-300 hover:text-neutral-950 hover:shadow-2xs"
                           }`}
                         >
                           <div className="flex items-center gap-3 min-w-0 pr-1">
                             <IconComponent
                               className={`w-5 h-5 shrink-0 transition-all duration-300 ${
                                 isSelected
-                                  ? "text-[#1E4D3A] group-hover:scale-105"
-                                  : "text-neutral-700 group-hover:text-[#1E4D3A] group-hover:scale-105"
+                                  ? "text-white group-hover:scale-105"
+                                  : "text-neutral-600 group-hover:text-neutral-900 group-hover:scale-105"
                               }`}
                             />
                             <span
                               className={`text-[13px] sm:text-[13.5px] font-medium truncate transition-colors duration-300 ${
                                 isSelected
-                                  ? "text-[#1E4D3A] font-semibold"
+                                  ? "text-white font-semibold"
                                   : "text-neutral-800 group-hover:text-neutral-950"
                               }`}
                             >
@@ -836,8 +837,8 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                           </div>
 
                           {isSelected && (
-                            <div className="w-4 h-4 rounded-full bg-[#1E4D3A] text-white flex items-center justify-center shrink-0 ml-1.5 transition-transform duration-300 group-hover:scale-110 animate-in zoom-in-75 duration-200">
-                              <CheckCircle2 className="w-3.5 h-3.5 fill-current text-white stroke-[#1E4D3A]" />
+                            <div className="w-4 h-4 rounded-full bg-white text-[#1E1A17] flex items-center justify-center shrink-0 ml-1.5 transition-transform duration-300 group-hover:scale-110 shadow-2xs">
+                              <Check className="w-2.5 h-2.5 stroke-[3] text-[#1E1A17]" />
                             </div>
                           )}
                         </button>
@@ -856,7 +857,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                     >
                       Preferred Travel Date
                     </label>
-                    <div className="relative rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-4 py-2.5 sm:py-3 gap-2.5 cursor-pointer h-[46px] sm:h-[50px]">
+                    <div className="relative rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E1A17] focus-within:ring-2 focus-within:ring-[#1E1A17]/10 transition-all flex items-center px-4 py-2.5 sm:py-3 gap-2.5 cursor-pointer h-[46px] sm:h-[50px]">
                       <Calendar className="w-4 h-4 text-neutral-400 shrink-0 pointer-events-none" />
                       <input
                         type={formData.travelDate ? "date" : "text"}
@@ -909,7 +910,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                           value={adultsInput}
                           onChange={handleAdultsChange}
                           onBlur={handleAdultsBlur}
-                          className="w-9 sm:w-10 text-center font-semibold text-xs sm:text-[13px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E4D3A]/20 border border-neutral-200 focus:border-[#1E4D3A] rounded-lg py-1 px-1 outline-none transition cursor-text shrink-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          className="w-9 sm:w-10 text-center font-semibold text-xs sm:text-[13px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E1A17]/10 border border-neutral-200 focus:border-[#1E1A17] rounded-lg py-1 px-1 outline-none transition cursor-text shrink-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                       </div>
 
@@ -930,7 +931,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                           value={kidsInput}
                           onChange={handleKidsChange}
                           onBlur={handleKidsBlur}
-                          className="w-9 sm:w-10 text-center font-semibold text-xs sm:text-[13px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E4D3A]/20 border border-neutral-200 focus:border-[#1E4D3A] rounded-lg py-1 px-1 outline-none transition cursor-text shrink-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          className="w-9 sm:w-10 text-center font-semibold text-xs sm:text-[13px] text-neutral-900 bg-neutral-100/70 hover:bg-neutral-100 focus:bg-white focus:ring-2 focus:ring-[#1E1A17]/10 border border-neutral-200 focus:border-[#1E1A17] rounded-lg py-1 px-1 outline-none transition cursor-text shrink-0 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                       </div>
                     </div>
@@ -945,7 +946,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                   >
                     Special Requests (Optional)
                   </label>
-                  <div className="rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all p-4 flex items-start gap-3">
+                  <div className="rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E1A17] focus-within:ring-2 focus-within:ring-[#1E1A17]/10 transition-all p-4 flex items-start gap-3">
                     <PenLine className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
                     <textarea
                       rows={3}
@@ -982,7 +983,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                       !!servicesError ||
                       services.length === 0
                     }
-                    className="px-7 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#13382C] hover:bg-[#0E2920] text-white text-xs sm:text-sm font-semibold flex items-center gap-2.5 shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-60 active:scale-95"
+                    className="px-7 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#1E1A17] hover:bg-[#2F2924] text-white text-xs sm:text-sm font-semibold flex items-center gap-2.5 shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-60 active:scale-95"
                   >
                     {isSubmitting ? (
                       <>
