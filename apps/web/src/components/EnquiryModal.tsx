@@ -389,25 +389,25 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
         event.preventDefault();
         close();
       }}
-      className="fixed inset-0 m-auto w-[92vw] max-w-2xl max-h-[92vh] p-0 rounded-[28px] sm:rounded-[34px] bg-transparent backdrop:bg-black/60 backdrop:backdrop-blur-sm shadow-[0_25px_70px_rgba(0,0,0,0.35)] border-0"
+      className="fixed inset-0 m-auto w-[94vw] max-w-[820px] max-h-[92vh] p-0 rounded-[30px] sm:rounded-[36px] bg-transparent backdrop:bg-black/60 backdrop:backdrop-blur-sm shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-0"
     >
-      <div className="bg-white rounded-[28px] sm:rounded-[34px] shadow-2xl border border-neutral-100 w-full overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="bg-white rounded-[30px] sm:rounded-[36px] shadow-2xl border border-neutral-100 w-full overflow-hidden flex flex-col max-h-[92vh]">
         {/* Header matching exact user uploaded mockup in media_1793685416686_e324fab2.jpg */}
-        <div className="relative pt-7 px-6 sm:px-8 pb-4 bg-white flex items-start justify-between gap-4">
-          <div className="max-w-md">
+        <div className="relative pt-8 sm:pt-9 px-7 sm:px-10 pb-5 bg-white flex items-start justify-between gap-5">
+          <div className="max-w-lg">
             <h3
               id="enquiry-title"
-              className="text-[22px] sm:text-[26px] font-bold text-neutral-900 tracking-tight leading-tight font-sans"
+              className="text-2xl sm:text-[27px] font-bold text-neutral-900 tracking-tight leading-tight font-sans"
             >
               Plan Your Trip with Us
             </h3>
-            <p className="text-xs sm:text-[13.5px] text-neutral-500 font-normal leading-relaxed mt-1.5">
+            <p className="text-xs sm:text-[14px] text-neutral-500 font-normal leading-relaxed mt-1.5">
               Tell us your travel plans and our team will get in touch with the
               best options for you.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3.5 shrink-0 pt-0.5">
             {/* Triple Overlapping Destination Circular Avatars */}
             <div
               className="flex items-center -space-x-3.5 select-none"
@@ -416,17 +416,17 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
               <img
                 src="/services/hajj-packages.jpg"
                 alt=""
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
               />
               <img
                 src="/destinations/maldives_hd.jpg"
                 alt=""
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
               />
               <img
                 src="/destinations/dubai_hd.jpg"
                 alt=""
-                className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
+                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
               />
             </div>
 
@@ -436,15 +436,15 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
               aria-label="Close enquiry"
               disabled={isSubmitting}
               onClick={handleReset}
-              className="p-1.5 sm:p-2 rounded-full text-neutral-400 hover:text-neutral-800 hover:bg-neutral-100 transition-colors cursor-pointer"
+              className="p-1.5 text-neutral-400 hover:text-neutral-800 transition-colors cursor-pointer outline-none focus:outline-none"
             >
-              <X className="w-5 h-5" />
+              <X className="w-5 h-5 stroke-[1.8]" />
             </button>
           </div>
         </div>
 
         {/* Content Body */}
-        <div className="px-6 sm:px-8 pb-7 overflow-y-auto flex-1 no-scrollbar">
+        <div className="px-7 sm:px-10 pb-6 sm:pb-8 overflow-y-auto flex-1 no-scrollbar">
           {submissionSuccess ? (
             /* Success State */
             <div className="text-center py-8 animate-in zoom-in-95 duration-200">
@@ -490,12 +490,18 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
             </div>
           ) : (
             /* Form State matching reference design */
-            <form onSubmit={handleSubmit} className="space-y-4 pt-1">
-              <fieldset disabled={isSubmitting} className="space-y-4 min-w-0">
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-6 sm:space-y-6.5 pt-1"
+            >
+              <fieldset
+                disabled={isSubmitting}
+                className="space-y-6 sm:space-y-6.5 min-w-0"
+              >
                 {servicesError && (
                   <div
                     role="alert"
-                    className="text-xs text-rose-700 bg-rose-50 p-3 rounded-xl border border-rose-200"
+                    className="text-xs text-rose-700 bg-rose-50 p-3.5 rounded-xl border border-rose-200"
                   >
                     {servicesError}{" "}
                     <button
@@ -509,7 +515,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 )}
 
                 {serverError && (
-                  <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
+                  <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span role="alert">
                       {serverError}{" "}
@@ -530,7 +536,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 {Object.keys(validationErrors).length > 0 && (
                   <div
                     role="alert"
-                    className="text-xs text-rose-700 bg-rose-50/80 p-2.5 rounded-xl border border-rose-100"
+                    className="text-xs text-rose-700 bg-rose-50/80 p-3 rounded-xl border border-rose-100"
                   >
                     {Object.entries(validationErrors).map(
                       ([field, message]) => (
@@ -555,17 +561,17 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 )}
 
                 {/* 1. ROW 1: Full Name, Email Address, and Phone / WhatsApp */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 sm:gap-4.5">
                   {/* Full Name */}
                   <div>
                     <label
                       htmlFor="enquiry-fullName"
-                      className="block text-xs font-semibold text-neutral-800 mb-1.5"
+                      className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2"
                     >
                       Full Name <span className="text-red-500">*</span>
                     </label>
                     <div
-                      className={`relative rounded-xl sm:rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3 py-2.5 sm:py-3 gap-2 ${
+                      className={`relative rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3.5 sm:px-4 py-3 sm:py-3.5 gap-2.5 ${
                         validationErrors.fullName
                           ? "border-rose-400 focus-within:border-rose-500"
                           : "border-neutral-200 focus-within:border-[#1E4D3A]"
@@ -576,7 +582,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                         type="text"
                         id="enquiry-fullName"
                         autoComplete="name"
-                        placeholder="Enter full name"
+                        placeholder="Enter your full name"
                         aria-describedby={
                           validationErrors.fullName
                             ? "enquiry-fullName-error"
@@ -587,7 +593,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                         onChange={(e) =>
                           setFormData({ ...formData, fullName: e.target.value })
                         }
-                        className="w-full text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal"
+                        className="w-full text-xs sm:text-[13.5px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal"
                       />
                     </div>
                     {validationErrors.fullName && (
@@ -604,12 +610,12 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                   <div>
                     <label
                       htmlFor="enquiry-email"
-                      className="block text-xs font-semibold text-neutral-800 mb-1.5"
+                      className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2"
                     >
                       Email Address
                     </label>
                     <div
-                      className={`relative rounded-xl sm:rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3 py-2.5 sm:py-3 gap-2 ${
+                      className={`relative rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3.5 sm:px-4 py-3 sm:py-3.5 gap-2.5 ${
                         validationErrors.email
                           ? "border-rose-400 focus-within:border-rose-500"
                           : "border-neutral-200 focus-within:border-[#1E4D3A]"
@@ -620,7 +626,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                         type="email"
                         id="enquiry-email"
                         autoComplete="email"
-                        placeholder="Enter email address"
+                        placeholder="Enter your email address"
                         aria-describedby={
                           validationErrors.email
                             ? "enquiry-email-error"
@@ -631,7 +637,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                         onChange={(e) =>
                           setFormData({ ...formData, email: e.target.value })
                         }
-                        className="w-full text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal"
+                        className="w-full text-xs sm:text-[13.5px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal"
                       />
                     </div>
                     {validationErrors.email && (
@@ -648,13 +654,13 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                   <div>
                     <label
                       htmlFor="enquiry-phone"
-                      className="block text-xs font-semibold text-neutral-800 mb-1.5"
+                      className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2"
                     >
                       Phone / WhatsApp Number{" "}
                       <span className="text-red-500">*</span>
                     </label>
                     <div
-                      className={`relative rounded-xl sm:rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3 py-2.5 sm:py-3 gap-2 ${
+                      className={`relative rounded-2xl border bg-white focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3.5 sm:px-4 py-3 sm:py-3.5 gap-2.5 ${
                         validationErrors.phone
                           ? "border-rose-400 focus-within:border-rose-500"
                           : "border-neutral-200 focus-within:border-[#1E4D3A]"
@@ -677,7 +683,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                         onChange={(e) =>
                           setFormData({ ...formData, phone: e.target.value })
                         }
-                        className="w-full text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal"
+                        className="w-full text-xs sm:text-[13.5px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none font-normal"
                       />
                     </div>
                     {validationErrors.phone && (
@@ -693,7 +699,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
 
                 {/* 2. ROW 2: Travel Service * (Exact 6-service grid matching reference) */}
                 <div>
-                  <label className="block text-xs font-semibold text-neutral-800 mb-1.5">
+                  <label className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2">
                     Travel Service <span className="text-red-500">*</span>
                   </label>
 
@@ -715,7 +721,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                     ))}
                   </select>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5">
                     {SERVICE_DEFINITIONS.map((def) => {
                       const IconComponent = def.icon;
                       const matchedService = getServiceForCard(def);
@@ -735,22 +741,22 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                               });
                             }
                           }}
-                          className={`flex items-center justify-between px-3 sm:px-3.5 py-3 sm:py-3.5 rounded-xl sm:rounded-2xl transition-all duration-200 cursor-pointer select-none text-left border ${
+                          className={`flex items-center justify-between px-4 sm:px-4.5 py-3.5 sm:py-4 rounded-2xl transition-all duration-200 cursor-pointer select-none text-left border ${
                             isSelected
-                              ? "border-[#1E4D3A] bg-[#F0F7F4]/50 shadow-xs"
+                              ? "border-[#1E4D3A] bg-[#F0F7F4]/60 shadow-xs ring-1 ring-[#1E4D3A]"
                               : "border-neutral-200 bg-white hover:bg-neutral-50 hover:border-neutral-300"
                           }`}
                         >
-                          <div className="flex items-center gap-2.5 min-w-0 pr-1">
+                          <div className="flex items-center gap-3 min-w-0 pr-1">
                             <IconComponent
-                              className={`w-[18px] h-[18px] shrink-0 transition-colors ${
+                              className={`w-5 h-5 shrink-0 transition-colors ${
                                 isSelected
                                   ? "text-[#1E4D3A]"
                                   : "text-neutral-700"
                               }`}
                             />
                             <span
-                              className={`text-xs sm:text-[13px] font-medium truncate ${
+                              className={`text-[13px] sm:text-[13.5px] font-medium truncate ${
                                 isSelected
                                   ? "text-[#1E4D3A] font-semibold"
                                   : "text-neutral-800"
@@ -761,7 +767,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                           </div>
 
                           {isSelected && (
-                            <div className="w-4 h-4 rounded-full bg-[#1E4D3A] text-white flex items-center justify-center shrink-0 ml-1">
+                            <div className="w-4 h-4 rounded-full bg-[#1E4D3A] text-white flex items-center justify-center shrink-0 ml-1.5">
                               <CheckCircle2 className="w-3.5 h-3.5 fill-current text-white stroke-[#1E4D3A]" />
                             </div>
                           )}
@@ -772,16 +778,16 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 </div>
 
                 {/* 3. ROW 3: Preferred Travel Date & Number of Travellers */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
                   {/* Preferred Travel Date */}
                   <div>
                     <label
                       htmlFor="enquiry-travelDate"
-                      className="block text-xs font-semibold text-neutral-800 mb-1.5"
+                      className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2"
                     >
                       Preferred Travel Date
                     </label>
-                    <div className="relative rounded-xl sm:rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-3.5 py-2.5 sm:py-3 gap-2.5 cursor-pointer">
+                    <div className="relative rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all flex items-center px-4 py-3 sm:py-3.5 gap-2.5 cursor-pointer">
                       <Calendar className="w-4 h-4 text-neutral-400 shrink-0 pointer-events-none" />
                       <input
                         type={formData.travelDate ? "date" : "text"}
@@ -810,15 +816,15 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
 
                   {/* Number of Travellers Split Component */}
                   <div>
-                    <label className="block text-xs font-semibold text-neutral-800 mb-1.5">
+                    <label className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2">
                       Number of Travellers
                     </label>
-                    <div className="rounded-xl sm:rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 transition-all flex items-center divide-x divide-neutral-200 py-1">
+                    <div className="rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 transition-all flex items-center divide-x divide-neutral-200 py-1.5 sm:py-2">
                       {/* Adults (12+) */}
-                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 gap-1.5">
-                        <div className="flex items-center gap-1.5 min-w-0">
-                          <Users className="w-3.5 h-3.5 text-neutral-400 shrink-0" />
-                          <span className="text-[11.5px] sm:text-xs font-medium text-neutral-700 truncate">
+                      <div className="flex-1 flex items-center justify-between px-3.5 sm:px-4 py-1.5 gap-2">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <Users className="w-4 h-4 text-neutral-400 shrink-0" />
+                          <span className="text-xs sm:text-[13px] font-medium text-neutral-700 truncate">
                             Adults (12+)
                           </span>
                         </div>
@@ -832,7 +838,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                               numberOfAdults: Number(e.target.value),
                             })
                           }
-                          className="bg-transparent text-xs sm:text-[13px] font-semibold text-neutral-900 outline-none cursor-pointer pr-1"
+                          className="bg-transparent text-xs sm:text-[13.5px] font-semibold text-neutral-900 outline-none cursor-pointer pr-1"
                         >
                           {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20].map((n) => (
                             <option key={n} value={n}>
@@ -843,8 +849,8 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                       </div>
 
                       {/* Children (0–11) */}
-                      <div className="flex-1 flex items-center justify-between px-3 py-1.5 gap-1.5">
-                        <span className="text-[11.5px] sm:text-xs font-medium text-neutral-700 truncate pl-1">
+                      <div className="flex-1 flex items-center justify-between px-3.5 sm:px-4 py-1.5 gap-2">
+                        <span className="text-xs sm:text-[13px] font-medium text-neutral-700 truncate pl-1">
                           Children (0–11)
                         </span>
                         <select
@@ -857,7 +863,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                               numberOfKids: Number(e.target.value),
                             })
                           }
-                          className="bg-transparent text-xs sm:text-[13px] font-semibold text-neutral-900 outline-none cursor-pointer pr-1"
+                          className="bg-transparent text-xs sm:text-[13.5px] font-semibold text-neutral-900 outline-none cursor-pointer pr-1"
                         >
                           {[0, 1, 2, 3, 4, 5, 6, 7, 8].map((n) => (
                             <option key={n} value={n}>
@@ -874,11 +880,11 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 <div>
                   <label
                     htmlFor="enquiry-notes"
-                    className="block text-xs font-semibold text-neutral-800 mb-1.5"
+                    className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2"
                   >
                     Special Requests (Optional)
                   </label>
-                  <div className="rounded-xl sm:rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all p-3 flex items-start gap-2.5">
+                  <div className="rounded-2xl border border-neutral-200 bg-white hover:border-neutral-300 focus-within:border-[#1E4D3A] focus-within:ring-2 focus-within:ring-[#1E4D3A]/20 transition-all p-4 flex items-start gap-3">
                     <PenLine className="w-4 h-4 text-neutral-400 mt-0.5 shrink-0" />
                     <textarea
                       rows={3}
@@ -890,18 +896,18 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                       onChange={(e) =>
                         setFormData({ ...formData, notes: e.target.value })
                       }
-                      className="w-full text-xs sm:text-[13px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none resize-none font-normal leading-relaxed"
+                      className="w-full text-xs sm:text-[13.5px] text-neutral-900 placeholder:text-neutral-400 bg-transparent outline-none resize-none font-normal leading-relaxed min-h-[90px]"
                     />
                   </div>
                 </div>
 
                 {/* 5. FOOTER: Cancel and Send Enquiry Buttons */}
-                <div className="pt-3 border-t border-neutral-100 flex items-center justify-end gap-3 mt-5">
+                <div className="pt-5 sm:pt-6 border-t border-solid border-neutral-200/80 flex items-center justify-end gap-3.5 mt-6 sm:mt-7">
                   <button
                     type="button"
                     disabled={isSubmitting}
                     onClick={handleReset}
-                    className="px-5 py-2.5 rounded-full text-xs sm:text-sm font-semibold text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                    className="px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-semibold text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -915,7 +921,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                       !!servicesError ||
                       services.length === 0
                     }
-                    className="px-6 sm:px-7 py-2.5 sm:py-3 rounded-full bg-[#13382C] hover:bg-[#0E2920] text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-60 active:scale-95"
+                    className="px-7 sm:px-8 py-3 sm:py-3.5 rounded-full bg-[#13382C] hover:bg-[#0E2920] text-white text-xs sm:text-sm font-semibold flex items-center gap-2.5 shadow-sm hover:shadow transition-all cursor-pointer disabled:opacity-60 active:scale-95"
                   >
                     {isSubmitting ? (
                       <>
