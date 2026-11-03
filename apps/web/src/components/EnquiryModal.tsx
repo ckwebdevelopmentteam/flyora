@@ -17,8 +17,10 @@ import {
   Plane,
   Bus,
   Train,
+  Hotel,
   Luggage,
   Package,
+  Compass,
   PenLine,
 } from "lucide-react";
 import type { PublicEnquiryInput } from "@flyora/validators";
@@ -53,45 +55,65 @@ const PassportIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   </svg>
 );
 
-// 6 Target travel services from reference design
-const SERVICE_DEFINITIONS = [
-  {
-    key: "flight",
-    label: "Flight Booking",
-    icon: Plane,
-    matchKeywords: ["flight", "corporate-flight", "flights"],
-  },
-  {
-    key: "bus",
-    label: "Bus Booking",
-    icon: Bus,
-    matchKeywords: ["bus", "buses"],
-  },
-  {
-    key: "train",
-    label: "Train Booking",
-    icon: Train,
-    matchKeywords: ["train", "trains"],
-  },
-  {
-    key: "visa",
-    label: "Visa Assistance",
-    icon: PassportIcon,
-    matchKeywords: ["visa", "visas"],
-  },
-  {
-    key: "holiday",
-    label: "Holiday Package",
-    icon: Luggage,
-    matchKeywords: ["holiday", "holidays", "custom", "tour"],
-  },
-  {
-    key: "hajj",
-    label: "Hajj Package",
-    icon: Package,
-    matchKeywords: ["hajj", "umrah", "pilgrimage"],
-  },
-];
+// Dynamic Icon Resolver based on service name & slug
+const getServiceIcon = (service: { name: string; slug?: string }) => {
+  const text = `${service.name} ${service.slug || ""}`.toLowerCase();
+  if (
+    text.includes("flight") ||
+    text.includes("airline") ||
+    text.includes("plane") ||
+    text.includes("air")
+  ) {
+    return Plane;
+  }
+  if (text.includes("bus") || text.includes("coach")) {
+    return Bus;
+  }
+  if (
+    text.includes("train") ||
+    text.includes("rail") ||
+    text.includes("metro")
+  ) {
+    return Train;
+  }
+  if (
+    text.includes("hotel") ||
+    text.includes("resort") ||
+    text.includes("stay") ||
+    text.includes("room") ||
+    text.includes("accommodation")
+  ) {
+    return Hotel;
+  }
+  if (text.includes("visa") || text.includes("passport")) {
+    return PassportIcon;
+  }
+  if (
+    text.includes("hajj") ||
+    text.includes("umrah") ||
+    text.includes("pilgrim") ||
+    text.includes("makkah") ||
+    text.includes("madinah")
+  ) {
+    return Package;
+  }
+  if (
+    text.includes("holiday") ||
+    text.includes("tour") ||
+    text.includes("trip") ||
+    text.includes("vacation") ||
+    text.includes("package")
+  ) {
+    return Luggage;
+  }
+  return Compass;
+};
+
+// Formatter to clean up any odd admin casing while preserving service naming
+const formatServiceName = (name: string) => {
+  if (name.toLowerCase() === "bus booking") return "Bus Booking";
+  return name;
+};
 
 export const EnquiryModal: React.FC<EnquiryModalProps> = (props) =>
   props.isOpen ? (
@@ -309,7 +331,11 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
 
           setFormData((prev) => ({
             ...prev,
-            serviceId: prev.serviceId || initialId,
+            serviceId:
+              prev.serviceId &&
+              data.data.some((s: ServiceSummary) => s.id === prev.serviceId)
+                ? prev.serviceId
+                : initialId,
           }));
         }
       } catch {
@@ -436,20 +462,6 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
       ? `Hi Flyora Travels, my enquiry reference is ${submissionSuccess.leadId}.`
       : "Hi Flyora Travels, I need help with a travel enquiry.",
   );
-
-  // Helper to map card definition to backend service ID
-  const getServiceForCard = (def: (typeof SERVICE_DEFINITIONS)[0]) => {
-    if (!services.length) return null;
-    return (
-      services.find((s) =>
-        def.matchKeywords.some(
-          (kw) =>
-            s.name.toLowerCase().includes(kw) ||
-            (s.slug || "").toLowerCase().includes(kw),
-        ),
-      ) || null
-    );
-  };
 
   return (
     <dialog
@@ -767,7 +779,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                   </div>
                 </div>
 
-                {/* 2. ROW 2: Travel Service * (Exact 6-service grid matching reference) */}
+                {/* 2. ROW 2: Travel Service * (Dynamic backend services grid) */}
                 <div>
                   <label className="block text-xs sm:text-[13px] font-semibold text-neutral-800 mb-2">
                     Travel Service <span className="text-red-500">*</span>
@@ -791,60 +803,76 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                     ))}
                   </select>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5">
-                    {SERVICE_DEFINITIONS.map((def) => {
-                      const IconComponent = def.icon;
-                      const matchedService = getServiceForCard(def);
-                      const isSelected =
-                        matchedService &&
-                        formData.serviceId === matchedService.id;
+                  {isLoadingServices ? (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5">
+                      {Array.from({ length: 6 }).map((_, idx) => (
+                        <div
+                          key={idx}
+                          className="h-[52px] sm:h-[56px] rounded-2xl bg-neutral-100/70 border border-neutral-200/50 animate-pulse"
+                        />
+                      ))}
+                    </div>
+                  ) : services.length === 0 ? (
+                    <div className="p-4 rounded-2xl border border-dashed border-neutral-200 text-center text-xs text-neutral-400">
+                      No travel services available at the moment.
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-3.5">
+                      {services.map((srv) => {
+                        const IconComponent = getServiceIcon(srv);
+                        const isSelected = formData.serviceId === srv.id;
 
-                      return (
-                        <button
-                          key={def.key}
-                          type="button"
-                          onClick={() => {
-                            if (matchedService) {
-                              setFormData({
-                                ...formData,
-                                serviceId: matchedService.id,
-                              });
-                            }
-                          }}
-                          className={`group flex items-center justify-between px-4 sm:px-4.5 py-3.5 sm:py-4 rounded-2xl transition-all duration-300 ease-in-out cursor-pointer select-none text-left border active:scale-[0.98] ${
-                            isSelected
-                              ? "bg-[#1E1A17] text-white border-[#1E1A17] hover:bg-[#2F2924] hover:border-[#2F2924] shadow-md"
-                              : "bg-white text-neutral-800 border-neutral-200 hover:bg-[#F5F2EB] hover:border-neutral-300 hover:text-neutral-950 hover:shadow-2xs"
-                          }`}
-                        >
-                          <div className="flex items-center gap-3 min-w-0 pr-1">
-                            <IconComponent
-                              className={`w-5 h-5 shrink-0 transition-all duration-300 ${
-                                isSelected
-                                  ? "text-white group-hover:scale-105"
-                                  : "text-neutral-600 group-hover:text-neutral-900 group-hover:scale-105"
-                              }`}
-                            />
-                            <span
-                              className={`text-[13px] sm:text-[13.5px] font-medium truncate transition-colors duration-300 ${
-                                isSelected
-                                  ? "text-white font-semibold"
-                                  : "text-neutral-800 group-hover:text-neutral-950"
-                              }`}
-                            >
-                              {def.label}
-                            </span>
-                          </div>
-
-                          {isSelected && (
-                            <div className="w-4 h-4 rounded-full bg-white text-[#1E1A17] flex items-center justify-center shrink-0 ml-1.5 transition-transform duration-300 group-hover:scale-110 shadow-2xs">
-                              <Check className="w-2.5 h-2.5 stroke-[3] text-[#1E1A17]" />
+                        return (
+                          <button
+                            key={srv.id}
+                            type="button"
+                            onClick={() => {
+                              setFormData((prev) => ({
+                                ...prev,
+                                serviceId: srv.id,
+                              }));
+                            }}
+                            className={`group flex items-center justify-between px-4 sm:px-4.5 py-3.5 sm:py-4 rounded-2xl transition-all duration-300 ease-in-out cursor-pointer select-none text-left border active:scale-[0.98] ${
+                              isSelected
+                                ? "bg-[#1E1A17] text-white border-[#1E1A17] hover:bg-[#2F2924] hover:border-[#2F2924] shadow-md"
+                                : "bg-white text-neutral-800 border-neutral-200 hover:bg-[#F5F2EB] hover:border-neutral-300 hover:text-neutral-950 hover:shadow-2xs"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 min-w-0 pr-1">
+                              <IconComponent
+                                className={`w-5 h-5 shrink-0 transition-all duration-300 ${
+                                  isSelected
+                                    ? "text-white group-hover:scale-105"
+                                    : "text-neutral-600 group-hover:text-neutral-900 group-hover:scale-105"
+                                }`}
+                              />
+                              <span
+                                className={`text-[13px] sm:text-[13.5px] font-medium truncate transition-colors duration-300 ${
+                                  isSelected
+                                    ? "text-white font-semibold"
+                                    : "text-neutral-800 group-hover:text-neutral-950"
+                                }`}
+                              >
+                                {formatServiceName(srv.name)}
+                              </span>
                             </div>
-                          )}
-                        </button>
-                      );
-                    })}
-                  </div>
+
+                            {isSelected && (
+                              <div className="w-4 h-4 rounded-full bg-white text-[#1E1A17] flex items-center justify-center shrink-0 ml-1.5 transition-transform duration-300 group-hover:scale-110 shadow-2xs">
+                                <Check className="w-2.5 h-2.5 stroke-[3] text-[#1E1A17]" />
+                              </div>
+                            )}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {validationErrors.serviceId && (
+                    <p className="text-[11px] text-rose-600 mt-1.5">
+                      {validationErrors.serviceId}
+                    </p>
+                  )}
                 </div>
 
                 {/* 3. ROW 3: Preferred Travel Date & Number of Travellers */}
