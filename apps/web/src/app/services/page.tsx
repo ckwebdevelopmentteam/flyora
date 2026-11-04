@@ -380,7 +380,7 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
   onToggle,
   options,
   onSelect,
-  dropdownWidth = "w-72 sm:w-80",
+  dropdownWidth = "w-72 sm:w-88",
   className = "flex-1 min-w-0",
 }) => {
   return (
@@ -388,24 +388,24 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
       <button
         type="button"
         onClick={onToggle}
-        className="w-full flex items-center gap-3 sm:gap-3.5 group cursor-pointer text-left focus:outline-none transition-transform duration-150 active:scale-[0.99] py-1 select-none px-2 sm:px-3 rounded-[8px] hover:bg-black/[0.03]"
+        className="w-full flex items-center gap-3 sm:gap-4 group cursor-pointer text-left focus:outline-none transition-transform duration-150 active:scale-[0.99] py-1.5 select-none px-2.5 sm:px-3.5 rounded-[8px] hover:bg-black/[0.03]"
       >
         {/* Soft Circular Icon Container */}
-        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#F4F1EA] group-hover:bg-[#EAE5DC] flex items-center justify-center shrink-0 transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
-          <IconComponent className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-[#2C241E] stroke-[1.6]" />
+        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#F4F1EA] group-hover:bg-[#EAE5DC] flex items-center justify-center shrink-0 transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
+          <IconComponent className="w-5 h-5 sm:w-[22px] sm:h-[22px] text-[#2C241E] stroke-[1.7]" />
         </div>
 
         {/* Text Block: Label on top, Value + Chevron below */}
         <div className="flex flex-col min-w-0 flex-1 pr-1">
-          <span className="text-[11px] sm:text-[11.5px] text-[#78716A] font-normal leading-tight mb-0.5 select-none truncate">
+          <span className="text-[12px] sm:text-[13px] text-[#78716A] font-medium leading-tight mb-1 select-none truncate">
             {label}
           </span>
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <span className="text-[13.5px] sm:text-[14.5px] font-semibold text-[#1C1917] tracking-tight leading-tight group-hover:text-[#002f89] transition-colors truncate">
+          <div className="flex items-center justify-between gap-2 w-full">
+            <span className="text-[15px] sm:text-[16px] lg:text-[17px] font-bold sm:font-semibold text-[#1C1917] tracking-tight leading-tight group-hover:text-[#002f89] transition-colors truncate">
               {value}
             </span>
             <ChevronDown
-              className={`w-3.5 h-3.5 text-[#78716A] group-hover:text-[#1C1917] shrink-0 transition-transform duration-200 ${
+              className={`w-4 h-4 text-[#78716A] group-hover:text-[#1C1917] shrink-0 transition-transform duration-200 ${
                 isOpen ? "rotate-180 text-[#002f89]" : ""
               }`}
             />
@@ -416,7 +416,7 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
       {/* Upward luxury dropdown with standard rounded-[8px] */}
       {isOpen && (
         <div
-          className={`absolute left-0 bottom-[calc(100%+12px)] z-50 ${dropdownWidth} bg-white rounded-[8px] p-2 shadow-[0_24px_55px_rgba(0,0,0,0.25),0_6px_20px_rgba(0,0,0,0.12)] border border-neutral-200/90 animate-in fade-in slide-in-from-bottom-2 duration-150 max-h-[300px] overflow-y-auto no-scrollbar`}
+          className={`absolute left-0 bottom-[calc(100%+12px)] z-50 ${dropdownWidth} bg-white rounded-[8px] p-2.5 shadow-[0_24px_55px_rgba(0,0,0,0.25),0_6px_20px_rgba(0,0,0,0.12)] border border-neutral-200/90 animate-in fade-in slide-in-from-bottom-2 duration-150 max-h-[320px] overflow-y-auto no-scrollbar`}
         >
           {options.map((opt, idx) => {
             const isSelected = value === opt.label;
@@ -425,22 +425,24 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
                 key={idx}
                 type="button"
                 onClick={() => onSelect(opt.label)}
-                className={`w-full px-3.5 py-2.5 rounded-[6px] text-left flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
+                className={`w-full px-4 py-2.5 rounded-[6px] text-left flex items-center justify-between gap-3 transition-colors cursor-pointer ${
                   isSelected
                     ? "bg-[#F4F1EA] text-[#002f89] font-semibold"
                     : "hover:bg-neutral-50 text-neutral-800 font-normal"
                 }`}
               >
                 <div className="min-w-0 pr-1">
-                  <div className="text-[13.5px] truncate">{opt.label}</div>
+                  <div className="text-[14px] sm:text-[14.5px] truncate">
+                    {opt.label}
+                  </div>
                   {opt.sub && (
-                    <div className="text-[11px] text-neutral-400 truncate mt-0.5">
+                    <div className="text-[12px] text-neutral-400 truncate mt-0.5">
                       {opt.sub}
                     </div>
                   )}
                 </div>
                 {isSelected && (
-                  <Check className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
+                  <Check className="w-4 h-4 text-[#002f89] shrink-0" />
                 )}
               </button>
             );
@@ -878,7 +880,7 @@ export default function ServicesPage() {
           </div>
 
           {/* Hero Content Container */}
-          <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col justify-center">
+          <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] flex-1 flex flex-col justify-center">
             {/* Main Hero Headline - staggered entrance 1 */}
             <div
               key={`headline-wrap-${activeService.id}`}
@@ -913,7 +915,7 @@ export default function ServicesPage() {
 
             {/* 7 HERO SERVICE CARDS (Matching Homepage Hero Design, rounded-[8px]) */}
             <div className="relative mt-8 sm:mt-10 mb-3.5">
-              <div className="flex lg:grid lg:grid-cols-7 items-stretch gap-2.5 sm:gap-3 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth px-1 lg:px-0 pt-3 pb-3">
+              <div className="flex lg:grid lg:grid-cols-7 items-stretch gap-2.5 sm:gap-3 lg:gap-3.5 xl:gap-4 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth px-1 lg:px-0 pt-3 pb-3">
                 {HERO_SERVICES.map((s, idx) => {
                   const IconComp = s.icon;
                   const isActive = idx === activeServiceIndex;
@@ -959,10 +961,10 @@ export default function ServicesPage() {
 
                       {/* Bottom Row: Typography */}
                       <div className="relative z-30 w-full mt-auto">
-                        <div className="text-[13px] sm:text-[14px] lg:text-[15px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] whitespace-normal break-words">
+                        <div className="text-[13.5px] sm:text-[14.5px] lg:text-[15.5px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] whitespace-normal break-words">
                           {s.name}
                         </div>
-                        <div className="text-[11px] sm:text-[11.5px] lg:text-[12px] font-medium text-white/95 leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words mt-1">
+                        <div className="text-[11.5px] sm:text-[12px] lg:text-[12.5px] font-medium text-white/95 leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words mt-1">
                           {s.subtitle}
                         </div>
                       </div>
@@ -975,7 +977,7 @@ export default function ServicesPage() {
             {/* CONCIERGE SEARCH BAR (rounded-[8px] & Blue Action Button) */}
             <div
               ref={conciergeBarRef}
-              className="relative z-40 w-full bg-[#FAF8F5]/95 backdrop-blur-md text-[#1E1A17] rounded-[8px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-white/80 transition-all duration-300"
+              className="relative z-40 w-full bg-[#FAF8F5]/95 backdrop-blur-md text-[#1E1A17] rounded-[8px] p-3 sm:px-7 sm:py-4 lg:px-8 lg:py-4.5 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-white/80 transition-all duration-300"
             >
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-2">
                 <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-[#E5E0D5]/50 min-w-0">
@@ -1001,7 +1003,7 @@ export default function ServicesPage() {
                         }}
                         dropdownWidth="w-72 sm:w-80"
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={CalendarDays}
                         label="Travel Period"
@@ -1020,7 +1022,7 @@ export default function ServicesPage() {
                           setOpenDropdown(null);
                         }}
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={Users}
                         label="Travellers"
@@ -1064,7 +1066,7 @@ export default function ServicesPage() {
                         }}
                         dropdownWidth="w-72 sm:w-88"
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={CalendarDays}
                         label="Expected Timeline"
@@ -1081,7 +1083,7 @@ export default function ServicesPage() {
                           setOpenDropdown(null);
                         }}
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={Users}
                         label="Applicants"
@@ -1125,7 +1127,7 @@ export default function ServicesPage() {
                         }}
                         dropdownWidth="w-72 sm:w-88"
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={CalendarDays}
                         label="Departure Date"
@@ -1144,7 +1146,7 @@ export default function ServicesPage() {
                           setOpenDropdown(null);
                         }}
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={Users}
                         label="Passengers & Class"
@@ -1188,7 +1190,7 @@ export default function ServicesPage() {
                         }}
                         dropdownWidth="w-72 sm:w-88"
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={CalendarDays}
                         label="Travel Date"
@@ -1205,7 +1207,7 @@ export default function ServicesPage() {
                           setOpenDropdown(null);
                         }}
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={Users}
                         label="Travel Class"
@@ -1247,7 +1249,7 @@ export default function ServicesPage() {
                         }}
                         dropdownWidth="w-72 sm:w-88"
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={CalendarDays}
                         label="Travel Date"
@@ -1264,7 +1266,7 @@ export default function ServicesPage() {
                           setOpenDropdown(null);
                         }}
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={Users}
                         label="Seat Preference"
@@ -1304,7 +1306,7 @@ export default function ServicesPage() {
                         }}
                         dropdownWidth="w-72 sm:w-88"
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={CalendarDays}
                         label="Travel Period"
@@ -1323,7 +1325,7 @@ export default function ServicesPage() {
                           setOpenDropdown(null);
                         }}
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={Users}
                         label="Pilgrims"
@@ -1365,7 +1367,7 @@ export default function ServicesPage() {
                         }}
                         dropdownWidth="w-72 sm:w-88"
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={CalendarDays}
                         label="Travel Period"
@@ -1384,7 +1386,7 @@ export default function ServicesPage() {
                           setOpenDropdown(null);
                         }}
                       />
-                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <div className="h-10 w-px bg-[#E5E0D5] mx-2 sm:mx-3.5 lg:mx-4.5 shrink-0 hidden sm:block" />
                       <ConciergePillField
                         icon={Users}
                         label="Pilgrims"
@@ -1411,7 +1413,7 @@ export default function ServicesPage() {
                 <button
                   type="button"
                   onClick={handleRequestQuote}
-                  className="w-full lg:w-auto h-[48px] sm:h-[52px] px-8 sm:px-9 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-medium text-[14.5px] sm:text-[15px] flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_16px_rgba(0,47,137,0.35)] hover:shadow-[0_6px_22px_rgba(0,47,137,0.5)] cursor-pointer whitespace-nowrap shrink-0 lg:ml-4 select-none active:scale-[0.98]"
+                  className="w-full lg:w-auto h-[52px] sm:h-[56px] px-8 sm:px-10 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-semibold text-[15.5px] sm:text-[16px] flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_18px_rgba(0,47,137,0.4)] hover:shadow-[0_6px_24px_rgba(0,47,137,0.55)] cursor-pointer whitespace-nowrap shrink-0 lg:ml-4 select-none active:scale-[0.98]"
                 >
                   {isSubmitted ? (
                     <>
