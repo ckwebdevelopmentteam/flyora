@@ -72,7 +72,7 @@ export const MobileFilterDrawer: React.FC<MobileFilterDrawerProps> = ({
           </button>
           <button
             onClick={onClose}
-            className="flex-1 py-3 px-4 rounded-xl bg-[#4A2E18] text-white text-xs font-semibold shadow-sm hover:bg-[#38200F] transition flex items-center justify-center gap-2"
+            className="flex-1 py-3 px-4 rounded-xl bg-[#002f89] text-white text-xs font-semibold shadow-sm hover:bg-[#00246b] transition flex items-center justify-center gap-2"
           >
             <Check className="w-4 h-4" />
             <span>Show {totalResults} Packages</span>

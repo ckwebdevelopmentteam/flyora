@@ -442,7 +442,7 @@ export default function ServicesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FDFCFB] text-[#1C1815] selection:bg-[#463D34] selection:text-white">
+    <div className="min-h-screen bg-[#FDFCFB] text-[#1C1815] selection:bg-[#002f89] selection:text-white">
       {/* 1. Flyora Floating Navbar */}
       <Navbar
         activePath="/services"
@@ -582,7 +582,7 @@ export default function ServicesPage() {
                         {fullName || "Traveler"}
                       </span>
                       . Our dedicated coordinator for{" "}
-                      <strong className="font-bold text-[#463D34]">
+                      <strong className="font-bold text-[#002f89]">
                         {activeService.name}
                       </strong>{" "}
                       will contact you via WhatsApp/phone shortly with
@@ -592,7 +592,7 @@ export default function ServicesPage() {
                       <button
                         type="button"
                         onClick={() => setSubmitted(false)}
-                        className="inline-flex items-center justify-center px-6 py-2.5 rounded-none border border-[#463D34] bg-white text-[#463D34] text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider hover:bg-[#463D34] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
+                        className="inline-flex items-center justify-center px-6 py-2.5 rounded-none border border-[#002f89] bg-[#002f89] text-white text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider hover:bg-[#00246b] transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
                       >
                         Submit Another Enquiry
                       </button>
@@ -627,7 +627,7 @@ export default function ServicesPage() {
                         type="date"
                         value={travelDate}
                         onChange={(e) => setTravelDate(e.target.value)}
-                        className="w-full h-11 px-3.5 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition"
+                        className="w-full h-11 px-3.5 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:bg-white transition"
                       />
                     </div>
 
@@ -640,7 +640,7 @@ export default function ServicesPage() {
                       <select
                         value={travelers}
                         onChange={(e) => setTravelers(e.target.value)}
-                        className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition cursor-pointer"
+                        className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:bg-white transition cursor-pointer"
                       >
                         <option value="1 Adult">Solo Traveler (1 Adult)</option>
                         <option value="2 Adults, 0 Kids">
@@ -670,14 +670,14 @@ export default function ServicesPage() {
                           placeholder="Your Name"
                           value={fullName}
                           onChange={(e) => setFullName(e.target.value)}
-                          className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition"
+                          className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:bg-white transition"
                         />
                         <input
                           type="tel"
                           placeholder="Phone / WhatsApp"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
-                          className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:bg-white transition"
+                          className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:bg-white transition"
                         />
                       </div>
                     </div>
@@ -686,7 +686,7 @@ export default function ServicesPage() {
                     <div>
                       <button
                         type="submit"
-                        className="w-full h-11 rounded-lg bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-xs font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-md flex items-center justify-center gap-2"
+                        className="w-full h-11 rounded-lg bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-md flex items-center justify-center gap-2"
                       >
                         <Send className="w-3.5 h-3.5 text-amber-300" />
                         <span>Submit Enquiry</span>
@@ -715,7 +715,7 @@ export default function ServicesPage() {
             {DISCOUNTS_OFFERS.map((offer) => (
               <div
                 key={offer.id}
-                className="relative rounded-2xl min-h-[320px] sm:min-h-[340px] p-6 sm:p-7 text-white shadow-xl overflow-hidden flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300 border border-black/10"
+                className="relative rounded-[8px] min-h-[320px] sm:min-h-[340px] p-6 sm:p-7 text-white shadow-xl overflow-hidden flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300 border border-black/10"
               >
                 {/* Background Image */}
                 <Image
@@ -730,7 +730,7 @@ export default function ServicesPage() {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/35 group-hover:via-black/50 transition-colors" />
 
                 {/* Card Border Outline */}
-                <div className="absolute inset-0 rounded-2xl border border-white/15 pointer-events-none" />
+                <div className="absolute inset-0 rounded-[8px] border border-white/15 pointer-events-none" />
 
                 <div className="relative z-10">
                   <div className="flex items-center justify-between mb-3.5">
@@ -773,7 +773,7 @@ export default function ServicesPage() {
         {/* 4. TOP PICKUPS FOR YOU GALLERY & COASTAL STATS STRIP */}
         <section className="relative bg-[#FDFCFB] pt-16 sm:pt-20 pb-0 overflow-hidden">
           {/* Subtle Sailboat Watermark on bottom left matching reference image */}
-          <div className="absolute left-6 bottom-56 w-36 h-36 opacity-10 pointer-events-none select-none text-[#463D34]">
+          <div className="absolute left-6 bottom-56 w-36 h-36 opacity-10 pointer-events-none select-none text-[#002f89]">
             <svg
               viewBox="0 0 100 100"
               fill="none"
@@ -820,7 +820,7 @@ export default function ServicesPage() {
                 <div
                   key={pickup.id}
                   onClick={() => handleCardEnquiry(pickup.serviceId)}
-                  className={`relative ${pickup.colSpan} h-[260px] sm:h-[300px] lg:h-[340px] rounded-2xl overflow-hidden group shadow-sm hover:shadow-2xl border border-black/[0.08] hover:border-amber-400/40 transition-all duration-300 cursor-pointer`}
+                  className={`relative ${pickup.colSpan} h-[260px] sm:h-[300px] lg:h-[340px] rounded-[8px] overflow-hidden group shadow-sm hover:shadow-2xl border border-black/[0.08] hover:border-amber-400/40 transition-all duration-300 cursor-pointer`}
                 >
                   {/* Background Image */}
                   <Image
@@ -853,7 +853,7 @@ export default function ServicesPage() {
               <button
                 type="button"
                 onClick={() => handleCardEnquiry("Custom Holidays")}
-                className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg border border-[#463D34] text-[#463D34] text-xs sm:text-sm font-sans font-semibold hover:bg-[#463D34] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg border border-[#002f89] text-[#002f89] text-xs sm:text-sm font-sans font-semibold hover:bg-[#002f89] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
               >
                 View All
               </button>
@@ -1049,7 +1049,7 @@ export default function ServicesPage() {
             {POPULAR_PACKAGES.map((pkg) => (
               <div
                 key={pkg.id}
-                className="rounded-2xl overflow-hidden bg-white border border-black/[0.07] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
+                className="rounded-[8px] overflow-hidden bg-white border border-black/[0.07] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
               >
                 <div>
                   {/* Photo with Tag */}
@@ -1082,7 +1082,7 @@ export default function ServicesPage() {
 
                   {/* Body Details */}
                   <div className="p-5">
-                    <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 group-hover:text-[#463D34] transition leading-snug">
+                    <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 group-hover:text-[#002f89] transition leading-snug">
                       {pkg.title}
                     </h3>
 
@@ -1115,7 +1115,7 @@ export default function ServicesPage() {
                   <button
                     type="button"
                     onClick={() => handleCardEnquiry(pkg.serviceId)}
-                    className="px-4 py-2 rounded-lg bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
+                    className="px-4 py-2 rounded-lg bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
                   >
                     <span>Enquire Now</span>
                     <ArrowRight className="w-3.5 h-3.5" />

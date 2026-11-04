@@ -4,7 +4,7 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
   return (
     <section
       id="cta"
-      className="py-14 sm:py-20 lg:py-24 bg-[#463D34] text-white text-center px-4 sm:px-5 scroll-mt-20 sm:scroll-mt-24"
+      className="py-14 sm:py-20 lg:py-24 bg-[#002f89] text-white text-center px-4 sm:px-5 scroll-mt-20 sm:scroll-mt-24"
       aria-labelledby="journey-cta-title"
     >
       <div className="max-w-3xl mx-auto">
@@ -23,7 +23,7 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
         </p>
         <button
           onClick={onStart}
-          className="px-7 sm:px-9 py-3 sm:py-4 rounded-sm bg-white hover:bg-[#FAF7F2] text-[#463D34] text-xs font-semibold uppercase tracking-[0.14em] shadow-lg hover:shadow-xl transition motion-reduce:transition-none motion-reduce:transform-none active:scale-[0.98] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
+          className="px-7 sm:px-9 py-3 sm:py-4 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] hover:text-[#00246b] text-xs font-semibold uppercase tracking-[0.14em] shadow-lg hover:shadow-xl transition motion-reduce:transition-none motion-reduce:transform-none active:scale-[0.98] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
         >
           GET MATCHED
         </button>

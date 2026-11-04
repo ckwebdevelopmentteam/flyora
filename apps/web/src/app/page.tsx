@@ -4,14 +4,20 @@ import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
-import { Plus, ArrowRight, ArrowLeft } from "lucide-react";
+import {
+  Plus,
+  ArrowRight,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { HeroSection } from "../components/HeroSection";
 import { EnquiryModal } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
-import { PopularHolidayPackages } from "../components/PopularHolidayPackages";
+import CarouselCards from "@/components/ui/carousel-cards";
 import { DestinationsShowcase } from "../components/DestinationsShowcase";
 import InkOrbitTestimonials, {
   type InkTestimonial,
@@ -326,7 +332,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F3EC] text-[#1E1B18] font-sans selection:bg-[#463D34] selection:text-white">
+    <div className="min-h-screen bg-[#F9F3EC] text-[#1E1B18] font-sans selection:bg-[#002f89] selection:text-white">
       {/* ---------------------------------------------------------------------
           NAVBAR: Preserved exactly as existing
           --------------------------------------------------------------------- */}
@@ -364,41 +370,41 @@ export default function Home() {
 
       {/* ---------------------------------------------------------------------
           STACKING CONTENT SHEET:
-          Has z-10 and stacks on top of the sticky fixed hero as you scroll.
+          Has z-20 and stacks on top of the sticky fixed hero as you scroll.
           The clouds are pulled up over the hero video with negative margin and a transparent
           backdrop so the video shows through, attached directly to the Featured Destinations!
           --------------------------------------------------------------------- */}
-      <div className="relative z-10 w-full">
-        {/* Floating animated clouds marquee attached to top of Featured Destinations */}
-        <div className="relative -mt-[80px] sm:-mt-[110px] md:-mt-[135px] lg:-mt-[155px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
+      <div className="relative z-20 w-full">
+        {/* Floating animated clouds marquee attached to top of Featured Destinations (lowered profile) */}
+        <div className="relative -mt-[50px] sm:-mt-[70px] md:-mt-[85px] lg:-mt-[100px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
           <div className="animate-marquee flex w-max will-change-transform">
             {/* Set 1 */}
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-1.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-2.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-3.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-4.png"
             />
             {/* Set 2 (for seamless loop) */}
@@ -406,28 +412,28 @@ export default function Home() {
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-1.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-2.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-3.png"
             />
             <img
               alt=""
               width={1580}
               height={440}
-              className="block shrink-0 h-[90px] sm:h-[120px] md:h-[145px] lg:h-[165px] w-auto -mr-[50px] sm:-mr-[65px] md:-mr-[80px] lg:-mr-[88px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
+              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
               src="/cloude-frame/Frame@1.5x-4.png"
             />
           </div>
@@ -463,25 +469,37 @@ export default function Home() {
                   unforgettable journeys and cultural immersion.
                 </p>
 
-                {/* Navigation arrows matching the reference image */}
+                {/* Navigation arrows matching destination sharp button style */}
                 <div className="flex items-center gap-2.5 mt-4 sm:mt-5">
                   <button
                     type="button"
                     onClick={() => handleScroll("left")}
                     disabled={!canScrollLeft}
                     aria-label="Previous destination"
-                    className="w-10 h-10 rounded-full bg-[#FAF7F2] hover:bg-[#463D34] text-[#1E1A17] hover:text-white border border-black/[0.08] hover:border-[#463D34] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                    className="group relative overflow-hidden w-10 h-10 rounded-[2px] bg-[#FAF7F2] text-[#1E1A17] hover:text-white border border-black/[0.1] hover:border-transparent grid place-items-center transition-all duration-300 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
                   >
-                    <ArrowLeft className="w-4 h-4" />
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    />
+                    <span className="relative z-10 flex items-center justify-center">
+                      <ChevronLeft className="w-4 h-4 stroke-[2.4]" />
+                    </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleScroll("right")}
                     disabled={!canScrollRight}
                     aria-label="Next destination"
-                    className="w-10 h-10 rounded-full bg-[#FAF7F2] hover:bg-[#463D34] text-[#1E1A17] hover:text-white border border-black/[0.08] hover:border-[#463D34] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                    className="group relative overflow-hidden w-10 h-10 rounded-[2px] bg-[#FAF7F2] text-[#1E1A17] hover:text-white border border-black/[0.1] hover:border-transparent grid place-items-center transition-all duration-300 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
                   >
-                    <ArrowRight className="w-4 h-4" />
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    />
+                    <span className="relative z-10 flex items-center justify-center">
+                      <ChevronRight className="w-4 h-4 stroke-[2.4]" />
+                    </span>
                   </button>
                 </div>
               </div>
@@ -506,18 +524,18 @@ export default function Home() {
                       openEnquiry(dest.name);
                     }
                   }}
-                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-12px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-13px)] aspect-[1/2.5] rounded-[20px] lg:rounded-[22px] overflow-hidden cursor-pointer select-none snap-start shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.16)] transition-all duration-300 transform hover:-translate-y-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#463D34]"
+                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-12px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-13px)] aspect-[1/2.5] rounded-[8px] overflow-hidden cursor-pointer select-none snap-start shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.16)] transition-all duration-300 transform hover:-translate-y-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89]"
                 >
                   {/* Destination Card Image */}
                   <img
                     src={dest.image}
                     alt={dest.name}
                     loading="lazy"
-                    className="w-full h-full object-cover rounded-[20px] lg:rounded-[22px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
+                    className="w-full h-full object-cover rounded-[8px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
                   />
 
                   {/* Soft interactive hover gradient */}
-                  <div className="absolute inset-0 rounded-[20px] lg:rounded-[22px] bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 rounded-[8px] bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
                   {/* Center frosted glass badge */}
                   <div className="absolute inset-0 flex items-center justify-center p-3 pointer-events-none">
@@ -532,11 +550,9 @@ export default function Home() {
         </section>
 
         {/* ===================================================================
-            SECTION 2: POPULAR HOLIDAY PACKAGES
+            SECTION 2: CAROUSEL EXPERIENCES
             =================================================================== */}
-        <PopularHolidayPackages
-          onOpenEnquiry={(pkgName) => openEnquiry(pkgName)}
-        />
+        <CarouselCards />
 
         {/* ===================================================================
             SECTION: DESTINATIONS SHOWCASE (International & Domestic Tour Packages)
@@ -566,7 +582,7 @@ export default function Home() {
             =================================================================== */}
         <section
           id="faqs"
-          className="py-16 sm:py-24 border-t border-black/[0.06] bg-[#FAF7F2]"
+          className="py-16 sm:py-24 border-t border-black/[0.06] bg-white"
         >
           <div className="max-w-3xl mx-auto px-5 sm:px-8">
             <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
@@ -628,7 +644,7 @@ export default function Home() {
               <button
                 type="button"
                 onClick={() => openEnquiry("General Question / FAQ Support")}
-                className="mt-6 inline-flex items-center justify-center px-8 py-2.5 rounded-full border border-[#1E1A17] text-xs sm:text-sm font-medium text-[#1E1A17] hover:bg-[#1E1A17] hover:text-white transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs"
+                className="mt-6 inline-flex items-center justify-center px-8 py-2.5 rounded-md border border-[#002f89] bg-[#002f89] hover:bg-[#00246b] text-xs sm:text-sm font-medium text-white transition-all duration-200 cursor-pointer shadow-2xs hover:shadow-xs active:scale-95"
               >
                 Contact
               </button>

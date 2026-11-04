@@ -262,7 +262,7 @@ export default function TiltCascadeCarousel({
   angle = 30,
   drop = 0.5,
   inactiveScale = 0.6,
-  radius = 16,
+  radius = 8,
   bounce = 0.2,
   duration = 0.8,
   loop = false,
@@ -754,7 +754,7 @@ export default function TiltCascadeCarousel({
           >
             <span
               aria-hidden="true"
-              className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+              className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
             />
             <span className="relative z-10 flex items-center justify-center">
               <Chevron dir={-1} />
@@ -772,7 +772,7 @@ export default function TiltCascadeCarousel({
           >
             <span
               aria-hidden="true"
-              className="absolute inset-0 bg-[#00a2d9] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+              className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
             />
             <span className="relative z-10 flex items-center justify-center">
               <Chevron dir={1} />

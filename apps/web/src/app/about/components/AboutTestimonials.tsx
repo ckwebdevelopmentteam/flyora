@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import type { AboutPageData } from "../aboutData";
 
 interface AboutTestimonialsProps {
@@ -29,9 +29,9 @@ export const AboutTestimonials: React.FC<AboutTestimonialsProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 sm:mb-16">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-black/[0.06] text-[#6B6156] text-[10.5px] font-sans font-medium uppercase tracking-[0.2em] mb-3">
-              <span className="text-[9px] text-[#463D34]">♥</span>
+              <span className="text-[9px] text-[#002f89]">♥</span>
               <span>{data.eyebrow}</span>
-              <span className="text-[9px] text-[#463D34]">♥</span>
+              <span className="text-[9px] text-[#002f89]">♥</span>
             </div>
 
             <h2 className="font-serif text-[32px] sm:text-[42px] font-normal tracking-tight text-[#1C1815]">
@@ -43,23 +43,35 @@ export const AboutTestimonials: React.FC<AboutTestimonialsProps> = ({
             </p>
           </div>
 
-          {/* Navigation Arrows matching reference: (←) (→) */}
+          {/* Navigation Arrows - sharp ends matching destination */}
           <div className="flex items-center gap-2 self-start sm:self-end">
             <button
               type="button"
               onClick={handlePrev}
               aria-label="Previous testimonial"
-              className="w-9 h-9 rounded-full bg-white hover:bg-stone-100 border border-black/[0.1] flex items-center justify-center text-[#1C1815] transition cursor-pointer shadow-2xs"
+              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 rounded-[2px] bg-white border border-black/[0.1] hover:border-transparent grid place-items-center text-[#1C1815] hover:text-white transition-all duration-300 cursor-pointer shadow-2xs active:scale-95"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+              />
+              <span className="relative z-10 flex items-center justify-center">
+                <ChevronLeft className="w-4 h-4 stroke-[2.4]" />
+              </span>
             </button>
             <button
               type="button"
               onClick={handleNext}
               aria-label="Next testimonial"
-              className="w-9 h-9 rounded-full bg-[#1C1815] hover:bg-[#352E27] text-white flex items-center justify-center transition cursor-pointer shadow-2xs"
+              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 rounded-[2px] bg-white border border-black/[0.1] hover:border-transparent grid place-items-center text-[#1C1815] hover:text-white transition-all duration-300 cursor-pointer shadow-2xs active:scale-95"
             >
-              <ArrowRight className="w-4 h-4" />
+              <span
+                aria-hidden="true"
+                className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+              />
+              <span className="relative z-10 flex items-center justify-center">
+                <ChevronRight className="w-4 h-4 stroke-[2.4]" />
+              </span>
             </button>
           </div>
         </div>
@@ -69,12 +81,12 @@ export const AboutTestimonials: React.FC<AboutTestimonialsProps> = ({
           {data.items.map((item) => (
             <div
               key={item.id}
-              className="bg-white rounded-[26px] p-7 sm:p-8 border border-black/[0.06] shadow-2xs flex flex-col justify-between hover:shadow-md transition-shadow duration-300"
+              className="bg-white rounded-[8px] p-7 sm:p-8 border border-black/[0.06] shadow-2xs flex flex-col justify-between hover:shadow-md transition-shadow duration-300"
             >
               <div>
                 {/* Quotation mark & Category pill */}
                 <div className="flex items-center justify-between mb-5">
-                  <span className="font-serif text-3xl text-[#463D34] leading-none select-none">
+                  <span className="font-serif text-3xl text-[#002f89] leading-none select-none">
                     “
                   </span>
                   <span className="text-[10px] font-sans uppercase tracking-wider text-[#6B6156] bg-[#FAF7F2] px-2.5 py-1 rounded-full border border-black/[0.05]">

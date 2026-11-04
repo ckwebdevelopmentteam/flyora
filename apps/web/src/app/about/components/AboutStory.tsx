@@ -26,9 +26,9 @@ export const AboutStory: React.FC<AboutStoryProps> = ({
           <div className="lg:col-span-6 xl:col-span-6 flex flex-col justify-center">
             {/* Minimal Eyebrow with Hearts matching the reference: ♥ WHO WE ARE ♥ */}
             <div className="inline-flex items-center gap-1.5 self-start px-3.5 py-1 rounded-full bg-[#FAF7F2] border border-black/[0.06] text-[#6B6156] text-[11px] font-sans font-medium uppercase tracking-[0.2em] mb-5">
-              <span className="text-[9px] text-[#463D34]">♥</span>
+              <span className="text-[9px] text-[#002f89]">♥</span>
               <span>{data.eyebrow}</span>
-              <span className="text-[9px] text-[#463D34]">♥</span>
+              <span className="text-[9px] text-[#002f89]">♥</span>
             </div>
 
             {/* Editorial Heading */}
@@ -50,7 +50,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({
                 onClick={() =>
                   onOpenEnquiry && onOpenEnquiry("Custom Holidays")
                 }
-                className="group inline-flex items-center gap-2 pl-5 pr-2 py-2 rounded-full bg-[#1C1815] hover:bg-[#352E27] active:bg-[#110E0C] text-white text-[12px] font-sans font-medium tracking-wide transition-all duration-200 cursor-pointer shadow-xs"
+                className="group inline-flex items-center gap-2 pl-5 pr-2 py-2 rounded-full bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[12px] font-sans font-medium tracking-wide transition-all duration-200 cursor-pointer shadow-xs"
               >
                 <span>{data.primaryCta.label}</span>
                 <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:scale-105">
@@ -90,7 +90,7 @@ export const AboutStory: React.FC<AboutStoryProps> = ({
           <div className="lg:col-span-6 xl:col-span-6">
             <div className="relative group">
               {/* Floating heavy rounded container */}
-              <div className="relative h-[420px] sm:h-[500px] lg:h-[580px] w-full rounded-[32px] sm:rounded-[42px] overflow-hidden border border-black/[0.06] shadow-[0_20px_50px_-10px_rgba(70,61,52,0.12)] bg-[#F5EFEB]">
+              <div className="relative h-[420px] sm:h-[500px] lg:h-[580px] w-full rounded-[8px] overflow-hidden border border-black/[0.06] shadow-[0_20px_50px_-10px_rgba(70,61,52,0.12)] bg-[#F5EFEB]">
                 <Image
                   src={data.image.src}
                   alt={data.image.alt}

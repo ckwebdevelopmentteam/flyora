@@ -212,7 +212,7 @@ export default function ToursPage() {
   }, [packages, filters]);
 
   return (
-    <div className="min-h-screen bg-white text-stone-900 font-sans selection:bg-[#4A2E18] selection:text-white">
+    <div className="min-h-screen bg-white text-stone-900 font-sans selection:bg-[#002f89] selection:text-white">
       {/* Navbar with 5 Clean Links & Luxury Theme */}
       <Navbar
         activePath="/tours"
@@ -253,7 +253,7 @@ export default function ToursPage() {
                 {[1, 2].map((i) => (
                   <div
                     key={i}
-                    className="rounded-2xl border border-stone-200/80 bg-white overflow-hidden shadow-xs animate-pulse flex flex-col h-[520px]"
+                    className="rounded-[8px] border border-stone-200/80 bg-white overflow-hidden shadow-xs animate-pulse flex flex-col h-[520px]"
                   >
                     <div className="h-64 bg-stone-100" />
                     <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
@@ -285,8 +285,8 @@ export default function ToursPage() {
               </div>
             ) : (
               /* Empty State */
-              <div className="bg-stone-50 border border-stone-200/90 rounded-2xl p-12 text-center space-y-4 max-w-lg mx-auto my-8">
-                <div className="w-12 h-12 rounded-full bg-[#F5EBE6] text-[#4A2E18] flex items-center justify-center mx-auto shadow-xs">
+              <div className="bg-stone-50 border border-stone-200/90 rounded-[8px] p-12 text-center space-y-4 max-w-lg mx-auto my-8">
+                <div className="w-12 h-12 rounded-full bg-blue-50 text-[#002f89] flex items-center justify-center mx-auto shadow-xs">
                   <Compass className="w-6 h-6 stroke-[1.8]" />
                 </div>
                 <div className="space-y-1">
@@ -313,9 +313,9 @@ export default function ToursPage() {
                       setEnquiryPackageTitle(undefined);
                       setIsEnquiryOpen(true);
                     }}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#4A2E18] text-white text-xs font-semibold shadow-xs hover:bg-[#38200F] transition flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#002f89] text-white text-xs font-semibold shadow-xs hover:bg-[#00246b] transition flex items-center justify-center gap-2"
                   >
-                    <Sparkles className="w-3.5 h-3.5 text-[#E6D5C7]" />
+                    <Sparkles className="w-3.5 h-3.5 text-blue-200" />
                     <span>Request Custom Trip</span>
                   </button>
                 </div>

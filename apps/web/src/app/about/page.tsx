@@ -22,7 +22,7 @@ export default function AboutPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#144A72] text-[#1C1815] flex flex-col font-sans selection:bg-[#463D34] selection:text-white antialiased">
+    <div className="min-h-screen bg-[#144A72] text-[#1C1815] flex flex-col font-sans selection:bg-[#002f89] selection:text-white antialiased">
       {/* Floating Glassmorphic Navbar */}
       <Navbar
         isFixed={true}
