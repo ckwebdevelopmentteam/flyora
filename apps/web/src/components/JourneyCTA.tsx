@@ -62,41 +62,41 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
           Takes flex-1 to fill all space from the bottom edge of the image
           down to the bottom of the section.
           =================================================================== */}
-      <div className="flex-1 w-full bg-[#002f89] text-white px-6 sm:px-10 lg:px-[105px] pt-4 sm:pt-6 pb-8 sm:pb-10 lg:pb-12 flex flex-col justify-start">
+      <div className="flex-1 w-full bg-[#002f89] text-white px-6 sm:px-10 lg:px-[105px] pt-4 sm:pt-5 lg:pt-6 pb-6 sm:pb-8 lg:pb-10 flex flex-col justify-start">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 items-start w-full">
           {/* Stat 1 */}
           <div className="space-y-1 sm:space-y-1.5">
-            <span className="text-xs sm:text-[13px] text-white/80 block font-sans">
+            <span className="text-sm sm:text-[15px] text-white/90 block font-sans font-normal tracking-wide">
               Journeys Crafted
             </span>
-            <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
+            <div className="font-serif text-4xl sm:text-5xl lg:text-[54px] xl:text-[60px] font-light text-white tracking-tight leading-none mt-1 sm:mt-1.5">
               1,200 +
             </div>
           </div>
 
           {/* Stat 2 */}
           <div className="space-y-1 sm:space-y-1.5">
-            <span className="text-xs sm:text-[13px] text-white/80 block font-sans">
+            <span className="text-sm sm:text-[15px] text-white/90 block font-sans font-normal tracking-wide">
               Curated Destinations
             </span>
-            <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
+            <div className="font-serif text-4xl sm:text-5xl lg:text-[54px] xl:text-[60px] font-light text-white tracking-tight leading-none mt-1 sm:mt-1.5">
               50 +
             </div>
           </div>
 
           {/* Stat 3 */}
           <div className="space-y-1 sm:space-y-1.5">
-            <span className="text-xs sm:text-[13px] text-white/80 block font-sans">
+            <span className="text-sm sm:text-[15px] text-white/90 block font-sans font-normal tracking-wide">
               Traveler Satisfaction
             </span>
-            <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
+            <div className="font-serif text-4xl sm:text-5xl lg:text-[54px] xl:text-[60px] font-light text-white tracking-tight leading-none mt-1 sm:mt-1.5">
               98 %
             </div>
           </div>
 
           {/* Col 4: Description & Plan My Trip Button */}
           <div className="col-span-2 lg:col-span-1 space-y-2.5">
-            <p className="text-xs sm:text-[13px] text-white/85 leading-relaxed font-sans">
+            <p className="text-sm sm:text-[14.5px] lg:text-[15px] text-white/90 leading-relaxed font-sans">
               Every itinerary is shaped by dedicated specialists who obsess over
               every detail — from handpicked luxury stays to seamless
               coordination.
