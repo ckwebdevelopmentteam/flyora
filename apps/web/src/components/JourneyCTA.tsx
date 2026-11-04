@@ -5,16 +5,19 @@ import Image from "next/image";
 
 export function JourneyCTA({ onStart }: { onStart: () => void }) {
   return (
-    <section id="our-team" className="relative w-full overflow-hidden">
+    <section
+      id="our-team"
+      className="relative w-full min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-between overflow-hidden"
+    >
       {/* -------------------------------------------------------------------
-          TOP SECTION (Light Background)
+          TOP HALF (Pure White Background)
           ------------------------------------------------------------------- */}
-      <div className="bg-white pt-14 sm:pt-20 lg:pt-24 pb-24 sm:pb-36 md:pb-44 lg:pb-52 px-6 sm:px-10 lg:px-[105px]">
+      <div className="bg-white px-6 sm:px-10 lg:px-[105px] pt-8 sm:pt-10 lg:pt-12 pb-3 sm:pb-4 flex flex-col justify-end">
         <div className="max-w-4xl">
-          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3 select-none">
+          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2 sm:mb-2.5 select-none">
             WHO WE ARE · MEET OUR TRAVEL CURATORS
           </span>
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-normal text-[#1E1A17] leading-[1.22] tracking-tight">
+          <h2 className="font-serif text-2xl sm:text-3xl lg:text-[36px] xl:text-[40px] font-normal text-[#1E1A17] leading-[1.22] tracking-tight">
             Care from the team who listens well, shaping bespoke journeys
             tailored to your personal pace and passion.
           </h2>
@@ -22,29 +25,41 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
       </div>
 
       {/* -------------------------------------------------------------------
-          BOTTOM SECTION (Our Signature Dark Background #1E1A17)
-          With the featured image pulled upward to straddle the two halves
+          CENTER FEATURED IMAGE (Exact 50/50 Split Background Behind Image)
+          Top half sits on White, Bottom half sits on our Brand Blue
           ------------------------------------------------------------------- */}
-      <div className="relative bg-[#1E1A17] text-white px-6 sm:px-10 lg:px-[105px] pb-16 sm:pb-20 lg:pb-24">
-        {/* Straddling Featured Panoramic Image */}
-        <div className="relative -mt-20 sm:-mt-28 md:-mt-36 lg:-mt-44 mb-10 sm:mb-14 lg:mb-16 z-10">
-          <div className="w-full aspect-[16/7] md:aspect-[21/9] rounded-[8px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
-            <Image
-              src="/home/travel-team-curators.jpg"
-              alt="Flyora travel curators team planning bespoke journeys"
-              width={1920}
-              height={820}
-              className="w-full h-full object-cover object-center select-none pointer-events-none"
-              priority={false}
-            />
-          </div>
-        </div>
+      <div className="relative w-full px-6 sm:px-10 lg:px-[105px]">
+        {/* Background split: top 50% white, bottom 50% brand blue */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 top-0 h-1/2 bg-white pointer-events-none"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 bottom-0 h-1/2 bg-[#002f89] pointer-events-none"
+        />
 
-        {/* 4 Columns Row: 3 Stats + 1 Description with Plan My Trip CTA */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 items-start">
+        {/* Panoramic Curators Team Image */}
+        <div className="relative z-10 w-full h-[240px] sm:h-[320px] md:h-[380px] lg:h-[400px] xl:h-[430px] rounded-[16px] lg:rounded-[20px] overflow-hidden shadow-[0_16px_40px_rgba(0,0,0,0.18)]">
+          <Image
+            src="/home/travel-team-curators.jpg"
+            alt="Flyora travel curators team planning bespoke journeys"
+            fill
+            sizes="(max-width: 1024px) 100vw, 1360px"
+            className="object-cover object-center select-none pointer-events-none"
+            priority={false}
+          />
+        </div>
+      </div>
+
+      {/* -------------------------------------------------------------------
+          BOTTOM HALF (Our Signature Brand Blue #002f89)
+          ------------------------------------------------------------------- */}
+      <div className="bg-[#002f89] text-white px-6 sm:px-10 lg:px-[105px] pt-4 sm:pt-6 pb-8 sm:pb-10 lg:pb-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 items-start">
           {/* Stat 1 */}
-          <div className="space-y-1.5 sm:space-y-2">
-            <span className="text-xs sm:text-sm text-white/70 block font-sans">
+          <div className="space-y-1 sm:space-y-1.5">
+            <span className="text-xs sm:text-[13px] text-white/80 block font-sans">
               Journeys Crafted
             </span>
             <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
@@ -53,9 +68,9 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
           </div>
 
           {/* Stat 2 */}
-          <div className="space-y-1.5 sm:space-y-2">
-            <span className="text-xs sm:text-sm text-white/70 block font-sans">
-              Global Destinations
+          <div className="space-y-1 sm:space-y-1.5">
+            <span className="text-xs sm:text-[13px] text-white/80 block font-sans">
+              Curated Destinations
             </span>
             <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
               50 +
@@ -63,8 +78,8 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
           </div>
 
           {/* Stat 3 */}
-          <div className="space-y-1.5 sm:space-y-2">
-            <span className="text-xs sm:text-sm text-white/70 block font-sans">
+          <div className="space-y-1 sm:space-y-1.5">
+            <span className="text-xs sm:text-[13px] text-white/80 block font-sans">
               Traveler Satisfaction
             </span>
             <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
@@ -72,9 +87,9 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
             </div>
           </div>
 
-          {/* Col 4: Description & CTA */}
-          <div className="col-span-2 lg:col-span-1 space-y-3">
-            <p className="text-xs sm:text-[13px] text-white/75 leading-relaxed font-sans">
+          {/* Col 4: Description & Plan My Trip CTA */}
+          <div className="col-span-2 lg:col-span-1 space-y-2.5">
+            <p className="text-xs sm:text-[13px] text-white/85 leading-relaxed font-sans">
               Every itinerary is shaped by dedicated specialists who obsess over
               every detail — from handpicked luxury stays to seamless
               coordination.
@@ -82,7 +97,7 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
             <button
               type="button"
               onClick={onStart}
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#E58A60] hover:text-[#FFA07A] transition-colors cursor-pointer group select-none"
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#FFB088] hover:text-white transition-colors cursor-pointer group select-none"
             >
               <span>Plan My Trip</span>
               <span
