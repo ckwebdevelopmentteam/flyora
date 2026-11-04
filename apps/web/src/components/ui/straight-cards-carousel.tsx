@@ -164,8 +164,8 @@ export function StraightCardsCarousel({
     const s = state.current;
     if (s.raf) return;
 
-    const omega = (2 * Math.PI) / 0.65; // ~0.65s smooth duration
-    const zeta = 0.93; // slight, pleasant organic bounce
+    const omega = (2 * Math.PI) / 0.75; // ~0.75s smooth duration
+    const zeta = 0.92; // slight, pleasant organic bounce
 
     const frame = (now: number) => {
       const dt = Math.min((now - (s.lastTime || now)) / 1000, 1 / 20);
@@ -235,12 +235,16 @@ export function StraightCardsCarousel({
   }, [activeIndex, n, goTo]);
 
   // When items change (e.g. category switch), reset slide position cleanly without remounting
+  const prevItemsRef = useRef(items);
   useEffect(() => {
-    state.current.pos = activeIndex || 0;
-    state.current.target = activeIndex || 0;
-    state.current.vel = 0;
-    setActive(activeIndex || 0);
-    paint();
+    if (prevItemsRef.current !== items) {
+      prevItemsRef.current = items;
+      state.current.pos = activeIndex || 0;
+      state.current.target = activeIndex || 0;
+      state.current.vel = 0;
+      setActive(activeIndex || 0);
+      paint();
+    }
   }, [items, activeIndex, paint]);
 
   // Measure container width
