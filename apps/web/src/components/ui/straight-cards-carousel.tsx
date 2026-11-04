@@ -8,6 +8,11 @@ export interface StraightCardItem {
   title: string;
   description: string;
   src: string;
+  duration?: string;
+  price?: string | number;
+  originalPrice?: string | number;
+  rating?: number;
+  reviewCount?: number;
 }
 
 export interface StraightCardsCarouselProps {
@@ -365,19 +370,86 @@ export function StraightCardsCarousel({
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
 
-              {/* Dark dimming overlay on trailing cards */}
-              {!isLead && (
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none rounded-[8px]" />
-              )}
+              {/* Vibrant Original Image: No dark dimming, natural colors */}
+              <img
+                src={item.src}
+                alt={`${item.location} - ${item.title}`}
+                draggable={false}
+                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+              />
 
-              {/* Bottom Dark Gradient for Legibility */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none rounded-[8px]" />
+              {/* Gentle non-hovered gradient at the bottom solely for location text legibility */}
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-[8px] transition-opacity duration-300 group-hover:opacity-0" />
 
-              {/* Location Caption at Bottom */}
-              <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 z-10 pointer-events-none">
-                <p className="text-white font-medium text-base sm:text-lg tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
-                  {item.location}
-                </p>
+              {/* Smooth full-card dark gradient that fades in on hover to highlight details */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
+
+              {/* Location & Interactive Details Overlay */}
+              <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 z-10 flex flex-col justify-end pointer-events-none">
+                {/* Default State: Location Caption (slides smoothly up and fades out on hover) */}
+                <div className="transition-all duration-300 ease-out group-hover:opacity-0 group-hover:-translate-y-3">
+                  <p className="text-white font-medium text-base sm:text-lg tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+                    {item.location}
+                  </p>
+                </div>
+
+                {/* Hover State: Details Panel (slides smoothly up from below on hover, slides down on unhover) */}
+                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex flex-col gap-2.5 opacity-0 translate-y-6 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none group-hover:pointer-events-auto">
+                  {/* Top Row: Duration Badge + Star Rating */}
+                  <div className="flex items-center justify-between gap-2">
+                    {item.duration && (
+                      <span className="px-2.5 py-0.5 rounded-[5px] bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold tracking-wide border border-white/25">
+                        {item.duration}
+                      </span>
+                    )}
+                    {item.rating && (
+                      <div className="flex items-center gap-1 text-amber-300 text-xs font-semibold drop-shadow-sm">
+                        <span>★</span>
+                        <span className="text-white font-medium">
+                          {item.rating}
+                        </span>
+                        {item.reviewCount && (
+                          <span className="text-white/60 text-[10.5px]">
+                            ({item.reviewCount})
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Location & Short Description */}
+                  <div>
+                    <h4 className="text-white font-bold text-base sm:text-[17px] tracking-tight leading-snug drop-shadow-sm">
+                      {item.location}
+                    </h4>
+                    <p className="text-white/85 text-xs sm:text-[12.5px] line-clamp-2 mt-1 leading-relaxed">
+                      {item.description || item.title}
+                    </p>
+                  </div>
+
+                  {/* Rate / Price & View Details Action */}
+                  <div className="flex items-end justify-between pt-1.5 border-t border-white/20 mt-0.5">
+                    <div className="flex flex-col">
+                      {item.originalPrice && (
+                        <span className="text-white/60 text-[11px] line-through leading-tight">
+                          {item.originalPrice}
+                        </span>
+                      )}
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-white font-bold text-base sm:text-lg tracking-tight leading-tight">
+                          {item.price || "₹48,500"}
+                        </span>
+                        <span className="text-white/70 text-[10.5px]">
+                          / person
+                        </span>
+                      </div>
+                    </div>
+
+                    <span className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap">
+                      View Details
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           );
