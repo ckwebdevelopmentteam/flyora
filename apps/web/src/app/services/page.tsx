@@ -8,33 +8,90 @@ import { EnquiryModal } from "../../components/EnquiryModal";
 import { FloatingWhatsApp } from "../../components/FloatingWhatsApp";
 import CarouselCards from "@/components/ui/carousel-cards";
 import {
-  Star,
-  Globe,
+  CalendarDays,
+  Users,
+  Check,
+  ChevronDown,
+  ArrowRight,
   Plane,
   Train,
   Bus,
+  PlaneTakeoff,
   Compass,
-  Sparkles,
-  Calendar,
-  Users,
-  Send,
   CheckCircle2,
   Play,
-  ArrowRight,
-  Tag,
   MessageCircle,
-  MapPin,
 } from "lucide-react";
+
+// Pixel-perfect SVG icons matching the reference design
+const MosqueIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M12 3c-1.5 1.5-2 3-2 5h4c0-2-.5-3.5-2-5z" />
+    <path d="M4 10h16v11H4z" />
+    <path d="M9 21v-5a3 3 0 0 1 6 0v5" />
+    <path d="M2 13h2v8H2z" />
+    <path d="M20 13h2v8h-2z" />
+  </svg>
+);
+
+const PassportIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <rect x="5" y="3" width="14" height="18" rx="2" />
+    <circle cx="12" cy="10" r="2.5" />
+    <path d="M9 16h6" />
+  </svg>
+);
+
+const VacationPlaneIcon = ({
+  className = "w-4 h-4",
+}: {
+  className?: string;
+}) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z" />
+  </svg>
+);
+
+interface OptionItem {
+  label: string;
+  sub?: string;
+}
 
 interface ServiceHeroConfig {
   id: string;
   serviceId: string;
   name: string;
+  subtitle: string;
   badge: string;
   heroHeadline: string;
   heroSubheadline: string;
   imageSrc: string;
-  icon: React.ReactNode;
+  imagePosition?: string;
+  icon: React.ComponentType<{ className?: string }>;
 }
 
 const HERO_SERVICES: ServiceHeroConfig[] = [
@@ -42,80 +99,354 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     id: "custom-holidays",
     serviceId: "Custom Holidays",
     name: "Custom Holidays",
+    subtitle: "International & Local",
     badge: "Tailored Luxury",
     heroHeadline: "Bespoke Luxury Holiday Planning",
     heroSubheadline:
       "Private luxury itineraries, 5-star villas, and hand-curated experiences worldwide.",
     imageSrc: "/services/custom-holidays.jpg",
-    icon: <Star className="w-4 h-4 text-amber-400" />,
+    imagePosition: "object-[72%_50%]",
+    icon: VacationPlaneIcon,
   },
   {
     id: "visa-assistance",
     serviceId: "Visas",
     name: "Visa Assistance",
+    subtitle: "Hassle-free Process",
     badge: "Fast-Track",
     heroHeadline: "Hassle-Free Global Visa Approvals",
     heroSubheadline:
       "Express appointment booking, document audit, and 99.2% approval success for 100+ countries.",
     imageSrc: "/services/visa-assistance.jpg",
-    icon: <Globe className="w-4 h-4 text-blue-400" />,
+    imagePosition: "object-[30%_55%]",
+    icon: PassportIcon,
   },
   {
     id: "flight-booking",
     serviceId: "Flights",
     name: "Flight Booking",
+    subtitle: "Best Fares",
     badge: "Best Fares",
     heroHeadline: "Commercial & Business Air Ticketing",
     heroSubheadline:
       "Access unpublished corporate partner fares, flexible routing, and 24/7 flight rebooking.",
     imageSrc: "/services/flight-booking.jpg",
-    icon: <Plane className="w-4 h-4 text-sky-400" />,
+    imagePosition: "object-[65%_45%]",
+    icon: Plane,
   },
   {
     id: "train-booking",
     serviceId: "Trains",
     name: "Train Booking",
+    subtitle: "Easy & Fast",
     badge: "Scenic Rail",
     heroHeadline: "Confirmed Berths & Iconic Rail Journeys",
     heroSubheadline:
       "Express reservations, tatkal priority bookings, and panoramic luxury tourist rail tickets.",
     imageSrc: "/services/train-booking.jpg",
-    icon: <Train className="w-4 h-4 text-emerald-400" />,
+    imagePosition: "object-[70%_55%]",
+    icon: Train,
   },
   {
     id: "bus-booking",
     serviceId: "Buses",
     name: "Bus Booking",
+    subtitle: "Comfort Travel",
     badge: "Highway Comfort",
     heroHeadline: "Luxury Volvo & Sleeper Coach Travel",
     heroSubheadline:
       "Top-tier AC multi-axle coaches, verified city boarding lounges, and live GPS tracking links.",
     imageSrc: "/services/bus-booking.jpg",
-    icon: <Bus className="w-4 h-4 text-orange-400" />,
+    imagePosition: "object-[24%_65%]",
+    icon: Bus,
   },
   {
     id: "umrah-packages",
     serviceId: "Umrah Packages",
     name: "Umrah Packages",
+    subtitle: "Sacred Pilgrimages",
     badge: "Spiritual Journey",
     heroHeadline: "Sacred & Blessed Umrah Pilgrimages",
     heroSubheadline:
       "Hotels steps from the Holy Haram courtyard, Saudi e-visas & private AC vehicle transit.",
     imageSrc: "/services/umrah-packages.jpg",
-    icon: <Compass className="w-4 h-4 text-teal-400" />,
+    imagePosition: "object-[82%_45%]",
+    icon: MosqueIcon,
   },
   {
     id: "hajj-packages",
     serviceId: "Hajj Packages",
     name: "Hajj Packages",
+    subtitle: "Spiritual Journeys",
     badge: "The Holy Pillar",
     heroHeadline: "The Sacred Journey of a Lifetime",
     heroSubheadline:
       "Comprehensive guided pilgrimage with deluxe European air-conditioned Mina camps & guidance.",
     imageSrc: "/services/hajj-packages.jpg",
-    icon: <Sparkles className="w-4 h-4 text-amber-300" />,
+    imagePosition: "object-[50%_50%]",
+    icon: MosqueIcon,
   },
 ];
+
+// Curated concierge options for each of the 7 services
+const HOLIDAY_DESTINATIONS: OptionItem[] = [
+  { label: "Switzerland & The Alps", sub: "Scenic rail, chalets & peaks" },
+  { label: "Maldives Overwater Sanctuary", sub: "Private villa & seaplane" },
+  { label: "Bali Ubud & Seminyak", sub: "Rainforest villas & beaches" },
+  { label: "Dubai Family Luxury", sub: "VIP Burj & desert safari" },
+  { label: "Paris & French Riviera", sub: "Haute culture & coastal charm" },
+  { label: "Kyoto & Tokyo, Japan", sub: "Ryokans, onsens & bullet train" },
+];
+
+const HOLIDAY_MONTHS: OptionItem[] = [
+  { label: "Nov – Dec 2026", sub: "Winter holiday season" },
+  { label: "Next 30 Days", sub: "Immediate departure" },
+  { label: "Jan – Mar 2027", sub: "Early spring getaway" },
+  { label: "Summer 2027", sub: "Peak summer vacations" },
+  { label: "Flexible Dates", sub: "Best rates calendar" },
+];
+
+const HOLIDAY_TRAVELERS: OptionItem[] = [
+  { label: "Couple (2 Adults)" },
+  { label: "Solo Traveler (1 Adult)" },
+  { label: "Family (2 Adults, 2 Children)" },
+  { label: "Small Group (3–5 Adults)" },
+  { label: "Large Group (6+ Persons)" },
+];
+
+const VISA_COUNTRIES: OptionItem[] = [
+  {
+    label: "Schengen Europe (29 Countries)",
+    sub: "France, Italy, Swiss, Germany & more",
+  },
+  { label: "United Kingdom (UK)", sub: "Standard Visitor Visa 6 Months" },
+  { label: "United States (US B1/B2)", sub: "Slot booking & DS-160 review" },
+  { label: "Dubai & UAE Tourist", sub: "30 / 60 Days Express eVisa" },
+  { label: "Saudi Arabia Tourist/Umrah", sub: "Multiple entry 1-year eVisa" },
+  { label: "Singapore & Malaysia", sub: "Quick paper & eVisa filing" },
+];
+
+const VISA_DATES: OptionItem[] = [
+  { label: "Within 30 Days", sub: "Urgent slot assistance" },
+  { label: "Express 7–10 Days", sub: "Fast-track processing" },
+  { label: "Next 30–60 Days", sub: "Standard advance filing" },
+  { label: "Flexible Dates", sub: "Planning ahead" },
+];
+
+const VISA_APPLICANTS: OptionItem[] = [
+  { label: "Single Applicant (1 Person)" },
+  { label: "Couple (2 Applicants)" },
+  { label: "Family (3–5 Persons)" },
+  { label: "Corporate Delegation (5+ Persons)" },
+];
+
+const FLIGHT_ROUTES: OptionItem[] = [
+  { label: "Mumbai (BOM) → Dubai (DXB)", sub: "Direct 3h 30m" },
+  { label: "New Delhi (DEL) → London (LHR)", sub: "Direct 9h 15m" },
+  { label: "Bengaluru (BLR) → Singapore (SIN)", sub: "Direct 4h 30m" },
+  { label: "Mumbai (BOM) → Jeddah (JED)", sub: "Direct 5h 10m" },
+  { label: "New Delhi (DEL) → Bangkok (BKK)", sub: "Direct 4h 15m" },
+];
+
+const FLIGHT_DATES: OptionItem[] = [
+  { label: "Tomorrow", sub: "Immediate departure" },
+  { label: "This Weekend", sub: "Weekend getaway" },
+  { label: "15 Nov 2026", sub: "Best fare available" },
+  { label: "Next 30 Days", sub: "Advance booking" },
+  { label: "Flexible Dates", sub: "Lowest fare calendar" },
+];
+
+const FLIGHT_CLASSES: OptionItem[] = [
+  { label: "1 Adult, Economy" },
+  { label: "2 Adults, Economy" },
+  { label: "1 Adult, Business Class" },
+  { label: "2 Adults, Business Class" },
+  { label: "Family (2 Adults, 2 Kids)" },
+];
+
+const TRAIN_ROUTES: OptionItem[] = [
+  { label: "New Delhi → Mumbai Central", sub: "Rajdhani / Tejas Express" },
+  { label: "Mumbai → Madgaon, Goa", sub: "Vande Bharat / Konkan Kanya" },
+  { label: "Kolkata → Varanasi Junction", sub: "Vande Bharat Express" },
+  { label: "Bengaluru → Chennai Central", sub: "Shatabdi Express" },
+  { label: "New Delhi → Jaipur Junction", sub: "Double Decker / Shatabdi" },
+];
+
+const TRAIN_DATES: OptionItem[] = [
+  { label: "Tomorrow (Tatkal)", sub: "Confirmed quota booking" },
+  { label: "This Weekend", sub: "Scenic route" },
+  { label: "18 Nov 2026", sub: "General reservation" },
+  { label: "Next 30 Days", sub: "Advance reservation window" },
+];
+
+const TRAIN_CLASSES: OptionItem[] = [
+  { label: "1st AC (1A) Confirmed" },
+  { label: "2nd AC (2A)" },
+  { label: "3rd AC (3A)" },
+  { label: "Executive Chair Car (EC)" },
+  { label: "Sleeper Class (SL)" },
+];
+
+const BUS_ROUTES: OptionItem[] = [
+  { label: "Bangalore → Goa (Panjim)", sub: "Overnight Multi-Axle Volvo" },
+  { label: "Mumbai → Pune", sub: "Express AC Sleeper" },
+  { label: "Delhi → Manali", sub: "Himachal Luxury Volvo" },
+  { label: "Bangalore → Ooty", sub: "Scenic Nilgiri Sleeper" },
+  { label: "Delhi → Jaipur", sub: "Express AC Coach" },
+];
+
+const BUS_DATES: OptionItem[] = [
+  { label: "Tonight / Tomorrow", sub: "Instant boarding" },
+  { label: "This Weekend", sub: "Friday roundtrip" },
+  { label: "Next 7–10 Days", sub: "Advance sleeper" },
+  { label: "Flexible Dates", sub: "Best seat availability" },
+];
+
+const BUS_SEATS: OptionItem[] = [
+  { label: "2 Sleeper Berths (Volvo AC)" },
+  { label: "1 Single Lower Sleeper" },
+  { label: "2 Semi-Sleeper Seats" },
+  { label: "Full Luxury Coach Charter (35+)" },
+];
+
+const UMRAH_TIERS: OptionItem[] = [
+  {
+    label: "Executive 5-Star (Courtyard Facing)",
+    sub: "Steps from Haram courtyard",
+  },
+  {
+    label: "Deluxe Makkah & Madinah (10D)",
+    sub: "Clock tower & 5-star transit",
+  },
+  { label: "Ramadan Special Umrah", sub: "Last 10 days blessed package" },
+  { label: "Economy Family Umrah", sub: "Comfortable hotel with shuttle" },
+];
+
+const UMRAH_SEASONS: OptionItem[] = [
+  { label: "Next 30 Days", sub: "Immediate departure" },
+  { label: "Nov – Dec 2026", sub: "Pleasant winter pilgrimage" },
+  { label: "Ramadan 2027", sub: "Peak spiritual season" },
+  { label: "Flexible Dates", sub: "Custom group dates" },
+];
+
+const UMRAH_PILGRIMS: OptionItem[] = [
+  { label: "Couple (2 Adults)" },
+  { label: "Solo Pilgrim (1 Adult)" },
+  { label: "Family (2 Adults, 2 Kids)" },
+  { label: "Group (10+ Pilgrims)" },
+];
+
+const HAJJ_TIERS: OptionItem[] = [
+  { label: "Executive Non-Shifting (Mina A)", sub: "VIP AC European tents" },
+  { label: "Deluxe Shifting (Mina & Azizia)", sub: "5-star luxury hotels" },
+  { label: "Economy VIP Guided", sub: "Scholar led with full support" },
+  { label: "Private Luxury Camp", sub: "Exclusive private VIP setup" },
+];
+
+const HAJJ_SEASONS: OptionItem[] = [
+  { label: "May – Jun 2027", sub: "Hajj 1448H Official Season" },
+  { label: "Advance Waitlist 2028", sub: "Early seat allocation" },
+  { label: "Tentative Schedule", sub: "Custom quote inquiry" },
+];
+
+const HAJJ_PILGRIMS: OptionItem[] = [
+  { label: "2 Adults" },
+  { label: "1 Adult" },
+  { label: "Family (4 Pilgrims)" },
+  { label: "Group (6+ Pilgrims)" },
+];
+
+// Reusable concierge dropdown field using standard rounded-[8px]
+interface ConciergePillFieldProps {
+  icon: React.ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  isOpen: boolean;
+  onToggle: () => void;
+  options: OptionItem[];
+  onSelect: (val: string) => void;
+  dropdownWidth?: string;
+  className?: string;
+}
+
+const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
+  icon: IconComponent,
+  label,
+  value,
+  isOpen,
+  onToggle,
+  options,
+  onSelect,
+  dropdownWidth = "w-72 sm:w-80",
+  className = "flex-1 min-w-0",
+}) => {
+  return (
+    <div className={`relative ${className}`}>
+      <button
+        type="button"
+        onClick={onToggle}
+        className="w-full flex items-center gap-3 sm:gap-3.5 group cursor-pointer text-left focus:outline-none transition-transform duration-150 active:scale-[0.99] py-1 select-none px-2 sm:px-3 rounded-[8px] hover:bg-black/[0.03]"
+      >
+        {/* Soft Circular Icon Container */}
+        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#F4F1EA] group-hover:bg-[#EAE5DC] flex items-center justify-center shrink-0 transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
+          <IconComponent className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-[#2C241E] stroke-[1.6]" />
+        </div>
+
+        {/* Text Block: Label on top, Value + Chevron below */}
+        <div className="flex flex-col min-w-0 flex-1 pr-1">
+          <span className="text-[11px] sm:text-[11.5px] text-[#78716A] font-normal leading-tight mb-0.5 select-none truncate">
+            {label}
+          </span>
+          <div className="flex items-center justify-between gap-1.5 w-full">
+            <span className="text-[13.5px] sm:text-[14.5px] font-semibold text-[#1C1917] tracking-tight leading-tight group-hover:text-[#002f89] transition-colors truncate">
+              {value}
+            </span>
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-[#78716A] group-hover:text-[#1C1917] shrink-0 transition-transform duration-200 ${
+                isOpen ? "rotate-180 text-[#002f89]" : ""
+              }`}
+            />
+          </div>
+        </div>
+      </button>
+
+      {/* Upward luxury dropdown with standard rounded-[8px] */}
+      {isOpen && (
+        <div
+          className={`absolute left-0 bottom-[calc(100%+12px)] z-50 ${dropdownWidth} bg-white rounded-[8px] p-2 shadow-[0_24px_55px_rgba(0,0,0,0.25),0_6px_20px_rgba(0,0,0,0.12)] border border-neutral-200/90 animate-in fade-in slide-in-from-bottom-2 duration-150 max-h-[300px] overflow-y-auto no-scrollbar`}
+        >
+          {options.map((opt, idx) => {
+            const isSelected = value === opt.label;
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => onSelect(opt.label)}
+                className={`w-full px-3.5 py-2.5 rounded-[6px] text-left flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
+                  isSelected
+                    ? "bg-[#F4F1EA] text-[#002f89] font-semibold"
+                    : "hover:bg-neutral-50 text-neutral-800 font-normal"
+                }`}
+              >
+                <div className="min-w-0 pr-1">
+                  <div className="text-[13.5px] truncate">{opt.label}</div>
+                  {opt.sub && (
+                    <div className="text-[11px] text-neutral-400 truncate mt-0.5">
+                      {opt.sub}
+                    </div>
+                  )}
+                </div>
+                {isSelected && (
+                  <Check className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+};
 
 // Promotional Offer Banners matching the reference image row 2
 const DISCOUNTS_OFFERS = [
@@ -219,7 +550,7 @@ export default function ServicesPage() {
     setSlideDirection(idx > activeServiceIndex ? "next" : "prev");
     setPrevIndex(activeServiceIndex);
     setActiveServiceIndex(idx);
-    setSubmitted(false);
+    setOpenDropdown(null);
 
     // Keep URL hash in sync with user's selection without causing page jump or reload
     if (typeof window !== "undefined") {
@@ -230,12 +561,69 @@ export default function ServicesPage() {
     }
   };
 
-  // Inline Hero Enquiry Bar state
-  const [travelDate, setTravelDate] = useState("");
-  const [travelers, setTravelers] = useState("2 Adults, 0 Kids");
-  const [fullName, setFullName] = useState("");
-  const [phone, setPhone] = useState("");
-  const [submitted, setSubmitted] = useState(false);
+  // Concierge search bar state
+  const conciergeBarRef = useRef<HTMLDivElement>(null);
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+
+  // Service-specific field states
+  const [holidayDest, setHolidayDest] = useState("Switzerland & The Alps");
+  const [holidayMonth, setHolidayMonth] = useState("Nov – Dec 2026");
+  const [holidayTravelers, setHolidayTravelers] = useState("Couple (2 Adults)");
+
+  const [visaCountry, setVisaCountry] = useState(
+    "Schengen Europe (29 Countries)",
+  );
+  const [visaDate, setVisaDate] = useState("Within 30 Days");
+  const [visaApplicants, setVisaApplicants] = useState(
+    "Single Applicant (1 Person)",
+  );
+
+  const [flightRoute, setFlightRoute] = useState("Mumbai (BOM) → Dubai (DXB)");
+  const [flightDate, setFlightDate] = useState("15 Nov 2026");
+  const [flightClass, setFlightClass] = useState("2 Adults, Economy");
+
+  const [trainRoute, setTrainRoute] = useState("New Delhi → Mumbai Central");
+  const [trainDate, setTrainDate] = useState("18 Nov 2026");
+  const [trainClass, setTrainClass] = useState("2nd AC (2A)");
+
+  const [busRoute, setBusRoute] = useState("Bangalore → Goa (Panjim)");
+  const [busDate, setBusDate] = useState("This Weekend");
+  const [busSeats, setBusSeats] = useState("2 Sleeper Berths (Volvo AC)");
+
+  const [umrahTier, setUmrahTier] = useState(
+    "Executive 5-Star (Courtyard Facing)",
+  );
+  const [umrahSeason, setUmrahSeason] = useState("Next 30 Days");
+  const [umrahPilgrims, setUmrahPilgrims] = useState("Couple (2 Adults)");
+
+  const [hajjTier, setHajjTier] = useState("Executive Non-Shifting (Mina A)");
+  const [hajjSeason, setHajjSeason] = useState("May – Jun 2027");
+  const [hajjPilgrims, setHajjPilgrims] = useState("2 Adults");
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        conciergeBarRef.current &&
+        !conciergeBarRef.current.contains(e.target as Node)
+      ) {
+        setOpenDropdown(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleRequestQuote = () => {
+    setIsSubmitted(true);
+    setTimeout(() => {
+      setIsSubmitted(false);
+    }, 3500);
+
+    // Open Flyora Enquiry Modal with active service selected
+    handleCardEnquiry(activeService.serviceId);
+  };
 
   // Enquiry Modal state for card buttons
   const [modalOpen, setModalOpen] = useState(false);
@@ -318,23 +706,6 @@ export default function ServicesPage() {
     };
   }, []);
 
-  const handleHeroSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!fullName || !phone) {
-      // If empty, open modal prefilled
-      setModalServiceId(activeService.serviceId);
-      setModalOpen(true);
-      return;
-    }
-
-    setSubmitted(true);
-    // WhatsApp direct fallback link for instant admin communication
-    const message = encodeURIComponent(
-      `Hello Flyora Team,\n\nI want to enquire about *${activeService.name}*.\nName: ${fullName}\nPhone: ${phone}\nDate: ${travelDate || "Flexible"}\nTravelers: ${travelers}`,
-    );
-    window.open(`https://wa.me/919876543210?text=${message}`, "_blank");
-  };
-
   const handleCardEnquiry = (serviceId?: string) => {
     setModalServiceId(serviceId);
     setModalOpen(true);
@@ -350,8 +721,8 @@ export default function ServicesPage() {
       />
 
       <main>
-        {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & ENQUIRY BAR */}
-        <section className="relative w-full min-h-[760px] sm:min-h-[800px] lg:h-[830px] lg:min-h-[830px] flex flex-col justify-between overflow-hidden -mt-20 pt-44 sm:pt-48 lg:pt-52 xl:pt-56 pb-12 sm:pb-16">
+        {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & 7 HERO SERVICE CARDS */}
+        <section className="relative w-full min-h-[840px] sm:min-h-[880px] lg:min-h-[920px] flex flex-col justify-between overflow-hidden -mt-20 pt-36 sm:pt-40 lg:pt-44 xl:pt-48 pb-12 sm:pb-16">
           {/* Dynamic Full-Width Background Sliding Images */}
           <div className="absolute inset-0 z-0 overflow-hidden">
             {HERO_SERVICES.map((s, idx) => {
@@ -442,157 +813,520 @@ export default function ServicesPage() {
               </p>
             </div>
 
-            {/* Service Selection Tabs (Above the white enquiry box, exactly like reference image) */}
-            <div className="mt-8 sm:mt-10">
-              <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto pb-2 scrollbar-none">
+            {/* 7 HERO SERVICE CARDS (Matching Homepage Hero Design, rounded-[8px]) */}
+            <div className="relative mt-8 sm:mt-10 mb-3.5">
+              <div className="flex lg:grid lg:grid-cols-7 items-stretch gap-2.5 sm:gap-3 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth px-1 lg:px-0 pt-3 pb-3">
                 {HERO_SERVICES.map((s, idx) => {
+                  const IconComp = s.icon;
                   const isActive = idx === activeServiceIndex;
                   return (
                     <button
                       key={s.id}
                       type="button"
                       onClick={() => handleSelectService(idx)}
-                      className={`px-3.5 sm:px-4 py-2 rounded-t-xl text-xs sm:text-[13px] font-sans font-medium transition-all duration-200 flex items-center gap-2 cursor-pointer whitespace-nowrap shrink-0 ${
+                      aria-pressed={isActive}
+                      aria-label={`Select ${s.name}`}
+                      className={`group relative shrink-0 w-[160px] sm:w-[175px] lg:w-auto h-[165px] sm:h-[180px] lg:h-[195px] rounded-[8px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4.5 flex flex-col justify-between bg-neutral-950 ${
                         isActive
-                          ? "bg-white text-stone-900 shadow-md font-semibold"
-                          : "bg-black/40 hover:bg-black/60 text-white/90 backdrop-blur-sm border-t border-x border-white/10"
+                          ? "-translate-y-1.5 scale-[1.02] z-20 shadow-[0_16px_36px_rgba(0,0,0,0.5)]"
+                          : "hover:-translate-y-1.5 hover:scale-[1.01] hover:z-30 opacity-90 hover:opacity-100"
                       }`}
                     >
-                      <span>{s.icon}</span>
-                      <span>{s.name}</span>
+                      {/* Inner clipped canvas with service photo & scrims */}
+                      <div className="absolute inset-0 rounded-[8px] overflow-hidden pointer-events-none">
+                        <img
+                          src={s.imageSrc}
+                          alt=""
+                          className={`absolute inset-0 w-full h-full object-cover ${s.imagePosition || "object-center"} scale-[1.05] transition-transform duration-500 ease-out group-hover:scale-[1.12]`}
+                        />
+                        <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-black/55 via-black/20 to-transparent" />
+                        <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                      </div>
+
+                      {/* Outer border ring with standard rounded-[8px] */}
+                      <div
+                        className={`absolute inset-0 rounded-[8px] transition-all duration-300 pointer-events-none z-20 ${
+                          isActive
+                            ? "border-2 border-white ring-2 ring-white/60 shadow-[0_0_24px_rgba(255,255,255,0.55)]"
+                            : "border border-white/20 group-hover:border-white group-hover:ring-1 group-hover:ring-white/40 group-hover:shadow-[0_0_18px_rgba(255,255,255,0.4)]"
+                        }`}
+                      />
+
+                      {/* Top Row: Icon */}
+                      <div className="relative z-30 flex items-center justify-start w-full">
+                        <div className="text-white drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
+                          <IconComp className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </div>
+                      </div>
+
+                      {/* Bottom Row: Typography */}
+                      <div className="relative z-30 w-full mt-auto">
+                        <div className="text-[13px] sm:text-[14px] lg:text-[15px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] whitespace-normal break-words">
+                          {s.name}
+                        </div>
+                        <div className="text-[11px] sm:text-[11.5px] lg:text-[12px] font-medium text-white/95 leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words mt-1">
+                          {s.subtitle}
+                        </div>
+                      </div>
                     </button>
                   );
                 })}
               </div>
+            </div>
 
-              {/* White Floating Enquiry Box (Embedded in Hero, matching reference image) */}
-              <div className="bg-white rounded-b-2xl rounded-tr-2xl shadow-[0_20px_50px_rgba(0,0,0,0.25)] border border-black/[0.08] p-4 sm:p-6 transition-all duration-300">
-                {submitted ? (
-                  <div className="py-6 sm:py-8 text-center space-y-3.5 animate-in fade-in duration-300">
-                    <div className="w-14 h-14 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center mx-auto shadow-xs">
-                      <CheckCircle2 className="w-7 h-7" />
-                    </div>
-                    <h3 className="text-2xl sm:text-3xl font-sans font-bold text-[#1C1815] tracking-tight">
-                      Enquiry Done!
-                    </h3>
-                    <p className="text-sm sm:text-base font-sans font-medium text-stone-800 max-w-lg mx-auto leading-relaxed">
-                      Thank you,{" "}
-                      <span className="font-bold text-stone-900">
-                        {fullName || "Traveler"}
-                      </span>
-                      . Our dedicated coordinator for{" "}
-                      <strong className="font-bold text-[#002f89]">
-                        {activeService.name}
-                      </strong>{" "}
-                      will contact you via WhatsApp/phone shortly with
-                      customized pricing.
-                    </p>
-                    <div className="pt-2">
-                      <button
-                        type="button"
-                        onClick={() => setSubmitted(false)}
-                        className="inline-flex items-center justify-center px-6 py-2.5 rounded-none border border-[#002f89] bg-[#002f89] text-white text-xs sm:text-sm font-sans font-semibold uppercase tracking-wider hover:bg-[#00246b] transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
-                      >
-                        Submit Another Enquiry
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <form
-                    onSubmit={handleHeroSubmit}
-                    className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 items-end"
-                  >
-                    {/* Field 1: Service Chosen */}
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
-                        <Tag className="w-3.5 h-3.5 text-stone-400" />
-                        Selected Service
-                      </label>
-                      <div className="w-full h-11 px-3.5 bg-stone-50 rounded-lg border border-stone-200 text-xs font-semibold text-stone-800 flex items-center justify-between">
-                        <span className="truncate">{activeService.name}</span>
-                        <span className="text-[10px] text-amber-700 font-mono bg-amber-50 px-2 py-0.5 rounded">
-                          {activeService.badge}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Field 2: Travel Date */}
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
-                        <Calendar className="w-3.5 h-3.5 text-stone-400" />
-                        Expected Date
-                      </label>
-                      <input
-                        type="date"
-                        value={travelDate}
-                        onChange={(e) => setTravelDate(e.target.value)}
-                        className="w-full h-11 px-3.5 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:bg-white transition"
+            {/* CONCIERGE SEARCH BAR (rounded-[8px] & Blue Action Button) */}
+            <div
+              ref={conciergeBarRef}
+              className="relative z-40 w-full bg-[#FAF8F5]/95 backdrop-blur-md text-[#1E1A17] rounded-[8px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-white/80 transition-all duration-300"
+            >
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-2">
+                <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-[#E5E0D5]/50 min-w-0">
+                  {/* CASE 1: CUSTOM HOLIDAYS */}
+                  {activeService.id === "custom-holidays" && (
+                    <>
+                      <ConciergePillField
+                        icon={Compass}
+                        label="Destination"
+                        value={holidayDest}
+                        isOpen={openDropdown === "holiday-dest"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "holiday-dest"
+                              ? null
+                              : "holiday-dest",
+                          )
+                        }
+                        options={HOLIDAY_DESTINATIONS}
+                        onSelect={(val) => {
+                          setHolidayDest(val);
+                          setOpenDropdown(null);
+                        }}
+                        dropdownWidth="w-72 sm:w-80"
                       />
-                    </div>
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={CalendarDays}
+                        label="Travel Period"
+                        value={holidayMonth}
+                        isOpen={openDropdown === "holiday-month"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "holiday-month"
+                              ? null
+                              : "holiday-month",
+                          )
+                        }
+                        options={HOLIDAY_MONTHS}
+                        onSelect={(val) => {
+                          setHolidayMonth(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={Users}
+                        label="Travellers"
+                        value={holidayTravelers}
+                        isOpen={openDropdown === "holiday-travelers"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "holiday-travelers"
+                              ? null
+                              : "holiday-travelers",
+                          )
+                        }
+                        options={HOLIDAY_TRAVELERS}
+                        onSelect={(val) => {
+                          setHolidayTravelers(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                    </>
+                  )}
 
-                    {/* Field 3: Travelers */}
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
-                        <Users className="w-3.5 h-3.5 text-stone-400" />
-                        Guests / Travelers
-                      </label>
-                      <select
-                        value={travelers}
-                        onChange={(e) => setTravelers(e.target.value)}
-                        className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:bg-white transition cursor-pointer"
-                      >
-                        <option value="1 Adult">Solo Traveler (1 Adult)</option>
-                        <option value="2 Adults, 0 Kids">
-                          Couple (2 Adults)
-                        </option>
-                        <option value="Family (2 Adults, 2 Kids)">
-                          Family (2 Adults, 2 Kids)
-                        </option>
-                        <option value="Small Group (3-5 Adults)">
-                          Small Group (3-5 Adults)
-                        </option>
-                        <option value="Large Group (6+ Persons)">
-                          Large Group (6+ Persons)
-                        </option>
-                      </select>
-                    </div>
+                  {/* CASE 2: VISA ASSISTANCE */}
+                  {activeService.id === "visa-assistance" && (
+                    <>
+                      <ConciergePillField
+                        icon={PassportIcon}
+                        label="Visa Country"
+                        value={visaCountry}
+                        isOpen={openDropdown === "visa-country"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "visa-country"
+                              ? null
+                              : "visa-country",
+                          )
+                        }
+                        options={VISA_COUNTRIES}
+                        onSelect={(val) => {
+                          setVisaCountry(val);
+                          setOpenDropdown(null);
+                        }}
+                        dropdownWidth="w-72 sm:w-88"
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={CalendarDays}
+                        label="Expected Timeline"
+                        value={visaDate}
+                        isOpen={openDropdown === "visa-date"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "visa-date" ? null : "visa-date",
+                          )
+                        }
+                        options={VISA_DATES}
+                        onSelect={(val) => {
+                          setVisaDate(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={Users}
+                        label="Applicants"
+                        value={visaApplicants}
+                        isOpen={openDropdown === "visa-applicants"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "visa-applicants"
+                              ? null
+                              : "visa-applicants",
+                          )
+                        }
+                        options={VISA_APPLICANTS}
+                        onSelect={(val) => {
+                          setVisaApplicants(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                    </>
+                  )}
 
-                    {/* Field 4: Full Name & Phone */}
-                    <div className="space-y-1">
-                      <label className="text-[11px] font-mono font-semibold uppercase tracking-wider text-stone-600 flex items-center gap-1.5">
-                        <MessageCircle className="w-3.5 h-3.5 text-stone-400" />
-                        Your Contact
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <input
-                          type="text"
-                          placeholder="Your Name"
-                          value={fullName}
-                          onChange={(e) => setFullName(e.target.value)}
-                          className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:bg-white transition"
-                        />
-                        <input
-                          type="tel"
-                          placeholder="Phone / WhatsApp"
-                          value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
-                          className="w-full h-11 px-3 bg-stone-50 rounded-lg border border-stone-200 text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:bg-white transition"
-                        />
-                      </div>
-                    </div>
+                  {/* CASE 3: FLIGHT BOOKING */}
+                  {activeService.id === "flight-booking" && (
+                    <>
+                      <ConciergePillField
+                        icon={PlaneTakeoff}
+                        label="Flying Route"
+                        value={flightRoute}
+                        isOpen={openDropdown === "flight-route"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "flight-route"
+                              ? null
+                              : "flight-route",
+                          )
+                        }
+                        options={FLIGHT_ROUTES}
+                        onSelect={(val) => {
+                          setFlightRoute(val);
+                          setOpenDropdown(null);
+                        }}
+                        dropdownWidth="w-72 sm:w-88"
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={CalendarDays}
+                        label="Departure Date"
+                        value={flightDate}
+                        isOpen={openDropdown === "flight-date"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "flight-date"
+                              ? null
+                              : "flight-date",
+                          )
+                        }
+                        options={FLIGHT_DATES}
+                        onSelect={(val) => {
+                          setFlightDate(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={Users}
+                        label="Passengers & Class"
+                        value={flightClass}
+                        isOpen={openDropdown === "flight-class"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "flight-class"
+                              ? null
+                              : "flight-class",
+                          )
+                        }
+                        options={FLIGHT_CLASSES}
+                        onSelect={(val) => {
+                          setFlightClass(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                    </>
+                  )}
 
-                    {/* Field 5: Submit Button */}
-                    <div>
-                      <button
-                        type="submit"
-                        className="w-full h-11 rounded-lg bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-md flex items-center justify-center gap-2"
-                      >
-                        <Send className="w-3.5 h-3.5 text-amber-300" />
-                        <span>Submit Enquiry</span>
-                      </button>
-                    </div>
-                  </form>
-                )}
+                  {/* CASE 4: TRAIN BOOKING */}
+                  {activeService.id === "train-booking" && (
+                    <>
+                      <ConciergePillField
+                        icon={Train}
+                        label="Train Route"
+                        value={trainRoute}
+                        isOpen={openDropdown === "train-route"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "train-route"
+                              ? null
+                              : "train-route",
+                          )
+                        }
+                        options={TRAIN_ROUTES}
+                        onSelect={(val) => {
+                          setTrainRoute(val);
+                          setOpenDropdown(null);
+                        }}
+                        dropdownWidth="w-72 sm:w-88"
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={CalendarDays}
+                        label="Travel Date"
+                        value={trainDate}
+                        isOpen={openDropdown === "train-date"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "train-date" ? null : "train-date",
+                          )
+                        }
+                        options={TRAIN_DATES}
+                        onSelect={(val) => {
+                          setTrainDate(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={Users}
+                        label="Travel Class"
+                        value={trainClass}
+                        isOpen={openDropdown === "train-class"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "train-class"
+                              ? null
+                              : "train-class",
+                          )
+                        }
+                        options={TRAIN_CLASSES}
+                        onSelect={(val) => {
+                          setTrainClass(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {/* CASE 5: BUS BOOKING */}
+                  {activeService.id === "bus-booking" && (
+                    <>
+                      <ConciergePillField
+                        icon={Bus}
+                        label="Bus Route"
+                        value={busRoute}
+                        isOpen={openDropdown === "bus-route"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "bus-route" ? null : "bus-route",
+                          )
+                        }
+                        options={BUS_ROUTES}
+                        onSelect={(val) => {
+                          setBusRoute(val);
+                          setOpenDropdown(null);
+                        }}
+                        dropdownWidth="w-72 sm:w-88"
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={CalendarDays}
+                        label="Travel Date"
+                        value={busDate}
+                        isOpen={openDropdown === "bus-date"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "bus-date" ? null : "bus-date",
+                          )
+                        }
+                        options={BUS_DATES}
+                        onSelect={(val) => {
+                          setBusDate(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={Users}
+                        label="Seat Preference"
+                        value={busSeats}
+                        isOpen={openDropdown === "bus-seats"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "bus-seats" ? null : "bus-seats",
+                          )
+                        }
+                        options={BUS_SEATS}
+                        onSelect={(val) => {
+                          setBusSeats(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {/* CASE 6: UMRAH PACKAGES */}
+                  {activeService.id === "umrah-packages" && (
+                    <>
+                      <ConciergePillField
+                        icon={MosqueIcon}
+                        label="Package Tier"
+                        value={umrahTier}
+                        isOpen={openDropdown === "umrah-tier"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "umrah-tier" ? null : "umrah-tier",
+                          )
+                        }
+                        options={UMRAH_TIERS}
+                        onSelect={(val) => {
+                          setUmrahTier(val);
+                          setOpenDropdown(null);
+                        }}
+                        dropdownWidth="w-72 sm:w-88"
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={CalendarDays}
+                        label="Travel Period"
+                        value={umrahSeason}
+                        isOpen={openDropdown === "umrah-season"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "umrah-season"
+                              ? null
+                              : "umrah-season",
+                          )
+                        }
+                        options={UMRAH_SEASONS}
+                        onSelect={(val) => {
+                          setUmrahSeason(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={Users}
+                        label="Pilgrims"
+                        value={umrahPilgrims}
+                        isOpen={openDropdown === "umrah-pilgrims"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "umrah-pilgrims"
+                              ? null
+                              : "umrah-pilgrims",
+                          )
+                        }
+                        options={UMRAH_PILGRIMS}
+                        onSelect={(val) => {
+                          setUmrahPilgrims(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                    </>
+                  )}
+
+                  {/* CASE 7: HAJJ PACKAGES */}
+                  {activeService.id === "hajj-packages" && (
+                    <>
+                      <ConciergePillField
+                        icon={MosqueIcon}
+                        label="Package Tier"
+                        value={hajjTier}
+                        isOpen={openDropdown === "hajj-tier"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "hajj-tier" ? null : "hajj-tier",
+                          )
+                        }
+                        options={HAJJ_TIERS}
+                        onSelect={(val) => {
+                          setHajjTier(val);
+                          setOpenDropdown(null);
+                        }}
+                        dropdownWidth="w-72 sm:w-88"
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={CalendarDays}
+                        label="Travel Period"
+                        value={hajjSeason}
+                        isOpen={openDropdown === "hajj-season"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "hajj-season"
+                              ? null
+                              : "hajj-season",
+                          )
+                        }
+                        options={HAJJ_SEASONS}
+                        onSelect={(val) => {
+                          setHajjSeason(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                      <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                      <ConciergePillField
+                        icon={Users}
+                        label="Pilgrims"
+                        value={hajjPilgrims}
+                        isOpen={openDropdown === "hajj-pilgrims"}
+                        onToggle={() =>
+                          setOpenDropdown(
+                            openDropdown === "hajj-pilgrims"
+                              ? null
+                              : "hajj-pilgrims",
+                          )
+                        }
+                        options={HAJJ_PILGRIMS}
+                        onSelect={(val) => {
+                          setHajjPilgrims(val);
+                          setOpenDropdown(null);
+                        }}
+                      />
+                    </>
+                  )}
+                </div>
+
+                {/* Blue Brand Action Button */}
+                <button
+                  type="button"
+                  onClick={handleRequestQuote}
+                  className="w-full lg:w-auto h-[48px] sm:h-[52px] px-8 sm:px-9 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-medium text-[14.5px] sm:text-[15px] flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_16px_rgba(0,47,137,0.35)] hover:shadow-[0_6px_22px_rgba(0,47,137,0.5)] cursor-pointer whitespace-nowrap shrink-0 lg:ml-4 select-none active:scale-[0.98]"
+                >
+                  {isSubmitted ? (
+                    <>
+                      <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                      <span>Quote Requested</span>
+                    </>
+                  ) : (
+                    <>
+                      <span>Request a Quote</span>
+                      <ArrowRight className="w-4 h-4 text-white shrink-0" />
+                    </>
+                  )}
+                </button>
               </div>
             </div>
           </div>
