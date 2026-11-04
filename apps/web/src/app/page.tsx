@@ -135,27 +135,27 @@ const FAQS = [
   {
     question: "What is typically included in a Flyora holiday package?",
     answer:
-      "Placeholder: Our packages generally cover premium handpicked accommodations, daily breakfast, private or scheduled airport transfers, guided sightseeing, and selected curated activities as specified in your itinerary.",
+      "Flyora: Our packages generally cover premium handpicked accommodations, daily breakfast, private or scheduled airport transfers, guided sightseeing, and selected curated activities as specified in your itinerary.",
   },
   {
     question: "Can I customize an itinerary to suit my personal preferences?",
     answer:
-      "Placeholder: Yes, all Flyora itineraries can be completely tailored. You can adjust durations, select preferred hotel tiers, add private tours, or combine multiple destinations according to your schedule.",
+      "Flyora: Yes, all Flyora itineraries can be completely tailored. You can adjust durations, select preferred hotel tiers, add private tours, or combine multiple destinations according to your schedule.",
   },
   {
     question: "Are flights and visa assistance included in the package cost?",
     answer:
-      "Placeholder: International flights and visa assistance can be packaged together or booked separately depending on your preference. All inclusions and exclusions are clearly itemized prior to booking.",
+      "Flyora: International flights and visa assistance can be packaged together or booked separately depending on your preference. All inclusions and exclusions are clearly itemized prior to booking.",
   },
   {
     question: "What is the booking process and payment schedule?",
     answer:
-      "Placeholder: After reviewing and approving your personalized proposal, a standard deposit confirms your reservation. The remaining balance is completed closer to your departure date via flexible milestones.",
+      "Flyora: After reviewing and approving your personalized proposal, a standard deposit confirms your reservation. The remaining balance is completed closer to your departure date via flexible milestones.",
   },
   {
     question: "What kind of support is provided during my journey?",
     answer:
-      "Placeholder: You receive 24/7 dedicated travel support via phone and WhatsApp throughout your trip, ensuring prompt assistance with itinerary questions, airport coordination, or unexpected needs.",
+      "Flyora: You receive 24/7 dedicated travel support via phone and WhatsApp throughout your trip, ensuring prompt assistance with itinerary questions, airport coordination, or unexpected needs.",
   },
 ];
 
@@ -571,7 +571,7 @@ export default function Home() {
           <InkOrbitTestimonials
             theme="light"
             tag="VERIFIED EXPERIENCES"
-            title="What *Travelers* Say\nAbout Flyora."
+            title="What Travelers Say\nAbout Flyora."
             testimonials={TRAVEL_TESTIMONIALS}
             logos={[]}
           />
@@ -605,7 +605,7 @@ export default function Home() {
                       className="w-full px-6 sm:px-8 py-5 sm:py-5.5 text-left flex items-center justify-between gap-4 cursor-pointer select-none transition-colors"
                       aria-expanded={isOpen}
                     >
-                      <span className="text-sm sm:text-base font-semibold text-[#1E1A17] tracking-tight">
+                      <span className="text-base sm:text-lg font-semibold text-[#1E1A17] tracking-tight">
                         {faq.question}
                       </span>
                       <Plus
@@ -622,7 +622,7 @@ export default function Home() {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <div className="px-6 sm:px-8 pb-6 pt-1 text-xs sm:text-sm text-[#5C534A] leading-relaxed">
+                        <div className="px-6 sm:px-8 pb-6 pt-1 text-sm sm:text-base text-[#5C534A] leading-relaxed">
                           {faq.answer}
                         </div>
                       </div>
