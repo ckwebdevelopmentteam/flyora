@@ -234,6 +234,15 @@ export function StraightCardsCarousel({
     }
   }, [activeIndex, n, goTo]);
 
+  // When items change (e.g. category switch), reset slide position cleanly without remounting
+  useEffect(() => {
+    state.current.pos = activeIndex || 0;
+    state.current.target = activeIndex || 0;
+    state.current.vel = 0;
+    setActive(activeIndex || 0);
+    paint();
+  }, [items, activeIndex, paint]);
+
   // Measure container width
   useEffect(() => {
     const el = stageRef.current;

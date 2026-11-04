@@ -178,46 +178,67 @@ export function DestinationsShowcase({
   return (
     <section
       id="destination-packages"
-      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 ${className}`}
+      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[720px] lg:min-h-[760px] ${className}`}
     >
-      {/* Background Images Layer: Smooth expansion from center (initial 50px less on all sides -> expands to full) */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden bg-black/90">
-        <AnimatePresence initial={false} mode="sync">
-          <motion.div
-            key={activeCategory}
-            initial={{
-              opacity: 0,
-              clipPath: "inset(50px round 12px)",
-              scale: 0.98,
-            }}
-            animate={{
-              opacity: 1,
-              clipPath: "inset(0px round 0px)",
-              scale: 1,
-            }}
-            exit={{
-              opacity: 0,
-              scale: 1.01,
-              transition: { duration: 0.75, ease: "easeInOut" },
-            }}
-            transition={{
-              duration: 1.25,
-              ease: [0.22, 1, 0.36, 1], // luxurious, smooth slow-motion expansion
-            }}
-            className="absolute inset-0 bg-cover bg-center"
-            style={{
-              backgroundImage: `url(${
-                activeCategory === "International"
-                  ? "/home/heifiltower.png"
-                  : "/showcase/domestic-bg.jpg"
-              })`,
-            }}
-          >
-            {/* Darkening shade for balanced contrast and white text legibility */}
-            <div className="absolute inset-0 bg-black/25 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-transparent pointer-events-none" />
-          </motion.div>
-        </AnimatePresence>
+      {/* Background Images Layer: Dual permanent GPU-rendered layers with ZERO blink */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden bg-[#0a0e17]">
+        {/* International Background Layer */}
+        <motion.div
+          initial={false}
+          animate={
+            activeCategory === "International"
+              ? {
+                  clipPath: ["inset(50px round 16px)", "inset(0px round 0px)"],
+                  scale: [0.98, 1],
+                  opacity: [0, 1],
+                }
+              : {
+                  clipPath: "inset(0px round 0px)",
+                  scale: 1,
+                  opacity: 1,
+                }
+          }
+          transition={{
+            duration: 1.25,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className={`absolute inset-0 bg-cover bg-center ${
+            activeCategory === "International" ? "z-20" : "z-10"
+          }`}
+          style={{ backgroundImage: `url('/home/heifiltower.png')` }}
+        >
+          <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-transparent pointer-events-none" />
+        </motion.div>
+
+        {/* Domestic Background Layer */}
+        <motion.div
+          initial={false}
+          animate={
+            activeCategory === "Domestic"
+              ? {
+                  clipPath: ["inset(50px round 16px)", "inset(0px round 0px)"],
+                  scale: [0.98, 1],
+                  opacity: [0, 1],
+                }
+              : {
+                  clipPath: "inset(0px round 0px)",
+                  scale: 1,
+                  opacity: 1,
+                }
+          }
+          transition={{
+            duration: 1.25,
+            ease: [0.22, 1, 0.36, 1],
+          }}
+          className={`absolute inset-0 bg-cover bg-center ${
+            activeCategory === "Domestic" ? "z-20" : "z-10"
+          }`}
+          style={{ backgroundImage: `url('/showcase/domestic-bg.jpg')` }}
+        >
+          <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-transparent pointer-events-none" />
+        </motion.div>
       </div>
 
       {/* Main Showcase Content with 105px horizontal padding and symmetrical top/bottom gaps */}
@@ -272,37 +293,39 @@ export function DestinationsShowcase({
               LEFT COLUMN: Active Destination Details (Smooth Fade & Slide)
               ================================================================= */}
           <div className="w-full lg:w-[420px] xl:w-[480px] shrink-0 flex flex-col justify-center text-left">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`dest-info-${current.id}`}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -12 }}
-                transition={{ duration: 0.35, ease: [0.25, 1, 0.5, 1] }}
-                className="flex flex-col"
-              >
-                {/* Category / Location Eyebrow */}
-                <div className="flex items-center gap-2 mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]">
-                  <span className="text-xs uppercase tracking-[0.2em] font-mono text-white/90">
-                    {current.category} Tour
-                  </span>
-                  <span className="text-white/60">•</span>
-                  <span className="text-sm sm:text-base text-white font-medium tracking-wide">
-                    {current.location}
-                  </span>
-                </div>
+            <div className="relative min-h-[220px] sm:min-h-[240px] flex flex-col justify-start">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div
+                  key={`dest-info-${current.id}`}
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  className="flex flex-col"
+                >
+                  {/* Category / Location Eyebrow */}
+                  <div className="flex items-center gap-2 mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]">
+                    <span className="text-xs uppercase tracking-[0.2em] font-mono text-white/90">
+                      {current.category} Tour
+                    </span>
+                    <span className="text-white/60">•</span>
+                    <span className="text-sm sm:text-base text-white font-medium tracking-wide">
+                      {current.location}
+                    </span>
+                  </div>
 
-                {/* Main Heading Title */}
-                <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
-                  {current.title}
-                </h2>
+                  {/* Main Heading Title */}
+                  <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+                    {current.title}
+                  </h2>
 
-                {/* Description Text */}
-                <p className="text-sm sm:text-base text-white leading-relaxed mb-8 max-w-lg font-light drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
-                  {current.description}
-                </p>
-              </motion.div>
-            </AnimatePresence>
+                  {/* Description Text */}
+                  <p className="text-sm sm:text-base text-white leading-relaxed mb-8 max-w-lg font-light drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+                    {current.description}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
+            </div>
 
             {/* Editorial Button with sliding blue background fill hover effect (100% Tailwind) */}
             <div>
@@ -331,7 +354,6 @@ export function DestinationsShowcase({
               ================================================================= */}
           <div className="w-full lg:flex-1 min-w-0">
             <StraightCardsCarousel
-              key={activeCategory}
               items={filteredDestinations}
               activeIndex={activeIndex}
               onIndexChange={handleIndexChange}
