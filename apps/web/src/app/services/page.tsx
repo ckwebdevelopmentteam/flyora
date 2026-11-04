@@ -100,7 +100,7 @@ interface ServiceHeroConfig {
 const HERO_SERVICES: ServiceHeroConfig[] = [
   {
     id: "custom-holidays",
-    serviceId: "Custom Holidays",
+    serviceId: "Holiday Packages",
     name: "Custom Holidays",
     subtitle: "International & Local",
     badge: "Tailored Luxury",
@@ -113,7 +113,7 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
   },
   {
     id: "visa-assistance",
-    serviceId: "Visas",
+    serviceId: "Visa Assistance",
     name: "Visa Assistance",
     subtitle: "Hassle-free Process",
     badge: "Fast-Track",
@@ -126,7 +126,7 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
   },
   {
     id: "flight-booking",
-    serviceId: "Flights",
+    serviceId: "Flight Booking",
     name: "Flight Booking",
     subtitle: "Best Fares",
     badge: "Best Fares",
@@ -139,7 +139,7 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
   },
   {
     id: "train-booking",
-    serviceId: "Trains",
+    serviceId: "Train Booking",
     name: "Train Booking",
     subtitle: "Easy & Fast",
     badge: "Scenic Rail",
@@ -152,7 +152,7 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
   },
   {
     id: "bus-booking",
-    serviceId: "Buses",
+    serviceId: "Bus Booking",
     name: "Bus Booking",
     subtitle: "Comfort Travel",
     badge: "Highway Comfort",
@@ -165,7 +165,7 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
   },
   {
     id: "umrah-packages",
-    serviceId: "Umrah Packages",
+    serviceId: "Umrah & Hajj",
     name: "Umrah Packages",
     subtitle: "Sacred Pilgrimages",
     badge: "Spiritual Journey",
@@ -178,7 +178,7 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
   },
   {
     id: "hajj-packages",
-    serviceId: "Hajj Packages",
+    serviceId: "Umrah & Hajj",
     name: "Hajj Packages",
     subtitle: "Spiritual Journeys",
     badge: "The Holy Pillar",

@@ -24,7 +24,6 @@ import {
   PenLine,
   MapPin,
   Clock,
-  Sparkles,
 } from "lucide-react";
 import type { PublicEnquiryInput } from "@flyora/validators";
 import type { ServiceSummary } from "@flyora/types";
@@ -72,6 +71,26 @@ const PassportIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
   </svg>
 );
 
+// Custom Mosque Icon for Umrah & Hajj pilgrimage services
+const MosqueIcon = ({ className = "w-5 h-5" }: { className?: string }) => (
+  <svg
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.8"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    className={className}
+    aria-hidden="true"
+  >
+    <path d="M12 3c-1.5 1.5-2 3-2 5h4c0-2-.5-3.5-2-5z" />
+    <path d="M4 10h16v11H4z" />
+    <path d="M9 21v-5a3 3 0 0 1 6 0v5" />
+    <path d="M2 13h2v8H2z" />
+    <path d="M20 13h2v8h-2z" />
+  </svg>
+);
+
 // Dynamic Icon Resolver based on service name & slug
 const getServiceIcon = (service: { name: string; slug?: string }) => {
   const text = `${service.name} ${service.slug || ""}`.toLowerCase();
@@ -112,7 +131,7 @@ const getServiceIcon = (service: { name: string; slug?: string }) => {
     text.includes("makkah") ||
     text.includes("madinah")
   ) {
-    return Package;
+    return MosqueIcon;
   }
   if (
     text.includes("holiday") ||
@@ -124,6 +143,155 @@ const getServiceIcon = (service: { name: string; slug?: string }) => {
     return Luggage;
   }
   return Compass;
+};
+
+// Robust service ID resolver that maps user selections, prefill metadata, and package titles to actual backend services
+const resolveServiceId = (
+  availableServices: ServiceSummary[],
+  prefill?: EnquiryPrefill,
+  defaultServiceId?: string,
+  packageTitle?: string,
+): string => {
+  if (!availableServices.length) return "";
+
+  // 1. Gather all candidates in order of specificity
+  const searchTerms: string[] = [
+    prefill?.serviceId,
+    prefill?.serviceName,
+    defaultServiceId,
+    prefill?.destination,
+    prefill?.summaryLabel,
+    packageTitle,
+  ]
+    .filter((v): v is string => Boolean(v && typeof v === "string"))
+    .map((v) => v.toLowerCase().trim());
+
+  // 2. Exact match against ID, slug, or name
+  for (const term of searchTerms) {
+    const exact = availableServices.find(
+      (s) =>
+        s.id.toLowerCase() === term ||
+        (s.slug && s.slug.toLowerCase() === term) ||
+        s.name.toLowerCase() === term,
+    );
+    if (exact) return exact.id;
+  }
+
+  // 3. Keyword / semantic matching
+  for (const term of searchTerms) {
+    // Umrah & Hajj Pilgrimages
+    if (
+      term.includes("umrah") ||
+      term.includes("hajj") ||
+      term.includes("pilgrim") ||
+      term.includes("makkah") ||
+      term.includes("madinah")
+    ) {
+      const match = availableServices.find((s) => {
+        const text = `${s.name} ${s.slug || ""}`.toLowerCase();
+        return text.includes("umrah") || text.includes("hajj");
+      });
+      if (match) return match.id;
+    }
+
+    // Holiday / Custom Tours / Vacation
+    if (
+      term.includes("holiday") ||
+      term.includes("custom") ||
+      term.includes("tour") ||
+      term.includes("vacation") ||
+      term.includes("package")
+    ) {
+      const match = availableServices.find((s) => {
+        const text = `${s.name} ${s.slug || ""}`.toLowerCase();
+        return text.includes("holiday") || text.includes("tour");
+      });
+      if (match) return match.id;
+    }
+
+    // Flight
+    if (
+      term.includes("flight") ||
+      term.includes("plane") ||
+      term.includes("air") ||
+      term.includes("ticket")
+    ) {
+      const match = availableServices.find((s) => {
+        const text = `${s.name} ${s.slug || ""}`.toLowerCase();
+        return text.includes("flight") || text.includes("air");
+      });
+      if (match) return match.id;
+    }
+
+    // Visa
+    if (
+      term.includes("visa") ||
+      term.includes("passport") ||
+      term.includes("embassy")
+    ) {
+      const match = availableServices.find((s) => {
+        const text = `${s.name} ${s.slug || ""}`.toLowerCase();
+        return text.includes("visa") || text.includes("passport");
+      });
+      if (match) return match.id;
+    }
+
+    // Train
+    if (
+      term.includes("train") ||
+      term.includes("rail") ||
+      term.includes("tatkal")
+    ) {
+      const match = availableServices.find((s) => {
+        const text = `${s.name} ${s.slug || ""}`.toLowerCase();
+        return text.includes("train") || text.includes("rail");
+      });
+      if (match) return match.id;
+    }
+
+    // Bus
+    if (
+      term.includes("bus") ||
+      term.includes("coach") ||
+      term.includes("volvo")
+    ) {
+      const match = availableServices.find((s) => {
+        const text = `${s.name} ${s.slug || ""}`.toLowerCase();
+        return text.includes("bus") || text.includes("coach");
+      });
+      if (match) return match.id;
+    }
+
+    // Hotel
+    if (
+      term.includes("hotel") ||
+      term.includes("stay") ||
+      term.includes("room")
+    ) {
+      const match = availableServices.find((s) => {
+        const text = `${s.name} ${s.slug || ""}`.toLowerCase();
+        return text.includes("hotel") || text.includes("stay");
+      });
+      if (match) return match.id;
+    }
+  }
+
+  // 4. Substring inclusion
+  for (const term of searchTerms) {
+    const substrMatch = availableServices.find((s) => {
+      const sName = s.name.toLowerCase();
+      const sSlug = (s.slug || "").toLowerCase();
+      return (
+        sName.includes(term) ||
+        term.includes(sName) ||
+        (sSlug && (sSlug.includes(term) || term.includes(sSlug)))
+      );
+    });
+    if (substrMatch) return substrMatch.id;
+  }
+
+  // 5. Default fallback to first service in list
+  return availableServices[0].id;
 };
 
 // Formatter to clean up any odd admin casing while preserving service naming
@@ -288,17 +456,20 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     slug?: string,
   ): "flight" | "visa" | "train" | "bus" | "umrah" | "hajj" | "holiday" => {
     const text = `${name || ""} ${slug || ""}`.toLowerCase();
-    if (
-      text.includes("flight") ||
-      text.includes("plane") ||
-      text.includes("air")
-    )
-      return "flight";
+    const context =
+      `${text} ${prefill?.serviceName || ""} ${prefill?.destination || ""} ${prefill?.summaryLabel || ""}`.toLowerCase();
+
+    if (text.includes("flight") || text.includes("air")) return "flight";
     if (text.includes("visa") || text.includes("passport")) return "visa";
     if (text.includes("train") || text.includes("rail")) return "train";
     if (text.includes("bus") || text.includes("coach")) return "bus";
-    if (text.includes("hajj")) return "hajj";
-    if (text.includes("umrah")) return "umrah";
+
+    // If it's Umrah & Hajj, check if specifically Hajj, otherwise Umrah
+    if (text.includes("umrah") || text.includes("hajj")) {
+      if (context.includes("hajj") && !context.includes("umrah")) return "hajj";
+      return "umrah";
+    }
+
     return "holiday";
   };
 
@@ -334,86 +505,16 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
         if (!controller.signal.aborted) {
           setServices(data.data);
 
-          // Find initial service matching prefill, defaultServiceId, packageTitle, or fallback
-          let initialId = defaultServiceId || prefill?.serviceId || "";
-          const targetService = (
-            prefill?.serviceName ||
-            prefill?.serviceId ||
-            defaultServiceId ||
-            ""
-          ).toLowerCase();
-
-          if (targetService) {
-            const match = data.data.find((s: ServiceSummary) => {
-              const sName = s.name.toLowerCase();
-              const sSlug = (s.slug || "").toLowerCase();
-              const sId = s.id.toLowerCase();
-              return (
-                sId === targetService ||
-                sName === targetService ||
-                sSlug === targetService ||
-                sName.includes(targetService) ||
-                targetService.includes(sName)
-              );
-            });
-            if (match) initialId = match.id;
-          }
-
-          if (!initialId && packageTitle && typeof packageTitle === "string") {
-            const titleLower = packageTitle.toLowerCase();
-            // Match keywords intelligently
-            const found = data.data.find((s: ServiceSummary) => {
-              const nameLower = s.name.toLowerCase();
-              const slugLower = (s.slug || "").toLowerCase();
-              if (titleLower.includes("hajj") || titleLower.includes("umrah")) {
-                return (
-                  nameLower.includes("hajj") ||
-                  nameLower.includes("umrah") ||
-                  slugLower.includes("hajj")
-                );
-              }
-              if (titleLower.includes("holiday")) {
-                return (
-                  nameLower.includes("holiday") || slugLower.includes("holiday")
-                );
-              }
-              if (titleLower.includes("flight")) {
-                return (
-                  nameLower.includes("flight") || slugLower.includes("flight")
-                );
-              }
-              if (titleLower.includes("visa")) {
-                return nameLower.includes("visa") || slugLower.includes("visa");
-              }
-              if (titleLower.includes("bus")) {
-                return nameLower.includes("bus") || slugLower.includes("bus");
-              }
-              if (titleLower.includes("train")) {
-                return (
-                  nameLower.includes("train") || slugLower.includes("train")
-                );
-              }
-              return (
-                titleLower.includes(nameLower) || titleLower.includes(slugLower)
-              );
-            });
-            if (found) initialId = found.id;
-          }
-
-          if (
-            !initialId ||
-            !data.data.some((s: ServiceSummary) => s.id === initialId)
-          ) {
-            initialId = defaultPackageId ? "" : data.data[0].id;
-          }
+          const matchedId = resolveServiceId(
+            data.data,
+            prefill,
+            defaultServiceId,
+            packageTitle,
+          );
 
           setFormData((prev) => ({
             ...prev,
-            serviceId:
-              prev.serviceId &&
-              data.data.some((s: ServiceSummary) => s.id === prev.serviceId)
-                ? prev.serviceId
-                : initialId,
+            serviceId: matchedId,
           }));
         }
       } catch {
@@ -736,8 +837,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
               >
                 {/* Prefilled Confirmation Banner */}
                 {prefill && (prefill.summaryLabel || prefill.destination) && (
-                  <div className="flex items-start sm:items-center gap-2.5 px-4 py-3 rounded-[8px] bg-blue-50/90 border border-blue-200/90 text-blue-950 text-xs sm:text-[13px] shadow-2xs">
-                    <Sparkles className="w-4 h-4 text-[#002f89] shrink-0 mt-0.5 sm:mt-0" />
+                  <div className="px-4 py-3 rounded-[8px] bg-blue-50/90 border border-blue-200/90 text-blue-950 text-xs sm:text-[13px] shadow-2xs">
                     <div className="min-w-0 flex-1">
                       <span className="font-semibold text-[#002f89]">
                         Prefilled from your selection:
@@ -1055,9 +1155,13 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                 {/* 2.5 SERVICE-SPECIFIC CONTEXTUAL FIELDS */}
                 <div className="bg-[#FAF9F6] border border-neutral-200/90 rounded-[8px] p-3.5 sm:p-4 space-y-3">
                   <div className="flex items-center justify-between border-b border-neutral-200/60 pb-2">
-                    <span className="text-[11.5px] sm:text-[12px] font-bold uppercase tracking-wider text-neutral-700 flex items-center gap-1.5 font-sans">
-                      <Sparkles className="w-3.5 h-3.5 text-[#002f89]" />
-                      {selectedServiceObj?.name || "Service"} Specific Details
+                    <span className="text-[11.5px] sm:text-[12px] font-bold uppercase tracking-wider text-neutral-700 font-sans">
+                      {currentCategory === "umrah"
+                        ? "Umrah Packages"
+                        : currentCategory === "hajj"
+                          ? "Hajj Packages"
+                          : selectedServiceObj?.name || "Service"}{" "}
+                      Specific Details
                     </span>
                     <span className="text-[11px] text-neutral-500 font-medium">
                       Customized Options
@@ -1288,7 +1392,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                             Umrah Package Tier
                           </label>
                           <div className="relative rounded-[8px] border border-neutral-200 bg-white px-3.5 py-2.5 flex items-center gap-2 focus-within:border-[#002f89] focus-within:ring-2 focus-within:ring-[#002f89]/15 transition-all">
-                            <Sparkles className="w-4 h-4 text-[#002f89] shrink-0" />
+                            <MosqueIcon className="w-4 h-4 text-neutral-400 shrink-0" />
                             <select
                               value={customDestination}
                               onChange={(e) =>
@@ -1341,7 +1445,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                             Hajj Package Tier
                           </label>
                           <div className="relative rounded-[8px] border border-neutral-200 bg-white px-3.5 py-2.5 flex items-center gap-2 focus-within:border-[#002f89] focus-within:ring-2 focus-within:ring-[#002f89]/15 transition-all">
-                            <Sparkles className="w-4 h-4 text-[#002f89] shrink-0" />
+                            <MosqueIcon className="w-4 h-4 text-neutral-400 shrink-0" />
                             <select
                               value={customDestination}
                               onChange={(e) =>
