@@ -6,6 +6,7 @@ import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
 import { EnquiryModal } from "../../components/EnquiryModal";
 import { FloatingWhatsApp } from "../../components/FloatingWhatsApp";
+import CarouselCards from "@/components/ui/carousel-cards";
 import {
   Star,
   Globe,
@@ -23,7 +24,6 @@ import {
   Tag,
   MessageCircle,
   MapPin,
-  Check,
 } from "lucide-react";
 
 interface ServiceHeroConfig {
@@ -200,76 +200,6 @@ const PICKUP_STATS = [
   { value: "670", label: "SOLD TOURS" },
   { value: "24", label: "NEW TOURS" },
   { value: "980", label: "HAPPY CUSTOMERS" },
-];
-
-// Popular Packages Cards matching the reference image grid
-const POPULAR_PACKAGES = [
-  {
-    id: "pkg-1",
-    serviceId: "Custom Holidays",
-    title: "5D/4N Dubai Family Luxury Escape",
-    destination: "Dubai, UAE",
-    duration: "5 Days / 4 Nights",
-    startingPrice: "$799",
-    tag: "Featured",
-    image: "/destinations/dubai.jpg",
-    features: ["Burj Khalifa VIP", "Desert Safari BBQ", "Private Yacht"],
-  },
-  {
-    id: "pkg-2",
-    serviceId: "Custom Holidays",
-    title: "4D/3N Maldives Overwater Villa Sanctuary",
-    destination: "North Malé Atoll, Maldives",
-    duration: "4 Days / 3 Nights",
-    startingPrice: "$1,299",
-    tag: "Best Seller",
-    image: "/destinations/maldives.jpg",
-    features: ["Private Plunge Pool", "Seaplane Transfer", "All-Inclusive"],
-  },
-  {
-    id: "pkg-3",
-    serviceId: "Custom Holidays",
-    title: "6D/5N Bali Ubud Rainforest & Seminyak",
-    destination: "Bali, Indonesia",
-    duration: "6 Days / 5 Nights",
-    startingPrice: "$649",
-    tag: "Trending",
-    image: "/destinations/bali.jpg",
-    features: ["Jungle Swing", "Private Villa Pool", "Sunset Seafood"],
-  },
-  {
-    id: "pkg-4",
-    serviceId: "Visas",
-    title: "Schengen & UK Fast-Track Tourist Visa",
-    destination: "Europe & United Kingdom",
-    duration: "Express 7-10 Days",
-    startingPrice: "$180",
-    tag: "99% Approval",
-    image: "/services/visa-assistance.jpg",
-    features: ["Document Audit", "Biometric Slot Booking", "Doorstep Pickup"],
-  },
-  {
-    id: "pkg-5",
-    serviceId: "Umrah Packages",
-    title: "10D/9N Deluxe Makkah & Madinah Umrah",
-    destination: "Saudi Arabia",
-    duration: "10 Days / 9 Nights",
-    startingPrice: "$1,450",
-    tag: "Direct Flight",
-    image: "/services/umrah-packages.jpg",
-    features: ["Clock Tower Hotel", "Private AC Coach", "Ziyarat Guide"],
-  },
-  {
-    id: "pkg-6",
-    serviceId: "Trains",
-    title: "Swiss Panoramic Glacier Express Tour",
-    destination: "Zermatt to St. Moritz, Switzerland",
-    duration: "3 Days Scenic Rail",
-    startingPrice: "$520",
-    tag: "Iconic Rail",
-    image: "/services/train-booking.jpg",
-    features: ["Panoramic Windows", "3-Course Dining", "Swiss Rail Pass"],
-  },
 ];
 
 export default function ServicesPage() {
@@ -684,19 +614,19 @@ export default function ServicesPage() {
             {DISCOUNTS_OFFERS.map((offer) => (
               <div
                 key={offer.id}
-                className="relative rounded-[8px] min-h-[320px] sm:min-h-[340px] p-6 sm:p-7 text-white shadow-xl overflow-hidden flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300 border border-black/10"
+                className="relative rounded-[8px] min-h-[320px] sm:min-h-[340px] p-6 sm:p-7 text-white shadow-xs hover:shadow-md overflow-hidden flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300 border border-black/[0.08]"
               >
-                {/* Background Image */}
+                {/* Background Image - light and vivid like homepage */}
                 <Image
                   src={offer.image}
                   alt={offer.title}
                   fill
                   sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out brightness-[0.72]"
+                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
 
-                {/* Dark Gradient Overlay for high text readability */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/55 to-black/35 group-hover:via-black/50 transition-colors" />
+                {/* Light bottom gradient overlay for subtle contrast */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10 group-hover:from-black/80 transition-colors" />
 
                 {/* Card Border Outline */}
                 <div className="absolute inset-0 rounded-[8px] border border-white/15 pointer-events-none" />
@@ -720,7 +650,7 @@ export default function ServicesPage() {
                 </div>
 
                 <div className="relative z-10 pt-5 mt-4 border-t border-white/20 flex items-center justify-between">
-                  <div className="text-xs font-mono bg-black/45 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 text-white/90">
+                  <div className="text-xs font-mono bg-black/25 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 text-white/90">
                     CODE:{" "}
                     <strong className="text-amber-300 font-bold">
                       {offer.code}
@@ -729,7 +659,7 @@ export default function ServicesPage() {
                   <button
                     type="button"
                     onClick={() => handleCardEnquiry(offer.serviceId)}
-                    className="px-4 py-2 rounded-lg bg-white text-stone-900 text-xs sm:text-sm font-semibold hover:bg-amber-100 transition shadow-md cursor-pointer active:scale-95"
+                    className="px-4 py-2 rounded-lg bg-white text-stone-900 text-xs sm:text-sm font-semibold hover:bg-amber-100 transition shadow-xs cursor-pointer active:scale-95"
                   >
                     Claim Deal
                   </button>
@@ -789,9 +719,9 @@ export default function ServicesPage() {
                 <div
                   key={pickup.id}
                   onClick={() => handleCardEnquiry(pickup.serviceId)}
-                  className={`relative ${pickup.colSpan} h-[260px] sm:h-[300px] lg:h-[340px] rounded-[8px] overflow-hidden group shadow-sm hover:shadow-2xl border border-black/[0.08] hover:border-amber-400/40 transition-all duration-300 cursor-pointer`}
+                  className={`relative ${pickup.colSpan} h-[260px] sm:h-[300px] lg:h-[340px] rounded-[8px] overflow-hidden group shadow-xs hover:shadow-md border border-black/[0.08] hover:border-[#002f89]/30 transition-all duration-300 cursor-pointer`}
                 >
-                  {/* Background Image */}
+                  {/* Background Image - light and natural */}
                   <Image
                     src={pickup.image}
                     alt={pickup.title}
@@ -800,8 +730,8 @@ export default function ServicesPage() {
                     className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
 
-                  {/* High contrast gradient at bottom for text readability */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent group-hover:from-black/90 transition-colors" />
+                  {/* Subtle soft gradient at bottom for title contrast */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent group-hover:from-black/70 transition-colors" />
 
                   {/* Card Content Overlay */}
                   <div className="absolute inset-0 p-5 sm:p-6 flex flex-col justify-end text-white z-10">
@@ -1000,100 +930,8 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        {/* 5. POPULAR PACKAGES & SERVICES GRID (Matching Reference Image "Popular Travel Packages") */}
-        <section className="py-14 sm:py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 sm:mb-12">
-            <div>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
-                Popular Services &amp; Packages
-              </h2>
-            </div>
-            <p className="text-sm sm:text-base text-stone-600 max-w-md mt-2 sm:mt-0 font-sans leading-relaxed">
-              Select any package below to inspect inclusions or request an
-              instant tailored quote.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
-            {POPULAR_PACKAGES.map((pkg) => (
-              <div
-                key={pkg.id}
-                className="rounded-[8px] overflow-hidden bg-white border border-black/[0.07] shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between group"
-              >
-                <div>
-                  {/* Photo with Tag */}
-                  <div className="relative h-52 sm:h-56 w-full overflow-hidden">
-                    <Image
-                      src={pkg.image}
-                      alt={pkg.title}
-                      fill
-                      sizes="(max-width: 768px) 100vw, 33vw"
-                      className="object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent" />
-
-                    <div className="absolute top-3 left-3">
-                      <span className="px-2.5 py-1 rounded-full bg-amber-500 text-white text-[10px] font-bold uppercase tracking-wider shadow-sm">
-                        {pkg.tag}
-                      </span>
-                    </div>
-
-                    <div className="absolute bottom-3 left-3 right-3 text-white">
-                      <div className="flex items-center gap-1.5 text-[11px] text-amber-200">
-                        <MapPin className="w-3.5 h-3.5" />
-                        <span>{pkg.destination}</span>
-                      </div>
-                      <p className="text-xs font-mono text-white/80 mt-0.5">
-                        {pkg.duration}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Body Details */}
-                  <div className="p-5">
-                    <h3 className="text-base sm:text-lg font-serif font-bold text-stone-900 group-hover:text-[#002f89] transition leading-snug">
-                      {pkg.title}
-                    </h3>
-
-                    {/* Features list */}
-                    <div className="mt-3.5 space-y-1.5 pt-3 border-t border-black/[0.05]">
-                      {pkg.features.map((feat) => (
-                        <div
-                          key={feat}
-                          className="flex items-center gap-2 text-xs text-stone-600"
-                        >
-                          <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-                          <span>{feat}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer Action */}
-                <div className="px-5 pb-5 pt-2 flex items-center justify-between border-t border-black/[0.05]">
-                  <div>
-                    <span className="text-[10px] uppercase font-mono text-stone-400 block">
-                      Starting From
-                    </span>
-                    <span className="text-lg font-serif font-black text-stone-900">
-                      {pkg.startingPrice}
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => handleCardEnquiry(pkg.serviceId)}
-                    className="px-4 py-2 rounded-lg bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs font-semibold transition cursor-pointer flex items-center gap-1.5 shadow-xs"
-                  >
-                    <span>Enquire Now</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* 5. POPULAR & TRENDING PACKAGES CAROUSEL */}
+        <CarouselCards />
 
         {/* 6. MID-PAGE CINEMATIC QUOTE BANNER WITH PARALLAX MOTION EFFECT */}
         <section
