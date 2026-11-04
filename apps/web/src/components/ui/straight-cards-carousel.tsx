@@ -395,27 +395,14 @@ export function StraightCardsCarousel({
 
                 {/* Hover State: Details Panel (slides smoothly up from below on hover, slides down on unhover) */}
                 <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex flex-col gap-2.5 opacity-0 translate-y-6 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none group-hover:pointer-events-auto">
-                  {/* Top Row: Duration Badge + Star Rating */}
-                  <div className="flex items-center justify-between gap-2">
-                    {item.duration && (
+                  {/* Top Row: Duration Badge */}
+                  {item.duration && (
+                    <div className="flex items-center gap-2">
                       <span className="px-2.5 py-0.5 rounded-[5px] bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold tracking-wide border border-white/25">
                         {item.duration}
                       </span>
-                    )}
-                    {item.rating && (
-                      <div className="flex items-center gap-1 text-amber-300 text-xs font-semibold drop-shadow-sm">
-                        <span>★</span>
-                        <span className="text-white font-medium">
-                          {item.rating}
-                        </span>
-                        {item.reviewCount && (
-                          <span className="text-white/60 text-[10.5px]">
-                            ({item.reviewCount})
-                          </span>
-                        )}
-                      </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
 
                   {/* Location & Short Description */}
                   <div>

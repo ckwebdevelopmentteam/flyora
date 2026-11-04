@@ -197,12 +197,12 @@ export function DestinationsShowcase({
             }}
             exit={{
               opacity: 0,
-              scale: 1.02,
-              transition: { duration: 0.5, ease: "easeInOut" },
+              scale: 1.01,
+              transition: { duration: 0.75, ease: "easeInOut" },
             }}
             transition={{
-              duration: 0.8,
-              ease: [0.16, 1, 0.3, 1], // silky smooth cubic bezier
+              duration: 1.25,
+              ease: [0.22, 1, 0.36, 1], // luxurious, smooth slow-motion expansion
             }}
             className="absolute inset-0 bg-cover bg-center"
             style={{
