@@ -19,7 +19,6 @@ import {
   Send,
   CheckCircle2,
   Play,
-  ChevronDown,
   ArrowRight,
   Tag,
   MessageCircle,
@@ -273,35 +272,6 @@ const POPULAR_PACKAGES = [
   },
 ];
 
-const FAQS = [
-  {
-    question: "How do I submit my enquiry through this page?",
-    answer:
-      "Select your desired service tab in the top hero, choose your travel date, enter your name and phone number, and click 'Submit Enquiry'. Our travel coordinator receives your message instantly and replies with custom options via WhatsApp and email.",
-  },
-  {
-    question: "Can Flyora handle urgent or emergency visa requests?",
-    answer:
-      "Yes. Our visa documentation desk operates express appointment channels and emergency filing options for travelers needing urgent approvals for Schengen, Dubai, UK, US, and Southeast Asian countries.",
-  },
-  {
-    question:
-      "Do you arrange complex multi-city flights and train connections?",
-    answer:
-      "Absolutely. We specialize in non-standard itineraries, open-jaw flight tickets, family group seating on high-speed rail, and coordinating airport transfers directly with hotel check-ins.",
-  },
-  {
-    question: "What is included in the Umrah and Hajj packages?",
-    answer:
-      "Our holy pilgrimage packages provide full-board guidance including Saudi electronic visa issuance, 4-star/5-star accommodation walking distance from the Haram, private AC ground transit, historical Ziyarat tours, and daily spiritual guidance by experienced scholars.",
-  },
-  {
-    question: "Is my payment and booking protected with Flyora?",
-    answer:
-      "Yes. Flyora is an authorized, licensed travel agency. We issue official airline PNRs, verified hotel confirmation vouchers, and clear transparent invoicing with round-the-clock on-ground emergency support.",
-  },
-];
-
 export default function ServicesPage() {
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState(0);
@@ -342,7 +312,6 @@ export default function ServicesPage() {
   const [modalServiceId, setModalServiceId] = useState<string | undefined>(
     undefined,
   );
-  const [openFaq, setOpenFaq] = useState<number | null>(0);
 
   // Listen to hash changes on initial mount and external navigation (back/forward or navbar links)
   useEffect(() => {
@@ -1179,147 +1148,6 @@ export default function ServicesPage() {
                 <span>Chat on WhatsApp</span>
               </a>
             </div>
-          </div>
-        </section>
-
-        {/* 7. VERIFIED REVIEWS / TESTIMONIALS (Matching Reference Image "Hear From Travelers") */}
-        <section className="py-14 sm:py-20 bg-stone-50 border-b border-black/[0.05]">
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-10 sm:mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
-                Hear From Our Travelers
-              </h2>
-              <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto font-sans leading-relaxed">
-                Real stories from travelers who explored the world with Flyora.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="p-6 rounded-2xl bg-white border border-black/[0.06] shadow-xs">
-                <div className="flex items-center gap-1 text-amber-500 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400" />
-                  ))}
-                </div>
-                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
-                  &ldquo;Flyora planned our 10-day honeymoon in Switzerland and
-                  Paris. Every panoramic train, private lake transfer, and
-                  boutique hotel was flawless. Unmatched attention to
-                  detail!&rdquo;
-                </p>
-                <div className="mt-4 pt-3 border-t border-black/[0.05] flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xs font-serif font-bold text-stone-900">
-                      Rohan &amp; Priya Sen
-                    </h4>
-                    <span className="text-[10px] text-stone-400 font-mono">
-                      Custom Holidays Client
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono">
-                    Verified Trip
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-white border border-black/[0.06] shadow-xs">
-                <div className="flex items-center gap-1 text-amber-500 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400" />
-                  ))}
-                </div>
-                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
-                  &ldquo;I needed emergency Schengen visas for our family of
-                  four within 12 days. Flyora expedited our appointments and
-                  audited our files. All four visas arrived in 6 days!&rdquo;
-                </p>
-                <div className="mt-4 pt-3 border-t border-black/[0.05] flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xs font-serif font-bold text-stone-900">
-                      Dr. Tariq Mansoor
-                    </h4>
-                    <span className="text-[10px] text-stone-400 font-mono">
-                      Visa Assistance Client
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono">
-                    Verified Trip
-                  </span>
-                </div>
-              </div>
-
-              <div className="p-6 rounded-2xl bg-white border border-black/[0.06] shadow-xs">
-                <div className="flex items-center gap-1 text-amber-500 mb-3">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-amber-400" />
-                  ))}
-                </div>
-                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed italic">
-                  &ldquo;Performing Umrah with my elderly parents was our dream.
-                  Flyora arranged a five-star hotel right in the Clock Tower
-                  with wheelchair assistance and private AC transport. Blessed
-                  journey.&rdquo;
-                </p>
-                <div className="mt-4 pt-3 border-t border-black/[0.05] flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xs font-serif font-bold text-stone-900">
-                      Fatima &amp; Zayan Khan
-                    </h4>
-                    <span className="text-[10px] text-stone-400 font-mono">
-                      Umrah Pilgrims
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded font-mono">
-                    Verified Trip
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* 8. GENERAL QUESTIONS (FAQ ACCORDION) */}
-        <section className="py-14 sm:py-20 max-w-4xl mx-auto px-4 sm:px-6">
-          <div className="text-center mb-10 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
-              General Questions
-            </h2>
-            <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto font-sans leading-relaxed">
-              Common questions on booking, documentation, and on-trip
-              assistance.
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            {FAQS.map((faq, idx) => {
-              const isOpen = openFaq === idx;
-              return (
-                <div
-                  key={faq.question}
-                  className="rounded-xl border border-black/[0.07] bg-white overflow-hidden shadow-2xs transition"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(isOpen ? null : idx)}
-                    className="w-full px-5 py-4 flex items-center justify-between text-left gap-4 hover:bg-stone-50/60 transition cursor-pointer"
-                  >
-                    <span className="text-sm font-serif font-semibold text-stone-900">
-                      {faq.question}
-                    </span>
-                    <ChevronDown
-                      className={`w-4 h-4 text-stone-400 shrink-0 transition-transform duration-200 ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </button>
-                  {isOpen && (
-                    <div className="px-5 pb-5 pt-1 text-xs sm:text-[13px] text-stone-600 leading-relaxed border-t border-black/[0.04] bg-stone-50/30">
-                      {faq.answer}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
           </div>
         </section>
       </main>
