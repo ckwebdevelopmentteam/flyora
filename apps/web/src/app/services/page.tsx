@@ -24,6 +24,14 @@ import {
   CheckCircle2,
   Play,
   MessageCircle,
+  FileText,
+  ShieldCheck,
+  Clock,
+  Award,
+  Building2,
+  UserCheck,
+  CreditCard,
+  FileCheck2,
 } from "lucide-react";
 
 // Pixel-perfect SVG icons matching the reference design
@@ -453,83 +461,904 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
   );
 };
 
-// Promotional Offer Banners matching the reference image row 2
-const DISCOUNTS_OFFERS = [
-  {
-    id: "offer-1",
-    tag: "HOLIDAY SAVER",
-    discount: "Up to 25% OFF",
-    title: "Summer International Holidays",
-    description: "Book 45 days in advance & get complimentary 5-star upgrades",
-    code: "FLYHOLIDAY25",
-    image: "/destinations/maldives.jpg",
-    serviceId: "Custom Holidays",
-  },
-  {
-    id: "offer-2",
-    tag: "FAMILY VISA BUNDLE",
-    discount: "Flat 20% OFF",
-    title: "Schengen & Gulf Visa Processing",
-    description: "Apply for 3 or more family members with zero processing fee",
-    code: "FLYVISA20",
-    image: "/services/visa-assistance.jpg",
-    serviceId: "Visas",
-  },
-  {
-    id: "offer-3",
-    tag: "PILGRIM SPECIAL",
-    discount: "Save $250 / Pilgrim",
-    title: "Executive Umrah & Hajj Packages",
-    description: "Complimentary Haram-facing room upgrade on group bookings",
-    code: "PILGRIM250",
-    image: "/services/umrah-packages.jpg",
-    serviceId: "Umrah Packages",
-  },
-];
+// Dynamic Requirements, Trust & Step-by-Step Coordination Hub for all 7 Services
+interface ServiceHubDoc {
+  title: string;
+  badge: "Mandatory" | "Recommended" | "Conditional" | "Essential";
+  badgeType: "rose" | "blue" | "amber" | "emerald";
+  description: string;
+  requirement: string;
+  tip: string;
+}
 
-// Top Pickups Gallery matching user reference design
-const TOP_PICKUPS = [
-  {
-    id: "pickup-1",
-    title: "VILLA AQUARIUM",
-    toursCount: "2 Tours",
-    image: "/gallery/villa-aquarium.jpg",
-    colSpan: "md:col-span-2",
-    serviceId: "Custom Holidays",
+interface ServiceHubStep {
+  step: string;
+  duration: string;
+  title: string;
+  desc: string;
+}
+
+interface ServiceHubInclusion {
+  title: string;
+  desc: string;
+}
+
+interface ServiceHubItem {
+  serviceId: string;
+  name: string;
+  badge: string;
+  headline: string;
+  subheadline: string;
+  trustPillars: {
+    stat: string;
+    label: string;
+    desc: string;
+  }[];
+  documents: ServiceHubDoc[];
+  processSteps: ServiceHubStep[];
+  inclusions: ServiceHubInclusion[];
+  ctaHeadline: string;
+  ctaSubheadline: string;
+  ctaButtonText: string;
+  whatsappMessage: string;
+}
+
+const SERVICE_HUB_DATA: Record<string, ServiceHubItem> = {
+  "custom-holidays": {
+    serviceId: "Holiday Packages",
+    name: "Custom Holidays",
+    badge: "Bespoke Luxury Planning",
+    headline: "Tailor-Made Vacations Crafted Uniquely Around You",
+    subheadline:
+      "Zero cookie-cutter group tours. Private chauffeur-driven vehicles, hand-picked 5-star villas, insider experiences, and a dedicated 24/7 vacation curator from departure to return.",
+    trustPillars: [
+      {
+        stat: "100%",
+        label: "Custom Tailored",
+        desc: "Every itinerary designed from scratch to match your pace, dietary preferences, and personal passions.",
+      },
+      {
+        stat: "5-Star Only",
+        label: "Vetted Luxury Stays",
+        desc: "Private pool villas, boutique alpine chalets, and renowned international hotel suites.",
+      },
+      {
+        stat: "15,000+",
+        label: "Journeys Curated",
+        desc: "Over a decade of seamless luxury holidays across Europe, Maldives, Bali, Japan, and Southeast Asia.",
+      },
+      {
+        stat: "Private Driver",
+        label: "Dedicated Ground Transit",
+        desc: "Chauffeur-driven luxury Mercedes, BMW, or executive vans for all transfers and scenic day tours.",
+      },
+    ],
+    documents: [
+      {
+        title: "Valid Passports for All Travelers",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Minimum 6 months validity from return date",
+        requirement:
+          "Clear scans of bio pages with multiple blank visa pages for all participating adults and children.",
+        tip: "Notify our desk if any traveler holds a secondary passport or dual citizenship.",
+      },
+      {
+        title: "Destination Tourist Visas",
+        badge: "Essential",
+        badgeType: "emerald",
+        description: "Fully processed by Flyora Visa Desk",
+        requirement:
+          "Consular-approved entry permits for all countries included in your custom holiday itinerary.",
+        tip: "Bundled directly into your holiday coordination so you don't have to visit external agents.",
+      },
+      {
+        title: "Comprehensive Travel Insurance",
+        badge: "Recommended",
+        badgeType: "blue",
+        description: "Medical, cancellation & luggage coverage",
+        requirement:
+          "Emergency medical cover, trip interruption protection, and adventure activity riders if applicable.",
+        tip: "Included complimentary with all our premium executive holiday packages.",
+      },
+      {
+        title: "Travel Preferences & Dietary Notes",
+        badge: "Recommended",
+        badgeType: "blue",
+        description: "Personal style, special dates & dining",
+        requirement:
+          "Honeymoon / anniversary celebrations, vegetarian/Halal dining preferences, and preferred mobility pace.",
+        tip: "Allows us to coordinate complimentary room upgrades and surprise anniversary amenities.",
+      },
+    ],
+    processSteps: [
+      {
+        step: "01",
+        duration: "15 Mins",
+        title: "Trip Discovery & Wishlist Call",
+        desc: "Share your dream destination, travel dates, preferred vibe (relaxing, romantic, adventure, cultural), and family dynamics.",
+      },
+      {
+        step: "02",
+        duration: "Within 24 Hours",
+        title: "Interactive Custom Itinerary",
+        desc: "Receive a day-by-day bespoke proposal featuring hand-picked resorts, private experiences, and transparent itemized pricing.",
+      },
+      {
+        step: "03",
+        duration: "Flexible",
+        title: "Fine-Tune & Lock Pricing",
+        desc: "Adjust dates, switch villa types, add private catamaran cruises, and approve final arrangements without pressure.",
+      },
+      {
+        step: "04",
+        duration: "Entire Trip",
+        title: "VIP Execution & 24/7 Desk",
+        desc: "Airport meet-and-greet, luxury vehicle transfers, skip-the-line passes, and instant WhatsApp concierge support throughout.",
+      },
+    ],
+    inclusions: [
+      {
+        title: "Handpicked 5-Star Accommodations",
+        desc: "Complimentary room upgrades, daily gourmet breakfast, and VIP welcome amenities at top luxury resorts.",
+      },
+      {
+        title: "Private Chauffeur & Executive Transit",
+        desc: "Dedicated vehicle for private airport transfers and scenic sightseeing trips at your own pace.",
+      },
+      {
+        title: "Curated VIP Landmark Passes",
+        desc: "Skip-the-line tickets for iconic sights, private museum guides, and unique local culinary tastings.",
+      },
+      {
+        title: "Complete Visa & Insurance Handling",
+        desc: "Hassle-free visa documentation review and comprehensive international travel medical protection.",
+      },
+      {
+        title: "24/7 WhatsApp Travel Concierge",
+        desc: "Direct channel to your personal trip coordinator for restaurant bookings, route changes, and real-time advice.",
+      },
+    ],
+    ctaHeadline: "Design Your Dream Vacation",
+    ctaSubheadline:
+      "Tell us where you want to go. Our senior destination specialist will prepare a bespoke itinerary and reach out with tailored options within 15 minutes.",
+    ctaButtonText: "Request Custom Holiday Itinerary",
+    whatsappMessage:
+      "Hello Flyora, I would like to plan a bespoke holiday package.",
   },
-  {
-    id: "pickup-2",
-    title: "LA CABANE",
-    toursCount: "1 Tour",
-    image: "/gallery/la-cabane.jpg",
-    colSpan: "md:col-span-1",
-    serviceId: "Custom Holidays",
+  "visa-assistance": {
+    serviceId: "Visa Assistance",
+    name: "Visa Assistance",
+    badge: "99.2% Consular Approval",
+    headline: "Fast-Track Visa Approvals & Document Verification",
+    subheadline:
+      "Consular-trained visa specialists audit your documentation, book express appointment slots, and coordinate end-to-end embassy submissions with 99.2% approval success.",
+    trustPillars: [
+      {
+        stat: "99.2%",
+        label: "Approval Success Rate",
+        desc: "Rigorous pre-submission consular audit prevents common embassy rejection pitfalls.",
+      },
+      {
+        stat: "48–72 Hrs",
+        label: "Express Queue Access",
+        desc: "Priority VFS, TLS & BLS appointment booking desks across major consulates.",
+      },
+      {
+        stat: "50,000+",
+        label: "Visas Dispatched",
+        desc: "Successfully issued visas for Schengen, UK, USA, UAE, Singapore & 100+ countries.",
+      },
+      {
+        stat: "100%",
+        label: "Audit Accuracy",
+        desc: "Zero document rejection guarantee with comprehensive cover letter drafting.",
+      },
+    ],
+    documents: [
+      {
+        title: "Original Passport & Blank Pages",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Minimum 6 months validity from return date",
+        requirement:
+          "At least 2 contiguous blank visa pages, undamaged physical booklet, and clear scan of front/back biographical pages.",
+        tip: "Ensure passport has no water damage, tears, or loose stitching.",
+      },
+      {
+        title: "Biometric Studio Photographs",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "35mm × 45mm, white matte background",
+        requirement:
+          "Recent within 3 months, 80% face coverage, neutral facial expression, clear ears, no tinted eyewear or heavy headwear.",
+        tip: "Share digital JPG with our desk; we resize and format to exact consular specifications.",
+      },
+      {
+        title: "Bank Statements & Financial Proof",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Last 6 months verified statements",
+        requirement:
+          "Official bank seal and signature on all pages, healthy closing balance matching travel duration, plus recent 3 years ITR acknowledgement.",
+        tip: "Avoid sudden large unexplainable cash deposits right before printing statements.",
+      },
+      {
+        title: "Employment Letter / NOC",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Official company letterhead with seal",
+        requirement:
+          "Signed No Objection Certificate stating designation, salary, joining date, and approved leave window. Self-employed: GST & registration.",
+        tip: "We provide compliant NOC templates tailored to your destination embassy.",
+      },
+    ],
+    processSteps: [
+      {
+        step: "01",
+        duration: "15 Mins",
+        title: "Free Eligibility & Profile Audit",
+        desc: "Submit your destination country and travel dates. Our senior visa officer evaluates your financial standing, travel history, and sends a customized document checklist.",
+      },
+      {
+        step: "02",
+        duration: "Within 24 Hours",
+        title: "Document Review & Drafting",
+        desc: "Send documents via WhatsApp or secure portal. We verify every file, draft consulate-compliant cover letters, day-by-day itineraries, and confirmed hotel vouchers.",
+      },
+      {
+        step: "03",
+        duration: "2–5 Working Days",
+        title: "Appointment & Biometrics",
+        desc: "We schedule priority VFS/TLS/BLS slots, provide mock interview preparation, and guide you through biometric submission at your nearest center.",
+      },
+      {
+        step: "04",
+        duration: "Embassy Timeline",
+        title: "Stamped Visa Handover",
+        desc: "Real-time tracking of passport movement from embassy to our desk. Receive your stamped visa and passport securely via courier or instant digital dispatch.",
+      },
+    ],
+    inclusions: [
+      {
+        title: "Consulate-Compliant Cover Letter",
+        desc: "Tailored formal statement articulating travel purpose, financial stability, and return commitment.",
+      },
+      {
+        title: "Confirmed Flight & Hotel Vouchers",
+        desc: "Legitimate airline PNR reservation and hotel booking vouchers accepted by Schengen and global embassies.",
+      },
+      {
+        title: "Complimentary Medical Travel Insurance",
+        desc: "Comprehensive policy with minimum €30,000 / $50,000 emergency medical and repatriation cover.",
+      },
+      {
+        title: "Priority Slot Booking & Tracking",
+        desc: "Fast-track appointment scheduling with continuous WhatsApp status alerts on application milestones.",
+      },
+      {
+        title: "Personal Visa Officer Support",
+        desc: "Dedicated single point of contact available via call and WhatsApp throughout the process.",
+      },
+    ],
+    ctaHeadline: "Start Your Visa Application with Flyora",
+    ctaSubheadline:
+      "Submit your destination and details below. Our visa coordinator will review your profile, send a personalized document checklist, and call or message you on WhatsApp within 15 minutes.",
+    ctaButtonText: "Request Visa Eligibility Check",
+    whatsappMessage:
+      "Hello Flyora, I would like to check my visa eligibility and requirements.",
   },
-  {
-    id: "pickup-3",
-    title: "AZURE",
-    toursCount: "3 Tours",
-    image: "/gallery/azure.jpg",
-    colSpan: "md:col-span-1",
-    serviceId: "Custom Holidays",
+  "flight-booking": {
+    serviceId: "Flight Booking",
+    name: "Flight Booking",
+    badge: "Unpublished Corporate Fares",
+    headline: "Commercial & Business Class Air Ticketing with Offline Rates",
+    subheadline:
+      "Access wholesale corporate fares, flexible ticket hold windows, 24/7 emergency rebooking desks, and zero convenience fee transparency across 500+ global airlines.",
+    trustPillars: [
+      {
+        stat: "IATA Member",
+        label: "Official GDS Inventory",
+        desc: "Direct ticketing access through Amadeus & Sabre GDS systems for instant confirmed seat issuance.",
+      },
+      {
+        stat: "Up to 25% Off",
+        label: "Corporate Wholesale Fares",
+        desc: "Access unpublished offline fare buckets and consortium discounts unavailable on standard OTAs.",
+      },
+      {
+        stat: "48-Hour Hold",
+        label: "Price Lock Guarantee",
+        desc: "Lock attractive flight fares up to 48 hours without immediate payment while finalizing plans.",
+      },
+      {
+        stat: "24/7 Human Desk",
+        label: "Flight Reschedule Helpline",
+        desc: "Zero automated bot frustrations; real ticketing experts handle cancellations, seat shifts & refunds.",
+      },
+    ],
+    documents: [
+      {
+        title: "Government Photo ID / Passport",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Valid for all departing passengers",
+        requirement:
+          "Passport for international routes (valid 6+ months); Aadhaar, PAN or Driving License for domestic travel.",
+        tip: "Name on reservation must match ID proof down to the exact letter to avoid airline penalties.",
+      },
+      {
+        title: "Destination / Transit Visa",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "For international & multi-leg flights",
+        requirement:
+          "Valid entry visa or electronic travel authorization (ETA/ESTA) for destination and any intermediate layover hubs.",
+        tip: "Our flight desk cross-checks transit visa rules before issuing connecting tickets.",
+      },
+      {
+        title: "Frequent Flyer / Loyalty Numbers",
+        badge: "Recommended",
+        badgeType: "blue",
+        description: "Star Alliance, OneWorld & SkyTeam",
+        requirement:
+          "Airline membership number to earn miles, tier points, and access priority check-in/lounge privileges.",
+        tip: "Provide numbers during enquiry; we link them directly into your airline PNR.",
+      },
+      {
+        title: "Special Service Requests (SSR)",
+        badge: "Conditional",
+        badgeType: "amber",
+        description: "Wheelchair, dietary meal & extra baggage",
+        requirement:
+          "Advance notification for wheelchair ramp assistance, diabetic/Halal/infant meals, or pre-purchased baggage.",
+        tip: "Pre-booking extra baggage through our desk saves up to 40% over airport counter rates.",
+      },
+    ],
+    processSteps: [
+      {
+        step: "01",
+        duration: "Instant",
+        title: "Submit Route & Preferred Class",
+        desc: "Tell us departure/arrival airports, travel dates, preferred flight times, cabin class (Economy/Business), and luggage needs.",
+      },
+      {
+        step: "02",
+        duration: "10 Mins",
+        title: "Fare Comparison & 48h Hold",
+        desc: "We scan GDS inventory, identify unpublished wholesale rates, and temporarily hold the best flight option at locked pricing.",
+      },
+      {
+        step: "03",
+        duration: "Same Day",
+        title: "Seat Selection & Meal Locking",
+        desc: "Choose preferred window/aisle seats, verify baggage allowance, and confirm passenger details with zero hidden booking surcharges.",
+      },
+      {
+        step: "04",
+        duration: "Departure Day",
+        title: "Web Check-In & Gate Alerts",
+        desc: "Our desk completes automated web check-in, delivers e-boarding passes to WhatsApp, and monitors flight delays in real time.",
+      },
+    ],
+    inclusions: [
+      {
+        title: "Unpublished Offline & Corporate Fares",
+        desc: "Special negotiated airline fares offering superior savings compared to retail online travel portals.",
+      },
+      {
+        title: "Complimentary Web Check-In Assistance",
+        desc: "Automated advance check-in and seat assignment delivered straight to your WhatsApp.",
+      },
+      {
+        title: "Pre-Purchased Extra Luggage Discounts",
+        desc: "Save up to 40% by booking additional 15kg/23kg baggage allowances prior to departure.",
+      },
+      {
+        title: "Transparent Pricing with Zero Hidden Fees",
+        desc: "No unexpected payment gateway fees, processing markups, or convenience surcharges.",
+      },
+      {
+        title: "24/7 Dedicated Rebooking & Refund Desk",
+        desc: "Direct human coordinator available around the clock for missed connections, flight delays, or rescheduling.",
+      },
+    ],
+    ctaHeadline: "Find the Best Airfare & Route",
+    ctaSubheadline:
+      "Need domestic or international flight tickets? Submit your route and date details. Our ticketing specialist will find unpublished fares and contact you via WhatsApp or phone within 15 minutes.",
+    ctaButtonText: "Request Flight Fare Quote",
+    whatsappMessage:
+      "Hello Flyora, I would like to get a quote for flight tickets.",
   },
-  {
-    id: "pickup-4",
-    title: "SERENE",
-    toursCount: "1 Tour",
-    image: "/gallery/serene.jpg",
-    colSpan: "md:col-span-1",
-    serviceId: "Custom Holidays",
+  "train-booking": {
+    serviceId: "Train Booking",
+    name: "Train Booking",
+    badge: "IRCTC Authorized Partner",
+    headline: "Confirmed Berths & Iconic Indian Rail Journeys",
+    subheadline:
+      "Authorized railway reservations with Tatkal priority strategy, premium First AC & 2A berth allocations, instant WhatsApp PNR alerts, and zero-hassle cancellation support.",
+    trustPillars: [
+      {
+        stat: "IRCTC Partner",
+        label: "Direct Rail Authorization",
+        desc: "Legitimate agent portal access for rapid, compliant, and confirmed passenger ticket issuance.",
+      },
+      {
+        stat: "Tatkal Desk",
+        label: "Peak Date Priority Strategy",
+        desc: "Optimized opening-minute execution for emergency and last-minute holiday travel dates.",
+      },
+      {
+        stat: "98.7%",
+        label: "Confirmed Berth Success",
+        desc: "High success rate securing confirmed First AC, 2nd AC, and Executive Chair Car seats.",
+      },
+      {
+        stat: "Real-Time PNR",
+        label: "Live WhatsApp Tracking",
+        desc: "Instant notifications regarding chart preparation, coach position, and platform numbers.",
+      },
+    ],
+    documents: [
+      {
+        title: "Government Photo Identification",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Required for every passenger during travel",
+        requirement:
+          "Aadhaar Card, Voter ID, Driving License, or Passport matching the exact passenger name on the reservation.",
+        tip: "Digital Aadhaar on DigiLocker or m-Aadhaar is legally accepted by Indian Railways.",
+      },
+      {
+        title: "Accurate Passenger Details & Age",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Full names as per official government ID",
+        requirement:
+          "Exact age, gender, and berth preference (Lower berth, Upper berth, Side Lower, or Side Upper).",
+        tip: "Lower berths are automatically prioritized for senior citizens and pregnant travelers.",
+      },
+      {
+        title: "Senior Citizen / Concession Proof",
+        badge: "Conditional",
+        badgeType: "amber",
+        description: "For travelers claiming concessions",
+        requirement:
+          "Documentary age proof for eligible passenger quotas and medical concession certificates where applicable.",
+        tip: "Carry original physical proof during train journey to avoid TTE penalties.",
+      },
+      {
+        title: "Active Mobile Number",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "For receiving real-time IRCTC SMS",
+        requirement:
+          "Mobile number capable of receiving SMS updates, chart preparation alerts, and QR code ticket delivery.",
+        tip: "We link your WhatsApp directly so you get platform updates 4 hours before departure.",
+      },
+    ],
+    processSteps: [
+      {
+        step: "01",
+        duration: "Instant",
+        title: "Submit Route & Class Preference",
+        desc: "Tell us origin station, destination station, date of travel, and preferred coach class (1A, 2A, 3A, or CC).",
+      },
+      {
+        step: "02",
+        duration: "10 Mins",
+        title: "Quota & Availability Check",
+        desc: "Our rail desk checks general quota, premium tatkal, senior citizen quota, and alternative station combinations.",
+      },
+      {
+        step: "03",
+        duration: "Fast-Track",
+        title: "Confirmed Booking & PNR Creation",
+        desc: "Ticket reserved through official channel with preferred lower/side berths secured and confirmed PNR generated.",
+      },
+      {
+        step: "04",
+        duration: "Journey Day",
+        title: "WhatsApp E-Ticket & Live Charting",
+        desc: "Receive formatted E-ticket with QR code on WhatsApp, along with live chart preparation and platform updates.",
+      },
+    ],
+    inclusions: [
+      {
+        title: "Authorized IRCTC Confirmed Ticketing",
+        desc: "Genuine ticketing via official railway partner system ensuring complete travel peace of mind.",
+      },
+      {
+        title: "Tatkal & Emergency Priority Execution",
+        desc: "Dedicated high-speed booking team handling critical 10:00 AM (AC) & 11:00 AM (Non-AC) Tatkal windows.",
+      },
+      {
+        title: "Lower Berth Priority Allocation",
+        desc: "Systematic preference matching for elderly passengers, families, and solo female travelers.",
+      },
+      {
+        title: "Live PNR & Platform Alerts on WhatsApp",
+        desc: "Real-time updates on chart finalization, coach positioning on platform, and train running status.",
+      },
+      {
+        title: "Instant Cancellation & Refund Handling",
+        desc: "Quick processing of ticket cancellations with transparent IRCTC refund credit directly to your account.",
+      },
+    ],
+    ctaHeadline: "Reserve Confirmed Train Berths",
+    ctaSubheadline:
+      "Need confirmed rail tickets or Tatkal assistance? Submit your travel stations and dates below. Our rail desk will check availability and message you options on WhatsApp within 15 minutes.",
+    ctaButtonText: "Request Train Booking Quote",
+    whatsappMessage:
+      "Hello Flyora, I would like to check train seat availability and book confirmed berths.",
   },
-  {
-    id: "pickup-5",
-    title: "VERDANT",
-    toursCount: "2 Tours",
-    image: "/gallery/verdant.jpg",
-    colSpan: "md:col-span-1",
-    serviceId: "Custom Holidays",
+  "bus-booking": {
+    serviceId: "Bus Booking",
+    name: "Bus Booking",
+    badge: "Premium Volvo & Sleeper",
+    headline: "Luxury Multi-Axle Volvo & AC Sleeper Coach Travel",
+    subheadline:
+      "Premier intercity highway travel with verified sanitized coaches, private lounge boarding points, live GPS tracking links, and instant paperless m-tickets on WhatsApp.",
+    trustPillars: [
+      {
+        stat: "Volvo & Scania",
+        label: "Multi-Axle Fleet",
+        desc: "Top-tier air-suspension coaches providing ultra-smooth highway journeys and spacious berths.",
+      },
+      {
+        stat: "Verified Lounges",
+        label: "Safe Boarding Points",
+        desc: "Private, well-lit operator lounges with clean restrooms, seating, and tea/coffee facilities.",
+      },
+      {
+        stat: "Live GPS Link",
+        label: "Real-Time Tracking",
+        desc: "Live vehicle location link shareable with family members to monitor journey progress.",
+      },
+      {
+        stat: "100% Paperless",
+        label: "Instant WhatsApp M-Ticket",
+        desc: "Digital boarding pass sent straight to your phone with conductor phone number and boarding map.",
+      },
+    ],
+    documents: [
+      {
+        title: "Government Photo ID Proof",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Required at coach boarding gate",
+        requirement:
+          "Aadhaar Card, Driver's License, Voter ID, or College/Corporate ID matching the passenger name.",
+        tip: "Digital copy on smartphone is completely acceptable for boarding.",
+      },
+      {
+        title: "Active Mobile Phone Number",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "To receive live bus GPS tracking",
+        requirement:
+          "Working phone number to receive boarding point directions, driver/conductor contact, and delay alerts.",
+        tip: "Conductor calls passengers 15 minutes prior to pickup to confirm arrival.",
+      },
+      {
+        title: "Seat & Berth Preference",
+        badge: "Recommended",
+        badgeType: "blue",
+        description: "Lower deck vs Upper sleeper berth",
+        requirement:
+          "Specify single sleeper (for solo travelers), double sleeper (couples), or front row seats for minimal motion.",
+        tip: "Lower berths offer smoother ride comfort on ghat and hilly highway sections.",
+      },
+      {
+        title: "Special Cargo / Excess Luggage Note",
+        badge: "Conditional",
+        badgeType: "amber",
+        description: "For extra boxes or commercial parcels",
+        requirement:
+          "Advance notification if traveling with oversized cartons, bicycles, or commercial luggage beyond 20kg.",
+        tip: "We coordinate with operator in advance to guarantee cargo bay space.",
+      },
+    ],
+    processSteps: [
+      {
+        step: "01",
+        duration: "Instant",
+        title: "Select Route & Time Window",
+        desc: "Tell us departure city, destination city, preferred night or morning departure, and boarding pickup landmark.",
+      },
+      {
+        step: "02",
+        duration: "10 Mins",
+        title: "Coach & Berth Selection",
+        desc: "We compare top-rated Volvo, Scania, and BharatBenz coaches, reserving comfortable lower berths or women-only rows.",
+      },
+      {
+        step: "03",
+        duration: "Instant",
+        title: "Confirmed M-Ticket Issuance",
+        desc: "Confirmed ticket issued with seat numbers, vehicle registration number, and Google Maps boarding location link.",
+      },
+      {
+        step: "04",
+        duration: "Travel Evening",
+        title: "Live GPS & Conductor Details",
+        desc: "Receive live bus tracking link and driver/conductor direct phone number 1 hour prior to departure.",
+      },
+    ],
+    inclusions: [
+      {
+        title: "Sanitized Premium Air-Conditioned Sleeper",
+        desc: "Clean sanitized bedsheets, fresh blanket, ergonomic pillow, and personal reading light.",
+      },
+      {
+        title: "Individual USB & AC Power Outlets",
+        desc: "Fast-charging ports at every sleeper berth and semi-sleeper recliner seat.",
+      },
+      {
+        title: "Verified Safe Boarding Lounges",
+        desc: "Exclusive access to private operator waiting lounges with security and clean restrooms.",
+      },
+      {
+        title: "Live GPS Journey Sharing Link",
+        desc: "Real-time location link that can be shared with family members for complete journey safety.",
+      },
+      {
+        title: "24/7 Route Coordinator Helpline",
+        desc: "Direct hotline for boarding guidance, highway assistance, and emergency delay updates.",
+      },
+    ],
+    ctaHeadline: "Book Comfortable Highway Travel",
+    ctaSubheadline:
+      "Planning an intercity trip? Submit your pickup and drop cities below. Our bus desk will reserve premium sleeper seats and share instant details on WhatsApp within 15 minutes.",
+    ctaButtonText: "Request Bus Booking Quote",
+    whatsappMessage:
+      "Hello Flyora, I would like to book a luxury AC sleeper bus ticket.",
   },
-];
+  "umrah-packages": {
+    serviceId: "Umrah & Hajj",
+    name: "Umrah Packages",
+    badge: "MoHU Approved Partner",
+    headline: "Sacred & Blessed Umrah Pilgrimages with Courtyard Proximity",
+    subheadline:
+      "Ministry-certified Umrah arrangements with luxury hotels steps from the Holy Haram, instant Saudi e-visas, private AC transfers, and guided spiritual ziyarah.",
+    trustPillars: [
+      {
+        stat: "MoHU Certified",
+        label: "Official Saudi License",
+        desc: "Authorized direct Nusuk partner ensuring 100% genuine Tasreeh and visa authorization.",
+      },
+      {
+        stat: "50–150m",
+        label: "Walking to Holy Courtyard",
+        desc: "Premium Clock Tower and courtyard-facing 5-star hotels with private prayer hall access.",
+      },
+      {
+        stat: "12,500+",
+        label: "Pilgrims Coordinated",
+        desc: "Flawless group and custom family pilgrimages with senior bilingual scholars.",
+      },
+      {
+        stat: "24/7 Ground Team",
+        label: "Makkah & Madinah Help",
+        desc: "Dedicated on-ground operations desk stationed at Jeddah Airport, Makkah, and Madinah.",
+      },
+    ],
+    documents: [
+      {
+        title: "Original National Passport",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Minimum 6 months validity from departure",
+        requirement:
+          "Machine-readable passport with minimum 2 blank pages, crisp biographical page scan, and no damage.",
+        tip: "Passport must match the traveler name on your national ID.",
+      },
+      {
+        title: "Saudi Tourist / Umrah eVisa",
+        badge: "Essential",
+        badgeType: "emerald",
+        description: "Issued by our licensed visa desk",
+        requirement:
+          "Full e-visa processed within 24–48 hours directly linked to the official Nusuk portal, including mandatory health insurance.",
+        tip: "Handled 100% by Flyora alongside your package confirmation.",
+      },
+      {
+        title: "Vaccination & Medical Records",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Meningitis ACWY & health certificate",
+        requirement:
+          "Meningococcal vaccine administered at least 10 days before departure, plus routine seasonal influenza vaccine certificate.",
+        tip: "Keep both printed certificate and digital QR code readily accessible at airport.",
+      },
+      {
+        title: "Mahram & Relationship Proof",
+        badge: "Conditional",
+        badgeType: "amber",
+        description: "Required for specific pilgrim groups",
+        requirement:
+          "Government marriage certificate or birth certificate for family groups and minors traveling with guardians.",
+        tip: "Women above 45 can travel without Mahram in organized group pilgrimages.",
+      },
+    ],
+    processSteps: [
+      {
+        step: "01",
+        duration: "15 Mins",
+        title: "Select Pilgrim Tier & Season",
+        desc: "Choose your preferred dates, hotel proximity (Clock Tower vs courtyard), room occupancy (double/triple/quad), and flight departure city.",
+      },
+      {
+        step: "02",
+        duration: "Within 24 Hours",
+        title: "Customized Proposal & Lock",
+        desc: "Our Umrah coordinator provides transparent package pricing with confirmed hotel allocations, airline seats, and ground transit options.",
+      },
+      {
+        step: "03",
+        duration: "24–48 Hours",
+        title: "Saudi eVisa & Nusuk Booking",
+        desc: "We issue your Saudi electronic visa, lock Rawdah permits on Nusuk, and generate confirmed hotel check-in vouchers.",
+      },
+      {
+        step: "04",
+        duration: "Pilgrimage Care",
+        title: "Airport Meet & Guided Rituals",
+        desc: "Warm reception at Jeddah or Madinah airport, private VIP AC transfer, check-in escort, and scholar-guided Umrah and historical Ziyarah tours.",
+      },
+    ],
+    inclusions: [
+      {
+        title: "Walking-Distance Haram Accommodations",
+        desc: "Guaranteed 5-star or premium 4-star hotels situated 50 to 150 meters from the Holy Haram courtyards.",
+      },
+      {
+        title: "Express Saudi Umrah/Tourist eVisa",
+        desc: "Fast-track electronic visa issuance with comprehensive Kingdom-wide medical insurance.",
+      },
+      {
+        title: "Private VIP Ground Transportation",
+        desc: "Chauffeur-driven luxury GMC Yukon or modern air-conditioned multi-axle coaches between Jeddah, Makkah, and Madinah.",
+      },
+      {
+        title: "Guided Historical Ziyarat Tours",
+        desc: "Curated visits to Jabal Al-Noor, Cave of Hira, Mount Arafat, Mina, Muzdalifah, Masjid Quba, and Mount Uhud.",
+      },
+      {
+        title: "Complimentary 5L Zamzam Water",
+        desc: "Officially packaged factory-sealed Zamzam water can per pilgrim (airline luggage rules permitting).",
+      },
+    ],
+    ctaHeadline: "Plan Your Sacred Umrah Pilgrimage",
+    ctaSubheadline:
+      "Tell us your preferred departure month, number of pilgrims, and room sharing preferences. Our dedicated Umrah coordinator will contact you with full package options and hotel proximity details.",
+    ctaButtonText: "Request Umrah Package Consultation",
+    whatsappMessage:
+      "Hello Flyora, I would like to enquire about Umrah package pricing and hotel options.",
+  },
+  "hajj-packages": {
+    serviceId: "Umrah & Hajj",
+    name: "Hajj Packages",
+    badge: "Nusuk Hajj Synergy",
+    headline: "The Holy Pillar: Guided, Dignified & Fully Supported Hajj",
+    subheadline:
+      "Comprehensive pilgrimage packages with luxury European non-shifting Mina camps, direct high-speed train transit, and dedicated resident scholars guiding every sacred rite.",
+    trustPillars: [
+      {
+        stat: "Category-A",
+        label: "Mina Zone 1 Camps",
+        desc: "Air-conditioned gypsum-board European tents with private buffet dining and clean sanitation.",
+      },
+      {
+        stat: "High-Speed",
+        label: "Haramain Rail Transit",
+        desc: "Skip grueling multi-hour desert traffic with express bullet train transfers between holy sites.",
+      },
+      {
+        stat: "Non-Shifting",
+        label: "Permanent Hotel Stays",
+        desc: "Retain your comfortable 5-star hotel room throughout the 5 days of Hajj without shifting luggage.",
+      },
+      {
+        stat: "100% Guided",
+        label: "Senior Resident Muallim",
+        desc: "Step-by-step spiritual direction through every ritual from Tawaf to Mina, Arafat, and Jamarat.",
+      },
+    ],
+    documents: [
+      {
+        title: "National Passport (6+ Months)",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Valid for at least 6 months after Hajj",
+        requirement:
+          "Undamaged passport with at least 3 blank pages, accurate biographical details, and verified machine-readable code.",
+        tip: "Check expiry date well in advance; renewal takes time during peak seasons.",
+      },
+      {
+        title: "Official Nusuk Hajj Profile",
+        badge: "Essential",
+        badgeType: "emerald",
+        description: "Verified profile on Saudi Nusuk platform",
+        requirement:
+          "Completed pilgrim account with uploaded biometrics, verified photo, and approved category reservation token.",
+        tip: "Our team assists with your Nusuk profile setup and package locking free of charge.",
+      },
+      {
+        title: "Medical Fitness Certificate",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Authorized government hospital clearance",
+        requirement:
+          "Official certification of physical and mental capability to perform Hajj rites, free of severe chronic illnesses.",
+        tip: "Carry mandatory medication with doctor's prescription in original packaging.",
+      },
+      {
+        title: "Mandatory Vaccination Card",
+        badge: "Mandatory",
+        badgeType: "rose",
+        description: "Meningitis & seasonal flu certificates",
+        requirement:
+          "Meningococcal vaccine administered at least 10 days prior, verified COVID-19 booster doses, and Yellow Fever if applicable.",
+        tip: "Ensure vaccination details are digitally registered on the official health portal.",
+      },
+    ],
+    processSteps: [
+      {
+        step: "01",
+        duration: "6–12 Mo Prior",
+        title: "Nusuk Readiness & Pre-Registration",
+        desc: "Create and verify your Nusuk pilgrim account, upload required credentials, and select your preferred package category (Executive Non-Shifting or Shifting).",
+      },
+      {
+        step: "02",
+        duration: "3 Months Prior",
+        title: "Document & Health Screening",
+        desc: "Complete mandatory medical assessments, receive consular-approved vaccinations, and verify payment tokens on the official portal.",
+      },
+      {
+        step: "03",
+        duration: "30 Days Prior",
+        title: "Camp & Train Ticket Allocation",
+        desc: "Receive confirmed Mina Zone tent numbers, Haramain train passes, direct flight tickets, and attend our comprehensive Hajj orientation workshop.",
+      },
+      {
+        step: "04",
+        duration: "Dhul-Hijjah",
+        title: "The 5 Days of Sacred Rites",
+        desc: "Full scholar guidance from Day of Tarwiyah, Waqoof-e-Arafat, Muzdalifah night, Ramy al-Jamarat, to Tawaf Al-Ifadah and farewell Tawaf.",
+      },
+    ],
+    inclusions: [
+      {
+        title: "Non-Shifting 5-Star Accommodations",
+        desc: "Continuous stay at premier Makkah & Madinah hotels steps away from the Grand Mosque.",
+      },
+      {
+        title: "Deluxe European Air-Cooled Mina Tents",
+        desc: "Spacious partitioned luxury camps equipped with sofa beds, personal lockers, and air conditioning.",
+      },
+      {
+        title: "VIP High-Speed Haramain Train Access",
+        desc: "Comfortable rail transit between Makkah, Madinah, and Jeddah bypassing desert highway jams.",
+      },
+      {
+        title: "Full Board Gourmet Catering",
+        desc: "3 daily freshly prepared open buffet meals, unlimited cold beverages, tea, coffee, and fruit snacks.",
+      },
+      {
+        title: "Resident Doctors & Scholars",
+        desc: "24/7 dedicated medical doctor on-site in Mina and senior scholars answering theological questions.",
+      },
+    ],
+    ctaHeadline: "Inquire for Upcoming Hajj Departures",
+    ctaSubheadline:
+      "Hajj quotas and category allotments require advance preparation. Speak directly with our senior Hajj coordinator for package allocations and Nusuk profile assistance.",
+    ctaButtonText: "Request Hajj Consultation",
+    whatsappMessage:
+      "Hello Flyora, I would like to inquire about Hajj package tiers and Nusuk registration.",
+  },
+};
 
 const PICKUP_STATS = [
   { value: "12", label: "AMAZING DEALS" },
@@ -572,6 +1401,8 @@ export default function ServicesPage() {
   const [prevIndex, setPrevIndex] = useState(0);
   const [slideDirection, setSlideDirection] = useState<"next" | "prev">("next");
   const activeService = HERO_SERVICES[activeServiceIndex];
+  const hubData =
+    SERVICE_HUB_DATA[activeService.id] || SERVICE_HUB_DATA["custom-holidays"];
 
   // Motion parallax refs for coastal stats banner & Creed banner
   const statsSectionRef = useRef<HTMLDivElement>(null);
@@ -1432,81 +2263,318 @@ export default function ServicesPage() {
           </div>
         </section>
 
-        {/* 3. DISCOUNTS & OFFERS SECTION (Matching Reference Image Row 2) */}
-        <section className="py-14 sm:py-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10 sm:mb-12">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
-              Exclusive Discounts &amp; Deals
-            </h2>
-            <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto leading-relaxed font-sans">
-              Limited-time benefits and promotional upgrades curated for early
-              bookers and family travelers.
-            </p>
-          </div>
+        {/* 3. DYNAMIC SERVICE EXPERIENCE & REQUIREMENTS HUB */}
+        <section
+          id="service-requirements-hub"
+          className="w-full bg-[#FAF8F5]/80 py-16 sm:py-20 lg:py-24 border-b border-black/[0.06] relative"
+        >
+          <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+            {/* Hub Header & Title */}
+            <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-[#002f89]/10 text-[#002f89] text-[11.5px] font-mono font-bold uppercase tracking-wider mb-3">
+                <FileCheck2 className="w-3.5 h-3.5" />
+                Service Requirements &amp; Coordination Desk
+              </span>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
+                Everything You Need to Know Before You Travel
+              </h2>
+              <p className="text-sm sm:text-base text-stone-600 mt-3 leading-relaxed font-sans">
+                Explore verified document requirements, step-by-step timelines,
+                and our offline concierge workflow for each service. All
+                requests receive 1-on-1 human coordination through our admin
+                desk.
+              </p>
+            </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7">
-            {DISCOUNTS_OFFERS.map((offer) => (
-              <div
-                key={offer.id}
-                className="relative rounded-[8px] min-h-[320px] sm:min-h-[340px] p-6 sm:p-7 text-white shadow-xs hover:shadow-md overflow-hidden flex flex-col justify-between group hover:-translate-y-1.5 transition-all duration-300 border border-black/[0.08]"
-              >
-                {/* Background Image - light and vivid like homepage */}
-                <Image
-                  src={offer.image}
-                  alt={offer.title}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                />
+            {/* Interactive 7-Service Switcher Pill Tabs (Responsive horizontal bar) */}
+            <div className="mb-10 sm:mb-12">
+              <div className="flex items-center justify-start lg:justify-center gap-2 overflow-x-auto pb-3 pt-1 scrollbar-none select-none">
+                {HERO_SERVICES.map((srv, idx) => {
+                  const SrvIcon = srv.icon;
+                  const isActive = idx === activeServiceIndex;
+                  return (
+                    <button
+                      key={srv.id}
+                      type="button"
+                      onClick={() => handleSelectService(idx)}
+                      className={`inline-flex items-center gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-[8px] text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0 cursor-pointer ${
+                        isActive
+                          ? "bg-[#002f89] text-white shadow-md shadow-[#002f89]/25 border border-[#002f89]"
+                          : "bg-white text-stone-700 hover:text-stone-950 hover:bg-stone-50 border border-black/[0.08]"
+                      }`}
+                    >
+                      <SrvIcon
+                        className={`w-4 h-4 shrink-0 ${
+                          isActive ? "text-white" : "text-[#002f89]"
+                        }`}
+                      />
+                      <span>{srv.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
 
-                {/* Light bottom gradient overlay for subtle contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/25 to-black/10 group-hover:from-black/80 transition-colors" />
-
-                {/* Card Border Outline */}
-                <div className="absolute inset-0 rounded-[8px] border border-white/15 pointer-events-none" />
-
-                <div className="relative z-10">
-                  <div className="flex items-center justify-between mb-3.5">
-                    <span className="px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/25 text-[10.5px] font-mono font-bold tracking-widest uppercase text-white shadow-xs">
-                      {offer.tag}
-                    </span>
-                    <span className="text-2xl sm:text-3xl font-serif font-black tracking-tight text-amber-300 drop-shadow-sm">
-                      {offer.discount}
-                    </span>
+            {/* Active Service Showcase Card */}
+            <div className="bg-white rounded-[8px] border border-black/[0.08] shadow-xs p-6 sm:p-8 lg:p-10 mb-8 sm:mb-10">
+              {/* Active Service Title Banner */}
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-black/[0.06]">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-[8px] bg-amber-50 text-amber-800 border border-amber-200/80 text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
+                    {hubData.badge}
                   </div>
-
-                  <h3 className="text-xl sm:text-2xl font-serif font-bold leading-snug drop-shadow-sm">
-                    {offer.title}
+                  <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] tracking-tight">
+                    {hubData.headline}
                   </h3>
-                  <p className="text-xs sm:text-sm text-white/85 mt-2.5 leading-relaxed drop-shadow-xs">
-                    {offer.description}
+                  <p className="text-sm text-stone-600 mt-1.5 max-w-2xl leading-relaxed">
+                    {hubData.subheadline}
                   </p>
                 </div>
 
-                <div className="relative z-10 pt-5 mt-4 border-t border-white/20 flex items-center justify-between">
-                  <div className="text-xs font-mono bg-black/25 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/20 text-white/90">
-                    CODE:{" "}
-                    <strong className="text-amber-300 font-bold">
-                      {offer.code}
-                    </strong>
-                  </div>
+                <div className="flex items-center gap-3 shrink-0">
                   <button
                     type="button"
-                    onClick={() => handleCardEnquiry(offer.serviceId)}
-                    className="px-4 py-2 rounded-lg bg-white text-stone-900 text-xs sm:text-sm font-semibold hover:bg-amber-100 transition shadow-xs cursor-pointer active:scale-95"
+                    onClick={() => handleCardEnquiry(hubData.serviceId)}
+                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs sm:text-sm font-semibold shadow-xs transition-all cursor-pointer select-none active:scale-95"
                   >
-                    Claim Deal
+                    <span>Request Quote</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </button>
                 </div>
               </div>
-            ))}
+
+              {/* Block 1: Trust Proof & Authority Credentials (4 Cards) */}
+              <div className="mt-8">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                  {hubData.trustPillars.map((pillar, pIdx) => (
+                    <div
+                      key={pIdx}
+                      className="bg-[#FAF8F5]/80 hover:bg-[#FAF8F5] p-5 rounded-[8px] border border-black/[0.06] transition-all hover:border-[#002f89]/30 hover:shadow-2xs"
+                    >
+                      <span className="text-2xl sm:text-3xl font-serif font-bold text-[#002f89] tracking-tight block">
+                        {pillar.stat}
+                      </span>
+                      <span className="text-sm font-bold text-stone-900 mt-1 block">
+                        {pillar.label}
+                      </span>
+                      <p className="text-xs text-stone-600 mt-1.5 leading-relaxed">
+                        {pillar.desc}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Block 2: Document & Eligibility Checklist */}
+              <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-black/[0.06]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+                  <div>
+                    <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+                      Customer Document &amp; Eligibility Checklist
+                    </h4>
+                    <p className="text-xs sm:text-sm text-stone-600 mt-1">
+                      Gather these prerequisites. Our offline verification desk
+                      reviews and validates every file prior to official
+                      submission.
+                    </p>
+                  </div>
+                  <span className="text-xs text-stone-500 font-medium">
+                    Updated for 2026 Regulations
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
+                  {hubData.documents.map((doc, dIdx) => {
+                    const badgeClasses =
+                      doc.badgeType === "rose"
+                        ? "bg-rose-50 text-rose-700 border-rose-200"
+                        : doc.badgeType === "emerald"
+                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
+                          : doc.badgeType === "amber"
+                            ? "bg-amber-50 text-amber-800 border-amber-200"
+                            : "bg-blue-50 text-blue-800 border-blue-200";
+
+                    return (
+                      <div
+                        key={dIdx}
+                        className="bg-white p-5 rounded-[8px] border border-black/[0.08] shadow-2xs hover:border-[#002f89]/30 transition-all flex flex-col justify-between"
+                      >
+                        <div>
+                          <div className="flex items-start justify-between gap-3 mb-2">
+                            <h5 className="text-sm sm:text-[15px] font-bold text-stone-900 leading-snug">
+                              {doc.title}
+                            </h5>
+                            <span
+                              className={`shrink-0 px-2.5 py-0.5 rounded-[8px] text-[10.5px] font-mono font-bold uppercase tracking-wider border ${badgeClasses}`}
+                            >
+                              {doc.badge}
+                            </span>
+                          </div>
+                          <span className="text-xs font-semibold text-[#002f89] block mb-2">
+                            {doc.description}
+                          </span>
+                          <p className="text-xs text-stone-600 leading-relaxed">
+                            {doc.requirement}
+                          </p>
+                        </div>
+
+                        <div className="mt-4 pt-3 border-t border-black/[0.05] flex items-start gap-2 bg-stone-50/70 p-2.5 rounded-[8px]">
+                          <FileCheck2 className="w-3.5 h-3.5 text-[#002f89] shrink-0 mt-0.5" />
+                          <p className="text-[11.5px] text-stone-600 leading-snug">
+                            <strong className="text-stone-800">Note:</strong>{" "}
+                            {doc.tip}
+                          </p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Block 3: Step-by-Step Workflow & Timelines */}
+              <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-black/[0.06]">
+                <div className="mb-6">
+                  <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+                    Step-by-Step Coordination &amp; Turnaround Timelines
+                  </h4>
+                  <p className="text-xs sm:text-sm text-stone-600 mt-1">
+                    Transparent milestone progression from your initial enquiry
+                    to confirmed delivery.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+                  {hubData.processSteps.map((step, sIdx) => (
+                    <div
+                      key={sIdx}
+                      className="bg-white p-5 rounded-[8px] border border-black/[0.08] shadow-2xs hover:border-[#002f89]/30 transition-all flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between gap-2 mb-3">
+                          <span className="w-8 h-8 rounded-[8px] bg-[#002f89] text-white font-mono font-bold text-xs flex items-center justify-center shadow-xs">
+                            {step.step}
+                          </span>
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] bg-stone-100 text-stone-700 text-[11px] font-mono font-semibold border border-stone-200/80">
+                            <Clock className="w-3 h-3 text-stone-500" />
+                            {step.duration}
+                          </span>
+                        </div>
+                        <h5 className="text-sm sm:text-[15px] font-bold text-stone-900 leading-snug">
+                          {step.title}
+                        </h5>
+                        <p className="text-xs text-stone-600 mt-2 leading-relaxed">
+                          {step.desc}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Block 4: Inclusions & Enquiry Hub (Split 7 / 5 Grid) */}
+              <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-black/[0.06]">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
+                  {/* Left Column: What Flyora Brings */}
+                  <div className="lg:col-span-7 bg-[#FAF8F5]/80 p-6 sm:p-7 rounded-[8px] border border-black/[0.06] flex flex-col justify-between">
+                    <div>
+                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-1">
+                        Flyora Quality Inclusions
+                      </span>
+                      <h4 className="text-xl sm:text-2xl font-serif font-bold text-[#1C1815]">
+                        What Flyora Manages for You
+                      </h4>
+                      <p className="text-xs sm:text-sm text-stone-600 mt-1 mb-5">
+                        Every request is handled 1-on-1 by senior coordinators
+                        with full logistics support.
+                      </p>
+
+                      <div className="space-y-3.5">
+                        {hubData.inclusions.map((inc, iIdx) => (
+                          <div key={iIdx} className="flex items-start gap-3">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                            <div>
+                              <strong className="text-xs sm:text-sm font-bold text-stone-900 block leading-snug">
+                                {inc.title}
+                              </strong>
+                              <span className="text-xs text-stone-600 leading-relaxed block mt-0.5">
+                                {inc.desc}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs text-stone-500 flex items-center gap-2">
+                      <ShieldCheck className="w-4 h-4 text-[#002f89]" />
+                      <span>
+                        All bookings processed directly via official partner
+                        portals &amp; licensed desks.
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Right Column: Enquiry Action Card (No direct checkout, pure lead routing) */}
+                  <div className="lg:col-span-5 bg-gradient-to-br from-[#002f89] to-[#001c54] text-white p-6 sm:p-7 rounded-[8px] shadow-md flex flex-col justify-between">
+                    <div>
+                      <span className="inline-block px-2.5 py-0.5 rounded-[8px] bg-white/15 border border-white/20 text-[10.5px] font-mono uppercase tracking-wider text-amber-200 mb-3">
+                        Manual Concierge Desk
+                      </span>
+                      <h4 className="text-2xl font-serif font-bold leading-tight">
+                        {hubData.ctaHeadline}
+                      </h4>
+                      <p className="text-xs sm:text-sm text-white/85 mt-2.5 leading-relaxed font-sans">
+                        {hubData.ctaSubheadline}
+                      </p>
+                    </div>
+
+                    <div className="mt-6 space-y-3">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleCardEnquiry(hubData.serviceId, {
+                            serviceId: hubData.serviceId,
+                            serviceName: hubData.name,
+                            destination: "",
+                            travelDate: "",
+                            tierOrClass: "",
+                            summaryLabel: `${hubData.name} · Specialist Inquiry`,
+                          })
+                        }
+                        className="w-full py-3.5 px-5 rounded-[8px] bg-white hover:bg-amber-100 text-stone-900 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+                      >
+                        <span>{hubData.ctaButtonText}</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+
+                      <a
+                        href={`https://wa.me/919876543210?text=${encodeURIComponent(
+                          hubData.whatsappMessage,
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-3 px-5 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 cursor-pointer"
+                      >
+                        <MessageCircle className="w-4 h-4" />
+                        <span>Chat Directly on WhatsApp</span>
+                      </a>
+
+                      <div className="pt-3 border-t border-white/15 text-[11px] text-white/75 flex items-center justify-between">
+                        <span>✓ Zero upfront payment</span>
+                        <span>✓ 15-min human response</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* 4. TOP PICKUPS FOR YOU GALLERY & COASTAL STATS STRIP */}
-        <section className="relative bg-[#FDFCFB] pt-16 sm:pt-20 pb-0 overflow-hidden">
+        {/* 4. COASTAL STATS STRIP WITH PARALLAX MOTION */}
+        <section className="relative bg-[#FDFCFB] overflow-hidden">
           {/* Subtle Sailboat Watermark on bottom left matching reference image */}
-          <div className="absolute left-6 bottom-56 w-36 h-36 opacity-10 pointer-events-none select-none text-[#002f89]">
+          <div className="absolute left-6 bottom-16 w-36 h-36 opacity-10 pointer-events-none select-none text-[#002f89]">
             <svg
               viewBox="0 0 100 100"
               fill="none"
@@ -1533,64 +2601,6 @@ export default function ServicesPage() {
                 opacity="0.15"
               />
             </svg>
-          </div>
-
-          <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-            {/* Header: Top Pickups For You */}
-            <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-12">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight text-[#1C1815]">
-                Top Pickups For You
-              </h2>
-              <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-2xl mx-auto font-sans leading-relaxed">
-                Plan your perfect vacation with Flyora. Choose among
-                hand-curated, all-inclusive luxury offers!
-              </p>
-            </div>
-
-            {/* 5-Card Gallery Grid (Row 1: 2 cols + 1 col, Row 2: 1 + 1 + 1) */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6">
-              {TOP_PICKUPS.map((pickup) => (
-                <div
-                  key={pickup.id}
-                  onClick={() => handleCardEnquiry(pickup.serviceId)}
-                  className={`relative ${pickup.colSpan} h-[260px] sm:h-[300px] lg:h-[340px] rounded-[8px] overflow-hidden group shadow-xs hover:shadow-md border border-black/[0.08] hover:border-[#002f89]/30 transition-all duration-300 cursor-pointer`}
-                >
-                  {/* Background Image - light and natural */}
-                  <Image
-                    src={pickup.image}
-                    alt={pickup.title}
-                    fill
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
-                  />
-
-                  {/* Subtle soft gradient at bottom for title contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent group-hover:from-black/70 transition-colors" />
-
-                  {/* Card Content Overlay */}
-                  <div className="absolute inset-0 p-5 sm:p-6 flex flex-col justify-end text-white z-10">
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-bold tracking-wider text-white drop-shadow-md">
-                      {pickup.title}
-                    </h3>
-                    <div className="flex items-center gap-1.5 mt-1 text-xs font-sans text-white/90 drop-shadow-sm group-hover:text-amber-300 transition-colors">
-                      <span>{pickup.toursCount}</span>
-                      <Play className="w-2.5 h-2.5 fill-current text-amber-400" />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* View All Button */}
-            <div className="mt-8 sm:mt-10 mb-12 sm:mb-16 text-center">
-              <button
-                type="button"
-                onClick={() => handleCardEnquiry("Custom Holidays")}
-                className="inline-flex items-center justify-center px-6 py-2.5 rounded-lg border border-[#002f89] text-[#002f89] text-xs sm:text-sm font-sans font-semibold hover:bg-[#002f89] hover:text-white transition-all duration-200 shadow-2xs cursor-pointer active:scale-95"
-              >
-                View All
-              </button>
-            </div>
           </div>
 
           {/* Coastal Panoramic Counter Strip with Parallax Motion & Full Width Spacing */}
