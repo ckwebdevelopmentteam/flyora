@@ -4,7 +4,10 @@ import React, { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { Navbar } from "../../components/layout/Navbar";
 import { Footer } from "../../components/layout/Footer";
-import { EnquiryModal } from "../../components/EnquiryModal";
+import {
+  EnquiryModal,
+  type EnquiryPrefill,
+} from "../../components/EnquiryModal";
 import { FloatingWhatsApp } from "../../components/FloatingWhatsApp";
 import CarouselCards from "@/components/ui/carousel-cards";
 import {
@@ -533,6 +536,35 @@ const PICKUP_STATS = [
   { value: "980", label: "HAPPY CUSTOMERS" },
 ];
 
+const parseTravelerCounts = (
+  text: string,
+): { adults: number; children: number } => {
+  let adults = 1;
+  let children = 0;
+
+  const adultMatch = text.match(/(\d+)\s*Adult/i);
+  const childMatch = text.match(/(\d+)\s*(?:Children|Kids|Child)/i);
+
+  if (adultMatch) {
+    adults = parseInt(adultMatch[1], 10);
+  } else if (/couple/i.test(text)) {
+    adults = 2;
+  } else if (/solo|single/i.test(text)) {
+    adults = 1;
+  } else {
+    const generalMatch = text.match(/(\d+)/);
+    if (generalMatch) {
+      adults = parseInt(generalMatch[1], 10);
+    }
+  }
+
+  if (childMatch) {
+    children = parseInt(childMatch[1], 10);
+  }
+
+  return { adults, children };
+};
+
 export default function ServicesPage() {
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState(0);
@@ -615,21 +647,86 @@ export default function ServicesPage() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalServiceId, setModalServiceId] = useState<string | undefined>(
+    undefined,
+  );
+  const [modalPrefill, setModalPrefill] = useState<EnquiryPrefill | undefined>(
+    undefined,
+  );
+
   const handleRequestQuote = () => {
     setIsSubmitted(true);
     setTimeout(() => {
       setIsSubmitted(false);
     }, 3500);
 
-    // Open Flyora Enquiry Modal with active service selected
-    handleCardEnquiry(activeService.serviceId);
-  };
+    let destination = "";
+    let travelDate = "";
+    let tierOrClass = "";
+    let rawTravelers = "";
 
-  // Enquiry Modal state for card buttons
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalServiceId, setModalServiceId] = useState<string | undefined>(
-    undefined,
-  );
+    if (activeService.id === "custom-holidays") {
+      destination = holidayDest;
+      travelDate = holidayMonth;
+      rawTravelers = holidayTravelers;
+    } else if (activeService.id === "visa-assistance") {
+      destination = visaCountry;
+      travelDate = visaDate;
+      rawTravelers = visaApplicants;
+    } else if (activeService.id === "flight-booking") {
+      destination = flightRoute;
+      travelDate = flightDate;
+      tierOrClass = flightClass.includes("Business")
+        ? "Business Class"
+        : "Economy Class";
+      rawTravelers = flightClass;
+    } else if (activeService.id === "train-booking") {
+      destination = trainRoute;
+      travelDate = trainDate;
+      tierOrClass = trainClass;
+      rawTravelers = "2 Adults";
+    } else if (activeService.id === "bus-booking") {
+      destination = busRoute;
+      travelDate = busDate;
+      tierOrClass = busSeats;
+      rawTravelers = busSeats;
+    } else if (activeService.id === "umrah-packages") {
+      destination = umrahTier;
+      travelDate = umrahSeason;
+      tierOrClass = umrahTier;
+      rawTravelers = umrahPilgrims;
+    } else if (activeService.id === "hajj-packages") {
+      destination = hajjTier;
+      travelDate = hajjSeason;
+      tierOrClass = hajjTier;
+      rawTravelers = hajjPilgrims;
+    }
+
+    const counts = parseTravelerCounts(rawTravelers);
+    const summaryParts = [
+      activeService.name,
+      destination,
+      travelDate,
+      tierOrClass,
+      rawTravelers,
+    ].filter(Boolean);
+
+    const prefill: EnquiryPrefill = {
+      serviceId: activeService.serviceId,
+      serviceName: activeService.name,
+      destination,
+      travelDate,
+      tierOrClass,
+      adults: counts.adults,
+      children: counts.children,
+      summaryLabel: summaryParts.slice(1).join(" · "),
+    };
+
+    setModalPrefill(prefill);
+    setModalServiceId(activeService.serviceId);
+    setModalOpen(true);
+  };
 
   // Listen to hash changes on initial mount and external navigation (back/forward or navbar links)
   useEffect(() => {
@@ -706,7 +803,8 @@ export default function ServicesPage() {
     };
   }, []);
 
-  const handleCardEnquiry = (serviceId?: string) => {
+  const handleCardEnquiry = (serviceId?: string, prefill?: EnquiryPrefill) => {
+    setModalPrefill(prefill);
     setModalServiceId(serviceId);
     setModalOpen(true);
   };
@@ -1733,8 +1831,12 @@ export default function ServicesPage() {
       {/* Enquiry Modal for Card CTAs */}
       <EnquiryModal
         isOpen={modalOpen}
-        onClose={() => setModalOpen(false)}
+        onClose={() => {
+          setModalOpen(false);
+          setModalPrefill(undefined);
+        }}
         defaultServiceId={modalServiceId}
+        prefill={modalPrefill}
       />
     </div>
   );
