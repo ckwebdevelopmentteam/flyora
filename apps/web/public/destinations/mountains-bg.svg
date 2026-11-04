@@ -1,39 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 240" preserveAspectRatio="none" fill="none" class="w-full h-full">
   <defs>
-    <!-- Far Mountain Ridge: soft atmospheric blue -->
+    <!-- Far Mountain Ridge: atmospheric Flyora royal blue -->
     <linearGradient id="farRidge" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#4B7BA7" stop-opacity="0.6" />
-      <stop offset="100%" stop-color="#35628E" stop-opacity="0.75" />
+      <stop offset="0%" stop-color="#1d52b8" stop-opacity="0.75" />
+      <stop offset="100%" stop-color="#0e3a8f" stop-opacity="0.85" />
     </linearGradient>
 
-    <!-- Mid Mountain Ridge: rich medium brand blue -->
+    <!-- Mid Mountain Ridge: rich Flyora brand blue -->
     <linearGradient id="midRidge" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#1D4E82" stop-opacity="0.8" />
-      <stop offset="100%" stop-color="#0D3563" stop-opacity="0.9" />
+      <stop offset="0%" stop-color="#0a358c" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#002f89" stop-opacity="0.98" />
     </linearGradient>
 
-    <!-- Foreground Mountain Ridge: deep signature button blue (#002f89 & #0A2540) -->
+    <!-- Foreground Mountain Ridge: exact Flyora Logo Blue (#002f89) -->
     <linearGradient id="foreRidge" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#002f89" stop-opacity="0.9" />
-      <stop offset="100%" stop-color="#0A2540" stop-opacity="1" />
+      <stop offset="0%" stop-color="#002f89" stop-opacity="1.0" />
+      <stop offset="100%" stop-color="#002266" stop-opacity="1.0" />
     </linearGradient>
 
-    <!-- Subtle valley mist between layers -->
+    <!-- Valley atmospheric mist between ridges -->
     <linearGradient id="valleyMist" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.2" />
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0.0" />
     </linearGradient>
   </defs>
 
-  <!-- Far Mountain Ridge: peaks on left and right, dipping in center behind explore button -->
+  <!-- Far Mountain Ridge -->
   <path d="M0,90 Q90,50 200,75 T420,120 T620,160 Q720,175 820,160 T1040,115 T1260,65 Q1350,50 1440,75 L1440,240 L0,240 Z" fill="url(#farRidge)" />
 
   <!-- Mid Mountain Ridge -->
   <path d="M0,120 Q120,80 240,105 T480,145 T720,180 Q840,185 960,150 T1200,95 Q1330,80 1440,105 L1440,240 L0,240 Z" fill="url(#midRidge)" />
 
-  <!-- Valley atmosphere mist -->
+  <!-- Soft valley mist layer -->
   <ellipse cx="720" cy="185" rx="460" ry="35" fill="url(#valleyMist)" />
 
-  <!-- Foreground Mountain Ridge: rich button blue silhouette -->
+  <!-- Foreground Mountain Ridge (Signature Flyora Logo Blue) -->
   <path d="M0,150 Q110,115 220,135 T440,170 T660,195 Q720,200 780,195 T1000,165 T1220,125 Q1340,115 1440,135 L1440,240 L0,240 Z" fill="url(#foreRidge)" />
 </svg>

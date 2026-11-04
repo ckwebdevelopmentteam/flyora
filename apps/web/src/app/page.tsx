@@ -396,8 +396,10 @@ export default function Home() {
           {/* Top gradient matching exact cloud white, transitioning softly into Featured Destinations sky blue */}
           <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,#ffffff_0%,#F2F7FC_20%,#F8FBFE_80%,#ffffff_100%)]" />
           <div
-            className="absolute bottom-0 inset-x-0 h-36 sm:h-48 lg:h-56 pointer-events-none opacity-40 bg-cover bg-bottom bg-no-repeat"
-            style={{ backgroundImage: `url('/destinations/mountains-bg.svg')` }}
+            className="absolute bottom-0 inset-x-0 h-36 sm:h-48 lg:h-56 pointer-events-none opacity-100 bg-cover bg-bottom bg-no-repeat"
+            style={{
+              backgroundImage: `url('/destinations/mountains-bg.svg?v=brand')`,
+            }}
           />
 
           <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px]">
