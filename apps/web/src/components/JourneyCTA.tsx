@@ -7,44 +7,63 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
   return (
     <section
       id="our-team"
-      className="relative w-full bg-[#002f89] overflow-hidden"
+      className="relative w-full min-h-screen lg:h-screen lg:max-h-screen flex flex-col justify-between overflow-hidden bg-[#002f89]"
     >
       {/* ===================================================================
-          TOP HALF: Pure Solid White Background
+          1. TOP HALF: Pure Solid White Background
+          Takes flex-1 to fill all space from the top of the section down to
+          the top edge of the featured image.
           =================================================================== */}
-      <div className="w-full bg-white px-6 sm:px-10 lg:px-[105px] pt-8 sm:pt-10 lg:pt-12 pb-24 sm:pb-32 md:pb-36 lg:pb-44">
-        <div className="max-w-4xl">
+      <div className="flex-1 w-full bg-white px-6 sm:px-10 lg:px-[105px] pt-12 sm:pt-14 lg:pt-16 pb-3 sm:pb-4 flex flex-col justify-end">
+        <div className="w-full">
           <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2 sm:mb-2.5 select-none">
             WHO WE ARE · MEET OUR TRAVEL CURATORS
           </span>
-          <h2 className="font-serif text-2xl sm:text-3xl lg:text-[36px] xl:text-[40px] font-normal text-[#1E1A17] leading-[1.22] tracking-tight">
+          <h2 className="font-serif text-2xl sm:text-3xl lg:text-[34px] xl:text-[38px] font-normal text-[#1E1A17] leading-[1.25] tracking-tight w-full">
             Care from the team who listens well, shaping bespoke journeys
-            tailored to your personal pace and passion.
+            <br className="hidden md:inline" /> tailored to your personal pace
+            and passion.
           </h2>
         </div>
       </div>
 
       {/* ===================================================================
-          BOTTOM HALF: Solid Brand Blue Background (#002f89)
-          The panoramic image sits directly over the seam: 50% on white, 50% on blue.
+          2. CENTER IMAGE: Exact 50/50 Split Background Behind Image
+          Top half sits on White, Bottom half sits on Brand Blue #002f89.
+          -top-2 and -bottom-2 with calc(50%+8px) overlap completely eliminates
+          any subpixel rendering gap or line leak.
           =================================================================== */}
-      <div className="relative w-full bg-[#002f89] text-white px-6 sm:px-10 lg:px-[105px] pb-8 sm:pb-10 lg:pb-12">
-        {/* Featured Panoramic Image Pulled Upward to straddle the seam */}
-        <div className="relative -mt-20 sm:-mt-28 md:-mt-36 lg:-mt-40 mb-6 sm:mb-8 lg:mb-10 z-10">
-          <div className="w-full aspect-[16/7] md:aspect-[21/9] lg:aspect-[2.6/1] rounded-[16px] lg:rounded-[20px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.25)]">
-            <Image
-              src="/home/travel-team-curators.jpg"
-              alt="Flyora travel curators team planning bespoke journeys"
-              width={1920}
-              height={740}
-              className="w-full h-full object-cover object-center select-none pointer-events-none"
-              priority={false}
-            />
-          </div>
-        </div>
+      <div className="relative w-full px-6 sm:px-10 lg:px-[105px] shrink-0">
+        {/* Seamless 50/50 background split behind image */}
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 -top-2 h-[calc(50%+8px)] bg-white pointer-events-none"
+        />
+        <div
+          aria-hidden="true"
+          className="absolute inset-x-0 -bottom-2 h-[calc(50%+8px)] bg-[#002f89] pointer-events-none"
+        />
 
-        {/* 4 Columns: 3 Stats + 1 Description & Plan My Trip CTA */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 items-start">
+        {/* Featured Panoramic Image: same height as before, rounded-[8px] */}
+        <div className="relative z-10 w-full h-[240px] sm:h-[320px] md:h-[380px] lg:h-[400px] xl:h-[430px] rounded-[8px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
+          <Image
+            src="/home/travel-team-curators.jpg"
+            alt="Flyora travel curators team planning bespoke journeys"
+            fill
+            sizes="(max-width: 1024px) 100vw, 1360px"
+            className="object-cover object-center select-none pointer-events-none"
+            priority={false}
+          />
+        </div>
+      </div>
+
+      {/* ===================================================================
+          3. BOTTOM HALF: Brand Blue Background (#002f89)
+          Takes flex-1 to fill all space from the bottom edge of the image
+          down to the bottom of the section.
+          =================================================================== */}
+      <div className="flex-1 w-full bg-[#002f89] text-white px-6 sm:px-10 lg:px-[105px] pt-4 sm:pt-6 pb-8 sm:pb-10 lg:pb-12 flex flex-col justify-start">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 lg:gap-10 items-start w-full">
           {/* Stat 1 */}
           <div className="space-y-1 sm:space-y-1.5">
             <span className="text-xs sm:text-[13px] text-white/80 block font-sans">
@@ -75,7 +94,7 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
             </div>
           </div>
 
-          {/* Col 4: Description & CTA */}
+          {/* Col 4: Description & Plan My Trip Button */}
           <div className="col-span-2 lg:col-span-1 space-y-2.5">
             <p className="text-xs sm:text-[13px] text-white/85 leading-relaxed font-sans">
               Every itinerary is shaped by dedicated specialists who obsess over
@@ -85,15 +104,9 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
             <button
               type="button"
               onClick={onStart}
-              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#FFB088] hover:text-white transition-colors cursor-pointer group select-none"
+              className="mt-1 px-5 py-2.5 rounded-md bg-white hover:bg-neutral-100 active:bg-neutral-200 text-[#002f89] text-[11.5px] sm:text-[12px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap inline-flex items-center justify-center"
             >
               <span>Plan My Trip</span>
-              <span
-                aria-hidden="true"
-                className="transition-transform duration-200 group-hover:translate-x-1"
-              >
-                &gt;
-              </span>
             </button>
           </div>
         </div>
