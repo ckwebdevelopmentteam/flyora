@@ -45,22 +45,9 @@ export function computeOffset(i: number, pos: number, n: number): number {
   return d;
 }
 
-// Spring step for silky-smooth motion
-function springStep(
-  x: number,
-  v: number,
-  target: number,
-  omega: number,
-  zeta: number,
-  dt: number,
-): [number, number] {
-  const steps = Math.max(1, Math.ceil(dt / (1 / 240)));
-  const h = dt / steps;
-  for (let k = 0; k < steps; k++) {
-    v += (-omega * omega * (x - target) - 2 * zeta * omega * v) * h;
-    x += v * h;
-  }
-  return [x, v];
+// Luxurious, silky smooth slow-motion easing curve (starts soft, glides in slow motion, settles gracefully)
+function easeSlowMotion(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 export function StraightCardsCarousel({
@@ -82,9 +69,11 @@ export function StraightCardsCarousel({
   const state = useRef({
     pos: activeIndex,
     target: activeIndex,
-    vel: 0,
+    fromPos: activeIndex,
+    toPos: activeIndex,
+    startTime: 0,
+    duration: 950, // 950ms cinematic slow-motion glide
     raf: 0,
-    lastTime: 0,
     isDragging: false,
     dragStartX: 0,
     dragStartPos: 0,
@@ -159,39 +148,28 @@ export function StraightCardsCarousel({
     }
   }, [n, getLayout]);
 
-  // Animation frame loop
+  // Animation frame loop using smooth slow-motion easing
   const kick = useCallback(() => {
     const s = state.current;
-    if (s.raf) return;
-
-    const omega = (2 * Math.PI) / 0.75; // ~0.75s smooth duration
-    const zeta = 0.92; // slight, pleasant organic bounce
+    if (s.raf) cancelAnimationFrame(s.raf);
 
     const frame = (now: number) => {
-      const dt = Math.min((now - (s.lastTime || now)) / 1000, 1 / 20);
-      s.lastTime = now;
+      if (s.isDragging) return;
 
-      if (!s.isDragging) {
-        [s.pos, s.vel] = springStep(s.pos, s.vel, s.target, omega, zeta, dt);
-      }
+      const elapsed = now - (s.startTime || now);
+      const progress = Math.min(elapsed / s.duration, 1);
+      const eased = easeSlowMotion(progress);
 
+      s.pos = s.fromPos + (s.toPos - s.fromPos) * eased;
       paint();
 
-      const settled =
-        !s.isDragging &&
-        Math.abs(s.pos - s.target) < 1e-3 &&
-        Math.abs(s.vel) < 1e-2;
-
-      if (settled) {
-        s.pos = s.target;
-        s.vel = 0;
+      if (progress < 1) {
+        s.raf = requestAnimationFrame(frame);
+      } else {
+        s.pos = s.toPos;
         paint();
         s.raf = 0;
-        s.lastTime = 0;
-        return;
       }
-
-      s.raf = requestAnimationFrame(frame);
     };
 
     s.raf = requestAnimationFrame(frame);
@@ -201,7 +179,10 @@ export function StraightCardsCarousel({
   const setTarget = useCallback(
     (t: number) => {
       const s = state.current;
+      s.fromPos = s.pos;
+      s.toPos = t;
       s.target = t;
+      s.startTime = performance.now();
       const newActive = wrapIndex(Math.round(t), n);
       setActive(newActive);
       onIndexChange?.(newActive);
@@ -240,8 +221,9 @@ export function StraightCardsCarousel({
     if (prevItemsRef.current !== items) {
       prevItemsRef.current = items;
       state.current.pos = activeIndex || 0;
+      state.current.fromPos = activeIndex || 0;
+      state.current.toPos = activeIndex || 0;
       state.current.target = activeIndex || 0;
-      state.current.vel = 0;
       setActive(activeIndex || 0);
       paint();
     }
@@ -297,7 +279,6 @@ export function StraightCardsCarousel({
       s.hasDragged = true;
       s.dragStartX = e.clientX;
       s.dragStartPos = s.pos;
-      s.vel = 0;
       stageRef.current?.setPointerCapture(e.pointerId);
     }
 
@@ -332,8 +313,6 @@ export function StraightCardsCarousel({
     const ms = Math.max(last.t - first.t, 1);
     const slideUnit = leadWidth + gap;
     const v = (-(last.x - first.x) / ms / slideUnit) * 1000;
-    s.vel = v;
-
     const releaseT = Math.round(s.pos + v * 0.15);
     setTarget(releaseT);
   };
@@ -376,13 +355,6 @@ export function StraightCardsCarousel({
                 willChange: "transform, opacity",
               }}
             >
-              <img
-                src={item.src}
-                alt={`${item.location} - ${item.title}`}
-                draggable={false}
-                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
-              />
-
               {/* Vibrant Original Image: No dark dimming, natural colors */}
               <img
                 src={item.src}

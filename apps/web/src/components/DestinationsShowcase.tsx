@@ -289,10 +289,13 @@ export function DestinationsShowcase({
               <AnimatePresence mode="popLayout" initial={false}>
                 <motion.div
                   key={`dest-info-${current.id}`}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ duration: 0.25, ease: "easeOut" }}
+                  initial={{ opacity: 0, y: 14, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -14, filter: "blur(4px)" }}
+                  transition={{
+                    duration: 0.95,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
                   className="flex flex-col"
                 >
                   {/* Category / Location Eyebrow */}
