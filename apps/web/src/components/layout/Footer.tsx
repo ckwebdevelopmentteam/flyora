@@ -76,7 +76,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
 
   return (
     <footer
-      className={`relative z-10 w-full bg-[#FDF8F4] text-[#4A423B] border-t border-[#EBE3D8] pt-8 sm:pt-10 lg:pt-12 pb-3 overflow-hidden ${className}`}
+      className={`relative z-10 w-full bg-[#FDF8F4] text-[#4A423B] border-t border-[#EBE3D8] pt-12 sm:pt-16 lg:pt-20 pb-4 sm:pb-6 overflow-hidden ${className}`}
     >
       {/* Container aligned with Destinations section padding: px-6 sm:px-10 lg:px-[105px] */}
       <div className="w-full px-6 sm:px-10 lg:px-[105px]">
@@ -85,14 +85,14 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
             =================================================================== */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* Brand Intro Column */}
-          <div className="lg:col-span-5 space-y-2.5">
+          <div className="lg:col-span-5 space-y-3">
             <Link href="/" className="inline-block group">
               <Image
                 src="/flyora-logo.png"
                 alt="Flyora Tours & Travels LLP"
                 width={190}
                 height={58}
-                className="h-9 sm:h-10 md:h-11 w-auto object-contain transition-opacity group-hover:opacity-90"
+                className="h-10 sm:h-11 md:h-12 w-auto object-contain transition-opacity group-hover:opacity-90"
                 priority={false}
               />
             </Link>
@@ -104,53 +104,55 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
 
           {/* Vertical Divider (Desktop) */}
           <div className="hidden lg:flex lg:col-span-1 justify-center">
-            <div className="h-16 w-px bg-black/[0.08]" />
+            <div className="h-20 w-px bg-black/[0.08]" />
           </div>
 
-          {/* Newsletter Column */}
-          <div className="lg:col-span-6 space-y-2">
-            <h3 className="font-sans font-bold text-base sm:text-lg text-[#1C1815] tracking-tight">
-              Subscribe to Our Newsletter
-            </h3>
+          {/* Newsletter Column - 60% width on desktop aligned to the right edge */}
+          <div className="lg:col-span-6">
+            <div className="w-full lg:w-[60%] lg:ml-auto space-y-2.5">
+              <h3 className="font-sans font-bold text-base sm:text-lg text-[#1C1815] tracking-tight">
+                Subscribe to Our Newsletter
+              </h3>
 
-            <form onSubmit={handleSubscribe} className="space-y-1.5 w-full">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full shadow-2xs">
-                <div className="relative flex-1 flex items-center bg-white rounded-md sm:rounded-r-none border border-black/15 focus-within:border-[#002f89] focus-within:ring-1 focus-within:ring-[#002f89] transition">
-                  <Mail className="w-4.5 h-4.5 text-neutral-400 ml-3.5 shrink-0" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
-                    className="w-full py-2.5 px-3 text-xs sm:text-sm text-[#1C1815] placeholder:text-neutral-400 bg-transparent focus:outline-none"
-                    aria-label="Email address for newsletter"
-                  />
+              <form onSubmit={handleSubscribe} className="space-y-2 w-full">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full shadow-2xs">
+                  <div className="relative flex-1 flex items-center bg-white rounded-md sm:rounded-r-none border border-black/15 focus-within:border-[#002f89] focus-within:ring-1 focus-within:ring-[#002f89] transition">
+                    <Mail className="w-4.5 h-4.5 text-neutral-400 ml-3.5 shrink-0" />
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email address"
+                      className="w-full py-2.5 px-3 text-xs sm:text-sm text-[#1C1815] placeholder:text-neutral-400 bg-transparent focus:outline-none"
+                      aria-label="Email address for newsletter"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="mt-2 sm:mt-0 px-6 sm:px-7 py-2.5 bg-[#002f89] hover:bg-[#00246b] text-white text-xs sm:text-sm font-semibold rounded-md sm:rounded-l-none transition-colors cursor-pointer shrink-0 shadow-xs"
+                  >
+                    Subscribe
+                  </button>
                 </div>
-                <button
-                  type="submit"
-                  className="mt-2 sm:mt-0 px-6 sm:px-7 py-2.5 bg-[#002f89] hover:bg-[#00246b] text-white text-xs sm:text-sm font-semibold rounded-md sm:rounded-l-none transition-colors cursor-pointer shrink-0 shadow-xs"
-                >
-                  Subscribe
-                </button>
-              </div>
 
-              {isSubscribed && (
-                <p className="text-xs font-medium text-emerald-700">
-                  ✓ Thank you for subscribing to Flyora travel updates!
+                {isSubscribed && (
+                  <p className="text-xs font-medium text-emerald-700">
+                    ✓ Thank you for subscribing to Flyora travel updates!
+                  </p>
+                )}
+
+                <p className="text-[11px] sm:text-xs text-[#7A7167] leading-relaxed">
+                  Get travel deals, new package updates, and destination
+                  inspiration directly in your inbox.
                 </p>
-              )}
-
-              <p className="text-[11px] sm:text-xs text-[#7A7167] leading-relaxed">
-                Get travel deals, new package updates, and destination
-                inspiration directly in your inbox.
-              </p>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
 
         {/* Divider Line */}
-        <hr className="border-t border-black/[0.08] my-6 sm:my-7" />
+        <hr className="border-t border-black/[0.08] my-8 sm:my-10" />
 
         {/* ===================================================================
             MIDDLE SECTION: 4 Column Directory with enhanced typography
@@ -351,20 +353,20 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
       {/* ===================================================================
           BOTTOM SECTION: World Landmarks Illustration taking same padding
           =================================================================== */}
-      <div className="w-full px-6 sm:px-10 lg:px-[105px] mt-6 sm:mt-7 overflow-hidden flex justify-center">
+      <div className="w-full px-6 sm:px-10 lg:px-[105px] mt-8 sm:mt-12 overflow-hidden flex justify-center">
         <div className="w-full overflow-hidden flex justify-center">
           <Image
             src="/footer-landmarks.png"
             alt="World travel landmarks illustration"
             width={1024}
             height={138}
-            className="w-full h-[70px] sm:h-[90px] md:h-[105px] lg:h-[115px] object-cover object-bottom select-none pointer-events-none"
+            className="w-full h-auto object-cover object-bottom select-none pointer-events-none"
             priority={false}
           />
         </div>
       </div>
 
-      <div className="text-center pt-2 pb-1.5 px-6 sm:px-10 lg:px-[105px] text-xs text-[#7A7167]">
+      <div className="text-center pt-3 pb-2 sm:pb-3 px-6 sm:px-10 lg:px-[105px] text-xs text-[#7A7167]">
         <p>© 2026 Flyora Tours &amp; Travels LLP. All Rights Reserved.</p>
       </div>
     </footer>
