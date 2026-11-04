@@ -5,53 +5,95 @@ import Image from "next/image";
 
 export function JourneyCTA({ onStart }: { onStart: () => void }) {
   return (
-    <section
-      id="cta"
-      className="relative py-12 sm:py-16 lg:py-20 text-white text-center px-4 sm:px-5 overflow-hidden scroll-mt-20 sm:scroll-mt-24"
-      aria-labelledby="journey-cta-title"
-    >
-      {/* Background Scenic Image */}
-      <Image
-        src="/home/journey-cta-bg.jpg"
-        alt="Luxury getaway destination"
-        fill
-        sizes="100vw"
-        className="object-cover object-center pointer-events-none select-none"
-        priority={false}
-      />
+    <section id="our-team" className="relative w-full overflow-hidden">
+      {/* -------------------------------------------------------------------
+          TOP SECTION (Light Background)
+          ------------------------------------------------------------------- */}
+      <div className="bg-white pt-14 sm:pt-20 lg:pt-24 pb-24 sm:pb-36 md:pb-44 lg:pb-52 px-6 sm:px-10 lg:px-[105px]">
+        <div className="max-w-4xl">
+          <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3 select-none">
+            WHO WE ARE · MEET OUR TRAVEL CURATORS
+          </span>
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-[42px] font-normal text-[#1E1A17] leading-[1.22] tracking-tight">
+            Care from the team who listens well, shaping bespoke journeys
+            tailored to your personal pace and passion.
+          </h2>
+        </div>
+      </div>
 
-      {/* Atmospheric Overlays for optimal text contrast and photo depth */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70 pointer-events-none"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 bg-[#002f89]/20 mix-blend-multiply pointer-events-none"
-      />
+      {/* -------------------------------------------------------------------
+          BOTTOM SECTION (Our Signature Dark Background #1E1A17)
+          With the featured image pulled upward to straddle the two halves
+          ------------------------------------------------------------------- */}
+      <div className="relative bg-[#1E1A17] text-white px-6 sm:px-10 lg:px-[105px] pb-16 sm:pb-20 lg:pb-24">
+        {/* Straddling Featured Panoramic Image */}
+        <div className="relative -mt-20 sm:-mt-28 md:-mt-36 lg:-mt-44 mb-10 sm:mb-14 lg:mb-16 z-10">
+          <div className="w-full aspect-[16/7] md:aspect-[21/9] rounded-[8px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.35)]">
+            <Image
+              src="/home/travel-team-curators.jpg"
+              alt="Flyora travel curators team planning bespoke journeys"
+              width={1920}
+              height={820}
+              className="w-full h-full object-cover object-center select-none pointer-events-none"
+              priority={false}
+            />
+          </div>
+        </div>
 
-      {/* Exact plain content as on the original blue background */}
-      <div className="relative z-10 max-w-3xl mx-auto">
-        <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-white/70 block mb-2 sm:mb-3">
-          YOUR NEXT GETAWAY STARTS HERE
-        </span>
-        <h2
-          id="journey-cta-title"
-          className="font-serif text-2xl sm:text-3xl md:text-5xl font-normal mb-3 sm:mb-5 tracking-tight leading-[1.12]"
-        >
-          Find the perfect travel advisor for your next trip
-        </h2>
-        <p className="text-xs sm:text-sm md:text-base text-white/80 max-w-xl mx-auto mb-6 sm:mb-8 font-light leading-relaxed">
-          Connect with a handpicked specialist, unlock complimentary hotel
-          perks, and travel with total peace of mind.
-        </p>
-        <button
-          type="button"
-          onClick={onStart}
-          className="px-7 sm:px-9 py-3 sm:py-4 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] hover:text-[#00246b] text-xs font-semibold uppercase tracking-[0.14em] shadow-lg hover:shadow-xl transition motion-reduce:transition-none motion-reduce:transform-none active:scale-[0.98] cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white"
-        >
-          GET MATCHED
-        </button>
+        {/* 4 Columns Row: 3 Stats + 1 Description with Plan My Trip CTA */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12 items-start">
+          {/* Stat 1 */}
+          <div className="space-y-1.5 sm:space-y-2">
+            <span className="text-xs sm:text-sm text-white/70 block font-sans">
+              Journeys Crafted
+            </span>
+            <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
+              1,200 +
+            </div>
+          </div>
+
+          {/* Stat 2 */}
+          <div className="space-y-1.5 sm:space-y-2">
+            <span className="text-xs sm:text-sm text-white/70 block font-sans">
+              Global Destinations
+            </span>
+            <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
+              50 +
+            </div>
+          </div>
+
+          {/* Stat 3 */}
+          <div className="space-y-1.5 sm:space-y-2">
+            <span className="text-xs sm:text-sm text-white/70 block font-sans">
+              Traveler Satisfaction
+            </span>
+            <div className="font-serif text-3xl sm:text-4xl lg:text-5xl font-light text-white tracking-tight">
+              98 %
+            </div>
+          </div>
+
+          {/* Col 4: Description & CTA */}
+          <div className="col-span-2 lg:col-span-1 space-y-3">
+            <p className="text-xs sm:text-[13px] text-white/75 leading-relaxed font-sans">
+              Every itinerary is shaped by dedicated specialists who obsess over
+              every detail — from handpicked luxury stays to seamless
+              coordination.
+            </p>
+            <button
+              type="button"
+              onClick={onStart}
+              className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#E58A60] hover:text-[#FFA07A] transition-colors cursor-pointer group select-none"
+            >
+              <span>Plan My Trip</span>
+              <span
+                aria-hidden="true"
+                className="transition-transform duration-200 group-hover:translate-x-1"
+              >
+                &gt;
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </section>
   );
