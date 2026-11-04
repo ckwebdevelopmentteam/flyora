@@ -72,7 +72,7 @@ export function StraightCardsCarousel({
     fromPos: activeIndex,
     toPos: activeIndex,
     startTime: 0,
-    duration: 950, // 950ms cinematic slow-motion glide
+    duration: 1000, // Exactly 1.0s (1000ms) cinematic slow-motion lag
     raf: 0,
     isDragging: false,
     dragStartX: 0,
