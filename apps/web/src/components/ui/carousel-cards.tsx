@@ -219,8 +219,20 @@ export const popularPackages: PackageCardItem[] = [
   },
 ];
 
+// Helper to convert hex to rgba for smooth themed color gradient fade
+function hexToRgba(hex: string, alpha: number): string {
+  const cleanHex = hex.replace("#", "");
+  if (cleanHex.length === 6) {
+    const r = parseInt(cleanHex.substring(0, 2), 16);
+    const g = parseInt(cleanHex.substring(2, 4), 16);
+    const b = parseInt(cleanHex.substring(4, 6), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  return hex;
+}
+
 // =============================================================================
-// PACKAGE CARD COMPONENT (Dominant image with compact bottom content)
+// PACKAGE CARD COMPONENT (Dominant image with seamless color gradient)
 // =============================================================================
 export const PackageCard = ({
   packageItem,
@@ -240,8 +252,8 @@ export const PackageCard = ({
       className="group relative flex h-[395px] w-full flex-col overflow-hidden rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl transform-gpu hover:-translate-y-1"
       style={{ backgroundColor: cardBg }}
     >
-      {/* Top Image Section - Tall (275px, ~70% of card) for maximum image presence */}
-      <div className="relative h-[275px] w-full overflow-hidden border-b border-white/20">
+      {/* Top Image Section - Seamless fade into card background without sharp border */}
+      <div className="relative h-[275px] w-full overflow-hidden">
         <Image
           alt={packageItem.title}
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
@@ -249,11 +261,17 @@ export const PackageCard = ({
           sizes="(max-width: 640px) 270px, (max-width: 1024px) 290px, 320px"
           src={packageItem.image}
         />
-        {/* Subtle bottom gradient ONLY behind title so photo stays 100% visible */}
-        <div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
+        {/* Soft themed color gradient spreading seamlessly upward over the title */}
+        <div
+          className="absolute inset-x-0 bottom-0 pointer-events-none"
+          style={{
+            height: "105px",
+            background: `linear-gradient(to top, ${hexToRgba(cardBg, 1)} 0%, ${hexToRgba(cardBg, 0.92)} 35%, ${hexToRgba(cardBg, 0.45)} 70%, transparent 100%)`,
+          }}
+        />
 
-        {/* Title placed at the bottom-left inside the image */}
-        <div className="absolute bottom-3 left-4 right-4 z-10">
+        {/* Title placed at the bottom-left inside the image over the soft color spread */}
+        <div className="absolute bottom-2.5 left-4 right-4 z-10">
           <h3 className="font-bold text-lg sm:text-[19px] text-white tracking-tight leading-snug drop-shadow-sm line-clamp-1">
             {packageItem.title}
           </h3>
