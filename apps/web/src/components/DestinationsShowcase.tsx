@@ -148,9 +148,15 @@ export function DestinationsShowcase({
   const [activeCategory, setActiveCategory] = useState<
     "International" | "Domestic"
   >("International");
+  const [baseCategory, setBaseCategory] = useState<
+    "International" | "Domestic"
+  >("International");
+  const [incomingCategory, setIncomingCategory] = useState<
+    "International" | "Domestic" | null
+  >(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  // Preload background images so category switching is instantaneous and never blinks
+  // Preload background images so textures are 100% ready in memory
   useEffect(() => {
     if (typeof window !== "undefined") {
       const img1 = new window.Image();
@@ -169,80 +175,66 @@ export function DestinationsShowcase({
   };
 
   const handleCategoryChange = (category: "International" | "Domestic") => {
+    if (category === activeCategory) return;
     setActiveCategory(category);
     setActiveIndex(0);
+    setIncomingCategory(category);
   };
 
   const current = filteredDestinations[activeIndex] || filteredDestinations[0];
+
+  const getBgUrl = (cat: "International" | "Domestic") =>
+    cat === "International"
+      ? "/home/heifiltower.png"
+      : "/showcase/domestic-bg.jpg";
 
   return (
     <section
       id="destination-packages"
       className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[720px] lg:min-h-[760px] ${className}`}
     >
-      {/* Background Images Layer: Dual permanent GPU-rendered layers with ZERO blink */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden bg-[#0a0e17]">
-        {/* International Background Layer */}
-        <motion.div
-          initial={false}
-          animate={
-            activeCategory === "International"
-              ? {
-                  clipPath: ["inset(50px round 16px)", "inset(0px round 0px)"],
-                  scale: [0.98, 1],
-                  opacity: [0, 1],
-                }
-              : {
-                  clipPath: "inset(0px round 0px)",
-                  scale: 1,
-                  opacity: 1,
-                }
-          }
-          transition={{
-            duration: 1.25,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className={`absolute inset-0 bg-cover bg-center ${
-            activeCategory === "International" ? "z-20" : "z-10"
-          }`}
-          style={{ backgroundImage: `url('/home/heifiltower.png')` }}
+      {/* Background Images Layer: Base + Smooth Center Expansion with ZERO Blink */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-black">
+        {/* Permanent Base Layer (Always 100% visible underneath, never blinks) */}
+        <div
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${getBgUrl(baseCategory)}')` }}
         >
           <div className="absolute inset-0 bg-black/25 pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-transparent pointer-events-none" />
-        </motion.div>
+        </div>
 
-        {/* Domestic Background Layer */}
-        <motion.div
-          initial={false}
-          animate={
-            activeCategory === "Domestic"
-              ? {
-                  clipPath: ["inset(50px round 16px)", "inset(0px round 0px)"],
-                  scale: [0.98, 1],
-                  opacity: [0, 1],
-                }
-              : {
-                  clipPath: "inset(0px round 0px)",
-                  scale: 1,
-                  opacity: 1,
-                }
-          }
-          transition={{
-            duration: 1.25,
-            ease: [0.22, 1, 0.36, 1],
-          }}
-          className={`absolute inset-0 bg-cover bg-center ${
-            activeCategory === "Domestic" ? "z-20" : "z-10"
-          }`}
-          style={{ backgroundImage: `url('/showcase/domestic-bg.jpg')` }}
-        >
-          <div className="absolute inset-0 bg-black/25 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-transparent pointer-events-none" />
-        </motion.div>
+        {/* Incoming Layer: Expands outward from the center over the base layer */}
+        {incomingCategory && (
+          <motion.div
+            key={incomingCategory}
+            initial={{
+              clipPath: "inset(50px round 16px)",
+              scale: 0.98,
+            }}
+            animate={{
+              clipPath: "inset(0px round 0px)",
+              scale: 1,
+            }}
+            transition={{
+              duration: 1.25,
+              ease: [0.22, 1, 0.36, 1], // luxurious, smooth slow-motion expansion
+            }}
+            onAnimationComplete={() => {
+              setBaseCategory(incomingCategory);
+              setIncomingCategory(null);
+            }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('${getBgUrl(incomingCategory)}')` }}
+          >
+            <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-transparent pointer-events-none" />
+          </motion.div>
+        )}
       </div>
 
-      {/* Main Showcase Content with 105px horizontal padding and symmetrical top/bottom gaps */}
-      <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start py-12 lg:py-14">
+      {/* Main Showcase Content with 105px horizontal padding: ALWAYS on top at z-20 */}
+      <div className="relative z-20 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start py-12 lg:py-14">
         {/* Top-Right Category Switcher: 4 lines total (each button has 2 vertical lines: border-l & border-r) */}
         <div className="w-full flex justify-end items-center mb-5 lg:mb-4 shrink-0">
           <div className="inline-flex items-center gap-3 sm:gap-4 text-sm sm:text-base tracking-wide">
