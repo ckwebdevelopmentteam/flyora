@@ -7,9 +7,10 @@ import "lenis/dist/lenis.css";
 import {
   Plus,
   ArrowRight,
-  ArrowLeft,
   ChevronLeft,
   ChevronRight,
+  MapPin,
+  ArrowUpRight,
 } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/layout/Footer";
@@ -19,6 +20,7 @@ import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
 import CarouselCards from "@/components/ui/carousel-cards";
 import { DestinationsShowcase } from "../components/DestinationsShowcase";
+import { CloudMarquee } from "../components/CloudMarquee";
 import InkOrbitTestimonials, {
   type InkTestimonial,
 } from "@/components/ui/ink-orbit-testimonials";
@@ -86,47 +88,55 @@ const TRAVEL_TESTIMONIALS: InkTestimonial[] = [
 // HOMEPAGE DATA STRUCTURES
 // =============================================================================
 
-// Section 1: Featured Destinations matching reference design
+// Section 1: Featured Destinations matching reference design (Lisbon, Tulum, Swiss Alps, Dubai, Maldives)
 const FEATURED_DESTINATIONS = [
   {
-    id: "dest-bali",
-    name: "Bali, Indonesia",
-    image: "/destinations/bali_hd.jpg",
-  },
-  {
-    id: "dest-rome",
-    name: "Rome, Italy",
-    image: "/destinations/rome_hd.jpg",
-  },
-  {
-    id: "dest-kyoto",
-    name: "Kyoto, Japan",
-    image: "/destinations/kyoto_hd.jpg",
-  },
-  {
     id: "dest-lisbon",
-    name: "Lisbon, Portugal",
-    image: "/destinations/lisbon_hd.jpg",
+    name: "Lisbon",
+    country: "Portugal",
+    image: "/destinations/card-lisbon.jpg",
   },
   {
     id: "dest-tulum",
-    name: "Tulum, Mexico",
-    image: "/destinations/tulum_hd.jpg",
+    name: "Tulum",
+    country: "Mexico",
+    image: "/destinations/card-tulum.jpg",
   },
   {
-    id: "dest-switzerland",
-    name: "Switzerland & The Alps",
-    image: "/destinations/switzerland_hd.jpg",
+    id: "dest-swiss",
+    name: "Swiss Alps",
+    country: "Switzerland",
+    image: "/destinations/card-swiss.jpg",
   },
   {
     id: "dest-dubai",
-    name: "Dubai, UAE",
-    image: "/destinations/dubai_hd.jpg",
+    name: "Dubai",
+    country: "UAE",
+    image: "/destinations/card-dubai.jpg",
   },
   {
     id: "dest-maldives",
-    name: "Maldives Islands",
-    image: "/destinations/maldives_hd.jpg",
+    name: "Maldives",
+    country: "Maldives Islands",
+    image: "/destinations/card-maldives.jpg",
+  },
+  {
+    id: "dest-bali",
+    name: "Bali",
+    country: "Indonesia",
+    image: "/destinations/card-bali.jpg",
+  },
+  {
+    id: "dest-rome",
+    name: "Rome",
+    country: "Italy",
+    image: "/destinations/card-rome.jpg",
+  },
+  {
+    id: "dest-kyoto",
+    name: "Kyoto",
+    country: "Japan",
+    image: "/destinations/card-kyoto.jpg",
   },
 ];
 
@@ -135,27 +145,27 @@ const FAQS = [
   {
     question: "What is typically included in a Flyora holiday package?",
     answer:
-      "Placeholder: Our packages generally cover premium handpicked accommodations, daily breakfast, private or scheduled airport transfers, guided sightseeing, and selected curated activities as specified in your itinerary.",
+      "Flyora: Our packages generally cover premium handpicked accommodations, daily breakfast, private or scheduled airport transfers, guided sightseeing, and selected curated activities as specified in your itinerary.",
   },
   {
     question: "Can I customize an itinerary to suit my personal preferences?",
     answer:
-      "Placeholder: Yes, all Flyora itineraries can be completely tailored. You can adjust durations, select preferred hotel tiers, add private tours, or combine multiple destinations according to your schedule.",
+      "Flyora: Yes, all Flyora itineraries can be completely tailored. You can adjust durations, select preferred hotel tiers, add private tours, or combine multiple destinations according to your schedule.",
   },
   {
     question: "Are flights and visa assistance included in the package cost?",
     answer:
-      "Placeholder: International flights and visa assistance can be packaged together or booked separately depending on your preference. All inclusions and exclusions are clearly itemized prior to booking.",
+      "Flyora: International flights and visa assistance can be packaged together or booked separately depending on your preference. All inclusions and exclusions are clearly itemized prior to booking.",
   },
   {
     question: "What is the booking process and payment schedule?",
     answer:
-      "Placeholder: After reviewing and approving your personalized proposal, a standard deposit confirms your reservation. The remaining balance is completed closer to your departure date via flexible milestones.",
+      "Flyora: After reviewing and approving your personalized proposal, a standard deposit confirms your reservation. The remaining balance is completed closer to your departure date via flexible milestones.",
   },
   {
     question: "What kind of support is provided during my journey?",
     answer:
-      "Placeholder: You receive 24/7 dedicated travel support via phone and WhatsApp throughout your trip, ensuring prompt assistance with itinerary questions, airport coordination, or unexpected needs.",
+      "Flyora: You receive 24/7 dedicated travel support via phone and WhatsApp throughout your trip, ensuring prompt assistance with itinerary questions, airport coordination, or unexpected needs.",
   },
 ];
 
@@ -200,8 +210,8 @@ export default function Home() {
       isSnapping = true;
       const target = destinationsRef.current;
       const targetY = target
-        ? target.getBoundingClientRect().top + window.scrollY - 100
-        : window.innerHeight * 0.9;
+        ? target.getBoundingClientRect().top + window.scrollY
+        : window.innerHeight;
       lenis.scrollTo(targetY, {
         duration: 1.2,
         onComplete: () => {
@@ -359,8 +369,8 @@ export default function Home() {
           if (lenisRef.current) {
             const target = destinationsRef.current;
             const targetY = target
-              ? target.getBoundingClientRect().top + window.scrollY - 100
-              : window.innerHeight * 0.9;
+              ? target.getBoundingClientRect().top + window.scrollY
+              : window.innerHeight;
             lenisRef.current.scrollTo(targetY, { duration: 1.2 });
           } else if (destinationsRef.current) {
             destinationsRef.current.scrollIntoView({ behavior: "smooth" });
@@ -370,136 +380,78 @@ export default function Home() {
 
       {/* ---------------------------------------------------------------------
           STACKING CONTENT SHEET:
-          Has z-20 and stacks on top of the sticky fixed hero as you scroll.
-          The clouds are pulled up over the hero video with negative margin and a transparent
-          backdrop so the video shows through, attached directly to the Featured Destinations!
+          Has z-20 and stacks smoothly on top of the sticky fixed hero as you scroll.
           --------------------------------------------------------------------- */}
       <div className="relative z-20 w-full">
-        {/* Floating animated clouds marquee attached to top of Featured Destinations (lowered profile) */}
-        <div className="relative -mt-[50px] sm:-mt-[70px] md:-mt-[85px] lg:-mt-[100px] overflow-hidden leading-none text-[0px] pointer-events-none select-none z-20">
-          <div className="animate-marquee flex w-max will-change-transform">
-            {/* Set 1 */}
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-1.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-2.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-3.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-4.png"
-            />
-            {/* Set 2 (for seamless loop) */}
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-1.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-2.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-3.png"
-            />
-            <img
-              alt=""
-              width={1580}
-              height={440}
-              className="block shrink-0 h-[55px] sm:h-[75px] md:h-[90px] lg:h-[105px] w-auto -mr-[32px] sm:-mr-[42px] md:-mr-[52px] lg:-mr-[58px] pointer-events-none drop-shadow-[0_4px_12px_rgba(0,0,0,0.15)]"
-              src="/cloude-frame/Frame@1.5x-4.png"
-            />
-          </div>
-
-          {/* Luminous gradient: completely transparent at top so hero video shines through, fading down to pure white */}
-          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,rgba(255,255,255,0)_0%,rgba(255,255,255,0)_30%,rgba(255,255,255,0.25)_55%,rgba(255,255,255,0.85)_82%,#ffffff_100%)]" />
-        </div>
+        <CloudMarquee />
 
         {/* ===================================================================
-            SECTION 1: FEATURED DESTINATIONS (Matching Reference Design)
+            SECTION 1: FEATURED DESTINATIONS (Matching Attachment Reference)
             =================================================================== */}
         <section
           id="destinations"
           ref={destinationsRef}
-          className="relative z-10 pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16 lg:pb-24 bg-white border-b border-black/[0.06] scroll-mt-20 sm:scroll-mt-24"
+          className="relative z-10 pt-28 sm:pt-32 lg:pt-36 pb-16 sm:pb-20 lg:pb-24 overflow-hidden scroll-mt-0"
         >
-          <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+          {/* Top gradient matching exact cloud white, transitioning softly into Featured Destinations sky blue */}
+          <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,#ffffff_0%,#F2F7FC_20%,#F8FBFE_80%,#ffffff_100%)]" />
+          <div
+            className="absolute bottom-0 inset-x-0 h-36 sm:h-48 lg:h-56 pointer-events-none opacity-100 bg-cover bg-bottom bg-no-repeat"
+            style={{
+              backgroundImage: `url('/destinations/mountains-bg.svg?v=brand')`,
+            }}
+          />
+
+          <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px]">
             {/* Header: Left title + Right description & navigation arrows */}
-            <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 sm:gap-6 lg:gap-12 mb-6 sm:mb-10 lg:mb-12">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-12 mb-8 sm:mb-10 lg:mb-12">
               <div className="max-w-xl">
-                <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-2 sm:mb-2.5">
-                  FEATURED DESTINATIONS
-                </span>
-                <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
-                  Explore <br className="hidden sm:inline" />
-                  Destinations
+                <div className="flex items-center gap-3 mb-2.5 sm:mb-3">
+                  <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-[#2C4875]">
+                    FEATURED DESTINATIONS
+                  </span>
+                  <span className="w-10 sm:w-14 h-px bg-[#B0C4DE]" />
+                </div>
+                <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#0A192F] tracking-tight leading-[1.12]">
+                  Explore Our <br />
+                  Featured Destinations
                 </h2>
               </div>
 
-              <div className="max-w-md flex flex-col items-start pt-0.5 sm:pt-1">
-                <p className="text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed">
-                  Discover handpicked international destinations crafted for
-                  unforgettable journeys and cultural immersion.
+              <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6 lg:gap-8">
+                <div className="hidden lg:block w-px h-12 bg-neutral-300/80 shrink-0" />
+                <p className="text-xs sm:text-[13.5px] text-[#4A5568] max-w-[340px] leading-relaxed">
+                  Handpicked international destinations, curated for
+                  unforgettable journeys and cultural experiences.
                 </p>
 
-                {/* Navigation arrows matching destination sharp button style */}
-                <div className="flex items-center gap-2.5 mt-4 sm:mt-5">
+                {/* Carousel navigation buttons */}
+                <div className="flex items-center gap-2.5 shrink-0">
                   <button
                     type="button"
                     onClick={() => handleScroll("left")}
                     disabled={!canScrollLeft}
                     aria-label="Previous destination"
-                    className="group relative overflow-hidden w-10 h-10 rounded-[2px] bg-[#FAF7F2] text-[#1E1A17] hover:text-white border border-black/[0.1] hover:border-transparent grid place-items-center transition-all duration-300 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                    className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 ${
+                      canScrollLeft
+                        ? "bg-[#0A2540] text-white border-[#0A2540] hover:bg-[#071C30]"
+                        : "bg-white text-neutral-400 border-neutral-200 cursor-not-allowed opacity-60"
+                    }`}
                   >
-                    <span
-                      aria-hidden="true"
-                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-                    />
-                    <span className="relative z-10 flex items-center justify-center">
-                      <ChevronLeft className="w-4 h-4 stroke-[2.4]" />
-                    </span>
+                    <ChevronLeft className="w-4 h-4 stroke-[2.2]" />
                   </button>
                   <button
                     type="button"
                     onClick={() => handleScroll("right")}
                     disabled={!canScrollRight}
                     aria-label="Next destination"
-                    className="group relative overflow-hidden w-10 h-10 rounded-[2px] bg-[#FAF7F2] text-[#1E1A17] hover:text-white border border-black/[0.1] hover:border-transparent grid place-items-center transition-all duration-300 cursor-pointer shadow-2xs active:scale-95 disabled:opacity-35 disabled:cursor-not-allowed"
+                    className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 ${
+                      canScrollRight
+                        ? "bg-[#0A2540] text-white border-[#0A2540] hover:bg-[#071C30] shadow-sm"
+                        : "bg-white text-neutral-400 border-neutral-200 cursor-not-allowed opacity-60"
+                    }`}
                   >
-                    <span
-                      aria-hidden="true"
-                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-                    />
-                    <span className="relative z-10 flex items-center justify-center">
-                      <ChevronRight className="w-4 h-4 stroke-[2.4]" />
-                    </span>
+                    <ChevronRight className="w-4 h-4 stroke-[2.2]" />
                   </button>
                 </div>
               </div>
@@ -509,42 +461,70 @@ export default function Home() {
             <div
               ref={carouselTrackRef}
               onScroll={checkScroll}
-              className="flex gap-3.5 sm:gap-4 lg:gap-4 xl:gap-5 overflow-x-auto scroll-smooth no-scrollbar pb-3 pt-1 px-1 -mx-1 snap-x snap-mandatory"
+              className="flex gap-4 sm:gap-4.5 lg:gap-5 overflow-x-auto scroll-smooth no-scrollbar pb-4 pt-1 px-1 -mx-1 snap-x snap-mandatory"
             >
               {FEATURED_DESTINATIONS.map((dest) => (
                 <div
                   key={dest.id}
-                  onClick={() => openEnquiry(dest.name)}
+                  onClick={() => openEnquiry(`${dest.name}, ${dest.country}`)}
                   role="button"
                   tabIndex={0}
-                  aria-label={`Explore ${dest.name}`}
+                  aria-label={`Explore ${dest.name}, ${dest.country}`}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      openEnquiry(dest.name);
+                      openEnquiry(`${dest.name}, ${dest.country}`);
                     }
                   }}
-                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-12px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-13px)] aspect-[1/2.5] rounded-[8px] overflow-hidden cursor-pointer select-none snap-start shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_36px_rgba(0,0,0,0.16)] transition-all duration-300 transform hover:-translate-y-1.5 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89]"
+                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-16px)] aspect-[3/4.4] rounded-[22px] sm:rounded-[24px] overflow-hidden cursor-pointer select-none snap-start shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-all duration-400 transform hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A2540]"
                 >
-                  {/* Destination Card Image */}
+                  {/* Crisp High-Definition Destination Card Image */}
                   <img
                     src={dest.image}
-                    alt={dest.name}
+                    alt={`${dest.name}, ${dest.country}`}
                     loading="lazy"
-                    className="w-full h-full object-cover rounded-[8px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
+                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108 pointer-events-none select-none"
                   />
 
-                  {/* Soft interactive hover gradient */}
-                  <div className="absolute inset-0 rounded-[8px] bg-gradient-to-t from-black/25 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
+                  {/* Cinematic gradient scrim at bottom for text contrast */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
 
-                  {/* Center frosted glass badge */}
-                  <div className="absolute inset-0 flex items-center justify-center p-3 pointer-events-none">
-                    <div className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 shadow-lg text-white font-medium text-xs sm:text-sm tracking-wide text-center">
-                      {dest.name}
+                  {/* Soft interactive card border ring */}
+                  <div className="absolute inset-0 rounded-[22px] sm:rounded-[24px] ring-1 ring-black/10 group-hover:ring-white/40 transition-all duration-300 pointer-events-none" />
+
+                  {/* Card Content Footer: Location Info + Real Interactive Action Button */}
+                  <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex items-end justify-between gap-2.5 z-10 pointer-events-none">
+                    {/* Left: Location Pin + Destination Name + Country */}
+                    <div className="flex items-start gap-2 max-w-[calc(100%-44px)]">
+                      <MapPin className="w-4 h-4 text-white shrink-0 mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" />
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-white font-bold text-sm sm:text-base lg:text-[17px] leading-tight tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)] truncate">
+                          {dest.name}
+                        </span>
+                        <span className="text-white/85 text-[11px] sm:text-xs font-normal leading-tight mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] truncate">
+                          {dest.country}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Right: REAL Interactive Circular Action Button */}
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/60 bg-white/10 backdrop-blur-md flex items-center justify-center text-white shrink-0 transition-all duration-300 group-hover:bg-white group-hover:text-[#0A2540] group-hover:border-white group-hover:scale-110 shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
+                      <ArrowUpRight className="w-4 h-4 stroke-[2.2] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </div>
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Explore All Destinations Pill Button */}
+            <div className="flex justify-center items-center mt-10 sm:mt-12">
+              <Link
+                href="/tours"
+                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full border border-neutral-300 bg-white/95 backdrop-blur-md text-[#0A2540] hover:text-black hover:bg-white hover:border-neutral-400 font-medium text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group cursor-pointer"
+              >
+                <span>Explore All Destinations</span>
+                <ArrowRight className="w-4 h-4 stroke-[2] transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
             </div>
           </div>
         </section>
@@ -571,7 +551,7 @@ export default function Home() {
           <InkOrbitTestimonials
             theme="light"
             tag="VERIFIED EXPERIENCES"
-            title="What *Travelers* Say\nAbout Flyora."
+            title="What Travelers Say\nAbout Flyora."
             testimonials={TRAVEL_TESTIMONIALS}
             logos={[]}
           />
@@ -605,7 +585,7 @@ export default function Home() {
                       className="w-full px-6 sm:px-8 py-5 sm:py-5.5 text-left flex items-center justify-between gap-4 cursor-pointer select-none transition-colors"
                       aria-expanded={isOpen}
                     >
-                      <span className="text-sm sm:text-base font-semibold text-[#1E1A17] tracking-tight">
+                      <span className="text-base sm:text-lg font-semibold text-[#1E1A17] tracking-tight">
                         {faq.question}
                       </span>
                       <Plus
@@ -622,7 +602,7 @@ export default function Home() {
                       }`}
                     >
                       <div className="overflow-hidden">
-                        <div className="px-6 sm:px-8 pb-6 pt-1 text-xs sm:text-sm text-[#5C534A] leading-relaxed">
+                        <div className="px-6 sm:px-8 pb-6 pt-1 text-sm sm:text-base text-[#5C534A] leading-relaxed">
                           {faq.answer}
                         </div>
                       </div>

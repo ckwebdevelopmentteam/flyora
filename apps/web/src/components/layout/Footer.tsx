@@ -76,92 +76,94 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
 
   return (
     <footer
-      className={`relative z-10 w-full bg-[#FDF8F4] text-[#4A423B] border-t border-[#EBE3D8] pt-14 sm:pt-20 pb-8 overflow-hidden ${className}`}
+      className={`relative z-10 w-full bg-[#FDF8F4] text-[#4A423B] border-t border-[#EBE3D8] pt-12 sm:pt-16 lg:pt-20 pb-4 sm:pb-6 overflow-hidden ${className}`}
     >
       {/* Container aligned with Destinations section padding: px-6 sm:px-10 lg:px-[105px] */}
       <div className="w-full px-6 sm:px-10 lg:px-[105px]">
         {/* ===================================================================
             TOP SECTION: Brand Bio & Newsletter
             =================================================================== */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
           {/* Brand Intro Column */}
-          <div className="lg:col-span-6 space-y-4">
+          <div className="lg:col-span-5 space-y-3">
             <Link href="/" className="inline-block group">
               <Image
                 src="/flyora-logo.png"
                 alt="Flyora Tours & Travels LLP"
                 width={190}
                 height={58}
-                className="h-11 sm:h-12 md:h-13 w-auto object-contain transition-opacity group-hover:opacity-90"
+                className="h-10 sm:h-11 md:h-12 w-auto object-contain transition-opacity group-hover:opacity-90"
                 priority={false}
               />
             </Link>
-            <p className="text-sm sm:text-base text-[#5C534A] leading-relaxed max-w-lg font-sans">
+            <p className="text-xs sm:text-sm text-[#5C534A] leading-relaxed max-w-md font-sans">
               Flyora Tours &amp; Travels LLP is your trusted travel partner,
               creating memorable journeys across India and around the world.
             </p>
           </div>
 
           {/* Vertical Divider (Desktop) */}
-          <div className="hidden lg:block lg:col-span-1 flex justify-center">
-            <div className="h-24 w-px bg-black/[0.08]" />
+          <div className="hidden lg:flex lg:col-span-1 justify-center">
+            <div className="h-20 w-px bg-black/[0.08]" />
           </div>
 
-          {/* Newsletter Column */}
-          <div className="lg:col-span-5 space-y-3">
-            <h3 className="font-sans font-bold text-lg sm:text-xl text-[#1C1815] tracking-tight">
-              Subscribe to Our Newsletter
-            </h3>
+          {/* Newsletter Column - 60% width on desktop aligned to the right edge */}
+          <div className="lg:col-span-6">
+            <div className="w-full lg:w-[60%] lg:ml-auto space-y-2.5">
+              <h3 className="font-sans font-bold text-base sm:text-lg text-[#1C1815] tracking-tight">
+                Subscribe to Our Newsletter
+              </h3>
 
-            <form onSubmit={handleSubscribe} className="space-y-2.5">
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center max-w-lg shadow-2xs">
-                <div className="relative flex-1 flex items-center bg-white rounded-md sm:rounded-r-none border border-black/15 focus-within:border-[#002f89] focus-within:ring-1 focus-within:ring-[#002f89] transition">
-                  <Mail className="w-5 h-5 text-neutral-400 ml-4 shrink-0" />
-                  <input
-                    type="email"
-                    required
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Enter your email address"
-                    className="w-full py-3 px-3.5 text-sm sm:text-base text-[#1C1815] placeholder:text-neutral-400 bg-transparent focus:outline-none"
-                    aria-label="Email address for newsletter"
-                  />
+              <form onSubmit={handleSubscribe} className="space-y-2 w-full">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full shadow-2xs">
+                  <div className="relative flex-1 flex items-center bg-white rounded-md sm:rounded-r-none border border-black/15 focus-within:border-[#002f89] focus-within:ring-1 focus-within:ring-[#002f89] transition">
+                    <Mail className="w-4.5 h-4.5 text-neutral-400 ml-3.5 shrink-0" />
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email address"
+                      className="w-full py-2.5 px-3 text-xs sm:text-sm text-[#1C1815] placeholder:text-neutral-400 bg-transparent focus:outline-none"
+                      aria-label="Email address for newsletter"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="mt-2 sm:mt-0 px-6 sm:px-7 py-2.5 bg-[#002f89] hover:bg-[#00246b] text-white text-xs sm:text-sm font-semibold rounded-md sm:rounded-l-none transition-colors cursor-pointer shrink-0 shadow-xs"
+                  >
+                    Subscribe
+                  </button>
                 </div>
-                <button
-                  type="submit"
-                  className="mt-2 sm:mt-0 px-7 sm:px-8 py-3 bg-[#002f89] hover:bg-[#00246b] text-white text-sm sm:text-base font-semibold rounded-md sm:rounded-l-none transition-colors cursor-pointer shrink-0 shadow-xs"
-                >
-                  Subscribe
-                </button>
-              </div>
 
-              {isSubscribed && (
-                <p className="text-xs sm:text-sm font-medium text-emerald-700">
-                  ✓ Thank you for subscribing to Flyora travel updates!
+                {isSubscribed && (
+                  <p className="text-xs font-medium text-emerald-700">
+                    ✓ Thank you for subscribing to Flyora travel updates!
+                  </p>
+                )}
+
+                <p className="text-[11px] sm:text-xs text-[#7A7167] leading-relaxed">
+                  Get travel deals, new package updates, and destination
+                  inspiration directly in your inbox.
                 </p>
-              )}
-
-              <p className="text-xs sm:text-[13px] text-[#7A7167] leading-relaxed">
-                Get travel deals, new package updates, and destination
-                inspiration directly in your inbox.
-              </p>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
 
         {/* Divider Line */}
-        <hr className="border-t border-black/[0.08] my-10 sm:my-14" />
+        <hr className="border-t border-black/[0.08] my-8 sm:my-10" />
 
         {/* ===================================================================
             MIDDLE SECTION: 4 Column Directory with enhanced typography
             =================================================================== */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12 xl:gap-16">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
           {/* Column 1: Quick Links */}
-          <div className="space-y-3.5">
-            <h4 className="font-sans font-bold text-base sm:text-lg text-[#1C1815]">
+          <div className="space-y-2.5">
+            <h4 className="font-sans font-bold text-sm sm:text-base text-[#1C1815]">
               Quick Links
             </h4>
-            <ul className="space-y-2.5 sm:space-y-3 text-sm sm:text-[15px] text-[#5C534A]">
+            <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-[#5C534A]">
               <li>
                 <Link
                   href="/"
@@ -198,11 +200,11 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
           </div>
 
           {/* Column 2: Travel Support */}
-          <div className="space-y-3.5">
-            <h4 className="font-sans font-bold text-base sm:text-lg text-[#1C1815]">
+          <div className="space-y-2.5 md:justify-self-center">
+            <h4 className="font-sans font-bold text-sm sm:text-base text-[#1C1815]">
               Travel Support
             </h4>
-            <ul className="space-y-2.5 sm:space-y-3 text-sm sm:text-[15px] text-[#5C534A]">
+            <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-[#5C534A]">
               <li>
                 <Link
                   href="/#faqs"
@@ -239,11 +241,11 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
           </div>
 
           {/* Column 3: Company */}
-          <div className="space-y-3.5">
-            <h4 className="font-sans font-bold text-base sm:text-lg text-[#1C1815]">
+          <div className="space-y-2.5 md:justify-self-center">
+            <h4 className="font-sans font-bold text-sm sm:text-base text-[#1C1815]">
               Company
             </h4>
-            <ul className="space-y-2.5 sm:space-y-3 text-sm sm:text-[15px] text-[#5C534A]">
+            <ul className="space-y-1.5 sm:space-y-2 text-xs sm:text-sm text-[#5C534A]">
               <li>
                 <Link
                   href="/about"
@@ -280,37 +282,37 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
           </div>
 
           {/* Column 4: Get in Touch */}
-          <div className="space-y-3.5">
-            <h4 className="font-sans font-bold text-base sm:text-lg text-[#1C1815]">
+          <div className="space-y-2.5 md:justify-self-end">
+            <h4 className="font-sans font-bold text-sm sm:text-base text-[#1C1815]">
               Get in Touch
             </h4>
-            <div className="space-y-3 text-sm sm:text-[15px] text-[#5C534A]">
+            <div className="space-y-2 text-xs sm:text-sm text-[#5C534A]">
               <a
                 href="mailto:support@flyora.com"
-                className="flex items-center gap-2.5 hover:text-[#002f89] transition-colors group"
+                className="flex items-center gap-2 hover:text-[#002f89] transition-colors group"
               >
-                <Mail className="w-4.5 h-4.5 text-[#1C1815] shrink-0 group-hover:text-[#002f89] transition-colors" />
+                <Mail className="w-4 h-4 text-[#1C1815] shrink-0 group-hover:text-[#002f89] transition-colors" />
                 <span>support@flyora.com</span>
               </a>
 
               <a
                 href="tel:+919876543210"
-                className="flex items-center gap-2.5 hover:text-[#002f89] transition-colors group"
+                className="flex items-center gap-2 hover:text-[#002f89] transition-colors group"
               >
-                <Phone className="w-4.5 h-4.5 text-[#1C1815] shrink-0 group-hover:text-[#002f89] transition-colors" />
+                <Phone className="w-4 h-4 text-[#1C1815] shrink-0 group-hover:text-[#002f89] transition-colors" />
                 <span>+91 98765 43210</span>
               </a>
 
               {/* Social Media Circular Buttons */}
-              <div className="flex items-center gap-3 pt-2">
+              <div className="flex items-center gap-2.5 pt-1">
                 <a
                   href="https://wa.me/919876543210"
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Flyora on WhatsApp"
-                  className="w-10 h-10 rounded-full bg-white border border-black/10 flex items-center justify-center text-neutral-700 hover:text-[#25D366] hover:border-[#25D366] hover:shadow-xs transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-white border border-black/10 flex items-center justify-center text-neutral-700 hover:text-[#25D366] hover:border-[#25D366] hover:shadow-xs transition-all cursor-pointer"
                 >
-                  <WhatsAppIcon className="w-5 h-5" />
+                  <WhatsAppIcon className="w-4 h-4" />
                 </a>
 
                 <a
@@ -318,9 +320,9 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Flyora on Instagram"
-                  className="w-10 h-10 rounded-full bg-white border border-black/10 flex items-center justify-center text-neutral-700 hover:text-[#E4405F] hover:border-[#E4405F] hover:shadow-xs transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-white border border-black/10 flex items-center justify-center text-neutral-700 hover:text-[#E4405F] hover:border-[#E4405F] hover:shadow-xs transition-all cursor-pointer"
                 >
-                  <InstagramIcon className="w-5 h-5" />
+                  <InstagramIcon className="w-4 h-4" />
                 </a>
 
                 <a
@@ -328,9 +330,9 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Flyora on Facebook"
-                  className="w-10 h-10 rounded-full bg-white border border-black/10 flex items-center justify-center text-neutral-700 hover:text-[#1877F2] hover:border-[#1877F2] hover:shadow-xs transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-white border border-black/10 flex items-center justify-center text-neutral-700 hover:text-[#1877F2] hover:border-[#1877F2] hover:shadow-xs transition-all cursor-pointer"
                 >
-                  <FacebookIcon className="w-5 h-5" />
+                  <FacebookIcon className="w-4 h-4" />
                 </a>
 
                 <a
@@ -338,9 +340,9 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Flyora on YouTube"
-                  className="w-10 h-10 rounded-full bg-white border border-black/10 flex items-center justify-center text-neutral-700 hover:text-[#FF0000] hover:border-[#FF0000] hover:shadow-xs transition-all cursor-pointer"
+                  className="w-8 h-8 rounded-full bg-white border border-black/10 flex items-center justify-center text-neutral-700 hover:text-[#FF0000] hover:border-[#FF0000] hover:shadow-xs transition-all cursor-pointer"
                 >
-                  <YouTubeIcon className="w-5 h-5" />
+                  <YouTubeIcon className="w-4 h-4" />
                 </a>
               </div>
             </div>
@@ -351,7 +353,7 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
       {/* ===================================================================
           BOTTOM SECTION: World Landmarks Illustration taking same padding
           =================================================================== */}
-      <div className="w-full px-6 sm:px-10 lg:px-[105px] mt-10 sm:mt-16 overflow-hidden flex justify-center">
+      <div className="w-full px-6 sm:px-10 lg:px-[105px] mt-8 sm:mt-12 overflow-hidden flex justify-center">
         <div className="w-full overflow-hidden flex justify-center">
           <Image
             src="/footer-landmarks.png"
@@ -364,8 +366,8 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
         </div>
       </div>
 
-      <div className="text-center pt-4 pb-2 px-6 sm:px-10 lg:px-[105px] text-xs sm:text-sm text-[#7A7167]">
-        <p>© 2025 Flyora Tours &amp; Travels LLP. All Rights Reserved.</p>
+      <div className="text-center pt-3 pb-2 sm:pb-3 px-6 sm:px-10 lg:px-[105px] text-xs text-[#7A7167]">
+        <p>© 2026 Flyora Tours &amp; Travels LLP. All Rights Reserved.</p>
       </div>
     </footer>
   );

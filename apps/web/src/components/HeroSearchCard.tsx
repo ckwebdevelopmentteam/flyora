@@ -14,27 +14,10 @@ import {
   MapPin,
   Compass,
   CheckCircle2,
+  Package,
 } from "lucide-react";
 
 // Pixel-perfect SVG icons matching the reference mockup
-const MosqueIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
-  <svg
-    className={className}
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-  >
-    <path d="M12 3c-1.5 1.5-2 3-2 5h4c0-2-.5-3.5-2-5z" />
-    <path d="M4 10h16v11H4z" />
-    <path d="M9 21v-5a3 3 0 0 1 6 0v5" />
-    <path d="M2 13h2v8H2z" />
-    <path d="M20 13h2v8h-2z" />
-  </svg>
-);
-
 const PassportIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg
     className={className}
@@ -99,7 +82,7 @@ const SERVICES_DATA: ServiceMetadata[] = [
     subtitle: "Spiritual Journeys",
     imageSrc: "/services/umrah-packages.jpg",
     imagePosition: "object-[82%_45%]",
-    icon: MosqueIcon,
+    icon: Package,
   },
   {
     id: "custom-holidays",
@@ -606,13 +589,6 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                   }`}
                 />
 
-                {/* Top Row: Vector Icon */}
-                <div className="relative z-30 flex items-center justify-start w-full">
-                  <div className="text-white drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
-                    <IconComponent className="w-[24px] h-[24px] sm:w-[26px] sm:h-[26px]" />
-                  </div>
-                </div>
-
                 {/* Bottom Row: Typography */}
                 <div className="relative z-30 w-full mt-auto">
                   <div className="text-[14px] sm:text-[15px] md:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] whitespace-normal break-words">
@@ -643,7 +619,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
             {activeTab === "hajj-packages" && (
               <>
                 <ConciergePillField
-                  icon={MosqueIcon}
+                  icon={Package}
                   label="Package Tier"
                   value={hajjTier}
                   isOpen={openDropdown === "hajj-tier"}

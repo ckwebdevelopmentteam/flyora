@@ -8,6 +8,11 @@ export interface StraightCardItem {
   title: string;
   description: string;
   src: string;
+  duration?: string;
+  price?: string | number;
+  originalPrice?: string | number;
+  rating?: number;
+  reviewCount?: number;
 }
 
 export interface StraightCardsCarouselProps {
@@ -40,22 +45,9 @@ export function computeOffset(i: number, pos: number, n: number): number {
   return d;
 }
 
-// Spring step for silky-smooth motion
-function springStep(
-  x: number,
-  v: number,
-  target: number,
-  omega: number,
-  zeta: number,
-  dt: number,
-): [number, number] {
-  const steps = Math.max(1, Math.ceil(dt / (1 / 240)));
-  const h = dt / steps;
-  for (let k = 0; k < steps; k++) {
-    v += (-omega * omega * (x - target) - 2 * zeta * omega * v) * h;
-    x += v * h;
-  }
-  return [x, v];
+// Luxurious, silky smooth slow-motion easing curve (starts soft, glides in slow motion, settles gracefully)
+function easeSlowMotion(t: number): number {
+  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 }
 
 export function StraightCardsCarousel({
@@ -77,9 +69,11 @@ export function StraightCardsCarousel({
   const state = useRef({
     pos: activeIndex,
     target: activeIndex,
-    vel: 0,
+    fromPos: activeIndex,
+    toPos: activeIndex,
+    startTime: 0,
+    duration: 2000, // Exactly 2.0s (2000ms) cinematic slow-motion lag
     raf: 0,
-    lastTime: 0,
     isDragging: false,
     dragStartX: 0,
     dragStartPos: 0,
@@ -154,39 +148,28 @@ export function StraightCardsCarousel({
     }
   }, [n, getLayout]);
 
-  // Animation frame loop
+  // Animation frame loop using smooth slow-motion easing
   const kick = useCallback(() => {
     const s = state.current;
-    if (s.raf) return;
-
-    const omega = (2 * Math.PI) / 0.65; // ~0.65s smooth duration
-    const zeta = 0.93; // slight, pleasant organic bounce
+    if (s.raf) cancelAnimationFrame(s.raf);
 
     const frame = (now: number) => {
-      const dt = Math.min((now - (s.lastTime || now)) / 1000, 1 / 20);
-      s.lastTime = now;
+      if (s.isDragging) return;
 
-      if (!s.isDragging) {
-        [s.pos, s.vel] = springStep(s.pos, s.vel, s.target, omega, zeta, dt);
-      }
+      const elapsed = now - (s.startTime || now);
+      const progress = Math.min(elapsed / s.duration, 1);
+      const eased = easeSlowMotion(progress);
 
+      s.pos = s.fromPos + (s.toPos - s.fromPos) * eased;
       paint();
 
-      const settled =
-        !s.isDragging &&
-        Math.abs(s.pos - s.target) < 1e-3 &&
-        Math.abs(s.vel) < 1e-2;
-
-      if (settled) {
-        s.pos = s.target;
-        s.vel = 0;
+      if (progress < 1) {
+        s.raf = requestAnimationFrame(frame);
+      } else {
+        s.pos = s.toPos;
         paint();
         s.raf = 0;
-        s.lastTime = 0;
-        return;
       }
-
-      s.raf = requestAnimationFrame(frame);
     };
 
     s.raf = requestAnimationFrame(frame);
@@ -196,7 +179,10 @@ export function StraightCardsCarousel({
   const setTarget = useCallback(
     (t: number) => {
       const s = state.current;
+      s.fromPos = s.pos;
+      s.toPos = t;
       s.target = t;
+      s.startTime = performance.now();
       const newActive = wrapIndex(Math.round(t), n);
       setActive(newActive);
       onIndexChange?.(newActive);
@@ -228,6 +214,20 @@ export function StraightCardsCarousel({
       }
     }
   }, [activeIndex, n, goTo]);
+
+  // When items change (e.g. category switch), reset slide position cleanly without remounting
+  const prevItemsRef = useRef(items);
+  useEffect(() => {
+    if (prevItemsRef.current !== items) {
+      prevItemsRef.current = items;
+      state.current.pos = activeIndex || 0;
+      state.current.fromPos = activeIndex || 0;
+      state.current.toPos = activeIndex || 0;
+      state.current.target = activeIndex || 0;
+      setActive(activeIndex || 0);
+      paint();
+    }
+  }, [items, activeIndex, paint]);
 
   // Measure container width
   useEffect(() => {
@@ -279,7 +279,6 @@ export function StraightCardsCarousel({
       s.hasDragged = true;
       s.dragStartX = e.clientX;
       s.dragStartPos = s.pos;
-      s.vel = 0;
       stageRef.current?.setPointerCapture(e.pointerId);
     }
 
@@ -314,8 +313,6 @@ export function StraightCardsCarousel({
     const ms = Math.max(last.t - first.t, 1);
     const slideUnit = leadWidth + gap;
     const v = (-(last.x - first.x) / ms / slideUnit) * 1000;
-    s.vel = v;
-
     const releaseT = Math.round(s.pos + v * 0.15);
     setTarget(releaseT);
   };
@@ -358,6 +355,7 @@ export function StraightCardsCarousel({
                 willChange: "transform, opacity",
               }}
             >
+              {/* Vibrant Original Image: No dark dimming, natural colors */}
               <img
                 src={item.src}
                 alt={`${item.location} - ${item.title}`}
@@ -365,19 +363,65 @@ export function StraightCardsCarousel({
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
 
-              {/* Dark dimming overlay on trailing cards */}
-              {!isLead && (
-                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/5 transition-colors duration-300 pointer-events-none rounded-[8px]" />
-              )}
+              {/* Gentle non-hovered gradient at the bottom solely for location text legibility */}
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-[8px] transition-opacity duration-300 group-hover:opacity-0" />
 
-              {/* Bottom Dark Gradient for Legibility */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent pointer-events-none rounded-[8px]" />
+              {/* Smooth full-card dark gradient that fades in on hover to highlight details */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
 
-              {/* Location Caption at Bottom */}
-              <div className="absolute bottom-0 inset-x-0 p-4 sm:p-5 z-10 pointer-events-none">
-                <p className="text-white font-medium text-base sm:text-lg tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
-                  {item.location}
-                </p>
+              {/* Location & Interactive Details Overlay */}
+              <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 z-10 flex flex-col justify-end pointer-events-none">
+                {/* Default State: Location Caption (slides smoothly up and fades out on hover) */}
+                <div className="transition-all duration-300 ease-out group-hover:opacity-0 group-hover:-translate-y-3">
+                  <p className="text-white font-medium text-base sm:text-lg tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+                    {item.location}
+                  </p>
+                </div>
+
+                {/* Hover State: Details Panel (slides smoothly up from below on hover, slides down on unhover) */}
+                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex flex-col gap-2.5 opacity-0 translate-y-6 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none group-hover:pointer-events-auto">
+                  {/* Top Row: Duration Badge */}
+                  {item.duration && (
+                    <div className="flex items-center gap-2">
+                      <span className="px-2.5 py-0.5 rounded-[5px] bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold tracking-wide border border-white/25">
+                        {item.duration}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Location & Short Description */}
+                  <div>
+                    <h4 className="text-white font-bold text-base sm:text-[17px] tracking-tight leading-snug drop-shadow-sm">
+                      {item.location}
+                    </h4>
+                    <p className="text-white/85 text-xs sm:text-[12.5px] line-clamp-2 mt-1 leading-relaxed">
+                      {item.description || item.title}
+                    </p>
+                  </div>
+
+                  {/* Rate / Price & View Details Action */}
+                  <div className="flex items-end justify-between pt-1.5 border-t border-white/20 mt-0.5">
+                    <div className="flex flex-col">
+                      {item.originalPrice && (
+                        <span className="text-white/60 text-[11px] line-through leading-tight">
+                          {item.originalPrice}
+                        </span>
+                      )}
+                      <div className="flex items-baseline gap-1 mt-0.5">
+                        <span className="text-white font-bold text-base sm:text-lg tracking-tight leading-tight">
+                          {item.price || "₹48,500"}
+                        </span>
+                        <span className="text-white/70 text-[10.5px]">
+                          / person
+                        </span>
+                      </div>
+                    </div>
+
+                    <span className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap">
+                      View Details
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           );
