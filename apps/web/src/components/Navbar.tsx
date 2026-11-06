@@ -206,7 +206,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       key={service.serviceId}
       href={service.href}
       onClick={(event) => selectService(event, service)}
-      className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-xl overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#463D34] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer block"
+      className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-[8px] overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer block"
     >
       {/* Background Image */}
       <Image
@@ -278,11 +278,16 @@ export const Navbar: React.FC<NavbarProps> = ({
           <Link
             href="/"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="group flex items-center gap-2 select-none shrink-0"
+            className="group flex items-center select-none shrink-0"
           >
-            <span className="font-serif text-[22px] sm:text-[24px] font-normal tracking-[0.2em] text-[#1C1815] uppercase transition-opacity group-hover:opacity-85">
-              FLYORA
-            </span>
+            <Image
+              src="/flyora-logo.png"
+              alt="Flyora"
+              width={140}
+              height={46}
+              priority
+              className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-opacity group-hover:opacity-90"
+            />
           </Link>
 
           {/* Center: Nav Links */}
@@ -309,7 +314,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 >
                   {item.label}
                   {isActive && (
-                    <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#463D34] rounded-full" />
+                    <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#002f89] rounded-full" />
                   )}
                 </Link>
               );
@@ -354,7 +359,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               About
               {activePath === "/about" && (
-                <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#463D34] rounded-full" />
+                <span className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#002f89] rounded-full" />
               )}
             </Link>
 
@@ -362,7 +367,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Link
               href="/contact"
               aria-current={activePath === "/contact" ? "page" : undefined}
-              className={`text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 relative select-none ${activePath === "/contact" ? "text-[#1C1815] font-semibold border-b-2 border-[#463D34]" : "text-[#4A423B] hover:text-black"}`}
+              className={`text-[11.5px] lg:text-[12px] font-sans font-medium uppercase tracking-[0.14em] transition-colors py-1 relative select-none ${activePath === "/contact" ? "text-[#1C1815] font-semibold border-b-2 border-[#002f89]" : "text-[#4A423B] hover:text-black"}`}
             >
               Contact
             </Link>
@@ -385,7 +390,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Primary Action Button */}
             <button
               onClick={handleCtaClick}
-              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#463D34] hover:bg-[#352E27] active:bg-[#2B2520] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
+              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
             >
               <span>{ctaLabel}</span>
             </button>
@@ -411,7 +416,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             ref={dropdownRef}
             onMouseEnter={handleMouseEnter}
             onMouseLeave={handleMouseLeave}
-            className="hidden md:block absolute top-[calc(100%+8px)] inset-x-0 w-full bg-white/95 backdrop-blur-xl rounded-2xl border border-black/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.14)] p-4 sm:p-5 lg:p-6 transition-all duration-300 animate-in fade-in slide-in-from-top-2 z-50 before:content-[''] before:absolute before:-top-3 before:inset-x-0 before:h-3"
+            className="hidden md:block absolute top-[calc(100%+8px)] inset-x-0 w-full bg-white/95 backdrop-blur-xl rounded-[8px] border border-black/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.14)] p-4 sm:p-5 lg:p-6 transition-all duration-300 animate-in fade-in slide-in-from-top-2 z-50 before:content-[''] before:absolute before:-top-3 before:inset-x-0 before:h-3"
           >
             {/* Modal Header: Title on Left, Carousel Arrows on Right */}
             <div className="flex items-center justify-between pb-3.5 mb-4 border-b border-black/[0.06]">
@@ -426,7 +431,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
 
-              {/* Left and Right Arrow Navigation */}
+              {/* Left and Right Arrow Navigation - sharp ends matching destination */}
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
@@ -434,13 +439,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setServicePage(Math.max(0, currentPage - 1))}
                   disabled={currentPage === 0}
                   aria-label="Previous services"
-                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-black/10 flex items-center justify-center transition-all ${
+                  className={`group relative overflow-hidden w-7 h-7 sm:w-8 sm:h-8 rounded-[2px] border border-black/10 grid place-items-center transition-all ${
                     currentPage === 0
                       ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
-                      : "opacity-100 cursor-pointer text-stone-700 hover:bg-stone-100 hover:text-black active:scale-95 shadow-xs"
+                      : "opacity-100 cursor-pointer text-stone-700 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
                   }`}
                 >
-                  <ChevronLeft className="w-4 h-4" />
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  />
+                  <span className="relative z-10 flex items-center justify-center">
+                    <ChevronLeft className="w-3.5 h-3.5 stroke-[2.2]" />
+                  </span>
                 </button>
                 <button
                   type="button"
@@ -450,13 +461,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }
                   disabled={currentPage === pageCount - 1}
                   aria-label="Next services"
-                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full border border-black/10 flex items-center justify-center transition-all ${
+                  className={`group relative overflow-hidden w-7 h-7 sm:w-8 sm:h-8 rounded-[2px] border border-black/10 grid place-items-center transition-all ${
                     currentPage === pageCount - 1
                       ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
-                      : "opacity-100 cursor-pointer text-stone-700 hover:bg-stone-100 hover:text-black active:scale-95 shadow-xs"
+                      : "opacity-100 cursor-pointer text-stone-700 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
                   }`}
                 >
-                  <ChevronRight className="w-4 h-4" />
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  />
+                  <span className="relative z-10 flex items-center justify-center">
+                    <ChevronRight className="w-3.5 h-3.5 stroke-[2.2]" />
+                  </span>
                 </button>
               </div>
             </div>
@@ -623,7 +640,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setMobileMenuOpen(false);
                   handleCtaClick();
                 }}
-                className="w-full py-2.5 rounded-md bg-[#463D34] hover:bg-[#352E27] text-white text-xs font-semibold uppercase tracking-[0.12em] transition text-center flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                className="w-full py-2.5 rounded-md bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold uppercase tracking-[0.12em] transition text-center flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#E6D5C7]" />
                 <span>{ctaLabel}</span>

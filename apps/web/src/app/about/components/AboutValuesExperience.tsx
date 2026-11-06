@@ -301,7 +301,7 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
             <p className="font-serif text-[52px] font-bold leading-none tracking-tight text-[#4FAF9F] sm:text-[76px] lg:text-[96px]">
               Our Values
             </p>
-            <p className="mt-3 max-w-3xl text-[14px] font-semibold uppercase leading-[1.45] tracking-[0.15em] text-[#463D34] sm:text-[16px]">
+            <p className="mt-3 max-w-3xl text-[14px] font-semibold uppercase leading-[1.45] tracking-[0.15em] text-[#002f89] sm:text-[16px]">
               The three principles that guide every Flyora journey, from the
               first idea to the journey home.
             </p>
@@ -315,7 +315,7 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
                 return (
                   <article
                     key={value.title}
-                    className="min-h-[275px] bg-[#463D34] p-7 text-[#F9F5EF] shadow-[0_18px_40px_rgba(70,61,52,0.18)] transition-[opacity,transform] duration-300 ease-out sm:p-8"
+                    className="min-h-[275px] bg-[#002f89] p-7 text-[#F9F5EF] shadow-[0_18px_40px_rgba(0,47,137,0.18)] transition-[opacity,transform] duration-300 ease-out sm:p-8"
                     style={{
                       opacity: cardOpacity,
                       transform: "translateY(" + (1 - cardOpacity) * 32 + "px)",

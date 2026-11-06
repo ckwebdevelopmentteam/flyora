@@ -163,7 +163,7 @@ export const ExploreView: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F9F3EC] text-zinc-900 selection:bg-[#463d34] selection:text-white pb-28">
+    <div className="min-h-screen bg-[#F9F3EC] text-zinc-900 selection:bg-[#002f89] selection:text-white pb-28">
       {/* 1. Explore Floating Navbar (Pixel-perfect matching screenshot) */}
       <header className="sticky top-6 sm:top-8 z-40 px-4 sm:px-8 w-full max-w-6xl mx-auto">
         <div className="bg-white rounded-2xl border border-black/[0.06] shadow-[0_8px_30px_rgb(0,0,0,0.05)] px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3">
@@ -184,7 +184,7 @@ export const ExploreView: React.FC = () => {
 
           {/* Center: Search Input Bar */}
           <div className="flex-1 max-w-xl mx-1 sm:mx-3">
-            <div className="relative bg-[#F8F3EC] hover:bg-[#F3ECE3] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#463d34]/20 border border-[#EFE8DF] rounded-full px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2.5 transition-all">
+            <div className="relative bg-[#F8F3EC] hover:bg-[#F3ECE3] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#002f89]/20 border border-[#EFE8DF] rounded-full px-3.5 sm:px-4 py-2 sm:py-2.5 flex items-center gap-2.5 transition-all">
               <Search className="w-3.5 h-3.5 text-zinc-500 shrink-0 stroke-[2]" />
               <input
                 type="text"
@@ -212,7 +212,7 @@ export const ExploreView: React.FC = () => {
                 setSelectedDestinationTitle(undefined);
                 setIsMatchModalOpen(true);
               }}
-              className="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#463d34] hover:bg-[#38312a] active:bg-[#2b2520] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 shadow-xs cursor-pointer whitespace-nowrap active:scale-[0.98]"
+              className="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 shadow-xs cursor-pointer whitespace-nowrap active:scale-[0.98]"
             >
               <span className="hidden sm:inline">GET MATCHED</span>
               <span className="sm:hidden">MATCH</span>
@@ -295,7 +295,7 @@ export const ExploreView: React.FC = () => {
               title="Show all destinations"
               className={`w-9 h-9 rounded-full flex items-center justify-center border transition cursor-pointer shadow-2xs ${
                 !selectedCategory && !searchQuery
-                  ? "bg-[#463d34] text-white border-[#463d34]"
+                  ? "bg-[#002f89] text-white border-[#002f89]"
                   : "bg-white text-zinc-700 hover:bg-zinc-50 border-zinc-200/90"
               }`}
             >
@@ -313,7 +313,7 @@ export const ExploreView: React.FC = () => {
                   }
                   className={`px-3.5 py-1.5 rounded-full text-xs font-medium border transition-all flex items-center gap-1.5 cursor-pointer shadow-2xs active:scale-95 whitespace-nowrap ${
                     isSelected
-                      ? "bg-[#463d34] text-white border-[#463d34] shadow-xs"
+                      ? "bg-[#002f89] text-white border-[#002f89] shadow-xs"
                       : "bg-white hover:bg-zinc-50 text-zinc-800 border-zinc-200/90"
                   }`}
                 >
@@ -362,7 +362,7 @@ export const ExploreView: React.FC = () => {
                 setSearchQuery("");
                 setSelectedCategory(null);
               }}
-              className="px-4 py-2 rounded-lg bg-[#463d34] text-white text-xs font-medium uppercase tracking-wider"
+              className="px-4 py-2 rounded-lg bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-medium uppercase tracking-wider transition"
             >
               Clear Search &amp; Filters
             </button>
@@ -478,7 +478,7 @@ export const ExploreView: React.FC = () => {
                         setSelectedCategory(c.id);
                         setFilterCount(1);
                       }}
-                      className="text-[#463d34] focus:ring-[#463d34]"
+                      className="text-[#002f89] focus:ring-[#002f89]"
                     />
                     <span>{c.label}</span>
                   </label>
@@ -498,7 +498,7 @@ export const ExploreView: React.FC = () => {
               </button>
               <button
                 onClick={() => setIsFilterModalOpen(false)}
-                className="px-5 py-2.5 rounded-xl bg-[#463d34] text-white text-xs font-semibold uppercase tracking-wider"
+                className="px-5 py-2.5 rounded-xl bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold uppercase tracking-wider transition"
               >
                 Apply
               </button>

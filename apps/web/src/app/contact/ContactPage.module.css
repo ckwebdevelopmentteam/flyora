@@ -354,8 +354,8 @@
   padding-block: 10px 22px;
 }
 .submit {
-  border: 1px solid #463d34;
-  background: #463d34;
+  border: 1px solid #002f89;
+  background: #002f89;
   color: #fff;
   min-height: 50px;
   display: flex;
@@ -367,6 +367,9 @@
   font-weight: 500;
   cursor: pointer;
   transition: background-color 0.2s;
+}
+.submit:hover {
+  background: #00246b;
 }
 .submit:hover {
   background: #2e2924;
@@ -532,8 +535,8 @@
   width: 100%;
   min-height: 48px;
   margin-top: 24px;
-  background: #463d34;
-  border: 1px solid #463d34;
+  background: #002f89;
+  border: 1px solid #002f89;
   border-radius: 2px;
   color: white;
   font-family: inherit;
@@ -541,7 +544,7 @@
   cursor: pointer;
 }
 .confirmationButton:hover {
-  background: #2e2924;
+  background: #00246b;
 }
 @keyframes dialogIn {
   from {

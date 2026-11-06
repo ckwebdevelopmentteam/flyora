@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
-import TiltCascadeCarousel, {
-  type TiltCascadeItem,
-} from "@/components/ui/tilt-cascade-carousel";
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { StraightCardsCarousel } from "@/components/ui/straight-cards-carousel";
 
 export interface ShowcaseDestination {
   id: string;
@@ -12,6 +11,11 @@ export interface ShowcaseDestination {
   title: string;
   description: string;
   src: string;
+  duration: string;
+  price: string;
+  originalPrice: string;
+  rating: number;
+  reviewCount: number;
 }
 
 export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
@@ -22,8 +26,13 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     location: "Cappadocia, Türkiye",
     title: "Hot air balloon at sunrise.",
     description:
-      "Drift peacefully above breathtaking landscapes as the first rays of sunlight paint the sky in vibrant shades of gold and orange. A sunrise hot air balloon ride offers unforgettable panoramic views and a truly magical start to your day.",
-    src: "https://images.unsplash.com/photo-1570939274717-7eda259b50ed?q=80&w=800&auto=format&fit=crop",
+      "Drift peacefully above breathtaking fairy chimneys as the first rays of sunlight paint the sky in vibrant shades of gold and orange.",
+    src: "https://images.unsplash.com/photo-1507608869274-d3177c8bb4c7?q=80&w=800&auto=format&fit=crop",
+    duration: "5D & 4N",
+    price: "₹64,500",
+    originalPrice: "₹72,000",
+    rating: 4.98,
+    reviewCount: 142,
   },
   {
     id: "dest-amalfi",
@@ -33,6 +42,11 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     description:
       "Wander fragrant lemon groves and cliffside Mediterranean balconies overlooking sun-drenched coastal waters, private yachts, and dramatic seaside vistas.",
     src: "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=800&auto=format&fit=crop",
+    duration: "6D & 5N",
+    price: "₹88,900",
+    originalPrice: "₹98,500",
+    rating: 4.96,
+    reviewCount: 118,
   },
   {
     id: "dest-kyoto",
@@ -42,6 +56,11 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     description:
       "Step into timeless tranquility among centuries-old wooden shrines, peaceful zen rock gardens, and private evening tea ceremonies steeped in ancient harmony.",
     src: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop",
+    duration: "7D & 6N",
+    price: "₹94,500",
+    originalPrice: "₹1,05,000",
+    rating: 4.99,
+    reviewCount: 165,
   },
   {
     id: "dest-swiss",
@@ -51,6 +70,11 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     description:
       "Ascend through dramatic snow-capped alpine passes aboard world-renowned scenic railways, relaxing in five-star mountain chalets with panoramic Matterhorn views.",
     src: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=800&auto=format&fit=crop",
+    duration: "7D & 6N",
+    price: "₹1,18,000",
+    originalPrice: "₹1,32,000",
+    rating: 4.97,
+    reviewCount: 194,
   },
 
   // Domestic Destinations
@@ -62,6 +86,11 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     description:
       "Float through peaceful morning waters surrounded by snow-draped Himalayan peaks, floating lotus gardens, and historic cedar wood houseboats in the crown jewel of India.",
     src: "https://images.unsplash.com/photo-1595815771614-ade9d652a65d?q=80&w=800&auto=format&fit=crop",
+    duration: "5D & 4N",
+    price: "₹24,500",
+    originalPrice: "₹28,000",
+    rating: 4.98,
+    reviewCount: 210,
   },
   {
     id: "dest-kerala",
@@ -71,6 +100,11 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     description:
       "Cruise tranquil palm-fringed canals aboard private luxury houseboats before ascending into cool mist-wrapped tea hills for the quintessential soul-refreshing retreat.",
     src: "https://images.unsplash.com/photo-1602216056096-3b40cc0c9944?q=80&w=800&auto=format&fit=crop",
+    duration: "5D & 4N",
+    price: "₹22,900",
+    originalPrice: "₹26,500",
+    rating: 4.95,
+    reviewCount: 178,
   },
   {
     id: "dest-rajasthan",
@@ -80,6 +114,11 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     description:
       "Experience royal Rajasthani hospitality with private heritage havelis, lake-palace sunset dining, and starlit desert camps under Thar skies.",
     src: "https://images.unsplash.com/photo-1599661046289-e31897846e41?q=80&w=800&auto=format&fit=crop",
+    duration: "6D & 5N",
+    price: "₹26,800",
+    originalPrice: "₹31,000",
+    rating: 4.97,
+    reviewCount: 185,
   },
   {
     id: "dest-goa",
@@ -89,6 +128,11 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     description:
       "Unwind along sun-kissed Arabian Sea beaches and explore the mystical monolithic boulder ruins and UNESCO world heritage temples of historic Vijayanagara.",
     src: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop",
+    duration: "4D & 3N",
+    price: "₹18,500",
+    originalPrice: "₹21,500",
+    rating: 4.92,
+    reviewCount: 240,
   },
 ];
 
@@ -104,95 +148,133 @@ export function DestinationsShowcase({
   const [activeCategory, setActiveCategory] = useState<
     "International" | "Domestic"
   >("International");
+  const [baseCategory, setBaseCategory] = useState<
+    "International" | "Domestic"
+  >("International");
+  const [incomingCategory, setIncomingCategory] = useState<
+    "International" | "Domestic" | null
+  >(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [, startTransition] = useTransition();
+
+  // Preload background images so textures are 100% ready in memory
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const img1 = new window.Image();
+      img1.src = "/home/heifiltower.png";
+      const img2 = new window.Image();
+      img2.src = "/showcase/domestic-bg.jpg";
+    }
+  }, []);
 
   const filteredDestinations = SHOWCASE_DESTINATIONS.filter(
     (d) => d.category === activeCategory,
   );
 
   const handleIndexChange = (index: number) => {
-    startTransition(() => {
-      setActiveIndex(index);
-    });
+    setActiveIndex(index);
   };
 
   const handleCategoryChange = (category: "International" | "Domestic") => {
+    if (category === activeCategory) return;
     setActiveCategory(category);
     setActiveIndex(0);
+    setIncomingCategory(category);
   };
 
   const current = filteredDestinations[activeIndex] || filteredDestinations[0];
 
-  const carouselItems: TiltCascadeItem[] = filteredDestinations.map((d) => ({
-    title: d.location,
-    caption: d.title,
-    src: d.src,
-    alt: `${d.location} - ${d.title}`,
-  }));
+  const getBgUrl = (cat: "International" | "Domestic") =>
+    cat === "International"
+      ? "/home/heifiltower.png"
+      : "/showcase/domestic-bg.jpg";
 
   return (
     <section
       id="destination-packages"
-      className={`relative w-full min-h-[84vh] lg:min-h-[86vh] overflow-hidden flex flex-col justify-start ${className}`}
+      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[720px] lg:min-h-[760px] ${className}`}
     >
-      {/* Background Images Layer */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* International Background */}
+      {/* Background Images Layer: Base + Smooth Center Expansion with ZERO Blink */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-black">
+        {/* Permanent Base Layer (Always 100% visible underneath, never blinks) */}
         <div
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out ${
-            activeCategory === "International" ? "opacity-100" : "opacity-0"
-          }`}
-          style={{ backgroundImage: `url('/showcase/international-bg.jpg')` }}
-        />
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${getBgUrl(baseCategory)}')` }}
+        >
+          <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-transparent pointer-events-none" />
+        </div>
 
-        {/* Domestic Background */}
-        <div
-          className={`absolute inset-0 bg-cover bg-center transition-opacity duration-700 ease-in-out ${
-            activeCategory === "Domestic" ? "opacity-100" : "opacity-0"
-          }`}
-          style={{ backgroundImage: `url('/showcase/domestic-bg.jpg')` }}
-        />
-
-        {/* White overlay effect setup to soften the background image and make cards pop */}
-        <div className="absolute inset-0 bg-white/30 backdrop-blur-[1.5px] pointer-events-none" />
-
-        {/* Luminous soft white highlight behind the cards */}
-        <div className="absolute right-0 top-1/2 -translate-y-1/2 w-full lg:w-2/3 h-full bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.4)_0%,rgba(255,255,255,0.15)_50%,transparent_80%)] pointer-events-none" />
-
-        {/* Left side contrast gradient ensuring typography and buttons are crystal clear */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/65 via-black/25 to-transparent pointer-events-none" />
+        {/* Incoming Layer: Expands outward from the center over the base layer */}
+        {incomingCategory && (
+          <motion.div
+            key={incomingCategory}
+            initial={{
+              clipPath: "inset(50px round 16px)",
+              scale: 0.98,
+            }}
+            animate={{
+              clipPath: "inset(0px round 0px)",
+              scale: 1,
+            }}
+            transition={{
+              duration: 1.25,
+              ease: [0.22, 1, 0.36, 1], // luxurious, smooth slow-motion expansion
+            }}
+            onAnimationComplete={() => {
+              setBaseCategory(incomingCategory);
+              setIncomingCategory(null);
+            }}
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url('${getBgUrl(incomingCategory)}')` }}
+          >
+            <div className="absolute inset-0 bg-black/25 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/40 via-black/15 to-transparent pointer-events-none" />
+          </motion.div>
+        )}
       </div>
 
-      {/* Main Showcase Content with 105px padding on both sides */}
-      <div className="relative z-10 w-full h-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start pt-8 lg:pt-6 pb-12 sm:pb-16 lg:pb-18">
-        {/* Top-Right Category Switcher matching reference UI */}
-        <div className="w-full flex justify-end items-center mb-4 lg:mb-3">
-          <div className="inline-flex items-center gap-2 sm:gap-3 text-xs sm:text-sm">
+      {/* Main Showcase Content with 105px horizontal padding: ALWAYS on top at z-20 */}
+      <div className="relative z-20 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start py-12 lg:py-14">
+        {/* Top-Right Category Switcher: 4 lines total (each button has 2 vertical lines: border-l & border-r) */}
+        <div className="w-full flex justify-end items-center mb-5 lg:mb-4 shrink-0">
+          <div className="inline-flex items-center gap-3 sm:gap-4 text-sm sm:text-base tracking-wide">
             <button
               type="button"
               onClick={() => handleCategoryChange("International")}
-              className={`cursor-pointer transition-all duration-200 ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
                 activeCategory === "International"
-                  ? "bg-white text-black px-4 py-1.5 rounded-[2px] font-medium shadow-sm"
-                  : "text-white/80 hover:text-white px-3 py-1.5 font-medium"
+                  ? "bg-white text-black font-semibold shadow-sm border-white"
+                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
               }`}
             >
-              International Destination
+              {activeCategory !== "International" && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
+              <span className="relative z-10 tracking-wide">
+                International Destination
+              </span>
             </button>
-            <span className="text-white/40 text-xs sm:text-sm select-none">
-              |
-            </span>
             <button
               type="button"
               onClick={() => handleCategoryChange("Domestic")}
-              className={`cursor-pointer transition-all duration-200 ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
                 activeCategory === "Domestic"
-                  ? "bg-white text-black px-4 py-1.5 rounded-[2px] font-medium shadow-sm"
-                  : "text-white/80 hover:text-white px-3 py-1.5 font-medium"
+                  ? "bg-white text-black font-semibold shadow-sm border-white"
+                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
               }`}
             >
-              Domestic Destination
+              {activeCategory !== "Domestic" && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
+              <span className="relative z-10 tracking-wide">
+                Domestic Destination
+              </span>
             </button>
           </div>
         </div>
@@ -200,37 +282,47 @@ export function DestinationsShowcase({
         {/* Main Content Columns */}
         <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 xl:gap-16">
           {/* =================================================================
-              LEFT COLUMN: Active Destination Details
+              LEFT COLUMN: Active Destination Details (Smooth Fade & Slide)
               ================================================================= */}
           <div className="w-full lg:w-[420px] xl:w-[480px] shrink-0 flex flex-col justify-center text-left">
-            {/* Category / Location Eyebrow */}
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs uppercase tracking-[0.2em] font-mono text-white/70">
-                {current.category} Tour
-              </span>
-              <span className="text-white/40">•</span>
-              <span className="text-sm sm:text-base text-white/90 font-medium tracking-wide">
-                {current.location}
-              </span>
+            <div className="relative min-h-[220px] sm:min-h-[240px] flex flex-col justify-start">
+              <AnimatePresence mode="popLayout" initial={false}>
+                <motion.div
+                  key={`dest-info-${current.id}`}
+                  initial={{ opacity: 0, y: 14, filter: "blur(4px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -14, filter: "blur(4px)" }}
+                  transition={{
+                    duration: 2.0,
+                    ease: [0.22, 1, 0.36, 1],
+                  }}
+                  className="flex flex-col"
+                >
+                  {/* Category / Location Eyebrow */}
+                  <div className="flex items-center gap-2 mb-3 drop-shadow-[0_1px_3px_rgba(0,0,0,0.85)]">
+                    <span className="text-xs uppercase tracking-[0.2em] font-mono text-white/90">
+                      {current.category} Tour
+                    </span>
+                    <span className="text-white/60">•</span>
+                    <span className="text-sm sm:text-base text-white font-medium tracking-wide">
+                      {current.location}
+                    </span>
+                  </div>
+
+                  {/* Main Heading Title */}
+                  <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+                    {current.title}
+                  </h2>
+
+                  {/* Description Text */}
+                  <p className="text-sm sm:text-base text-white leading-relaxed mb-8 max-w-lg font-light drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+                    {current.description}
+                  </p>
+                </motion.div>
+              </AnimatePresence>
             </div>
 
-            {/* Main Heading Title */}
-            <h2
-              key={`title-${current.id}`}
-              className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 transition-all duration-300 drop-shadow-sm"
-            >
-              {current.title}
-            </h2>
-
-            {/* Description Text */}
-            <p
-              key={`desc-${current.id}`}
-              className="text-sm sm:text-base text-white/80 leading-relaxed mb-8 max-w-lg font-light transition-all duration-300 drop-shadow-sm"
-            >
-              {current.description}
-            </p>
-
-            {/* Editorial Button */}
+            {/* Editorial Button with sliding blue background fill hover effect (100% Tailwind) */}
             <div>
               <button
                 type="button"
@@ -239,9 +331,13 @@ export function DestinationsShowcase({
                     ? onOpenEnquiry(`${current.location}: ${current.title}`)
                     : undefined
                 }
-                className="inline-flex items-center px-6 py-2.5 border-l border-r border-white/60 hover:border-white text-white font-normal text-sm sm:text-base transition-all cursor-pointer group bg-transparent hover:bg-white/10"
+                className="group relative overflow-hidden inline-flex items-center px-6 py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] shadow-sm"
               >
-                <span className="tracking-wide group-hover:tracking-wider transition-all duration-200">
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+                <span className="relative z-10 tracking-wide group-hover:tracking-wider transition-all duration-200">
                   Explore the destination
                 </span>
               </button>
@@ -249,63 +345,32 @@ export function DestinationsShowcase({
           </div>
 
           {/* =================================================================
-              RIGHT COLUMN: TiltCascadeCarousel (Taller portrait cards)
+              RIGHT COLUMN: StraightCardsCarousel (Smooth 60fps Spring Slide)
               ================================================================= */}
-          <div className="w-full lg:flex-1 h-[530px] sm:h-[570px] lg:h-[590px] flex items-center justify-center min-w-0">
-            <TiltCascadeCarousel
-              key={activeCategory}
-              items={carouselItems}
-              height="100%"
-              slideSize="clamp(235px, 20vw, 295px)"
-              aspectRatio="3/4"
-              angle={18}
-              drop={0.25}
-              inactiveScale={0.72}
-              radius={20}
-              bounce={0.2}
-              duration={0.75}
-              loop={true}
-              autoplay={0}
-              titles={false}
-              captions={false}
-              controls={true}
+          <div className="w-full lg:flex-1 min-w-0">
+            <StraightCardsCarousel
+              items={filteredDestinations}
+              activeIndex={activeIndex}
+              onIndexChange={handleIndexChange}
+              onSelectLead={(item) =>
+                onOpenEnquiry
+                  ? onOpenEnquiry(`${item.location}: ${item.title}`)
+                  : undefined
+              }
               footerRight={
                 <a
                   href="/tours"
-                  className="inline-flex items-center gap-1.5 text-white/90 hover:text-white text-xs sm:text-sm font-medium tracking-wide transition-all group py-1 px-3 rounded-full hover:bg-white/10 select-none cursor-pointer"
+                  className="group relative overflow-hidden inline-flex items-center px-6 py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base tracking-wide transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] select-none whitespace-nowrap shadow-sm"
                 >
-                  <span className="hover:underline underline-offset-4">
+                  <span
+                    aria-hidden="true"
+                    className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                  />
+                  <span className="relative z-10 tracking-wide group-hover:tracking-wider transition-all duration-200">
                     View all destinations
                   </span>
-                  <svg
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="transition-transform duration-200 group-hover:translate-x-1"
-                  >
-                    <path d="M5 12h14" />
-                    <path d="m12 5 7 7-7 7" />
-                  </svg>
                 </a>
               }
-              background="transparent"
-              color="#ffffff"
-              index={activeIndex}
-              onIndexChange={handleIndexChange}
-              onSelect={(item, i) =>
-                onOpenEnquiry
-                  ? onOpenEnquiry(
-                      `${filteredDestinations[i]?.location || item.title}`,
-                    )
-                  : undefined
-              }
-              ariaLabel="International and Domestic Tour Packages Carousel"
-              className="w-full"
             />
           </div>
         </div>

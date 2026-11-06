@@ -21,9 +21,9 @@ export const AboutCTA: React.FC<AboutCTAProps> = ({ data, onOpenEnquiry }) => {
         {/* Section Header */}
         <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FAF7F2] border border-black/[0.06] text-[#6B6156] text-[10.5px] font-sans font-medium uppercase tracking-[0.2em] mb-4">
-            <span className="text-[9px] text-[#463D34]">♥</span>
+            <span className="text-[9px] text-[#002f89]">♥</span>
             <span>{data.eyebrow}</span>
-            <span className="text-[9px] text-[#463D34]">♥</span>
+            <span className="text-[9px] text-[#002f89]">♥</span>
           </div>
 
           <h2 className="font-serif text-[34px] sm:text-[44px] font-normal tracking-tight text-[#1C1815]">
@@ -133,7 +133,7 @@ export const AboutCTA: React.FC<AboutCTAProps> = ({ data, onOpenEnquiry }) => {
                     >
                       <Check
                         className={`w-3.5 h-3.5 shrink-0 ${
-                          tier.isPopular ? "text-amber-300" : "text-[#463D34]"
+                          tier.isPopular ? "text-amber-300" : "text-[#002f89]"
                         }`}
                       />
                       <span
@@ -156,7 +156,7 @@ export const AboutCTA: React.FC<AboutCTAProps> = ({ data, onOpenEnquiry }) => {
                   className={`w-full group py-3 px-5 rounded-full text-xs font-sans font-medium tracking-wide flex items-center justify-center gap-2 transition cursor-pointer ${
                     tier.isPopular
                       ? "bg-white text-[#1C1815] hover:bg-stone-100"
-                      : "bg-[#1C1815] text-white hover:bg-[#352E27]"
+                      : "bg-[#002f89] text-white hover:bg-[#00246b]"
                   }`}
                 >
                   <span>Select {tier.title.split(" ")[0]}</span>
@@ -167,14 +167,14 @@ export const AboutCTA: React.FC<AboutCTAProps> = ({ data, onOpenEnquiry }) => {
           ))}
         </div>
 
-        {/* Closing Action Links (Signature Black Tomato Hot Pink & Secondary Link) */}
+        {/* Closing Action Links */}
         <div className="mt-14 flex flex-wrap items-center justify-center gap-4 text-center">
           <button
             type="button"
             onClick={() =>
               onOpenEnquiry && onOpenEnquiry("Custom Travel Inquiry")
             }
-            className="group inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#EC1C54] hover:bg-[#d6174a] text-white text-xs font-spartan font-bold uppercase tracking-[0.18em] shadow-[0_10px_25px_-5px_rgba(236,28,84,0.4)] transition-all cursor-pointer transform hover:-translate-y-0.5"
+            className="group inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-spartan font-bold uppercase tracking-[0.18em] shadow-[0_10px_25px_-5px_rgba(0,47,137,0.4)] transition-all cursor-pointer transform hover:-translate-y-0.5"
           >
             <span>ENQUIRE NOW</span>
             <span className="w-5 h-5 rounded-full bg-white/20 flex items-center justify-center transition-transform group-hover:scale-110">

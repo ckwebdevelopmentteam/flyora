@@ -93,7 +93,7 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
       id="packages"
       className="w-full bg-[#FAF7F2] text-[#1E1A17] py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] scroll-mt-20 sm:scroll-mt-24"
     >
-      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-10 flex flex-wrap gap-y-8 sm:gap-y-12 gap-x-10 lg:gap-x-14 xl:gap-x-16 items-start">
+      <div className="w-full px-6 sm:px-10 lg:px-[105px] flex flex-wrap gap-y-8 sm:gap-y-12 gap-x-10 lg:gap-x-14 xl:gap-x-16 items-start">
         {/* =================================================================
             LEFT INFO COLUMN (Sticky on desktop, full-width below 980px)
             ================================================================= */}
@@ -141,7 +141,7 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
           <div className="mt-5 sm:mt-6">
             <Link
               href="/tours"
-              className="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#463D34] hover:text-[#1E1A17] transition"
+              className="group inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-[#002f89] hover:opacity-80 transition"
             >
               <span>View all packages</span>
               <ArrowRight className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-1" />
@@ -156,11 +156,11 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
           {POPULAR_PACKAGES.map((pkg) => (
             <article
               key={pkg.number}
-              className="group flex flex-col sm:flex-row gap-4 sm:gap-7 bg-white border border-stone-200/90 rounded-2xl sm:rounded-3xl p-3.5 sm:p-5 shadow-xs hover:border-stone-300 hover:shadow-md transition-all duration-300"
+              className="group flex flex-col sm:flex-row gap-4 sm:gap-7 bg-white border border-stone-200/90 rounded-[8px] p-3.5 sm:p-5 shadow-xs hover:border-stone-300 hover:shadow-md transition-all duration-300"
             >
               {/* Card Image Area */}
               <div
-                className="sm:w-[260px] md:w-[280px] lg:w-[300px] shrink-0 h-[190px] sm:h-auto min-h-[190px] sm:min-h-[220px] relative rounded-xl sm:rounded-2xl overflow-hidden select-none"
+                className="sm:w-[260px] md:w-[280px] lg:w-[300px] shrink-0 h-[190px] sm:h-auto min-h-[190px] sm:min-h-[220px] relative rounded-[8px] overflow-hidden select-none"
                 style={{
                   background: pkg.tintGradient,
                 }}
@@ -173,10 +173,10 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
                       alt={pkg.name}
                       fill
                       sizes="(max-width: 640px) 100vw, 300px"
-                      className="object-cover rounded-xl sm:rounded-2xl transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
+                      className="object-cover rounded-[8px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
                       priority={pkg.number === "01"}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/25 pointer-events-none rounded-xl sm:rounded-2xl" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/25 pointer-events-none rounded-[8px]" />
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center gap-2 px-4 h-full text-[#7A7167]">
@@ -238,7 +238,7 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
                   <button
                     type="button"
                     onClick={() => onOpenEnquiry && onOpenEnquiry(pkg.name)}
-                    className="inline-flex items-center gap-2 bg-[#463D34] hover:bg-[#38312A] text-white text-xs font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded-full transition shadow-xs cursor-pointer active:scale-95"
+                    className="inline-flex items-center gap-2 bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded-[2px] transition shadow-xs cursor-pointer active:scale-95"
                   >
                     <span>View Package</span>
                     <ArrowRight className="w-3.5 h-3.5" />
