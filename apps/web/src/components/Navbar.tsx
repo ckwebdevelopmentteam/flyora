@@ -330,6 +330,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               priority
               className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-opacity group-hover:opacity-90"
             />
+            <span className="sr-only">FLYORA</span>
           </Link>
 
           {/* Center: Nav Links */}
@@ -422,10 +423,10 @@ export const Navbar: React.FC<NavbarProps> = ({
               href="https://wa.me/919876543210?text=Hi%20Flyora%20Travels,%20I%20am%20looking%20for%20a%20customized%20tour%20package."
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden xl:flex items-center gap-1.5 px-3 py-2 rounded-md border border-black/[0.08] text-[#38312B] hover:text-emerald-700 hover:border-emerald-500/50 hover:bg-emerald-50/40 text-[11px] font-medium transition cursor-pointer"
+              className="hidden xl:flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-md bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap"
               title="Chat on WhatsApp"
             >
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+              <MessageCircle className="w-3.5 h-3.5 text-white shrink-0" />
               <span>WhatsApp</span>
             </a>
 
@@ -699,9 +700,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   href="https://wa.me/919876543210?text=Hello%20Flyora%20Travels"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="py-2 px-3 rounded-md bg-emerald-50 text-emerald-800 text-[11px] font-medium flex items-center justify-center gap-1.5 hover:bg-emerald-100 transition"
+                  className="py-2 px-3 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <MessageCircle className="w-3.5 h-3.5 text-white" />
                   <span>WhatsApp</span>
                 </a>
                 <a

@@ -8,8 +8,21 @@ import {
   EnquiryModal,
   type EnquiryPrefill,
 } from "../../components/EnquiryModal";
-import { FloatingWhatsApp } from "../../components/FloatingWhatsApp";
 import CarouselCards from "@/components/ui/carousel-cards";
+import InteractiveImageBentoGallery, {
+  type ImageItem,
+} from "@/components/ui/bento-gallery";
+import BentoGridShowcase from "@/components/ui/bento-product-features";
+import Timeline, { type TimelineEntry } from "@/components/ui/timeline";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+  CardFooter,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import {
   CalendarDays,
   Users,
@@ -32,6 +45,12 @@ import {
   UserCheck,
   CreditCard,
   FileCheck2,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  MapPin,
+  Star,
+  XCircle,
 } from "lucide-react";
 
 // Pixel-perfect SVG icons matching the reference design
@@ -101,8 +120,11 @@ interface ServiceHeroConfig {
   heroHeadline: string;
   heroSubheadline: string;
   imageSrc: string;
+  cardImageSrc: string;
   imagePosition?: string;
+  cardImagePosition?: string;
   icon: React.ComponentType<{ className?: string }>;
+  scrollCue: string;
 }
 
 const HERO_SERVICES: ServiceHeroConfig[] = [
@@ -116,8 +138,11 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Private luxury itineraries, 5-star villas, and hand-curated experiences worldwide.",
     imageSrc: "/services/custom-holidays.jpg",
+    cardImageSrc: "/services/holidaysservice.png",
     imagePosition: "object-[72%_50%]",
+    cardImagePosition: "object-[40%_50%]",
     icon: VacationPlaneIcon,
+    scrollCue: "Explore Handpicked Holiday Tours & Curated Pickups",
   },
   {
     id: "visa-assistance",
@@ -129,8 +154,11 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Express appointment booking, document audit, and 99.2% approval success for 100+ countries.",
     imageSrc: "/services/visa-assistance.jpg",
+    cardImageSrc: "/services/visaservice.png",
     imagePosition: "object-[30%_55%]",
+    cardImagePosition: "object-[48%_52%]",
     icon: PassportIcon,
+    scrollCue: "Explore 10 Popular Visa Countries & Document Dossier",
   },
   {
     id: "flight-booking",
@@ -142,8 +170,11 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Access unpublished corporate partner fares, flexible routing, and 24/7 flight rebooking.",
     imageSrc: "/services/flight-booking.jpg",
+    cardImageSrc: "/services/flightservice.png",
     imagePosition: "object-[65%_45%]",
+    cardImagePosition: "object-[55%_48%]",
     icon: Plane,
+    scrollCue: "Explore Verified Flight Routes & Issuance Concierge",
   },
   {
     id: "train-booking",
@@ -155,8 +186,11 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Express reservations, tatkal priority bookings, and panoramic luxury tourist rail tickets.",
     imageSrc: "/services/train-booking.jpg",
+    cardImageSrc: "/services/trainservice.png",
     imagePosition: "object-[70%_55%]",
+    cardImagePosition: "object-[52%_50%]",
     icon: Train,
+    scrollCue: "Explore Confirmed Rail Berths & Route Details",
   },
   {
     id: "bus-booking",
@@ -168,8 +202,11 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Top-tier AC multi-axle coaches, verified city boarding lounges, and live GPS tracking links.",
     imageSrc: "/services/bus-booking.jpg",
+    cardImageSrc: "/services/busservice.png",
     imagePosition: "object-[24%_65%]",
+    cardImagePosition: "object-[55%_50%]",
     icon: Bus,
+    scrollCue: "Explore Express Luxury Bus Schedules & Seating",
   },
   {
     id: "umrah-packages",
@@ -181,8 +218,11 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Hotels steps from the Holy Haram courtyard, Saudi e-visas & private AC vehicle transit.",
     imageSrc: "/services/umrah-packages.jpg",
+    cardImageSrc: "/services/ummrahservice.png",
     imagePosition: "object-[82%_45%]",
+    cardImagePosition: "object-[50%_45%]",
     icon: MosqueIcon,
+    scrollCue: "Explore Sacred Umrah Tiers, Hotels & Ziyarat",
   },
   {
     id: "hajj-packages",
@@ -194,8 +234,11 @@ const HERO_SERVICES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Comprehensive guided pilgrimage with deluxe European air-conditioned Mina camps & guidance.",
     imageSrc: "/services/hajj-packages.jpg",
+    cardImageSrc: "/services/hajjservice.png",
     imagePosition: "object-[50%_50%]",
+    cardImagePosition: "object-[50%_45%]",
     icon: MosqueIcon,
+    scrollCue: "Explore Sacred Hajj Allocations & Guided Departures",
   },
 ];
 
@@ -1367,6 +1410,247 @@ const PICKUP_STATS = [
   { value: "980", label: "HAPPY CUSTOMERS" },
 ];
 
+const TOP_PICKUP_BENTO_ITEMS: ImageItem[] = [
+  {
+    id: "pickup-1",
+    title: "Villa Aquarium",
+    desc: "Luxury waterfront estate with 2 curated tours & private lagoon.",
+    url: "/gallery/villa-aquarium.jpg",
+    span: "md:col-span-2 md:row-span-2",
+  },
+  {
+    id: "pickup-2",
+    title: "La Cabane",
+    desc: "Secluded beachside sanctuary with bespoke concierge service.",
+    url: "/gallery/la-cabane.jpg",
+    span: "md:row-span-1",
+  },
+  {
+    id: "pickup-3",
+    title: "Azure Overwater Bungalow",
+    desc: "Direct ocean lagoon access with 3 all-inclusive luxury tours.",
+    url: "/gallery/azure.jpg",
+    span: "md:row-span-1",
+  },
+  {
+    id: "pickup-4",
+    title: "Serene Alpine Chalet",
+    desc: "Pristine mountain snowscapes with fireside alpine tranquility.",
+    url: "/gallery/serene.jpg",
+    span: "md:row-span-2",
+  },
+  {
+    id: "pickup-5",
+    title: "Verdant Jungle Sanctuary",
+    desc: "Immersive rainforest eco-haven with private canopy views.",
+    url: "/gallery/verdant.jpg",
+    span: "md:row-span-1",
+  },
+  {
+    id: "pickup-6",
+    title: "Solitude Atoll",
+    desc: "Exclusive private island bliss in the turquoise Maldives.",
+    url: "/destinations/maldives_hd.jpg",
+    span: "md:col-span-2 md:row-span-1",
+  },
+];
+
+interface FeaturedDestination {
+  id: string;
+  name: string;
+  country: string;
+  image: string;
+  toursCount: string;
+  tag: string;
+  priceStarting: string;
+}
+
+const FEATURED_DESTINATIONS: FeaturedDestination[] = [
+  {
+    id: "dest-swiss",
+    name: "Switzerland",
+    country: "Europe",
+    image: "/destinations/switzerland_hd.jpg",
+    toursCount: "7 Curated Packages",
+    tag: "Alpine Bliss",
+    priceStarting: "From ₹1,45,000",
+  },
+  {
+    id: "dest-bali",
+    name: "Bali",
+    country: "Indonesia",
+    image: "/destinations/bali_hd.jpg",
+    toursCount: "9 Curated Packages",
+    tag: "Tropical Haven",
+    priceStarting: "From ₹48,000",
+  },
+  {
+    id: "dest-dubai",
+    name: "Dubai",
+    country: "United Arab Emirates",
+    image: "/destinations/dubai_hd.jpg",
+    toursCount: "8 Curated Packages",
+    tag: "Futuristic Luxury",
+    priceStarting: "From ₹55,000",
+  },
+  {
+    id: "dest-kyoto",
+    name: "Kyoto",
+    country: "Japan",
+    image: "/destinations/kyoto_hd.jpg",
+    toursCount: "5 Curated Packages",
+    tag: "Zen Culture",
+    priceStarting: "From ₹1,20,000",
+  },
+  {
+    id: "dest-maldives",
+    name: "Maldives",
+    country: "Indian Ocean",
+    image: "/destinations/maldives_hd.jpg",
+    toursCount: "6 Curated Packages",
+    tag: "Overwater Villas",
+    priceStarting: "From ₹85,000",
+  },
+  {
+    id: "dest-rome",
+    name: "Rome",
+    country: "Italy",
+    image: "/destinations/rome_hd.jpg",
+    toursCount: "4 Curated Packages",
+    tag: "Historic Elegance",
+    priceStarting: "From ₹1,10,000",
+  },
+  {
+    id: "dest-tulum",
+    name: "Tulum",
+    country: "Mexico",
+    image: "/destinations/tulum_hd.jpg",
+    toursCount: "5 Curated Packages",
+    tag: "Coastal Riviera",
+    priceStarting: "From ₹1,35,000",
+  },
+];
+
+interface PopularVisaCountry {
+  id: string;
+  name: string;
+  region: string;
+  image: string;
+  visaType: string;
+  processingTime: string;
+  approvalRate: string;
+  popularFor: string;
+}
+
+const POPULAR_VISA_COUNTRIES: PopularVisaCountry[] = [
+  {
+    id: "visa-schengen",
+    name: "Schengen Europe",
+    region: "Europe",
+    image: "/destinations/switzerland_hd.jpg",
+    visaType: "Tourist & Business (29 Nations)",
+    processingTime: "10-15 Working Days",
+    approvalRate: "99.2% Approved",
+    popularFor: "France, Germany, Italy, Swiss",
+  },
+  {
+    id: "visa-uk",
+    name: "United Kingdom",
+    region: "Europe",
+    image:
+      "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=800&q=80",
+    visaType: "Standard Visitor & Transit",
+    processingTime: "15 Days (Priority Avail.)",
+    approvalRate: "98.9% Approved",
+    popularFor: "London, Scotland, Wales",
+  },
+  {
+    id: "visa-usa",
+    name: "United States",
+    region: "Americas",
+    image:
+      "https://images.unsplash.com/photo-1485738422979-f5c462d49f74?auto=format&fit=crop&w=800&q=80",
+    visaType: "B1/B2 Tourism & Business",
+    processingTime: "Early Slot Expediting",
+    approvalRate: "98.4% Approved",
+    popularFor: "New York, California, Florida",
+  },
+  {
+    id: "visa-uae",
+    name: "United Arab Emirates",
+    region: "Middle East",
+    image: "/destinations/dubai_hd.jpg",
+    visaType: "30 / 60-Day Express Tourist eVisa",
+    processingTime: "24 to 48 Hours",
+    approvalRate: "99.8% Approved",
+    popularFor: "Dubai, Abu Dhabi, Sharjah",
+  },
+  {
+    id: "visa-saudi",
+    name: "Saudi Arabia",
+    region: "Middle East",
+    image: "/packages/makkah.jpg",
+    visaType: "Umrah, Tourist & Multiple Entry",
+    processingTime: "Instant / 24 Hours",
+    approvalRate: "99.9% Approved",
+    popularFor: "Makkah, Madinah, Riyadh",
+  },
+  {
+    id: "visa-japan",
+    name: "Japan",
+    region: "Asia",
+    image: "/destinations/kyoto_hd.jpg",
+    visaType: "Short-Stay Tourist & eVisa",
+    processingTime: "5-7 Working Days",
+    approvalRate: "99.3% Approved",
+    popularFor: "Tokyo, Kyoto, Osaka",
+  },
+  {
+    id: "visa-singapore",
+    name: "Singapore",
+    region: "Asia",
+    image:
+      "https://images.unsplash.com/photo-1525625293386-3f8f99389edd?auto=format&fit=crop&w=800&q=80",
+    visaType: "30-Day Paper eVisa",
+    processingTime: "3-4 Working Days",
+    approvalRate: "99.7% Approved",
+    popularFor: "Marina Bay, Sentosa",
+  },
+  {
+    id: "visa-canada",
+    name: "Canada",
+    region: "Americas",
+    image:
+      "https://images.unsplash.com/photo-1517935703635-27c946402475?auto=format&fit=crop&w=800&q=80",
+    visaType: "Visitor Visa (TRV) & Biometrics",
+    processingTime: "File Audit & Bio Slot",
+    approvalRate: "98.1% Approved",
+    popularFor: "Toronto, Vancouver, Banff",
+  },
+  {
+    id: "visa-australia",
+    name: "Australia",
+    region: "Oceania",
+    image:
+      "https://images.unsplash.com/photo-1506973035872-a4ec16b8e8d9?auto=format&fit=crop&w=800&q=80",
+    visaType: "Subclass 600 Tourist Stream",
+    processingTime: "15-20 Working Days",
+    approvalRate: "98.7% Approved",
+    popularFor: "Sydney, Melbourne, Gold Coast",
+  },
+  {
+    id: "visa-turkey",
+    name: "Turkey",
+    region: "Europe",
+    image:
+      "https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=800&q=80",
+    visaType: "Express eVisa & Sticker Gateway",
+    processingTime: "24-48 Hours",
+    approvalRate: "99.6% Approved",
+    popularFor: "Istanbul, Cappadocia, Antalya",
+  },
+];
+
 const parseTravelerCounts = (
   text: string,
 ): { adults: number; children: number } => {
@@ -1396,6 +1680,626 @@ const parseTravelerCounts = (
   return { adults, children };
 };
 
+const UMRAH_GALLERY_PHOTOS = [
+  {
+    src: "/services/umrah-packages.jpg",
+    alt: "Holy Kaaba & Grand Mosque Courtyard",
+    label: "Makkah Al-Mukarramah",
+  },
+  {
+    src: "/services/madinah-mosque.jpg",
+    alt: "Prophet's Mosque & Green Dome",
+    label: "Madinah Al-Munawwarah",
+  },
+  {
+    src: "/services/hotel-suite-luxury.jpg",
+    alt: "5-Star Courtyard Facing Executive Suite",
+    label: "5-Star Haram Suite",
+  },
+  {
+    src: "/services/makkah-clocktower.jpg",
+    alt: "Makkah Clock Tower & Royal Clock",
+    label: "Abraj Al-Bait",
+  },
+];
+
+const HAJJ_GALLERY_PHOTOS = [
+  {
+    src: "/services/hajj-packages.jpg",
+    alt: "Mount Arafat & Jabal al-Rahmah",
+    label: "Plain of Arafat",
+  },
+  {
+    src: "/packages/hajj.jpg",
+    alt: "Air-Conditioned Mina Camps",
+    label: "Deluxe Mina Tents",
+  },
+  {
+    src: "/packages/makkah.jpg",
+    alt: "Holy Kaaba Tawaf al-Ifadah",
+    label: "Tawaf Al-Ifadah",
+  },
+  {
+    src: "/services/madinah-mosque.jpg",
+    alt: "Madinah Ziyarat & Rawdah",
+    label: "Madinah Ziyarat",
+  },
+];
+
+type PilgrimageTierKey = "executive" | "deluxe" | "vip";
+
+interface PilgrimageTierInfo {
+  name: string;
+  price: string;
+  priceUsd: string;
+  perPerson: string;
+  makkahHotel: string;
+  madinahHotel: string;
+  distance: string;
+  transit: string;
+  guide: string;
+  duration: string;
+}
+
+const UMRAH_TIER_DATA: Record<PilgrimageTierKey, PilgrimageTierInfo> = {
+  executive: {
+    name: "Executive 5-Star",
+    price: "₹1,35,000",
+    priceUsd: "$1,620",
+    perPerson: "per pilgrim (double sharing)",
+    makkahHotel: "Fairmont Clock Tower / Swissôtel (50m)",
+    madinahHotel: "Dar Al Taqwa / Oberoi (Steps to Rawdah)",
+    distance: "50m to Haram Courtyard",
+    transit: "Haramain Bullet Train (VIP Business)",
+    guide: "English & Urdu Guided Scholar",
+    duration: "15 Days / 14 Nights",
+  },
+  deluxe: {
+    name: "Deluxe 4-Star",
+    price: "₹95,000",
+    priceUsd: "$1,150",
+    perPerson: "per pilgrim (quad sharing)",
+    makkahHotel: "Swissôtel Al Maqam (150m)",
+    madinahHotel: "Anwar Al Madinah Mövenpick (100m)",
+    distance: "150m to Haram Courtyard",
+    transit: "AC Luxury Coach",
+    guide: "Group Scholar Guide",
+    duration: "15 Days / 14 Nights",
+  },
+  vip: {
+    name: "Custom VIP Family",
+    price: "₹2,10,000",
+    priceUsd: "$2,520",
+    perPerson: "per pilgrim (Kaaba view suite)",
+    makkahHotel: "Raffles Makkah Palace (Kaaba View)",
+    madinahHotel: "The Oberoi Madinah (Royal Floor)",
+    distance: "Direct Private Elevator Access",
+    transit: "Private GMC Yukon / Mercedes",
+    guide: "Private Dedicated Scholar",
+    duration: "15 Days / 14 Nights",
+  },
+};
+
+const HAJJ_TIER_DATA: Record<PilgrimageTierKey, PilgrimageTierInfo> = {
+  executive: {
+    name: "Royal Non-Shifting",
+    price: "₹5,85,000",
+    priceUsd: "$7,100",
+    perPerson: "per pilgrim (Mina Zone A)",
+    makkahHotel: "Swissôtel / Fairmont Clock Tower",
+    madinahHotel: "Oberoi Madinah / Dar Al Taqwa",
+    distance: "Zone A VIP European Mina Tents",
+    transit: "Mashair Sacred Train & VIP GMC",
+    guide: "Senior Scholar Guided",
+    duration: "21 Days / 20 Nights",
+  },
+  deluxe: {
+    name: "Executive Shifting",
+    price: "₹4,60,000",
+    priceUsd: "$5,550",
+    perPerson: "per pilgrim (Mina Zone B)",
+    makkahHotel: "Azizia Deluxe Building + Clock Tower",
+    madinahHotel: "Pullman Zamzam Madinah",
+    distance: "Zone B Air-Conditioned Mina Tents",
+    transit: "Dedicated AC Luxury Coach",
+    guide: "Bilingual Scholar Guides",
+    duration: "24 Days / 23 Nights",
+  },
+  vip: {
+    name: "Platinum VIP Private",
+    price: "₹8,50,000",
+    priceUsd: "$10,250",
+    perPerson: "per pilgrim (Kaaba view suite)",
+    makkahHotel: "Raffles Palace Kaaba View Suite",
+    madinahHotel: "The Oberoi Presidential Suite",
+    distance: "VIP Private Air-Cooled Camp A+",
+    transit: "Chauffeured Private GMC Yukon",
+    guide: "Dedicated Personal Scholar",
+    duration: "18 Days / 17 Nights",
+  },
+};
+
+const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
+  {
+    title: "Day 01",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Arrival &amp; VIP Transit
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Arrival in Jeddah &amp; VIP Transfer to Makkah
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Greeted at King Abdulaziz International Airport (JED) by Flyora&apos;s
+          representative right at baggage claim. Escorted private transfer to
+          your 5-star hotel steps from the King Abdulaziz Haram Gate. Your
+          luggage is handled directly to your room so you can prepare
+          comfortably for Ihram.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Private Chauffeur
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            5-Star Courtyard Hotel
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Welcome Zamzam Refreshment
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 02",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Sacred First Umrah Rites
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Guided First Umrah Tawaf &amp; Sa&apos;i
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Accompanied by our experienced resident scholar for your sacred Umrah
+          rites—including pre-departure Ihram briefing, step-by-step Tawaf
+          supplications, and Sa&apos;i at Safa &amp; Marwa with elderly-friendly
+          pacing.
+        </p>
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+          <Image
+            src="/services/makkah-clocktower.jpg"
+            alt="Holy Haram Courtyard & Kaaba"
+            fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-[6px] bg-black/60 backdrop-blur-md text-xs text-white/95 font-medium border border-white/20">
+            Walking distance to the Holy Kaaba &amp; Grand Mosque
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Resident Scholar Guidance
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Sunnah-Compliant Duas
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 05",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Historical Makkah Ziyarat
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Historical Makkah Ziyarat &amp; Sacred Sites
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Private air-conditioned exploration of Cave Hira (Jabal al-Nour), Cave
+          Thawr, Mount Arafat (Jabal al-Rahmah), Muzdalifah, and the Mina tent
+          valley with certified historical commentary from our scholar.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            AC Private Transport
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Scholar Commentary
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            In time for Haram Dhuhr Prayers
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 08",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            High-Speed Rail Transit
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Haramain High-Speed Bullet Train to Madinah
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Seamless 2-hour transit in VIP Business Class through the desert at
+          300 km/h, arriving directly at your luxury hotel overlooking the
+          Prophet&apos;s Mosque courtyard.
+        </p>
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+          <Image
+            src="/services/vip-transit.jpg"
+            alt="Haramain VIP Bullet Train"
+            fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-[6px] bg-black/60 backdrop-blur-md text-xs text-white/95 font-medium border border-white/20">
+            Haramain High-Speed VIP Business Class Transit
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            300 km/h VIP Business Class
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Station Luggage Concierge
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 10",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Riyadh ul-Jannah Noble Garden
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Rawdah Sharif Appointment &amp; Madinah Ziyarat
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Pre-booked official Nusuk permits for Riyadh ul-Jannah (The Noble
+          Garden). Guided visits to Masjid Quba, Mount Uhud martyrs cemetery,
+          and Masjid al-Qiblatayn.
+        </p>
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+          <Image
+            src="/services/madinah-mosque.jpg"
+            alt="Prophet's Mosque in Madinah"
+            fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-[6px] bg-black/60 backdrop-blur-md text-xs text-white/95 font-medium border border-white/20">
+            Al-Masjid an-Nabawi Courtyard in Madinah Al-Munawwarah
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            100% Guaranteed Nusuk Slot
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Masjid Quba Guided Prayer
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 14",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Farewell &amp; Departure
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Farewell Prayers &amp; Zamzam Handover
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Final farewell prayers at the Prophet&apos;s Mosque. Handover of
+          certified, airline-approved 5-liter Zamzam canister and escorted
+          private transfer to the airport.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Certified 5L Zamzam Canister
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Escorted Airport Chauffeur
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Dedicated Baggage Assistance
+          </span>
+        </div>
+      </div>
+    ),
+  },
+];
+
+const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
+  {
+    title: "Day 01-07",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Arrival &amp; Spiritual Orientation
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Arrival, Welcome &amp; Spiritual Orientation
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Arrival at Jeddah/Madinah, hotel check-in, orientation seminars with
+          scholarly guides on Hajj rituals, and group preparation for the Day of
+          Tarwiyah.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            5-Star Hotel Stay
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Scholar Seminars
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 08",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Day of Tarwiyah · Departure to Mina
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Day of Tarwiyah · Departure to Mina
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Don the sacred Ihram. Transfer to the deluxe European air-conditioned
+          Mina camps. Perform Dhuhr, Asr, Maghrib, Isha, and Fajr prayers in
+          devotion.
+        </p>
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+          <Image
+            src="/packages/hajj.jpg"
+            alt="Mina Camps & Mashair"
+            fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-[6px] bg-black/60 backdrop-blur-md text-xs text-white/95 font-medium border border-white/20">
+            Zone A Deluxe Air-Conditioned Mina Camps
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            European Air-Conditioned Tents
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            3-Course Hot Buffet
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 09",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            The Pinnacle of Hajj · Arafat &amp; Muzdalifah
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            The Blessed Day of Arafat &amp; Muzdalifah
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Stand on the plain of Arafat from Dhuhr to Sunset for Wuqoof and dua.
+          At sunset, proceed peacefully via Mashair metro train to Muzdalifah
+          for open-sky rest and pebble collection.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Wuqoof on Jabal al-Rahmah
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Mashair Metro Train Transit
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 10",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Yawm an-Nahr · Rami, Qurbani &amp; Halq
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Yawm an-Nahr · Rami, Qurbani &amp; Halq
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Perform Rami at Jamarat al-Aqaba, complete the animal sacrifice
+          (Qurbani), shave or trim hair (Halq/Taqseer), and exit first Ihram
+          before returning to Makkah hotel.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Scholar-Escorted Jamarat Stoning
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Non-Shifting Makkah Room Access
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 11-13",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Days of Tashreeq in Mina
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Days of Tashreeq in Mina &amp; Tawaf al-Ifadah
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          Stoning of the three Jamarat daily, spiritual reflections, and
+          performing Tawaf al-Ifadah and Sa&apos;i at the Holy Kaaba in Makkah.
+        </p>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Tawaf al-Ifadah Completion
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Ongoing Scholar Support
+          </span>
+        </div>
+      </div>
+    ),
+  },
+  {
+    title: "Day 14-21",
+    content: (
+      <div className="space-y-4">
+        <div>
+          <span className="inline-flex items-center px-3 py-1 rounded-[6px] bg-[#E8EEFB] text-[#002f89] text-xs font-bold tracking-normal mb-2.5">
+            Madinah Al-Munawwarah &amp; Farewell
+          </span>
+          <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+            Madinah Al-Munawwarah &amp; Farewell
+          </h4>
+        </div>
+        <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+          High-speed rail journey to Madinah for prayers at the Prophet&apos;s
+          Mosque, Rawdah Sharif visits, and heartfelt departure with 5L Zamzam.
+        </p>
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+          <Image
+            src="/services/madinah-mosque.jpg"
+            alt="Prophet's Mosque in Madinah"
+            fill
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-[6px] bg-black/60 backdrop-blur-md text-xs text-white/95 font-medium border border-white/20">
+            The Prophet&apos;s Mosque in Madinah Al-Munawwarah
+          </div>
+        </div>
+        <div className="flex flex-wrap gap-2 pt-1">
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            Guaranteed Rawdah Slot
+          </span>
+          <span className="text-xs bg-[#FAF8F5] text-stone-800 border border-black/[0.08] px-3 py-1.5 rounded-[8px] font-medium flex items-center gap-1.5 shadow-2xs">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />{" "}
+            5L Sealed Zamzam Canister
+          </span>
+        </div>
+      </div>
+    ),
+  },
+];
+
+const PILGRIMAGE_INCLUSIONS = [
+  "5-Star walking-distance hotel steps from Haram courtyard",
+  "Authorized Saudi Tourist / Umrah eVisa & medical insurance",
+  "Haramain High-Speed Bullet Train VIP Business Class tickets",
+  "Comprehensive historical Ziyarat in Makkah & Madinah",
+  "Guaranteed Rawdah Sharif Nusuk booking slot",
+  "Daily international buffet breakfast in hotel",
+  "Complimentary sealed 5L airline-approved Zamzam canister",
+  "24/7 dedicated Flyora ground coordinator & resident scholar",
+];
+
+const PILGRIMAGE_EXCLUSIONS = [
+  "International flight tickets (add-on packages available)",
+  "Personal laundry, phone calls & hotel room service",
+  "Individual Qurbani / animal sacrifice (optional add-on)",
+  "Lunch & dinner outside scheduled package meals",
+];
+
+const PILGRIMAGE_REVIEWS = [
+  {
+    name: "Dr. Tariq & Farida Mansoor",
+    location: "London, United Kingdom",
+    stars: 5,
+    date: "Travelled Oct 2026",
+    package: "Executive 5-Star Umrah",
+    text: "The 50-meter proximity to the Haram made all the difference for my elderly mother. The scholar was patient, knowledgeable, and the Haramain bullet train was seamless. Every promise was kept flawlessly.",
+  },
+  {
+    name: "Ahmed & Sabiha Qureshi",
+    location: "Dubai, United Arab Emirates",
+    stars: 5,
+    date: "Travelled Sep 2026",
+    package: "Custom VIP Family Umrah",
+    text: "From our private Jeddah pickup to our guaranteed Rawdah appointment, Flyora handled every detail with genuine 5-star hospitality. The Kaaba view room was unforgettable.",
+  },
+];
+
 export default function ServicesPage() {
   const [activeServiceIndex, setActiveServiceIndex] = useState(0);
   const [prevIndex, setPrevIndex] = useState(0);
@@ -1409,6 +2313,68 @@ export default function ServicesPage() {
   const parallaxImageRef = useRef<HTMLDivElement>(null);
   const creedSectionRef = useRef<HTMLDivElement>(null);
   const creedImageRef = useRef<HTMLDivElement>(null);
+
+  // Featured destinations carousel refs & scroll state
+  const destinationsCarouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollDestLeft, setCanScrollDestLeft] = useState(false);
+  const [canScrollDestRight, setCanScrollDestRight] = useState(true);
+
+  const checkDestScroll = () => {
+    if (destinationsCarouselRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } =
+        destinationsCarouselRef.current;
+      setCanScrollDestLeft(scrollLeft > 10);
+      setCanScrollDestRight(scrollLeft + clientWidth < scrollWidth - 10);
+    }
+  };
+
+  const handleDestScroll = (direction: "left" | "right") => {
+    if (destinationsCarouselRef.current) {
+      const scrollAmount = destinationsCarouselRef.current.clientWidth * 0.75;
+      destinationsCarouselRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  // Popular visa destinations carousel refs & search state
+  const visaCarouselRef = useRef<HTMLDivElement>(null);
+  const [canScrollVisaLeft, setCanScrollVisaLeft] = useState(false);
+  const [canScrollVisaRight, setCanScrollVisaRight] = useState(true);
+  const [visaSearchQuery, setVisaSearchQuery] = useState("");
+  const [visaSelectedRegion, setVisaSelectedRegion] = useState("All");
+
+  const checkVisaScroll = () => {
+    if (visaCarouselRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = visaCarouselRef.current;
+      setCanScrollVisaLeft(scrollLeft > 10);
+      setCanScrollVisaRight(scrollLeft + clientWidth < scrollWidth - 10);
+    }
+  };
+
+  const handleVisaScroll = (direction: "left" | "right") => {
+    if (visaCarouselRef.current) {
+      const scrollAmount = visaCarouselRef.current.clientWidth * 0.75;
+      visaCarouselRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth",
+      });
+    }
+  };
+
+  const filteredVisaCountries = POPULAR_VISA_COUNTRIES.filter((country) => {
+    const query = visaSearchQuery.toLowerCase().trim();
+    const matchesSearch =
+      !query ||
+      country.name.toLowerCase().includes(query) ||
+      country.popularFor.toLowerCase().includes(query) ||
+      country.visaType.toLowerCase().includes(query) ||
+      country.region.toLowerCase().includes(query);
+    const matchesRegion =
+      visaSelectedRegion === "All" || country.region === visaSelectedRegion;
+    return matchesSearch && matchesRegion;
+  });
 
   const handleSelectService = (idx: number) => {
     if (idx === activeServiceIndex) return;
@@ -1466,6 +2432,15 @@ export default function ServicesPage() {
   const [hajjSeason, setHajjSeason] = useState("May – Jun 2027");
   const [hajjPilgrims, setHajjPilgrims] = useState("2 Adults");
 
+  // Interactive state for Umrah & Hajj reference showcase
+  const [umrahTierSelect, setUmrahTierSelect] =
+    useState<PilgrimageTierKey>("executive");
+  const [umrahActivePhoto, setUmrahActivePhoto] = useState(0);
+
+  const [hajjTierSelect, setHajjTierSelect] =
+    useState<PilgrimageTierKey>("executive");
+  const [hajjActivePhoto, setHajjActivePhoto] = useState(0);
+
   // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -1487,6 +2462,17 @@ export default function ServicesPage() {
   const [modalPrefill, setModalPrefill] = useState<EnquiryPrefill | undefined>(
     undefined,
   );
+
+  useEffect(() => {
+    const handleGlobal = () => {
+      setModalPrefill(undefined);
+      setModalServiceId(undefined);
+      setModalOpen(true);
+    };
+    window.addEventListener("flyora:open-enquiry", handleGlobal);
+    return () =>
+      window.removeEventListener("flyora:open-enquiry", handleGlobal);
+  }, []);
 
   const handleRequestQuote = () => {
     setIsSubmitted(true);
@@ -1653,7 +2639,7 @@ export default function ServicesPage() {
 
       <main>
         {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & 7 HERO SERVICE CARDS */}
-        <section className="relative w-full min-h-[840px] sm:min-h-[880px] lg:min-h-[920px] flex flex-col justify-between overflow-hidden -mt-20 pt-36 sm:pt-40 lg:pt-44 xl:pt-48 pb-12 sm:pb-16">
+        <section className="relative w-full min-h-[660px] sm:min-h-[700px] lg:min-h-[720px] lg:h-[75vh] lg:max-h-[780px] flex flex-col justify-between overflow-hidden -mt-20 pt-28 sm:pt-32 lg:pt-34 xl:pt-36 pb-0">
           {/* Dynamic Full-Width Background Sliding Images */}
           <div className="absolute inset-0 z-0 overflow-hidden">
             {HERO_SERVICES.map((s, idx) => {
@@ -1718,7 +2704,7 @@ export default function ServicesPage() {
               className="overflow-hidden"
             >
               <h1
-                className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-medium text-white tracking-tight leading-[1.12] max-w-4xl"
+                className="text-2xl sm:text-3xl md:text-4xl lg:text-[44px] font-serif font-medium text-white tracking-tight leading-[1.14] max-w-4xl"
                 style={{
                   animation:
                     "heroTextHeadingIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.15s both",
@@ -1734,7 +2720,7 @@ export default function ServicesPage() {
               className="overflow-hidden"
             >
               <p
-                className="mt-3 text-sm sm:text-base md:text-lg font-sans text-white/85 max-w-2xl leading-relaxed"
+                className="mt-2 sm:mt-2.5 text-xs sm:text-sm md:text-base font-sans text-white/85 max-w-2xl leading-relaxed"
                 style={{
                   animation:
                     "heroTextDescIn 0.7s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both",
@@ -1745,10 +2731,9 @@ export default function ServicesPage() {
             </div>
 
             {/* 7 HERO SERVICE CARDS (Matching Homepage Hero Design, rounded-[8px]) */}
-            <div className="relative mt-8 sm:mt-10 mb-3.5">
-              <div className="flex lg:grid lg:grid-cols-7 items-stretch gap-2.5 sm:gap-3 lg:gap-3.5 xl:gap-4 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth px-1 lg:px-0 pt-3 pb-3">
+            <div className="relative mt-6 sm:mt-7 mb-2.5 sm:mb-3">
+              <div className="flex lg:grid lg:grid-cols-7 items-stretch gap-2 sm:gap-2.5 lg:gap-3 xl:gap-3.5 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth px-1 lg:px-0 pt-2 pb-2">
                 {HERO_SERVICES.map((s, idx) => {
-                  const IconComp = s.icon;
                   const isActive = idx === activeServiceIndex;
                   return (
                     <button
@@ -1757,45 +2742,37 @@ export default function ServicesPage() {
                       onClick={() => handleSelectService(idx)}
                       aria-pressed={isActive}
                       aria-label={`Select ${s.name}`}
-                      className={`group relative shrink-0 w-[160px] sm:w-[175px] lg:w-auto h-[165px] sm:h-[180px] lg:h-[195px] rounded-[8px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4.5 flex flex-col justify-between bg-neutral-950 ${
+                      className={`group relative shrink-0 w-[150px] sm:w-[165px] lg:w-auto h-[155px] sm:h-[168px] lg:h-[178px] rounded-[8px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-end bg-neutral-950 ${
                         isActive
-                          ? "-translate-y-1.5 scale-[1.02] z-20 shadow-[0_16px_36px_rgba(0,0,0,0.5)]"
+                          ? "-translate-y-1.5 scale-[1.02] z-20 shadow-[0_16px_36px_rgba(0,0,0,0.5),0_0_28px_rgba(255,255,255,0.75)]"
                           : "hover:-translate-y-1.5 hover:scale-[1.01] hover:z-30 opacity-90 hover:opacity-100"
                       }`}
                     >
-                      {/* Inner clipped canvas with service photo & scrims */}
+                      {/* Inner clipped canvas with service image (object-cover zoomed) */}
                       <div className="absolute inset-0 rounded-[8px] overflow-hidden pointer-events-none">
                         <img
-                          src={s.imageSrc}
+                          src={s.cardImageSrc}
                           alt=""
-                          className={`absolute inset-0 w-full h-full object-cover ${s.imagePosition || "object-center"} scale-[1.05] transition-transform duration-500 ease-out group-hover:scale-[1.12]`}
+                          className={`absolute inset-0 w-full h-full object-cover ${s.cardImagePosition || "object-center"} scale-[1.08] transition-transform duration-500 ease-out group-hover:scale-[1.16]`}
                         />
-                        <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-black/55 via-black/20 to-transparent" />
-                        <div className="absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
+                        <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
                       </div>
 
-                      {/* Outer border ring with standard rounded-[8px] */}
+                      {/* Luminous white border & spread highlight like old */}
                       <div
                         className={`absolute inset-0 rounded-[8px] transition-all duration-300 pointer-events-none z-20 ${
                           isActive
-                            ? "border-2 border-white ring-2 ring-white/60 shadow-[0_0_24px_rgba(255,255,255,0.55)]"
+                            ? "border-2 border-white ring-2 ring-white/80 shadow-[0_0_28px_rgba(255,255,255,0.75)]"
                             : "border border-white/20 group-hover:border-white group-hover:ring-1 group-hover:ring-white/40 group-hover:shadow-[0_0_18px_rgba(255,255,255,0.4)]"
                         }`}
                       />
 
-                      {/* Top Row: Icon */}
-                      <div className="relative z-30 flex items-center justify-start w-full">
-                        <div className="text-white drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] transition-transform duration-200 group-hover:scale-110">
-                          <IconComp className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </div>
-                      </div>
-
                       {/* Bottom Row: Typography */}
-                      <div className="relative z-30 w-full mt-auto">
-                        <div className="text-[13.5px] sm:text-[14.5px] lg:text-[15.5px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] whitespace-normal break-words">
+                      <div className="relative z-30 w-full">
+                        <div className="text-[13.5px] sm:text-[14px] lg:text-[14.5px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] whitespace-normal break-words">
                           {s.name}
                         </div>
-                        <div className="text-[11.5px] sm:text-[12px] lg:text-[12.5px] font-medium text-white/95 leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words mt-1">
+                        <div className="text-[11px] sm:text-[11.5px] lg:text-[12px] font-medium text-white/95 leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words mt-0.5 sm:mt-1">
                           {s.subtitle}
                         </div>
                       </div>
@@ -1808,7 +2785,7 @@ export default function ServicesPage() {
             {/* CONCIERGE SEARCH BAR (rounded-[8px] & Blue Action Button) */}
             <div
               ref={conciergeBarRef}
-              className="relative z-40 w-full bg-[#FAF8F5]/95 backdrop-blur-md text-[#1E1A17] rounded-[8px] p-3 sm:px-7 sm:py-4 lg:px-8 lg:py-4.5 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-white/80 transition-all duration-300"
+              className="relative z-40 w-full bg-[#FAF8F5]/95 backdrop-blur-md text-[#1E1A17] rounded-[8px] p-2.5 sm:px-6 sm:py-3.5 lg:px-7 lg:py-4 shadow-[0_20px_50px_rgba(0,0,0,0.18)] border border-white/80 transition-all duration-300"
             >
               <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 lg:gap-2">
                 <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-[#E5E0D5]/50 min-w-0">
@@ -2244,7 +3221,7 @@ export default function ServicesPage() {
                 <button
                   type="button"
                   onClick={handleRequestQuote}
-                  className="w-full lg:w-auto h-[52px] sm:h-[56px] px-8 sm:px-10 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-semibold text-[15.5px] sm:text-[16px] flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_18px_rgba(0,47,137,0.4)] hover:shadow-[0_6px_24px_rgba(0,47,137,0.55)] cursor-pointer whitespace-nowrap shrink-0 lg:ml-4 select-none active:scale-[0.98]"
+                  className="w-full lg:w-auto h-[48px] sm:h-[52px] px-7 sm:px-9 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-semibold text-[15px] sm:text-[15.5px] flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_18px_rgba(0,47,137,0.4)] hover:shadow-[0_6px_24px_rgba(0,47,137,0.55)] cursor-pointer whitespace-nowrap shrink-0 lg:ml-4 select-none active:scale-[0.98]"
                 >
                   {isSubmitted ? (
                     <>
@@ -2261,516 +3238,2601 @@ export default function ServicesPage() {
               </div>
             </div>
           </div>
+
+          {/* LUXURY EDITORIAL SCROLL INDICATOR (Mouse above, text below with equal top/bottom gaps) */}
+          <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] py-6 sm:py-7 lg:py-8 flex flex-col items-center justify-center shrink-0">
+            <button
+              type="button"
+              onClick={() => {
+                const el = document.getElementById("service-details-hub");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth" });
+                }
+              }}
+              className="group flex flex-col items-center gap-2 sm:gap-2.5 cursor-pointer select-none transition-all duration-300"
+              aria-label={`Scroll to ${activeService.scrollCue}`}
+            >
+              {/* 1. MOUSE ICON ABOVE */}
+              <div className="w-[20px] h-[32px] sm:w-[22px] sm:h-[34px] rounded-full border-[1.5px] border-white/65 group-hover:border-white transition-all duration-300 flex justify-center pt-1.5 shadow-[0_2px_8px_rgba(0,0,0,0.4)] group-hover:translate-y-0.5">
+                <div className="w-[2.5px] h-[6px] rounded-full bg-white animate-mouse-scroll" />
+              </div>
+
+              {/* 2. TEXT BELOW (Semi-bold to highlight) */}
+              <span className="text-[10px] sm:text-[11px] lg:text-[11.5px] font-sans font-semibold tracking-[0.2em] uppercase text-white/95 group-hover:text-white transition-colors duration-300 drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)] text-center px-4 max-w-[360px] sm:max-w-none">
+                {activeService.scrollCue}
+              </span>
+            </button>
+          </div>
         </section>
 
-        {/* 3. DYNAMIC SERVICE EXPERIENCE & REQUIREMENTS HUB */}
-        <section
-          id="service-requirements-hub"
-          className="w-full bg-[#FAF8F5]/80 py-16 sm:py-20 lg:py-24 border-b border-black/[0.06] relative"
-        >
-          <div className="w-full px-6 sm:px-10 lg:px-[105px]">
-            {/* Hub Header & Title */}
-            <div className="text-center max-w-3xl mx-auto mb-10 sm:mb-12">
-              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-[8px] bg-[#002f89]/10 text-[#002f89] text-[11.5px] font-mono font-bold uppercase tracking-wider mb-3">
-                <FileCheck2 className="w-3.5 h-3.5" />
-                Service Requirements &amp; Coordination Desk
-              </span>
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold text-[#1C1815] tracking-tight">
-                Everything You Need to Know Before You Travel
-              </h2>
-              <p className="text-sm sm:text-base text-stone-600 mt-3 leading-relaxed font-sans">
-                Explore verified document requirements, step-by-step timelines,
-                and our offline concierge workflow for each service. All
-                requests receive 1-on-1 human coordination through our admin
-                desk.
-              </p>
-            </div>
+        {/* Scroll Target Anchor for Option B */}
+        <div
+          id="service-details-hub"
+          className="scroll-mt-20 sm:scroll-mt-24"
+        />
 
-            {/* Interactive 7-Service Switcher Pill Tabs (Responsive horizontal bar) */}
-            <div className="mb-10 sm:mb-12">
-              <div className="flex items-center justify-start lg:justify-center gap-2 overflow-x-auto pb-3 pt-1 scrollbar-none select-none">
-                {HERO_SERVICES.map((srv, idx) => {
-                  const SrvIcon = srv.icon;
-                  const isActive = idx === activeServiceIndex;
-                  return (
+        {/* =========================================================================
+            3. DYNAMIC SERVICE-SPECIFIC SECTIONS
+            Dynamically rendered based on activeService.id from Hero selection:
+            - Custom Holidays: Top Pickups For You (Bento Gallery) + Featured Destinations Carousel
+            - Visa Assistance: Popular Visa Countries (10 Cards + Search) + What Documents You Should Keep (BentoGridShowcase)
+            - Flight / Train / Bus: Structured Transport Booking Desk
+            - Umrah / Hajj: Dedicated Sacred Pilgrimage Desk
+            ========================================================================= */}
+
+        {/* -------------------------------------------------------------------------
+            CASE 1: CUSTOM HOLIDAYS (Top Pickups Bento Gallery + Featured Destinations)
+            ------------------------------------------------------------------------- */}
+        {activeService.id === "custom-holidays" && (
+          <div id="holidays-dynamic-hub" className="w-full bg-[#FDFCFB]">
+            {/* 1. Top Pickups For You Interactive Bento Gallery */}
+            <InteractiveImageBentoGallery
+              imageItems={TOP_PICKUP_BENTO_ITEMS}
+              title="Top Pickups For You"
+              description="Plan your perfect vacation with Flyora. Choose among hand-curated, all-inclusive luxury offers! Drag to explore, click to expand."
+              actionLabel="Explore All Holiday Tours"
+              onActionClick={() => handleCardEnquiry("Holiday Packages")}
+            />
+
+            {/* 2. Featured Destinations Carousel */}
+            <section className="relative z-10 w-full pt-12 sm:pt-16 pb-16 sm:pb-20 overflow-hidden bg-gradient-to-b from-[#FDFCFB] via-[#F8F9FA] to-[#FDFCFB]">
+              <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+                {/* Header: Left title (NO mini-heading, just prominent title) + Right navigation arrows */}
+                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-12 mb-8 sm:mb-10">
+                  <div className="max-w-xl">
+                    <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#1C1815] tracking-tight leading-[1.14]">
+                      Featured Destinations
+                    </h2>
+                    <p className="text-xs sm:text-sm text-stone-600 mt-2.5 max-w-lg leading-relaxed font-sans">
+                      Handpicked international getaways, curated for
+                      unforgettable journeys and bespoke cultural escapes.
+                    </p>
+                  </div>
+
+                  {/* Navigation Buttons */}
+                  <div className="flex items-center gap-2.5 shrink-0 self-end lg:self-auto">
                     <button
-                      key={srv.id}
                       type="button"
-                      onClick={() => handleSelectService(idx)}
-                      className={`inline-flex items-center gap-2.5 px-4 sm:px-5 py-2.5 sm:py-3 rounded-[8px] text-xs sm:text-sm font-semibold transition-all duration-200 shrink-0 cursor-pointer ${
-                        isActive
-                          ? "bg-[#002f89] text-white shadow-md shadow-[#002f89]/25 border border-[#002f89]"
-                          : "bg-white text-stone-700 hover:text-stone-950 hover:bg-stone-50 border border-black/[0.08]"
+                      onClick={() => handleDestScroll("left")}
+                      disabled={!canScrollDestLeft}
+                      aria-label="Previous destination"
+                      className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                        canScrollDestLeft
+                          ? "bg-[#002f89] text-white border-[#002f89] hover:bg-[#00246b] shadow-xs active:scale-95"
+                          : "bg-white text-stone-300 border-stone-200 cursor-not-allowed opacity-50"
                       }`}
                     >
-                      <SrvIcon
-                        className={`w-4 h-4 shrink-0 ${
-                          isActive ? "text-white" : "text-[#002f89]"
-                        }`}
-                      />
-                      <span>{srv.name}</span>
+                      <ChevronLeft className="w-4 h-4" />
                     </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Active Service Showcase Card */}
-            <div className="bg-white rounded-[8px] border border-black/[0.08] shadow-xs p-6 sm:p-8 lg:p-10 mb-8 sm:mb-10">
-              {/* Active Service Title Banner */}
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-black/[0.06]">
-                <div>
-                  <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-[8px] bg-amber-50 text-amber-800 border border-amber-200/80 text-[11px] font-mono font-bold uppercase tracking-wider mb-2">
-                    {hubData.badge}
-                  </div>
-                  <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] tracking-tight">
-                    {hubData.headline}
-                  </h3>
-                  <p className="text-sm text-stone-600 mt-1.5 max-w-2xl leading-relaxed">
-                    {hubData.subheadline}
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-3 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => handleCardEnquiry(hubData.serviceId)}
-                    className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs sm:text-sm font-semibold shadow-xs transition-all cursor-pointer select-none active:scale-95"
-                  >
-                    <span>Request Quote</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Block 1: Trust Proof & Authority Credentials (4 Cards) */}
-              <div className="mt-8">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-                  {hubData.trustPillars.map((pillar, pIdx) => (
-                    <div
-                      key={pIdx}
-                      className="bg-[#FAF8F5]/80 hover:bg-[#FAF8F5] p-5 rounded-[8px] border border-black/[0.06] transition-all hover:border-[#002f89]/30 hover:shadow-2xs"
+                    <button
+                      type="button"
+                      onClick={() => handleDestScroll("right")}
+                      disabled={!canScrollDestRight}
+                      aria-label="Next destination"
+                      className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                        canScrollDestRight
+                          ? "bg-[#002f89] text-white border-[#002f89] hover:bg-[#00246b] shadow-xs active:scale-95"
+                          : "bg-white text-stone-300 border-stone-200 cursor-not-allowed opacity-50"
+                      }`}
                     >
-                      <span className="text-2xl sm:text-3xl font-serif font-bold text-[#002f89] tracking-tight block">
-                        {pillar.stat}
-                      </span>
-                      <span className="text-sm font-bold text-stone-900 mt-1 block">
-                        {pillar.label}
-                      </span>
-                      <p className="text-xs text-stone-600 mt-1.5 leading-relaxed">
-                        {pillar.desc}
-                      </p>
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Destination Cards Track */}
+                <div
+                  ref={destinationsCarouselRef}
+                  onScroll={checkDestScroll}
+                  className="flex gap-4 sm:gap-5 overflow-x-auto scroll-smooth no-scrollbar pb-4 pt-1 px-1 -mx-1"
+                >
+                  {FEATURED_DESTINATIONS.map((dest) => (
+                    <div
+                      key={dest.id}
+                      onClick={() =>
+                        handleCardEnquiry(
+                          `Holiday Package: ${dest.name}, ${dest.country}`,
+                          {
+                            serviceId: "custom-holidays",
+                            serviceName: "Custom Holidays",
+                            destination: dest.name,
+                            travelDate: "",
+                            tierOrClass: "Luxury Tier",
+                            summaryLabel: `${dest.name} · ${dest.toursCount}`,
+                          },
+                        )
+                      }
+                      className="group relative flex-none w-[240px] sm:w-[260px] lg:w-[280px] aspect-[3/4.2] rounded-[8px] overflow-hidden cursor-pointer select-none shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 border border-black/[0.08]"
+                    >
+                      <Image
+                        src={dest.image}
+                        alt={dest.name}
+                        fill
+                        sizes="(max-width: 768px) 240px, 280px"
+                        className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+
+                      <div className="absolute top-3.5 left-3.5 z-10">
+                        <span className="px-2.5 py-1 rounded-[6px] bg-white/20 backdrop-blur-md text-[10.5px] font-mono font-bold uppercase tracking-wider text-white border border-white/20">
+                          {dest.tag}
+                        </span>
+                      </div>
+
+                      <div className="absolute inset-x-0 bottom-0 p-5 text-white z-10">
+                        <div className="flex items-center gap-1.5 text-amber-300 text-[11px] font-sans font-medium mb-1">
+                          <MapPin className="w-3.5 h-3.5 shrink-0" />
+                          <span>{dest.country}</span>
+                        </div>
+                        <h3 className="text-xl sm:text-2xl font-serif font-bold text-white leading-tight">
+                          {dest.name}
+                        </h3>
+                        <p className="text-xs text-white/80 font-sans mt-1">
+                          {dest.toursCount}
+                        </p>
+                        <div className="mt-3 pt-2.5 border-t border-white/20 flex items-center justify-between text-xs font-semibold">
+                          <span className="text-amber-200">
+                            {dest.priceStarting}
+                          </span>
+                          <span className="text-white group-hover:text-amber-300 flex items-center gap-1 transition-colors">
+                            Explore{" "}
+                            <ArrowRight className="w-3 h-3 group-hover:translate-x-0.5 transition-transform" />
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
+            </section>
+          </div>
+        )}
 
-              {/* Block 2: Document & Eligibility Checklist */}
-              <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-black/[0.06]">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
-                  <div>
-                    <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
-                      Customer Document &amp; Eligibility Checklist
-                    </h4>
-                    <p className="text-xs sm:text-sm text-stone-600 mt-1">
-                      Gather these prerequisites. Our offline verification desk
-                      reviews and validates every file prior to official
-                      submission.
+        {/* -------------------------------------------------------------------------
+            CASE 2: VISA ASSISTANCE (Popular Countries Carousel + Search + Documents Bento UI)
+            ------------------------------------------------------------------------- */}
+        {activeService.id === "visa-assistance" && (
+          <div id="visa-dynamic-hub" className="w-full bg-[#FDFCFB]">
+            {/* SUB-SECTION 1: SEARCH & 10 POPULAR VISA COUNTRIES */}
+            <section className="relative z-10 w-full pt-16 sm:pt-20 pb-16 sm:pb-20 overflow-hidden">
+              <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+                {/* Header: Left Title + Search Bar + Right Arrows */}
+                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-10 mb-8 sm:mb-10">
+                  <div className="max-w-xl">
+                    <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-[#002f89] block mb-2">
+                      GLOBAL VISA ASSISTANCE
+                    </span>
+                    <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#1C1815] tracking-tight leading-[1.14]">
+                      Popular Countries We Provide Visas For
+                    </h2>
+                    <p className="text-xs sm:text-sm text-stone-600 mt-2.5 max-w-lg leading-relaxed font-sans">
+                      Express appointment booking, multi-point document audit,
+                      and 99.2% approval success rate for 100+ embassies and
+                      electronic visas.
                     </p>
                   </div>
-                  <span className="text-xs text-stone-500 font-medium">
-                    Updated for 2026 Regulations
-                  </span>
+
+                  {/* Search Bar + Navigation Buttons */}
+                  <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 shrink-0">
+                    {/* Country Search Bar */}
+                    <div className="relative min-w-[260px] sm:min-w-[320px]">
+                      <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                      <input
+                        type="text"
+                        value={visaSearchQuery}
+                        onChange={(e) => setVisaSearchQuery(e.target.value)}
+                        placeholder="Search country (e.g. Schengen, UK, Dubai)..."
+                        className="w-full pl-10 pr-8 py-2.5 rounded-full border border-black/[0.12] bg-white text-xs sm:text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-[#002f89] focus:ring-1 focus:ring-[#002f89] transition-all shadow-2xs"
+                      />
+                      {visaSearchQuery && (
+                        <button
+                          type="button"
+                          onClick={() => setVisaSearchQuery("")}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 text-xs cursor-pointer p-1"
+                        >
+                          ✕
+                        </button>
+                      )}
+                    </div>
+
+                    {/* Navigation Buttons */}
+                    <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
+                      <button
+                        type="button"
+                        onClick={() => handleVisaScroll("left")}
+                        disabled={!canScrollVisaLeft}
+                        aria-label="Previous visa country"
+                        className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                          canScrollVisaLeft
+                            ? "bg-[#002f89] text-white border-[#002f89] hover:bg-[#00246b] shadow-xs active:scale-95"
+                            : "bg-white text-stone-300 border-stone-200 cursor-not-allowed opacity-50"
+                        }`}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleVisaScroll("right")}
+                        disabled={!canScrollVisaRight}
+                        aria-label="Next visa country"
+                        className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                          canScrollVisaRight
+                            ? "bg-[#002f89] text-white border-[#002f89] hover:bg-[#00246b] shadow-xs active:scale-95"
+                            : "bg-white text-stone-300 border-stone-200 cursor-not-allowed opacity-50"
+                        }`}
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-5">
-                  {hubData.documents.map((doc, dIdx) => {
-                    const badgeClasses =
-                      doc.badgeType === "rose"
-                        ? "bg-rose-50 text-rose-700 border-rose-200"
-                        : doc.badgeType === "emerald"
-                          ? "bg-emerald-50 text-emerald-800 border-emerald-200"
-                          : doc.badgeType === "amber"
-                            ? "bg-amber-50 text-amber-800 border-amber-200"
-                            : "bg-blue-50 text-blue-800 border-blue-200";
+                {/* Region Filter Chips */}
+                <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-6">
+                  {[
+                    "All",
+                    "Europe",
+                    "Middle East",
+                    "Asia",
+                    "Americas",
+                    "Oceania",
+                  ].map((region) => (
+                    <button
+                      key={region}
+                      type="button"
+                      onClick={() => setVisaSelectedRegion(region)}
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-sans font-medium transition-all shrink-0 cursor-pointer ${
+                        visaSelectedRegion === region
+                          ? "bg-[#002f89] text-white shadow-2xs font-semibold"
+                          : "bg-stone-100 hover:bg-stone-200/80 text-stone-700 border border-stone-200/60"
+                      }`}
+                    >
+                      {region}
+                    </button>
+                  ))}
+                  {filteredVisaCountries.length === 0 && (
+                    <span className="text-xs text-stone-500 pl-2">
+                      No countries found for "{visaSearchQuery}"
+                    </span>
+                  )}
+                </div>
 
-                    return (
-                      <div
-                        key={dIdx}
-                        className="bg-white p-5 rounded-[8px] border border-black/[0.08] shadow-2xs hover:border-[#002f89]/30 transition-all flex flex-col justify-between"
-                      >
-                        <div>
-                          <div className="flex items-start justify-between gap-3 mb-2">
-                            <h5 className="text-sm sm:text-[15px] font-bold text-stone-900 leading-snug">
-                              {doc.title}
-                            </h5>
-                            <span
-                              className={`shrink-0 px-2.5 py-0.5 rounded-[8px] text-[10.5px] font-mono font-bold uppercase tracking-wider border ${badgeClasses}`}
-                            >
-                              {doc.badge}
-                            </span>
+                {/* 10 Popular Visa Country Cards Track */}
+                <div
+                  ref={visaCarouselRef}
+                  onScroll={checkVisaScroll}
+                  className="flex gap-4 sm:gap-5 overflow-x-auto scroll-smooth no-scrollbar pb-4 pt-1 px-1 -mx-1"
+                >
+                  {filteredVisaCountries.map((country) => (
+                    <div
+                      key={country.id}
+                      onClick={() =>
+                        handleCardEnquiry(`Visa Application: ${country.name}`, {
+                          serviceId: "visa-assistance",
+                          serviceName: "Visa Assistance",
+                          destination: country.name,
+                          travelDate: "",
+                          tierOrClass: country.visaType,
+                          summaryLabel: `${country.name} · ${country.visaType}`,
+                        })
+                      }
+                      className="group relative flex-none w-[260px] sm:w-[280px] lg:w-[300px] h-[370px] sm:h-[390px] rounded-[8px] overflow-hidden cursor-pointer select-none shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 border border-black/[0.08] flex flex-col justify-between"
+                    >
+                      {/* Background Image */}
+                      <Image
+                        src={country.image}
+                        alt={country.name}
+                        fill
+                        sizes="(max-width: 768px) 260px, 300px"
+                        className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+
+                      {/* Gentle Gradient Overlays */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/20" />
+
+                      {/* Top Badges */}
+                      <div className="relative z-10 p-4 flex items-center justify-between gap-2">
+                        <span className="px-2.5 py-1 rounded-[6px] bg-white/20 backdrop-blur-md text-[10.5px] font-mono font-bold uppercase tracking-wider text-white border border-white/20">
+                          {country.region}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-[6px] bg-emerald-500/90 text-[10.5px] font-sans font-bold text-white shadow-xs">
+                          {country.approvalRate}
+                        </span>
+                      </div>
+
+                      {/* Bottom Content */}
+                      <div className="relative z-10 p-5 text-white">
+                        <h3 className="text-xl sm:text-2xl font-serif font-bold text-white leading-tight mb-1">
+                          {country.name}
+                        </h3>
+                        <p className="text-xs text-amber-200 font-sans font-medium mb-3">
+                          {country.visaType}
+                        </p>
+
+                        <div className="space-y-1.5 text-xs text-stone-200/90 font-sans border-t border-white/15 pt-2.5">
+                          <div className="flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                            <span>Processing: {country.processingTime}</span>
                           </div>
-                          <span className="text-xs font-semibold text-[#002f89] block mb-2">
-                            {doc.description}
-                          </span>
-                          <p className="text-xs text-stone-600 leading-relaxed">
-                            {doc.requirement}
-                          </p>
+                          <div className="flex items-center gap-1.5 text-stone-300 text-[11px]">
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                            <span>Popular: {country.popularFor}</span>
+                          </div>
                         </div>
 
-                        <div className="mt-4 pt-3 border-t border-black/[0.05] flex items-start gap-2 bg-stone-50/70 p-2.5 rounded-[8px]">
-                          <FileCheck2 className="w-3.5 h-3.5 text-[#002f89] shrink-0 mt-0.5" />
-                          <p className="text-[11.5px] text-stone-600 leading-snug">
-                            <strong className="text-stone-800">Note:</strong>{" "}
-                            {doc.tip}
-                          </p>
+                        <div className="mt-3.5 pt-2 flex items-center justify-between text-xs font-semibold text-white group-hover:text-amber-300 transition-colors">
+                          <span>Apply for Visa</span>
+                          <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
                         </div>
                       </div>
-                    );
-                  })}
+                    </div>
+                  ))}
                 </div>
               </div>
+            </section>
 
-              {/* Block 3: Step-by-Step Workflow & Timelines */}
-              <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-black/[0.06]">
-                <div className="mb-6">
-                  <h4 className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
-                    Step-by-Step Coordination &amp; Turnaround Timelines
-                  </h4>
-                  <p className="text-xs sm:text-sm text-stone-600 mt-1">
-                    Transparent milestone progression from your initial enquiry
-                    to confirmed delivery.
+            {/* SUB-SECTION 2: WHAT DOCUMENTS YOU SHOULD KEEP (BentoGridShowcase) */}
+            <section className="relative z-10 w-full pt-12 sm:pt-16 pb-20 sm:pb-24 border-t border-black/[0.06] bg-white overflow-hidden">
+              <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+                {/* Header */}
+                <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
+                  <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-[#002f89] block mb-2">
+                    MANDATORY DOSSIER &amp; AUDIT CHECKLIST
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#1C1815] tracking-tight leading-[1.14]">
+                    What Documents You Should Keep Ready
+                  </h2>
+                  <p className="text-sm sm:text-base text-stone-600 mt-3 font-sans leading-relaxed">
+                    Embassies demand exact, verifiable documentation. Keep these
+                    prerequisites ready before scheduling biometrics—our senior
+                    visa officers audit every single page to ensure zero
+                    rejection risk.
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
-                  {hubData.processSteps.map((step, sIdx) => (
-                    <div
-                      key={sIdx}
-                      className="bg-white p-5 rounded-[8px] border border-black/[0.08] shadow-2xs hover:border-[#002f89]/30 transition-all flex flex-col justify-between"
-                    >
-                      <div>
-                        <div className="flex items-center justify-between gap-2 mb-3">
-                          <span className="w-8 h-8 rounded-[8px] bg-[#002f89] text-white font-mono font-bold text-xs flex items-center justify-center shadow-xs">
-                            {step.step}
-                          </span>
-                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-[8px] bg-stone-100 text-stone-700 text-[11px] font-mono font-semibold border border-stone-200/80">
-                            <Clock className="w-3 h-3 text-stone-500" />
-                            {step.duration}
+                {/* BentoGridShowcase Layout */}
+                <BentoGridShowcase
+                  integration={
+                    <Card className="relative h-full overflow-hidden flex flex-col justify-between border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-[#1C1815] text-white">
+                      {/* Background image overlay */}
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/visa-assistance.jpg"
+                          alt="Passport vault"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center opacity-25 brightness-75"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1C1815] via-[#1C1815]/90 to-[#1C1815]/60" />
+                      </div>
+
+                      <CardHeader className="relative z-10 p-6 sm:p-7">
+                        <FileCheck2 className="w-7 h-7 text-amber-300 mb-4" />
+                        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-amber-300/95 block mb-2">
+                          Primary Vault · Step 1
+                        </span>
+                        <CardTitle className="text-2xl sm:text-3xl font-serif font-bold text-white leading-tight">
+                          Passport &amp; Identity Essentials
+                        </CardTitle>
+                        <CardDescription className="text-stone-300 text-xs sm:text-sm mt-2 leading-relaxed">
+                          The foundation of your visa dossier. Embassies reject
+                          applications instantly if the passport fails validity
+                          or integrity standards.
+                        </CardDescription>
+
+                        <div className="mt-6 space-y-3.5 text-xs sm:text-sm text-stone-200">
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>6+ Months Validity</strong> beyond
+                              intended stay
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Minimum 2 Blank Pages</strong> consecutive
+                              for sticker
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Previous Passports</strong> with travel
+                              stamp history
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Government Photo ID</strong> &amp;
+                              Residence Proof copy
+                            </span>
+                          </div>
+                        </div>
+                      </CardHeader>
+
+                      <CardFooter className="relative z-10 p-6 sm:p-7 pt-0 border-t border-white/10 mt-6">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCardEnquiry("Visa Assistance: Passport Audit")
+                          }
+                          className="w-full py-2.5 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center justify-center gap-2 border border-white/20 transition-all cursor-pointer"
+                        >
+                          <span>Request Passport Pre-Audit</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </CardFooter>
+                    </Card>
+                  }
+                  trackers={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      {/* Background Image with Frosted Glass Effect */}
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/bank-statements.jpg"
+                          alt="Bank Statements & Financial Proof"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <CreditCard className="w-6 h-6 text-[#002f89]" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-[#002f89]">
+                            Last 6 Months
                           </span>
                         </div>
-                        <h5 className="text-sm sm:text-[15px] font-bold text-stone-900 leading-snug">
-                          {step.title}
-                        </h5>
-                        <p className="text-xs text-stone-600 mt-2 leading-relaxed">
-                          {step.desc}
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Bank Statements &amp; Financial Proof
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Original bank statements with official branch stamp
+                          &amp; signature. Demonstrates sufficient balance
+                          meeting consulate minimum thresholds.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs sm:text-sm text-stone-700 font-sans font-medium">
+                        <span>Salary Slips (3 Mos)</span>
+                        <span className="font-semibold text-emerald-700">
+                          ✓ Stamp Required
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  statistic={
+                    <Card className="relative h-full overflow-hidden border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-gradient-to-br from-[#002f89] to-[#001c54] text-white flex flex-col justify-between p-6">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-amber-300 font-bold">
+                          Flyora Approval Metric
+                        </span>
+                        <ShieldCheck className="w-6 h-6 text-emerald-300" />
+                      </div>
+                      <div className="my-2">
+                        <span className="text-5xl sm:text-6xl font-serif font-extrabold tracking-tight text-white block">
+                          99.2%
+                        </span>
+                        <span className="text-xs sm:text-sm text-white/90 font-sans font-medium mt-1 block">
+                          Visa Approval Track Record
+                        </span>
+                      </div>
+                      <p className="text-xs text-white/75 font-sans leading-relaxed">
+                        12,400+ files pre-screened prior to submission with 0
+                        documentation defects.
+                      </p>
+                    </Card>
+                  }
+                  focus={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      {/* Background Image with Frosted Glass Effect */}
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/biometrics-appointment.jpg"
+                          alt="Biometrics & Slot Appointment"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <Clock className="w-6 h-6 text-amber-800" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-amber-900">
+                            Express Scheduling
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Biometrics &amp; Slot Appointment
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Direct monitoring across VFS Global, BLS
+                          International, and Consulates to secure early
+                          biometric booking dates.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs sm:text-sm text-stone-700 font-sans font-medium">
+                        <span>Appointment Vouchers</span>
+                        <span className="font-semibold text-[#002f89]">
+                          Early Slot Alerts
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  productivity={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      {/* Background Image with Frosted Glass Effect */}
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/flight-booking.jpg"
+                          alt="Flight Itinerary & Hotel Proofs"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <Plane className="w-6 h-6 text-emerald-800" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-emerald-900">
+                            Verifiable PNR
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Flight Itinerary &amp; Hotel Proofs
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Embassy-compliant confirmed round-trip dummy flight
+                          itineraries and confirmed hotel reservations with no
+                          financial ticket risks.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs text-stone-600 font-sans font-medium">
+                        <span>Day-Wise Travel Plan</span>
+                        <span className="font-semibold text-emerald-700">
+                          ✓ 100% Embassy Valid
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  shortcuts={
+                    <Card className="h-full border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-white flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 p-6 sm:p-7">
+                      <div className="max-w-md">
+                        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-2">
+                          Mandatory Add-ons
+                        </span>
+                        <CardTitle className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+                          Travel Insurance, Photographs &amp; Employer NOC
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-600 mt-1.5 leading-relaxed font-sans">
+                          Schengen &amp; worldwide embassies require $50,000+
+                          medical insurance with COVID &amp; repatriation
+                          coverage, exact 35×45mm photos, and approved company
+                          NOCs.
+                        </CardDescription>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs sm:text-sm text-stone-600 font-sans font-medium">
+                          <span>• 35×45mm White BG</span>
+                          <span>• €30k / $50k Policy</span>
+                          <span>• ITR-V Last 2 Yrs</span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-center gap-4 sm:gap-4.5 shrink-0 self-center">
+                        <span className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] tracking-tight text-center">
+                          Any doubts ?
+                        </span>
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-3.5 w-full sm:w-auto items-center">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCardEnquiry(
+                                "Visa Assistance: Full Dossier Review",
+                              )
+                            }
+                            className="px-5 py-2.5 rounded-lg bg-[#002f89] hover:bg-[#00246b] text-white text-xs sm:text-sm font-semibold transition-all shadow-xs cursor-pointer active:scale-95 text-center whitespace-nowrap"
+                          >
+                            Request Audit
+                          </button>
+                          <a
+                            href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20a%20checklist%20review%20for%20my%20visa%20documents."
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>WhatsApp Desk</span>
+                          </a>
+                        </div>
+                      </div>
+                    </Card>
+                  }
+                />
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------------------
+            CASE 3A: FLIGHT BOOKING (Airline Ticketing & Route Assurance Bento Showcase)
+            ------------------------------------------------------------------------- */}
+        {activeService.id === "flight-booking" && (
+          <div id="flight-dynamic-hub" className="w-full bg-white">
+            <section className="relative z-10 w-full pt-14 sm:pt-18 pb-20 sm:pb-24 border-t border-black/[0.06] bg-white overflow-hidden">
+              <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+                {/* Header */}
+                <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
+                  <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-[#002f89] block mb-2">
+                    AIRLINE TICKETING &amp; ROUTE ASSURANCE
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#1C1815] tracking-tight leading-[1.14]">
+                    What You Need For Confirmed Flight Issuance
+                  </h2>
+                  <p className="text-sm sm:text-base text-stone-600 mt-3 font-sans leading-relaxed">
+                    Avoid hidden baggage surcharges, rigid cancellation
+                    penalties, and unconfirmed waitlists. Flyora’s global air
+                    ticketing desk secures verified corporate PNRs and flexible
+                    routing.
+                  </p>
+                </div>
+
+                {/* BentoGridShowcase Layout */}
+                <BentoGridShowcase
+                  integration={
+                    <Card className="relative h-full overflow-hidden flex flex-col justify-between border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-[#1C1815] text-white">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/flight-booking.jpg"
+                          alt="Flight Booking Vault"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center opacity-30 brightness-85"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1C1815] via-[#1C1815]/90 to-[#1C1815]/60" />
+                      </div>
+
+                      <CardHeader className="relative z-10 p-6 sm:p-7">
+                        <Plane className="w-7 h-7 text-amber-300 mb-4" />
+                        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-amber-300/95 block mb-2">
+                          Primary Route · GDS Lock
+                        </span>
+                        <CardTitle className="text-2xl sm:text-3xl font-serif font-bold text-white leading-tight">
+                          Direct Carrier &amp; PNR Allocation
+                        </CardTitle>
+                        <CardDescription className="text-stone-300 text-xs sm:text-sm mt-2 leading-relaxed">
+                          Unpublished corporate inventory across 500+ commercial
+                          and business airlines worldwide with real-time seat
+                          locks.
+                        </CardDescription>
+
+                        <div className="mt-6 space-y-3.5 text-xs sm:text-sm text-stone-200">
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Passport &amp; Legal Names</strong>{" "}
+                              matching airline database record
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Frequent Flyer / Mileage</strong> tier
+                              accrual pre-attached
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Flexible Rescheduling</strong> with zero
+                              or low carrier fee locks
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>24/7 GDS Route Monitoring</strong> for
+                              schedule and terminal alerts
+                            </span>
+                          </div>
+                        </div>
+                      </CardHeader>
+
+                      <CardFooter className="relative z-10 p-6 sm:p-7 pt-0 border-t border-white/10 mt-6">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCardEnquiry("Flight Booking: Route Fare Lock")
+                          }
+                          className="w-full py-2.5 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center justify-center gap-2 border border-white/20 transition-all cursor-pointer"
+                        >
+                          <span>Request Flight Fare Audit</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </CardFooter>
+                    </Card>
+                  }
+                  trackers={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/flight-booking.jpg"
+                          alt="Baggage Allowances & Cabin Proof"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <Compass className="w-6 h-6 text-[#002f89]" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-[#002f89]">
+                            Baggage Tier
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Baggage Allowances &amp; Cabin Proof
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Up to 30kg–46kg checked baggage allowances confirmed
+                          upfront with clear dimension standards and excess fee
+                          waivers.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs sm:text-sm text-stone-700 font-sans font-medium">
+                        <span>Extra Piece Option</span>
+                        <span className="font-semibold text-emerald-700">
+                          ✓ 0 Surcharge Guarantee
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  statistic={
+                    <Card className="relative h-full overflow-hidden border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-gradient-to-br from-[#002f89] to-[#001c54] text-white flex flex-col justify-between p-6">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-amber-300 font-bold">
+                          Flyora Airline Metric
+                        </span>
+                        <ShieldCheck className="w-6 h-6 text-emerald-300" />
+                      </div>
+                      <div className="my-2">
+                        <span className="text-5xl sm:text-6xl font-serif font-extrabold tracking-tight text-white block">
+                          100%
+                        </span>
+                        <span className="text-xs sm:text-sm text-white/90 font-sans font-medium mt-1 block">
+                          Verified PNR Seat Confirmation
+                        </span>
+                      </div>
+                      <p className="text-xs text-white/75 font-sans leading-relaxed">
+                        Zero phantom bookings. Every ticket is issued directly
+                        via official Amadeus &amp; Sabre airline GDS networks.
+                      </p>
+                    </Card>
+                  }
+                  focus={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/destinations/dubai_hd.jpg"
+                          alt="Seat Allotment & Meal Preferences"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <Clock className="w-6 h-6 text-amber-800" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-amber-900">
+                            Priority Check-in
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Seat Allotment &amp; Meal Preferences
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Pre-reserved extra legroom seats, aisle/window lock,
+                          and bespoke dietary or religious meal selections on
+                          all sectors.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs sm:text-sm text-stone-700 font-sans font-medium">
+                        <span>Boarding Pass Delivery</span>
+                        <span className="font-semibold text-[#002f89]">
+                          Real-time WhatsApp Alerts
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  productivity={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/flight-booking.jpg"
+                          alt="Corporate & Best-Fare Lock"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <CreditCard className="w-6 h-6 text-emerald-800" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-emerald-900">
+                            Price Match
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Corporate &amp; Best-Fare Lock
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Hold confirmed fares for 24–48 hours without price
+                          spikes while your itinerary or visa clearance is being
+                          finalized.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs text-stone-600 font-sans font-medium">
+                        <span>Fare Lock Validity</span>
+                        <span className="font-semibold text-emerald-700">
+                          ✓ Best Fare Guarantee
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  shortcuts={
+                    <Card className="h-full border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-white flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 p-6 sm:p-7">
+                      <div className="max-w-md">
+                        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-2">
+                          Complimentary Concierge
+                        </span>
+                        <CardTitle className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+                          Airport Lounge Access, Multi-City Halts &amp; Travel
+                          Insurance
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-600 mt-1.5 leading-relaxed font-sans">
+                          Seamless transit transfers, international layover
+                          lounges, and full flight delay or baggage loss
+                          compensation insurance policies.
+                        </CardDescription>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs sm:text-sm text-stone-600 font-sans font-medium">
+                          <span>• Domestic &amp; Intl Lounges</span>
+                          <span>• Free Date Change Options</span>
+                          <span>• 24/7 Ticketing Support</span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-center gap-4 sm:gap-4.5 shrink-0 self-center">
+                        <span className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] tracking-tight text-center">
+                          Any doubts ?
+                        </span>
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-3.5 w-full sm:w-auto items-center">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCardEnquiry(
+                                "Flight Booking: Flight Route Fare",
+                              )
+                            }
+                            className="px-5 py-2.5 rounded-lg bg-[#002f89] hover:bg-[#00246b] text-white text-xs sm:text-sm font-semibold transition-all shadow-xs cursor-pointer active:scale-95 text-center whitespace-nowrap"
+                          >
+                            Request Route Quote
+                          </button>
+                          <a
+                            href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20inquire%20about%20a%20flight%20ticket%20booking."
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>WhatsApp Desk</span>
+                          </a>
+                        </div>
+                      </div>
+                    </Card>
+                  }
+                />
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------------------
+            CASE 3B: TRAIN BOOKING (Railway Concierge & Confirmed Berths Bento Showcase)
+            ------------------------------------------------------------------------- */}
+        {activeService.id === "train-booking" && (
+          <div id="train-dynamic-hub" className="w-full bg-white">
+            <section className="relative z-10 w-full pt-14 sm:pt-18 pb-20 sm:pb-24 border-t border-black/[0.06] bg-white overflow-hidden">
+              <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+                {/* Header */}
+                <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
+                  <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-[#002f89] block mb-2">
+                    RAILWAY CONCIERGE &amp; CONFIRMED BERTHS
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#1C1815] tracking-tight leading-[1.14]">
+                    What You Need For Hassle-Free Rail Travel
+                  </h2>
+                  <p className="text-sm sm:text-base text-stone-600 mt-3 font-sans leading-relaxed">
+                    Skip the frustration of endless waitlists and unconfirmed
+                    RAC tickets. Our dedicated rail desk secures confirmed
+                    berths, premium tourist coaches, and Tatkal allocations.
+                  </p>
+                </div>
+
+                {/* BentoGridShowcase Layout */}
+                <BentoGridShowcase
+                  integration={
+                    <Card className="relative h-full overflow-hidden flex flex-col justify-between border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-[#1C1815] text-white">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/train-booking.jpg"
+                          alt="Train Booking Vault"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center opacity-30 brightness-85"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1C1815] via-[#1C1815]/90 to-[#1C1815]/60" />
+                      </div>
+
+                      <CardHeader className="relative z-10 p-6 sm:p-7">
+                        <Train className="w-7 h-7 text-amber-300 mb-4" />
+                        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-amber-300/95 block mb-2">
+                          Confirmed Berth · Priority
+                        </span>
+                        <CardTitle className="text-2xl sm:text-3xl font-serif font-bold text-white leading-tight">
+                          Coach Tier &amp; Berth Preferences
+                        </CardTitle>
+                        <CardDescription className="text-stone-300 text-xs sm:text-sm mt-2 leading-relaxed">
+                          Direct allocation across 1st AC, 2nd AC, 3rd AC,
+                          Executive Chair Car, and luxury tourist train
+                          services.
+                        </CardDescription>
+
+                        <div className="mt-6 space-y-3.5 text-xs sm:text-sm text-stone-200">
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Lower &amp; Window Berth</strong>{" "}
+                              automatically prioritized for elders &amp;
+                              families
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Group &amp; Family Seating</strong> in the
+                              same coach compartment
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Tatkal &amp; Premium Tatkal</strong>{" "}
+                              express booking assistance
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Instant PNR Status</strong> &amp; live
+                              platform coach position links
+                            </span>
+                          </div>
+                        </div>
+                      </CardHeader>
+
+                      <CardFooter className="relative z-10 p-6 sm:p-7 pt-0 border-t border-white/10 mt-6">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCardEnquiry("Train Booking: Berth Allocation")
+                          }
+                          className="w-full py-2.5 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center justify-center gap-2 border border-white/20 transition-all cursor-pointer"
+                        >
+                          <span>Request Train Seat Audit</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </CardFooter>
+                    </Card>
+                  }
+                  trackers={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/destinations/switzerland_hd.jpg"
+                          alt="Confirmed PNR & Charting Guarantee"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <FileText className="w-6 h-6 text-[#002f89]" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-[#002f89]">
+                            Berth Status
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Confirmed PNR &amp; Charting Guarantee
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Guaranteed confirmed status prior to final chart
+                          preparation with automated RAC upgrade tracking and
+                          zero waitlist drop risks.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs sm:text-sm text-stone-700 font-sans font-medium">
+                        <span>Automated RAC Tracking</span>
+                        <span className="font-semibold text-emerald-700">
+                          ✓ 100% Berth Lock
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  statistic={
+                    <Card className="relative h-full overflow-hidden border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-gradient-to-br from-[#002f89] to-[#001c54] text-white flex flex-col justify-between p-6">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-amber-300 font-bold">
+                          Flyora Rail Metric
+                        </span>
+                        <ShieldCheck className="w-6 h-6 text-emerald-300" />
+                      </div>
+                      <div className="my-2">
+                        <span className="text-5xl sm:text-6xl font-serif font-extrabold tracking-tight text-white block">
+                          98.6%
+                        </span>
+                        <span className="text-xs sm:text-sm text-white/90 font-sans font-medium mt-1 block">
+                          Tatkal &amp; Berth Confirmation Rate
+                        </span>
+                      </div>
+                      <p className="text-xs text-white/75 font-sans leading-relaxed">
+                        Over 25,000+ confirmed berths secured on high-demand
+                        peak holiday and festival express routes.
+                      </p>
+                    </Card>
+                  }
+                  focus={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/train-booking.jpg"
+                          alt="Live Train GPS & Delay Alerts"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <Clock className="w-6 h-6 text-amber-800" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-amber-900">
+                            Live Tracker
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Live Train GPS &amp; Delay Alerts
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Real-time running status, platform arrival forecasts,
+                          and live route delay notifications sent directly to
+                          your phone.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs sm:text-sm text-stone-700 font-sans font-medium">
+                        <span>Platform Updates</span>
+                        <span className="font-semibold text-[#002f89]">
+                          Automated WhatsApp Alerts
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  productivity={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/destinations/switzerland.jpg"
+                          alt="Zero-Hassle Cancellation & Refunds"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <CreditCard className="w-6 h-6 text-emerald-800" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-emerald-900">
+                            Instant Refund
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Zero-Hassle Cancellation &amp; Refunds
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Speedy automated IRCTC cancellation processing with
+                          direct bank transfer refunds in 24 hours and zero
+                          hidden fees.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs text-stone-600 font-sans font-medium">
+                        <span>Cancellation Desk</span>
+                        <span className="font-semibold text-emerald-700">
+                          ✓ Instant Processing
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  shortcuts={
+                    <Card className="h-full border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-white flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 p-6 sm:p-7">
+                      <div className="max-w-md">
+                        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-2">
+                          Journey Perks
+                        </span>
+                        <CardTitle className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+                          Station Transfers, Onboard Meals &amp; Tourist Circuit
+                          Passes
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-600 mt-1.5 leading-relaxed font-sans">
+                          Pre-booked station cab pickups, hygienic hot meal
+                          catering delivered directly to your berth, and scenic
+                          tourist train bookings.
+                        </CardDescription>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs sm:text-sm text-stone-600 font-sans font-medium">
+                          <span>• Hot Meals to Seat</span>
+                          <span>• Verified Station Porters</span>
+                          <span>• Group Coach Bookings</span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-center gap-4 sm:gap-4.5 shrink-0 self-center">
+                        <span className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] tracking-tight text-center">
+                          Any doubts ?
+                        </span>
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-3.5 w-full sm:w-auto items-center">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCardEnquiry(
+                                "Train Booking: Berth Confirmation",
+                              )
+                            }
+                            className="px-5 py-2.5 rounded-lg bg-[#002f89] hover:bg-[#00246b] text-white text-xs sm:text-sm font-semibold transition-all shadow-xs cursor-pointer active:scale-95 text-center whitespace-nowrap"
+                          >
+                            Request Train Quote
+                          </button>
+                          <a
+                            href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20book%20a%20confirmed%20train%20ticket."
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>WhatsApp Desk</span>
+                          </a>
+                        </div>
+                      </div>
+                    </Card>
+                  }
+                />
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------------------
+            CASE 3C: BUS BOOKING (Intercity Coach & Highway Comfort Bento Showcase)
+            ------------------------------------------------------------------------- */}
+        {activeService.id === "bus-booking" && (
+          <div id="bus-dynamic-hub" className="w-full bg-white">
+            <section className="relative z-10 w-full pt-14 sm:pt-18 pb-20 sm:pb-24 border-t border-black/[0.06] bg-white overflow-hidden">
+              <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+                {/* Header */}
+                <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-14">
+                  <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-[#002f89] block mb-2">
+                    INTERCITY COACH &amp; HIGHWAY COMFORT
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#1C1815] tracking-tight leading-[1.14]">
+                    What You Need For Premium Coach Travel
+                  </h2>
+                  <p className="text-sm sm:text-base text-stone-600 mt-3 font-sans leading-relaxed">
+                    Travel comfortably with multi-axle Volvo, Scania, and luxury
+                    sleeper coaches. Enjoy verified city boarding lounges,
+                    certified sanitized berths, and punctuality guarantees.
+                  </p>
+                </div>
+
+                {/* BentoGridShowcase Layout */}
+                <BentoGridShowcase
+                  integration={
+                    <Card className="relative h-full overflow-hidden flex flex-col justify-between border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-[#1C1815] text-white">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/bus-booking.jpg"
+                          alt="Bus Booking Vault"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center opacity-30 brightness-85"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1C1815] via-[#1C1815]/90 to-[#1C1815]/60" />
+                      </div>
+
+                      <CardHeader className="relative z-10 p-6 sm:p-7">
+                        <Bus className="w-7 h-7 text-amber-300 mb-4" />
+                        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-amber-300/95 block mb-2">
+                          Sleeper &amp; Volvo · Select
+                        </span>
+                        <CardTitle className="text-2xl sm:text-3xl font-serif font-bold text-white leading-tight">
+                          Fleet &amp; Seat Allocation
+                        </CardTitle>
+                        <CardDescription className="text-stone-300 text-xs sm:text-sm mt-2 leading-relaxed">
+                          Direct tie-ups with top verified private operators and
+                          state luxury transport corporations for premier
+                          highway journeys.
+                        </CardDescription>
+
+                        <div className="mt-6 space-y-3.5 text-xs sm:text-sm text-stone-200">
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Lower Deck Sleeper</strong> &amp; Single
+                              Ladies Berth reserved safety
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Multi-Axle Volvo &amp; Scania</strong>{" "}
+                              air-suspension smooth rides
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Clean Sanitized Blankets</strong>,
+                              charging ports &amp; reading lights
+                            </span>
+                          </div>
+                          <div className="flex items-start gap-2.5">
+                            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                            <span>
+                              <strong>Prime City Boarding Lounges</strong> with
+                              air-conditioned waiting facilities
+                            </span>
+                          </div>
+                        </div>
+                      </CardHeader>
+
+                      <CardFooter className="relative z-10 p-6 sm:p-7 pt-0 border-t border-white/10 mt-6">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCardEnquiry(
+                              "Bus Booking: Route & Berth Audit",
+                            )
+                          }
+                          className="w-full py-2.5 px-4 rounded-lg bg-white/10 hover:bg-white/20 text-white text-xs font-semibold flex items-center justify-center gap-2 border border-white/20 transition-all cursor-pointer"
+                        >
+                          <span>Request Bus Route Audit</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </CardFooter>
+                    </Card>
+                  }
+                  trackers={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/bus-booking.jpg"
+                          alt="Verified Operators & GPS Tracking"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <ShieldCheck className="w-6 h-6 text-[#002f89]" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-[#002f89]">
+                            Safety First
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Verified Operators &amp; GPS Tracking
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Every coach operator is pre-screened for commercial
+                          fitness, speed governor compliance, and live GPS
+                          broadcast.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs sm:text-sm text-stone-700 font-sans font-medium">
+                        <span>Live Coach Location</span>
+                        <span className="font-semibold text-emerald-700">
+                          ✓ Shareable Tracking Link
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  statistic={
+                    <Card className="relative h-full overflow-hidden border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-gradient-to-br from-[#002f89] to-[#001c54] text-white flex flex-col justify-between p-6">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs sm:text-sm font-mono uppercase tracking-wider text-amber-300 font-bold">
+                          Flyora Transit Metric
+                        </span>
+                        <ShieldCheck className="w-6 h-6 text-emerald-300" />
+                      </div>
+                      <div className="my-2">
+                        <span className="text-5xl sm:text-6xl font-serif font-extrabold tracking-tight text-white block">
+                          99.4%
+                        </span>
+                        <span className="text-xs sm:text-sm text-white/90 font-sans font-medium mt-1 block">
+                          On-Time Departure &amp; Arrival Record
+                        </span>
+                      </div>
+                      <p className="text-xs text-white/75 font-sans leading-relaxed">
+                        18,000+ passengers safely transported on overnight and
+                        intercity highway express routes.
+                      </p>
+                    </Card>
+                  }
+                  focus={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/gallery/verdant.jpg"
+                          alt="City Boarding Point Assistance"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <Clock className="w-6 h-6 text-amber-800" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-amber-900">
+                            Express Service
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          City Boarding Point Assistance
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Exact pickup coordinates, direct contact numbers of
+                          the bus crew, and timely departure phone reminders.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs sm:text-sm text-stone-700 font-sans font-medium">
+                        <span>Crew Contact Support</span>
+                        <span className="font-semibold text-[#002f89]">
+                          Direct Boarding Help
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  productivity={
+                    <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
+                      <div className="absolute inset-0 z-0">
+                        <Image
+                          src="/services/bus-booking.jpg"
+                          alt="Easy Rescheduling & Instant Seat Lock"
+                          fill
+                          sizes="(max-width: 768px) 100vw, 33vw"
+                          className="object-cover object-center brightness-95 opacity-80 group-hover:scale-105 transition-transform duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-white/45 backdrop-blur-[6px]" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-white/95 via-white/55 to-white/30" />
+                      </div>
+
+                      <div className="relative z-10">
+                        <div className="flex items-center justify-between mb-3.5">
+                          <CreditCard className="w-6 h-6 text-emerald-800" />
+                          <span className="text-xs sm:text-sm font-sans font-semibold tracking-wide text-emerald-900">
+                            Flexible Travel
+                          </span>
+                        </div>
+                        <CardTitle className="text-base sm:text-lg font-serif font-bold text-[#1C1815] drop-shadow-[0_1px_1px_rgba(255,255,255,0.9)]">
+                          Easy Rescheduling &amp; Seat Lock
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-700 mt-1.5 leading-relaxed font-sans font-medium">
+                          Change your travel date up to 6 hours before departure
+                          without losing your booking value or incurring heavy
+                          penalties.
+                        </CardDescription>
+                      </div>
+                      <div className="relative z-10 mt-4 pt-3 border-t border-black/[0.08] flex items-center justify-between text-xs text-stone-600 font-sans font-medium">
+                        <span>Reschedule Window</span>
+                        <span className="font-semibold text-emerald-700">
+                          ✓ Low Cancellation Fee
+                        </span>
+                      </div>
+                    </Card>
+                  }
+                  shortcuts={
+                    <Card className="h-full border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-white flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-6 p-6 sm:p-7">
+                      <div className="max-w-md">
+                        <span className="text-xs sm:text-sm font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-2">
+                          Cabin Essentials
+                        </span>
+                        <CardTitle className="text-lg sm:text-xl font-serif font-bold text-[#1C1815]">
+                          Hygienic Rest Stops, Extra Luggage Space &amp; 24/7
+                          Road Desk
+                        </CardTitle>
+                        <CardDescription className="text-xs sm:text-sm text-stone-600 mt-1.5 leading-relaxed font-sans">
+                          Pre-selected verified highway restaurants with clean
+                          restrooms, dedicated boot luggage tags, and emergency
+                          breakdown assistance.
+                        </CardDescription>
+                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 mt-3 text-xs sm:text-sm text-stone-600 font-sans font-medium">
+                          <span>• Clean Restroom Halts</span>
+                          <span>• Free Luggage Tags</span>
+                          <span>• Emergency Road Assist</span>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-center gap-4 sm:gap-4.5 shrink-0 self-center">
+                        <span className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] tracking-tight text-center">
+                          Any doubts ?
+                        </span>
+                        <div className="flex flex-col sm:flex-row gap-3 sm:gap-3.5 w-full sm:w-auto items-center">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              handleCardEnquiry("Bus Booking: Seat Reservation")
+                            }
+                            className="px-5 py-2.5 rounded-lg bg-[#002f89] hover:bg-[#00246b] text-white text-xs sm:text-sm font-semibold transition-all shadow-xs cursor-pointer active:scale-95 text-center whitespace-nowrap"
+                          >
+                            Request Bus Quote
+                          </button>
+                          <a
+                            href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20book%20a%20luxury%20bus%20seat."
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="px-4 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95 whitespace-nowrap"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5" />
+                            <span>WhatsApp Desk</span>
+                          </a>
+                        </div>
+                      </div>
+                    </Card>
+                  }
+                />
+              </div>
+            </section>
+          </div>
+        )}
+
+        {/* -------------------------------------------------------------------------
+            CASE 4A: UMRAH PACKAGES (Luxury Reference Pilgrimage Experience)
+            ------------------------------------------------------------------------- */}
+        {activeService.id === "umrah-packages" && (
+          <div id="umrah-dynamic-hub" className="w-full bg-[#FDFCFB]">
+            <section className="relative z-10 w-full pt-14 sm:pt-18 pb-20 sm:pb-24 border-t border-black/[0.06]">
+              <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+                {/* Header Section */}
+                <div className="mb-10 sm:mb-12">
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#002f89] mb-2.5">
+                    <span>Sacred Pilgrimage</span>
+                    <span>·</span>
+                    <span>Executive 5-Star Suites</span>
+                    <span>·</span>
+                    <span className="text-emerald-700 font-bold">
+                      100% Guaranteed Rawdah Permit
+                    </span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-serif font-bold text-[#1C1815] tracking-tight leading-[1.12]">
+                    Executive 5-Star Umrah Pilgrimage Experience
+                  </h2>
+                  <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-3xl font-sans leading-relaxed">
+                    Complete peace of mind for you and your family.
+                    Walking-distance 5-star Haram accommodations, VIP Haramain
+                    bullet train, verified Nusuk permits, and guided Ziyarat.
+                  </p>
+                </div>
+
+                {/* 1. TOP SPLIT SHOWCASE: Left 4-Photo Gallery + Right Overview & Customizer */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 mb-14 sm:mb-16 items-stretch">
+                  {/* Left Column: Interactive 4-Photo Gallery */}
+                  <div className="lg:col-span-7 flex flex-col h-full">
+                    {/* Main Active Photo */}
+                    <div className="relative w-full h-[360px] sm:h-[430px] lg:h-auto lg:flex-1 min-h-[360px] sm:min-h-[430px] rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs group bg-stone-900">
+                      <Image
+                        src={UMRAH_GALLERY_PHOTOS[umrahActivePhoto].src}
+                        alt={UMRAH_GALLERY_PHOTOS[umrahActivePhoto].alt}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 58vw"
+                        priority
+                        className="object-cover object-center transition-all duration-500 group-hover:scale-[1.02]"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
+                      {/* Photo Badge */}
+                      <div className="absolute top-4 left-4 z-10 px-3.5 py-1.5 rounded-[8px] bg-black/60 backdrop-blur-md border border-white/20 text-white text-xs font-medium flex items-center gap-2">
+                        <MapPin className="w-3.5 h-3.5 text-amber-300" />
+                        <span>
+                          {UMRAH_GALLERY_PHOTOS[umrahActivePhoto].label}
+                        </span>
+                      </div>
+                      <div className="absolute bottom-4 left-4 right-4 z-10 text-white drop-shadow-md">
+                        <p className="text-sm sm:text-base font-serif font-medium text-white/95">
+                          {UMRAH_GALLERY_PHOTOS[umrahActivePhoto].alt}
                         </p>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* Block 4: Inclusions & Enquiry Hub (Split 7 / 5 Grid) */}
-              <div className="mt-10 sm:mt-12 pt-8 sm:pt-10 border-t border-black/[0.06]">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 items-stretch">
-                  {/* Left Column: What Flyora Brings */}
-                  <div className="lg:col-span-7 bg-[#FAF8F5]/80 p-6 sm:p-7 rounded-[8px] border border-black/[0.06] flex flex-col justify-between">
-                    <div>
-                      <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-1">
-                        Flyora Quality Inclusions
-                      </span>
-                      <h4 className="text-xl sm:text-2xl font-serif font-bold text-[#1C1815]">
-                        What Flyora Manages for You
-                      </h4>
-                      <p className="text-xs sm:text-sm text-stone-600 mt-1 mb-5">
-                        Every request is handled 1-on-1 by senior coordinators
-                        with full logistics support.
-                      </p>
-
-                      <div className="space-y-3.5">
-                        {hubData.inclusions.map((inc, iIdx) => (
-                          <div key={iIdx} className="flex items-start gap-3">
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                            <div>
-                              <strong className="text-xs sm:text-sm font-bold text-stone-900 block leading-snug">
-                                {inc.title}
-                              </strong>
-                              <span className="text-xs text-stone-600 leading-relaxed block mt-0.5">
-                                {inc.desc}
-                              </span>
+                    {/* 4 Clickable Thumbnails */}
+                    <div className="grid grid-cols-4 gap-2.5 sm:gap-3.5 mt-3 sm:mt-3.5 shrink-0">
+                      {UMRAH_GALLERY_PHOTOS.map((photo, idx) => {
+                        const isActive = idx === umrahActivePhoto;
+                        return (
+                          <button
+                            key={photo.label}
+                            type="button"
+                            onClick={() => setUmrahActivePhoto(idx)}
+                            className={`group relative h-[80px] sm:h-[95px] rounded-[8px] overflow-hidden border-2 transition-all cursor-pointer text-left ${
+                              isActive
+                                ? "border-[#002f89] ring-2 ring-[#002f89]/25 shadow-xs"
+                                : "border-black/[0.1] opacity-75 hover:opacity-100 hover:border-black/30"
+                            }`}
+                          >
+                            <Image
+                              src={photo.src}
+                              alt={photo.alt}
+                              fill
+                              sizes="25vw"
+                              className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                            <div className="absolute bottom-1 inset-x-1 text-center bg-black/65 backdrop-blur-xs text-[10px] text-white py-0.5 rounded-[6px] font-medium truncate px-1">
+                              {photo.label}
                             </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs text-stone-500 flex items-center gap-2">
-                      <ShieldCheck className="w-4 h-4 text-[#002f89]" />
-                      <span>
-                        All bookings processed directly via official partner
-                        portals &amp; licensed desks.
-                      </span>
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
-                  {/* Right Column: Enquiry Action Card (No direct checkout, pure lead routing) */}
-                  <div className="lg:col-span-5 bg-gradient-to-br from-[#002f89] to-[#001c54] text-white p-6 sm:p-7 rounded-[8px] shadow-md flex flex-col justify-between">
+                  {/* Right Column: Pricing, Specs & Package Tier Selector */}
+                  <div className="lg:col-span-5 flex flex-col justify-between bg-white rounded-[8px] border border-black/[0.08] p-6 sm:p-7 shadow-xs">
                     <div>
-                      <span className="inline-block px-2.5 py-0.5 rounded-[8px] bg-white/15 border border-white/20 text-[10.5px] font-mono uppercase tracking-wider text-amber-200 mb-3">
-                        Manual Concierge Desk
-                      </span>
-                      <h4 className="text-2xl font-serif font-bold leading-tight">
-                        {hubData.ctaHeadline}
-                      </h4>
-                      <p className="text-xs sm:text-sm text-white/85 mt-2.5 leading-relaxed font-sans">
-                        {hubData.ctaSubheadline}
-                      </p>
+                      {/* Price & Rating Bar */}
+                      <div className="flex items-start justify-between gap-4 pb-5 border-b border-black/[0.06]">
+                        <div>
+                          <span className="text-xs text-stone-500 uppercase tracking-wider font-mono block">
+                            Starting from
+                          </span>
+                          <div className="flex items-baseline gap-1.5 mt-1">
+                            <span className="text-3xl sm:text-4xl font-serif font-bold text-[#002f89]">
+                              {UMRAH_TIER_DATA[umrahTierSelect].price}
+                            </span>
+                            <span className="text-xs text-stone-500 font-sans">
+                              {UMRAH_TIER_DATA[umrahTierSelect].perPerson}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-xs text-stone-500 uppercase tracking-wider font-mono block">
+                            Pilgrim Rating
+                          </span>
+                          <div className="inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-[8px] bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-bold">
+                            <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
+                            <span>4.9</span>
+                            <span className="text-amber-700/80 font-normal">
+                              (450+ Reviews)
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 4 Quick Spec Badges (2x2 Grid) */}
+                      <div className="grid grid-cols-2 gap-3 py-5 border-b border-black/[0.06]">
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                          <Clock className="w-4 h-4 text-[#002f89] shrink-0" />
+                          <div>
+                            <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
+                              Duration
+                            </span>
+                            <span className="text-xs font-semibold text-stone-800">
+                              {UMRAH_TIER_DATA[umrahTierSelect].duration}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                          <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
+                          <div>
+                            <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
+                              Haram Distance
+                            </span>
+                            <span className="text-xs font-semibold text-stone-800">
+                              {UMRAH_TIER_DATA[umrahTierSelect].distance}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                          <Train className="w-4 h-4 text-amber-700 shrink-0" />
+                          <div>
+                            <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
+                              Transit Mode
+                            </span>
+                            <span className="text-xs font-semibold text-stone-800">
+                              {UMRAH_TIER_DATA[umrahTierSelect].transit}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                          <UserCheck className="w-4 h-4 text-purple-700 shrink-0" />
+                          <div>
+                            <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
+                              Scholar Guide
+                            </span>
+                            <span className="text-xs font-semibold text-stone-800">
+                              {UMRAH_TIER_DATA[umrahTierSelect].guide}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Package Tier Selection Tabs */}
+                      <div className="pt-5">
+                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-stone-500 block mb-2.5">
+                          Select Package Tier
+                        </span>
+                        <div className="grid grid-cols-3 gap-2 p-1 rounded-[8px] bg-[#FAF8F5] border border-black/[0.06]">
+                          {(
+                            [
+                              "executive",
+                              "deluxe",
+                              "vip",
+                            ] as PilgrimageTierKey[]
+                          ).map((key) => {
+                            const isSelected = umrahTierSelect === key;
+                            return (
+                              <button
+                                key={key}
+                                type="button"
+                                onClick={() => setUmrahTierSelect(key)}
+                                className={`py-2 px-1 text-xs font-semibold rounded-[6px] transition-all cursor-pointer text-center ${
+                                  isSelected
+                                    ? "bg-[#002f89] text-white shadow-xs"
+                                    : "text-stone-600 hover:text-stone-900 hover:bg-white/80"
+                                }`}
+                              >
+                                {UMRAH_TIER_DATA[key].name}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Selected Hotels Information */}
+                        <div className="mt-4 p-3.5 rounded-[8px] bg-amber-50/60 border border-amber-200/50 space-y-1.5 text-xs text-amber-950">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-amber-900">
+                              Makkah Hotel:
+                            </span>
+                            <span className="font-bold">
+                              {UMRAH_TIER_DATA[umrahTierSelect].makkahHotel}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-amber-900">
+                              Madinah Hotel:
+                            </span>
+                            <span className="font-bold">
+                              {UMRAH_TIER_DATA[umrahTierSelect].madinahHotel}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="mt-6 space-y-3">
+                    {/* Booking Buttons */}
+                    <div className="pt-6 mt-6 border-t border-black/[0.06] flex flex-col gap-2.5">
                       <button
                         type="button"
                         onClick={() =>
-                          handleCardEnquiry(hubData.serviceId, {
-                            serviceId: hubData.serviceId,
-                            serviceName: hubData.name,
-                            destination: "",
-                            travelDate: "",
-                            tierOrClass: "",
-                            summaryLabel: `${hubData.name} · Specialist Inquiry`,
-                          })
+                          handleCardEnquiry(
+                            `Umrah Packages (${UMRAH_TIER_DATA[umrahTierSelect].name})`,
+                          )
                         }
-                        className="w-full py-3.5 px-5 rounded-[8px] bg-white hover:bg-amber-100 text-stone-900 font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-md active:scale-95 cursor-pointer"
+                        className="w-full py-3.5 px-6 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-[0_4px_18px_rgba(0,47,137,0.35)] cursor-pointer active:scale-[0.99]"
                       >
-                        <span>{hubData.ctaButtonText}</span>
+                        <span>Book This Pilgrimage</span>
                         <ArrowRight className="w-4 h-4" />
                       </button>
-
                       <a
-                        href={`https://wa.me/919876543210?text=${encodeURIComponent(
-                          hubData.whatsappMessage,
-                        )}`}
+                        href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20inquire%20about%20the%20Executive%20Umrah%20package."
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-full py-3 px-5 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 cursor-pointer"
+                        className="w-full py-2.5 px-4 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-[0.99]"
                       >
-                        <MessageCircle className="w-4 h-4" />
-                        <span>Chat Directly on WhatsApp</span>
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>Instant Consultation with Scholar Desk</span>
                       </a>
+                    </div>
+                  </div>
+                </div>
 
-                      <div className="pt-3 border-t border-white/15 text-[11px] text-white/75 flex items-center justify-between">
-                        <span>✓ Zero upfront payment</span>
-                        <span>✓ 15-min human response</span>
+                {/* 2. LOWER SECTION: Left Narrative & Itinerary Timeline + Right Sticky Summary Card */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                  {/* Left Column (8 cols): Overview, Timeline, Inclusions, Reviews */}
+                  <div className="lg:col-span-8 space-y-12">
+                    {/* A. Spiritual Experience Overview */}
+                    <div className="bg-white rounded-[8px] p-7 sm:p-8 border border-black/[0.08] shadow-xs">
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-2">
+                        Sacred Pilgrimage Overview
+                      </span>
+                      <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] mb-3">
+                        A Sunnah-Compliant, Tranquil Pilgrimage for You &amp;
+                        Your Family
+                      </h3>
+                      <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+                        Performing Umrah is a life-affirming spiritual devotion.
+                        Flyora ensures your focus remains entirely on your
+                        prayers and supplications by eliminating the stress of
+                        distant commutes, complicated paperwork, and language
+                        barriers.
+                      </p>
+                      <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans mt-3">
+                        Our accommodations are handpicked within 50 to 150
+                        meters of the Holy Haram gates, allowing elderly
+                        pilgrims and families to comfortably walk to every
+                        congregation prayer with zero shuttle hassle.
+                      </p>
+                    </div>
+
+                    {/* B. Your Sacred Journey: Vertical Timeline Itinerary (Aceternity Timeline) */}
+                    <div className="bg-white rounded-[8px] border border-black/[0.08] shadow-xs overflow-visible">
+                      <Timeline
+                        title={
+                          <div>
+                            <span className="text-xs font-sans font-bold uppercase tracking-[0.16em] text-[#002f89] block mb-2">
+                              Step-by-Step Itinerary
+                            </span>
+                            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815]">
+                              Your Sacred Journey
+                            </h3>
+                          </div>
+                        }
+                        description={
+                          <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-2xl font-sans leading-relaxed">
+                            A serene, sunnah-guided day-by-day roadmap designed
+                            for maximum devotion, walking-distance comfort, and
+                            zero travel fatigue.
+                          </p>
+                        }
+                        data={UMRAH_TIMELINE_DATA}
+                        className="bg-white"
+                      />
+                    </div>
+
+                    {/* C. What's Included & What's Not Included Side-by-Side */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* What's Included */}
+                      <div className="bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-xs flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">
+                              ✓
+                            </span>
+                            <h4 className="text-lg font-serif font-bold text-[#1C1815]">
+                              What's Included
+                            </h4>
+                          </div>
+                          <ul className="space-y-3 text-xs sm:text-sm text-stone-700">
+                            {PILGRIMAGE_INCLUSIONS.map((item) => (
+                              <li
+                                key={item}
+                                className="flex items-start gap-2.5"
+                              >
+                                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs font-semibold text-emerald-700">
+                          ✓ Guaranteed MoFA Approved Coverage
+                        </div>
+                      </div>
+
+                      {/* Not Included */}
+                      <div className="bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-xs flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center text-xs font-bold">
+                              ✕
+                            </span>
+                            <h4 className="text-lg font-serif font-bold text-[#1C1815]">
+                              Not Included
+                            </h4>
+                          </div>
+                          <ul className="space-y-3 text-xs sm:text-sm text-stone-600">
+                            {PILGRIMAGE_EXCLUSIONS.map((item) => (
+                              <li
+                                key={item}
+                                className="flex items-start gap-2.5"
+                              >
+                                <XCircle className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs text-stone-500 font-sans">
+                          Available as customized package add-ons on request.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column (4 cols): Sticky Sidebar Action Card */}
+                  <div className="lg:col-span-4">
+                    <div className="sticky top-28 self-start bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-sm space-y-6">
+                      <div>
+                        <span className="inline-block px-2.5 py-1 rounded-[6px] bg-emerald-50 text-emerald-800 text-xs font-semibold uppercase tracking-wider mb-2">
+                          Instant Allocation
+                        </span>
+                        <h4 className="text-xl font-serif font-bold text-[#1C1815]">
+                          {UMRAH_TIER_DATA[umrahTierSelect].name} Package
+                        </h4>
+                        <div className="mt-3">
+                          <span className="text-xs text-stone-500 font-mono block">
+                            Package Starting Price
+                          </span>
+                          <span className="text-3xl font-serif font-bold text-[#002f89]">
+                            {UMRAH_TIER_DATA[umrahTierSelect].price}
+                          </span>
+                          <span className="text-xs text-stone-500 ml-1.5 font-sans">
+                            {UMRAH_TIER_DATA[umrahTierSelect].perPerson}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="py-4 border-y border-black/[0.06] space-y-2.5 text-xs text-stone-700">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>
+                            {UMRAH_TIER_DATA[umrahTierSelect].distance}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>
+                            {UMRAH_TIER_DATA[umrahTierSelect].transit}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Guaranteed Rawdah Nusuk Permit</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Daily Luxury Buffet Breakfast</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCardEnquiry(
+                              `Umrah Packages (${UMRAH_TIER_DATA[umrahTierSelect].name})`,
+                            )
+                          }
+                          className="w-full py-3.5 px-5 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
+                        >
+                          <span>Request Full Itinerary PDF</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                        <a
+                          href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20book%20an%20Umrah%20package."
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-2.5 px-4 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>WhatsApp Desk</span>
+                        </a>
+                      </div>
+
+                      <div className="pt-2 text-center text-[11px] text-stone-500 font-sans border-t border-black/[0.06]">
+                        Official MoFA Authorized · 100% Price Lock Guarantee
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
           </div>
-        </section>
+        )}
 
-        {/* 4. COASTAL STATS STRIP WITH PARALLAX MOTION */}
-        <section className="relative bg-[#FDFCFB] overflow-hidden">
-          {/* Subtle Sailboat Watermark on bottom left matching reference image */}
-          <div className="absolute left-6 bottom-16 w-36 h-36 opacity-10 pointer-events-none select-none text-[#002f89]">
-            <svg
-              viewBox="0 0 100 100"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="w-full h-full"
-            >
-              <path
-                d="M10 75 Q50 90 90 75 L78 85 Q50 95 22 85 Z"
-                fill="currentColor"
-                opacity="0.3"
-              />
-              <line x1="50" y1="20" x2="50" y2="75" strokeWidth="3" />
-              <path
-                d="M50 25 L82 70 L50 70 Z"
-                fill="currentColor"
-                opacity="0.2"
-              />
-              <path
-                d="M46 32 L20 70 L46 70 Z"
-                fill="currentColor"
-                opacity="0.15"
-              />
-            </svg>
+        {/* -------------------------------------------------------------------------
+            CASE 4B: HAJJ PACKAGES (Luxury Reference Pilgrimage Experience)
+            ------------------------------------------------------------------------- */}
+        {activeService.id === "hajj-packages" && (
+          <div id="hajj-dynamic-hub" className="w-full bg-[#FDFCFB]">
+            <section className="relative z-10 w-full pt-14 sm:pt-18 pb-20 sm:pb-24 border-t border-black/[0.06]">
+              <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+                {/* Header Section */}
+                <div className="mb-10 sm:mb-12">
+                  <div className="flex flex-wrap items-center gap-2 text-xs font-mono uppercase tracking-wider text-[#002f89] mb-2.5">
+                    <span>The Fifth Pillar</span>
+                    <span>·</span>
+                    <span>Official Ministry Allocation</span>
+                    <span>·</span>
+                    <span className="text-amber-800 font-bold">
+                      Zone A Deluxe European Camps
+                    </span>
+                  </div>
+                  <h2 className="text-3xl sm:text-4xl lg:text-[44px] font-serif font-bold text-[#1C1815] tracking-tight leading-[1.12]">
+                    Royal Non-Shifting Hajj Pilgrimage Allocation
+                  </h2>
+                  <p className="text-sm sm:text-base text-stone-600 mt-2.5 max-w-3xl font-sans leading-relaxed">
+                    The sacred journey of a lifetime conducted with complete
+                    serenity. Premium air-conditioned Mina camps, private
+                    Mashair high-speed transit, and full scholarly guidance.
+                  </p>
+                </div>
+
+                {/* 1. TOP SPLIT SHOWCASE: Left 4-Photo Gallery + Right Overview & Customizer */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 mb-14 sm:mb-16 items-stretch">
+                  {/* Left Column: Interactive 4-Photo Gallery */}
+                  <div className="lg:col-span-7 flex flex-col h-full">
+                    {/* Main Active Photo */}
+                    <div className="relative w-full h-[360px] sm:h-[430px] lg:h-auto lg:flex-1 min-h-[360px] sm:min-h-[430px] rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs group bg-stone-900">
+                      <Image
+                        src={HAJJ_GALLERY_PHOTOS[hajjActivePhoto].src}
+                        alt={HAJJ_GALLERY_PHOTOS[hajjActivePhoto].alt}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 58vw"
+                        priority
+                        className="object-cover object-center transition-all duration-500 group-hover:scale-[1.02]"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
+                      {/* Photo Badge */}
+                      <div className="absolute top-4 left-4 z-10 px-3.5 py-1.5 rounded-[8px] bg-black/60 backdrop-blur-md border border-white/20 text-white text-xs font-medium flex items-center gap-2">
+                        <MapPin className="w-3.5 h-3.5 text-amber-300" />
+                        <span>
+                          {HAJJ_GALLERY_PHOTOS[hajjActivePhoto].label}
+                        </span>
+                      </div>
+                      <div className="absolute bottom-4 left-4 right-4 z-10 text-white drop-shadow-md">
+                        <p className="text-sm sm:text-base font-serif font-medium text-white/95">
+                          {HAJJ_GALLERY_PHOTOS[hajjActivePhoto].alt}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* 4 Clickable Thumbnails */}
+                    <div className="grid grid-cols-4 gap-2.5 sm:gap-3.5 mt-3 sm:mt-3.5 shrink-0">
+                      {HAJJ_GALLERY_PHOTOS.map((photo, idx) => {
+                        const isActive = idx === hajjActivePhoto;
+                        return (
+                          <button
+                            key={photo.label}
+                            type="button"
+                            onClick={() => setHajjActivePhoto(idx)}
+                            className={`group relative h-[80px] sm:h-[95px] rounded-[8px] overflow-hidden border-2 transition-all cursor-pointer text-left ${
+                              isActive
+                                ? "border-[#002f89] ring-2 ring-[#002f89]/25 shadow-xs"
+                                : "border-black/[0.1] opacity-75 hover:opacity-100 hover:border-black/30"
+                            }`}
+                          >
+                            <Image
+                              src={photo.src}
+                              alt={photo.alt}
+                              fill
+                              sizes="25vw"
+                              className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                            />
+                            <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
+                            <div className="absolute bottom-1 inset-x-1 text-center bg-black/65 backdrop-blur-xs text-[10px] text-white py-0.5 rounded-[6px] font-medium truncate px-1">
+                              {photo.label}
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Right Column: Pricing, Specs & Package Tier Selector */}
+                  <div className="lg:col-span-5 flex flex-col justify-between bg-white rounded-[8px] border border-black/[0.08] p-6 sm:p-7 shadow-xs">
+                    <div>
+                      {/* Price & Rating Bar */}
+                      <div className="flex items-start justify-between gap-4 pb-5 border-b border-black/[0.06]">
+                        <div>
+                          <span className="text-xs text-stone-500 uppercase tracking-wider font-mono block">
+                            Starting from
+                          </span>
+                          <div className="flex items-baseline gap-1.5 mt-1">
+                            <span className="text-3xl sm:text-4xl font-serif font-bold text-[#002f89]">
+                              {HAJJ_TIER_DATA[hajjTierSelect].price}
+                            </span>
+                            <span className="text-xs text-stone-500 font-sans">
+                              {HAJJ_TIER_DATA[hajjTierSelect].perPerson}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="text-right shrink-0">
+                          <span className="text-xs text-stone-500 uppercase tracking-wider font-mono block">
+                            Hajj Approval Rate
+                          </span>
+                          <div className="inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-[8px] bg-emerald-50 text-emerald-900 border border-emerald-200/60 text-xs font-bold">
+                            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>100% Guaranteed</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 4 Quick Spec Badges (2x2 Grid) */}
+                      <div className="grid grid-cols-2 gap-3 py-5 border-b border-black/[0.06]">
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                          <Clock className="w-4 h-4 text-[#002f89] shrink-0" />
+                          <div>
+                            <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
+                              Duration
+                            </span>
+                            <span className="text-xs font-semibold text-stone-800">
+                              {HAJJ_TIER_DATA[hajjTierSelect].duration}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                          <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
+                          <div>
+                            <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
+                              Camp Category
+                            </span>
+                            <span className="text-xs font-semibold text-stone-800">
+                              {HAJJ_TIER_DATA[hajjTierSelect].distance}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                          <Train className="w-4 h-4 text-amber-700 shrink-0" />
+                          <div>
+                            <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
+                              Transit Mode
+                            </span>
+                            <span className="text-xs font-semibold text-stone-800">
+                              {HAJJ_TIER_DATA[hajjTierSelect].transit}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                          <UserCheck className="w-4 h-4 text-purple-700 shrink-0" />
+                          <div>
+                            <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
+                              Scholarly Guidance
+                            </span>
+                            <span className="text-xs font-semibold text-stone-800">
+                              {HAJJ_TIER_DATA[hajjTierSelect].guide}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Package Tier Selection Tabs */}
+                      <div className="pt-5">
+                        <span className="text-xs font-mono font-bold uppercase tracking-wider text-stone-500 block mb-2.5">
+                          Select Hajj Tier
+                        </span>
+                        <div className="grid grid-cols-3 gap-2 p-1 rounded-[8px] bg-[#FAF8F5] border border-black/[0.06]">
+                          {(
+                            [
+                              "executive",
+                              "deluxe",
+                              "vip",
+                            ] as PilgrimageTierKey[]
+                          ).map((key) => {
+                            const isSelected = hajjTierSelect === key;
+                            return (
+                              <button
+                                key={key}
+                                type="button"
+                                onClick={() => setHajjTierSelect(key)}
+                                className={`py-2 px-1 text-xs font-semibold rounded-[6px] transition-all cursor-pointer text-center ${
+                                  isSelected
+                                    ? "bg-[#002f89] text-white shadow-xs"
+                                    : "text-stone-600 hover:text-stone-900 hover:bg-white/80"
+                                }`}
+                              >
+                                {HAJJ_TIER_DATA[key].name}
+                              </button>
+                            );
+                          })}
+                        </div>
+
+                        {/* Selected Hotels Information */}
+                        <div className="mt-4 p-3.5 rounded-[8px] bg-amber-50/60 border border-amber-200/50 space-y-1.5 text-xs text-amber-950">
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-amber-900">
+                              Makkah Hotel:
+                            </span>
+                            <span className="font-bold">
+                              {HAJJ_TIER_DATA[hajjTierSelect].makkahHotel}
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="font-medium text-amber-900">
+                              Madinah Hotel:
+                            </span>
+                            <span className="font-bold">
+                              {HAJJ_TIER_DATA[hajjTierSelect].madinahHotel}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Booking Buttons */}
+                    <div className="pt-6 mt-6 border-t border-black/[0.06] flex flex-col gap-2.5">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleCardEnquiry(
+                            `Hajj Packages (${HAJJ_TIER_DATA[hajjTierSelect].name})`,
+                          )
+                        }
+                        className="w-full py-3.5 px-6 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-[0_4px_18px_rgba(0,47,137,0.35)] cursor-pointer active:scale-[0.99]"
+                      >
+                        <span>Request Hajj Allocation</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </button>
+                      <a
+                        href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20inquire%20about%20the%20Hajj%20package."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-full py-2.5 px-4 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-[0.99]"
+                      >
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>Instant Consultation with Hajj Desk</span>
+                      </a>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 2. LOWER SECTION: Left Narrative & Itinerary Timeline + Right Sticky Summary Card */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
+                  {/* Left Column (8 cols): Overview, Timeline, Inclusions, Reviews */}
+                  <div className="lg:col-span-8 space-y-12">
+                    {/* A. Spiritual Experience Overview */}
+                    <div className="bg-white rounded-[8px] p-7 sm:p-8 border border-black/[0.08] shadow-xs">
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-2">
+                        Hajj Rituals Overview
+                      </span>
+                      <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] mb-3">
+                        Fulfilling the Sacred Pillar with Royal Hospitality
+                      </h3>
+                      <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
+                        Hajj requires stamina, preparation, and profound
+                        devotion. Flyora ensures your journey through Mina,
+                        Arafat, and Muzdalifah is supported by top-tier European
+                        air-conditioned camps, hygienic catering, continuous
+                        medical support, and scholar leadership.
+                      </p>
+                      <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans mt-3">
+                        Our Non-Shifting packages keep your 5-star hotel rooms
+                        in Makkah active throughout the 5 days of Hajj, allowing
+                        you to return and freshen up at any time during your
+                        stay.
+                      </p>
+                    </div>
+
+                    {/* B. Your Sacred Journey: Vertical Timeline Itinerary (Aceternity Timeline) */}
+                    <div className="bg-white rounded-[8px] border border-black/[0.08] shadow-xs overflow-visible">
+                      <Timeline
+                        title={
+                          <div>
+                            <span className="text-xs font-sans font-bold uppercase tracking-[0.16em] text-[#002f89] block mb-2">
+                              Manasik Timeline
+                            </span>
+                            <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815]">
+                              The Manasik al-Hajj Program
+                            </h3>
+                          </div>
+                        }
+                        description={
+                          <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-2xl font-sans leading-relaxed">
+                            Complete day-by-day ritual milestones supported by
+                            dedicated Islamic scholars, European camps, and VIP
+                            Mashair transit.
+                          </p>
+                        }
+                        data={HAJJ_TIMELINE_DATA}
+                        className="bg-white"
+                      />
+                    </div>
+
+                    {/* C. What's Included & What's Not Included Side-by-Side */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* What's Included */}
+                      <div className="bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-xs flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">
+                              ✓
+                            </span>
+                            <h4 className="text-lg font-serif font-bold text-[#1C1815]">
+                              What's Included
+                            </h4>
+                          </div>
+                          <ul className="space-y-3 text-xs sm:text-sm text-stone-700">
+                            <li className="flex items-start gap-2.5">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>
+                                Zone A Deluxe European Air-Conditioned Mina
+                                Camps
+                              </span>
+                            </li>
+                            <li className="flex items-start gap-2.5">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>
+                                5-Star Makkah &amp; Madinah Luxury Hotels
+                              </span>
+                            </li>
+                            <li className="flex items-start gap-2.5">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>
+                                Mashair Sacred Metro Train &amp; Private VIP
+                                Coaches
+                              </span>
+                            </li>
+                            <li className="flex items-start gap-2.5">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>
+                                Full 3-Course Buffet Catering &amp; Refreshments
+                              </span>
+                            </li>
+                            <li className="flex items-start gap-2.5">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>
+                                Official Nusuk Hajj Visa &amp; Comprehensive
+                                Insurance
+                              </span>
+                            </li>
+                            <li className="flex items-start gap-2.5">
+                              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>
+                                Senior Islamic Scholar Guidance Throughout Rites
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs font-semibold text-emerald-700">
+                          ✓ Authorized Ministry of Hajj &amp; Umrah Allocation
+                        </div>
+                      </div>
+
+                      {/* Not Included */}
+                      <div className="bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-xs flex flex-col justify-between">
+                        <div>
+                          <div className="flex items-center gap-2 mb-4">
+                            <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center text-xs font-bold">
+                              ✕
+                            </span>
+                            <h4 className="text-lg font-serif font-bold text-[#1C1815]">
+                              Not Included
+                            </h4>
+                          </div>
+                          <ul className="space-y-3 text-xs sm:text-sm text-stone-600">
+                            <li className="flex items-start gap-2.5">
+                              <XCircle className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
+                              <span>
+                                Individual Qurbani / Hady (available as add-on)
+                              </span>
+                            </li>
+                            <li className="flex items-start gap-2.5">
+                              <XCircle className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
+                              <span>
+                                Personal laundry and room service extras
+                              </span>
+                            </li>
+                            <li className="flex items-start gap-2.5">
+                              <XCircle className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
+                              <span>
+                                Excess baggage charges on domestic/international
+                                flights
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                        <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs text-stone-500 font-sans">
+                          Clear itemized quotation with zero hidden charges.
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Right Column (4 cols): Sticky Sidebar Action Card */}
+                  <div className="lg:col-span-4">
+                    <div className="sticky top-28 self-start bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-sm space-y-6">
+                      <div>
+                        <span className="inline-block px-2.5 py-1 rounded-[6px] bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-semibold uppercase tracking-wider mb-2">
+                          Hajj 1448H Allocation
+                        </span>
+                        <h4 className="text-xl font-serif font-bold text-[#1C1815]">
+                          {HAJJ_TIER_DATA[hajjTierSelect].name}
+                        </h4>
+                        <div className="mt-3">
+                          <span className="text-xs text-stone-500 font-mono block">
+                            Package Starting Price
+                          </span>
+                          <span className="text-3xl font-serif font-bold text-[#002f89]">
+                            {HAJJ_TIER_DATA[hajjTierSelect].price}
+                          </span>
+                          <span className="text-xs text-stone-500 ml-1.5 font-sans">
+                            {HAJJ_TIER_DATA[hajjTierSelect].perPerson}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="py-4 border-y border-black/[0.06] space-y-2.5 text-xs text-stone-700">
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>{HAJJ_TIER_DATA[hajjTierSelect].distance}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>{HAJJ_TIER_DATA[hajjTierSelect].transit}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Official Nusuk Platform Processing</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>Full Mina &amp; Arafat Hot Catering</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleCardEnquiry(
+                              `Hajj Packages (${HAJJ_TIER_DATA[hajjTierSelect].name})`,
+                            )
+                          }
+                          className="w-full py-3.5 px-5 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
+                        >
+                          <span>Request Hajj Allocation</span>
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                        <a
+                          href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20information%20on%20Hajj%20packages."
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="w-full py-2.5 px-4 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>WhatsApp Desk</span>
+                        </a>
+                      </div>
+
+                      <div className="pt-2 text-center text-[11px] text-stone-500 font-sans border-t border-black/[0.06]">
+                        Direct Ministry Allocation · Full Protection Guarantee
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
           </div>
+        )}
 
-          {/* Coastal Panoramic Counter Strip with Parallax Motion & Full Width Spacing */}
+        {/* =========================================================================
+            4. COASTAL PANORAMIC COUNTER STRIP WITH AIRPLANE ANIMATION
+            Global Brand Trust Banner rendered for EVERY service directly above Popular & Trending Packages
+            ========================================================================= */}
+        <section className="relative w-full h-[210px] sm:h-[240px] lg:h-[270px] overflow-hidden flex items-center justify-center">
+          {/* Panoramic Background Image with Dynamic Parallax Motion */}
           <div
-            ref={statsSectionRef}
-            className="relative w-full h-[210px] sm:h-[240px] lg:h-[270px] overflow-hidden flex items-center justify-center"
+            ref={parallaxImageRef}
+            className="absolute -top-[20%] -bottom-[20%] inset-x-0 h-[140%] w-full will-change-transform"
+            style={{
+              transform: "translate3d(0, 0px, 0) scale(1.18)",
+            }}
           >
-            {/* Panoramic Background Image with Dynamic Parallax Motion */}
-            <div
-              ref={parallaxImageRef}
-              className="absolute -top-[20%] -bottom-[20%] inset-x-0 h-[140%] w-full will-change-transform"
-              style={{
-                transform: "translate3d(0, 0px, 0) scale(1.18)",
-              }}
-            >
-              <Image
-                src="/gallery/stats-coastal-bg.jpg"
-                alt="Coastal travel statistics"
-                fill
-                sizes="100vw"
-                className="object-cover object-center brightness-[0.82]"
-              />
-            </div>
+            <Image
+              src="/gallery/stats-coastal-bg.jpg"
+              alt="Coastal travel statistics"
+              fill
+              sizes="100vw"
+              className="object-cover object-center brightness-[0.88]"
+            />
+          </div>
 
-            {/* Rich espresso/black gradient tint overlay (eliminates cold blue cast) */}
-            <div className="absolute inset-0 bg-gradient-to-r from-[#1C1815]/80 via-[#1C1815]/55 to-[#1C1815]/80 pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/30 pointer-events-none" />
+          {/* Gentle, subtle dark overlay so the coastal island landscape stays bright and sunny while text pops */}
+          <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/35 to-black/55 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/25 pointer-events-none" />
 
-            {/* Decorative dashed flight curve line overlay with airplane animation */}
-            <svg
-              className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
-              preserveAspectRatio="none"
-              viewBox="0 0 1360 220"
-            >
-              <defs>
-                <path
-                  id="flightCurve"
-                  d="M -160 160 Q 340 30 680 120 T 1520 80"
-                />
-                <radialGradient id="propellerBlur" cx="50%" cy="50%" r="50%">
-                  <stop offset="0%" stopColor="#FEF08A" stopOpacity="0.45" />
-                  <stop offset="35%" stopColor="#FFFFFF" stopOpacity="0.32" />
-                  <stop offset="75%" stopColor="#FFFFFF" stopOpacity="0.18" />
-                  <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
-                </radialGradient>
-              </defs>
-
-              {/* Yellow dotted flight line */}
+          {/* Decorative dashed flight curve line overlay with airplane animation */}
+          <svg
+            className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
+            preserveAspectRatio="none"
+            viewBox="0 0 1360 220"
+          >
+            <defs>
               <path
+                id="flightCurve"
                 d="M -160 160 Q 340 30 680 120 T 1520 80"
-                fill="none"
-                stroke="#FDE68A"
-                strokeWidth="1.75"
-                strokeDasharray="6 6"
-                strokeOpacity="0.55"
-                className="animate-flight-dash"
+              />
+              <radialGradient id="propellerBlur" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FEF08A" stopOpacity="0.45" />
+                <stop offset="35%" stopColor="#FFFFFF" stopOpacity="0.32" />
+                <stop offset="75%" stopColor="#FFFFFF" stopOpacity="0.18" />
+                <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+
+            {/* Yellow dotted flight line */}
+            <path
+              d="M -160 160 Q 340 30 680 120 T 1520 80"
+              fill="none"
+              stroke="#FDE68A"
+              strokeWidth="1.75"
+              strokeDasharray="6 6"
+              strokeOpacity="0.65"
+              className="animate-flight-dash"
+            />
+
+            {/* Flying Airplane with trailing banner and spinning front fan */}
+            <g>
+              <animateMotion dur="16s" repeatCount="indefinite" rotate="auto">
+                <mpath href="#flightCurve" />
+              </animateMotion>
+
+              {/* Airplane Body & Banner */}
+              <image
+                href="/services/airplanenewnofan_clean.png"
+                x="-118"
+                y="-28"
+                width="165"
+                height="55"
               />
 
-              {/* Flying Airplane with trailing banner and spinning front fan */}
-              <g>
-                <animateMotion dur="16s" repeatCount="indefinite" rotate="auto">
-                  <mpath href="#flightCurve" />
-                </animateMotion>
-
-                {/* Airplane Body & Banner (Pristine no-fan image) */}
-                <image
-                  href="/services/airplanenewnofan_clean.png"
-                  x="-118"
-                  y="-28"
-                  width="165"
-                  height="55"
+              {/* Spinning Front Fan / Propeller */}
+              <g transform="translate(33.8, -3.0) scale(0.50)">
+                <ellipse
+                  cx="0"
+                  cy="0"
+                  rx="15"
+                  ry="15"
+                  fill="url(#propellerBlur)"
                 />
-
-                {/* Spinning Front Fan / Propeller (Adjusted to slightly smaller, balanced scale) */}
-                <g transform="translate(33.8, -3.0) scale(0.50)">
-                  {/* Shimmering Circular Wind Blur Disk */}
-                  <ellipse
-                    cx="0"
-                    cy="0"
-                    rx="15"
-                    ry="15"
-                    fill="url(#propellerBlur)"
+                <g>
+                  <animateTransform
+                    attributeName="transform"
+                    type="rotate"
+                    from="0 0 0"
+                    to="360 0 0"
+                    dur="0.10s"
+                    repeatCount="indefinite"
                   />
-
-                  {/* Fast Rotating Fan Blades & Speed Streaks */}
-                  <g>
-                    <animateTransform
-                      attributeName="transform"
-                      type="rotate"
-                      from="0 0 0"
-                      to="360 0 0"
-                      dur="0.10s"
-                      repeatCount="indefinite"
-                    />
-
-                    {/* 3 Aerodynamic Blades */}
-                    <path
-                      d="M 0 0 C -2.5 -5 -3 -10 0 -15 C 3 -10 2.5 -5 0 0 Z"
-                      fill="rgba(255, 255, 255, 0.95)"
-                      stroke="#1C1815"
-                      strokeWidth="1.3"
-                    />
-                    <path
-                      d="M 0 0 C -2.5 -5 -3 -10 0 -15 C 3 -10 2.5 -5 0 0 Z"
-                      fill="rgba(255, 255, 255, 0.95)"
-                      stroke="#1C1815"
-                      strokeWidth="1.3"
-                      transform="rotate(120)"
-                    />
-                    <path
-                      d="M 0 0 C -2.5 -5 -3 -10 0 -15 C 3 -10 2.5 -5 0 0 Z"
-                      fill="rgba(255, 255, 255, 0.95)"
-                      stroke="#1C1815"
-                      strokeWidth="1.3"
-                      transform="rotate(240)"
-                    />
-
-                    {/* Air Speed Wind Rings */}
-                    <circle
-                      r="14"
-                      fill="none"
-                      stroke="rgba(255, 255, 255, 0.8)"
-                      strokeWidth="1.4"
-                      strokeDasharray="4 6"
-                    />
-                    <circle
-                      r="10.5"
-                      fill="none"
-                      stroke="rgba(255, 255, 255, 0.55)"
-                      strokeWidth="1.1"
-                      strokeDasharray="5 5"
-                    />
-                  </g>
-
-                  {/* Front Nose Hub Cone in Center */}
-                  <circle
-                    cx="0"
-                    cy="0"
-                    r="3.8"
-                    fill="#F59E0B"
+                  <path
+                    d="M 0 0 C -2.5 -5 -3 -10 0 -15 C 3 -10 2.5 -5 0 0 Z"
+                    fill="rgba(255, 255, 255, 0.95)"
                     stroke="#1C1815"
                     strokeWidth="1.3"
                   />
-                  <circle cx="-1" cy="-1" r="1.4" fill="#FEF08A" />
-                </g>
-              </g>
-            </svg>
+                  <path
+                    d="M 0 0 C -2.5 -5 -3 -10 0 -15 C 3 -10 2.5 -5 0 0 Z"
+                    fill="rgba(255, 255, 255, 0.95)"
+                    stroke="#1C1815"
+                    strokeWidth="1.3"
+                    transform="rotate(120)"
+                  />
+                  <path
+                    d="M 0 0 C -2.5 -5 -3 -10 0 -15 C 3 -10 2.5 -5 0 0 Z"
+                    fill="rgba(255, 255, 255, 0.95)"
+                    stroke="#1C1815"
+                    strokeWidth="1.3"
+                    transform="rotate(240)"
+                  />
 
-            {/* 4 Stats Grid: Same width as other sections (max-w-[1360px]) with 4 equal gaps */}
-            <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 lg:gap-14 text-center">
-              {PICKUP_STATS.map((stat) => (
-                <div
-                  key={stat.label}
-                  className="flex flex-col items-center justify-center w-full px-2"
+                  {/* Air Speed Wind Rings */}
+                  <circle
+                    r="14"
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.8)"
+                    strokeWidth="1.4"
+                    strokeDasharray="4 6"
+                  />
+                  <circle
+                    r="10.5"
+                    fill="none"
+                    stroke="rgba(255, 255, 255, 0.55)"
+                    strokeWidth="1.1"
+                    strokeDasharray="5 5"
+                  />
+                </g>
+
+                {/* Front Nose Hub Cone in Center */}
+                <circle
+                  cx="0"
+                  cy="0"
+                  r="3.8"
+                  fill="#F59E0B"
+                  stroke="#1C1815"
+                  strokeWidth="1.3"
+                />
+                <circle cx="-1" cy="-1" r="1.4" fill="#FEF08A" />
+              </g>
+            </g>
+          </svg>
+
+          {/* 4 Stats Grid: Standard section width and padding */}
+          <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-10 lg:gap-14 text-center">
+            {PICKUP_STATS.map((stat) => (
+              <div
+                key={stat.label}
+                className="flex flex-col items-center justify-center w-full px-2"
+              >
+                <span
+                  className="font-sans text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)] transition-transform duration-300 hover:scale-105"
+                  style={{
+                    WebkitTextStroke: "2px rgba(255, 255, 255, 0.95)",
+                    color: "transparent",
+                  }}
                 >
-                  <span
-                    className="font-sans text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight drop-shadow-[0_4px_16px_rgba(0,0,0,0.6)] transition-transform duration-300 hover:scale-105"
-                    style={{
-                      WebkitTextStroke: "2px rgba(255, 255, 255, 0.95)",
-                      color: "transparent",
-                    }}
-                  >
-                    {stat.value}
-                  </span>
-                  <span className="mt-2 text-xs sm:text-sm lg:text-[15px] font-sans font-bold uppercase tracking-[0.18em] text-amber-100/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
-                    {stat.label}
-                  </span>
-                </div>
-              ))}
-            </div>
+                  {stat.value}
+                </span>
+                <span className="mt-2 text-xs sm:text-sm lg:text-[15px] font-sans font-bold uppercase tracking-[0.18em] text-amber-100/95 drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]">
+                  {stat.label}
+                </span>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -2836,9 +5898,6 @@ export default function ServicesPage() {
 
       {/* Footer */}
       <Footer />
-
-      {/* Floating WhatsApp Action */}
-      <FloatingWhatsApp />
 
       {/* Enquiry Modal for Card CTAs */}
       <EnquiryModal

@@ -8,13 +8,23 @@ import { TourFilterSidebar } from "../../components/tours/TourFilterSidebar";
 import { TourCard } from "../../components/tours/TourCard";
 import { MobileFilterDrawer } from "../../components/tours/MobileFilterDrawer";
 import { EnquiryModal } from "../../components/EnquiryModal";
-import { FloatingWhatsApp } from "../../components/FloatingWhatsApp";
 import {
   INITIAL_FILTERS,
   type TourFilterState,
+  type TourCategoryTab,
+  BUDGET_LABELS,
+  DURATION_LABELS,
+  isDomesticPackage,
 } from "../../components/tours/types";
 import type { PackageSummary } from "@flyora/types";
-import { Sparkles, Compass, RotateCcw, Loader2 } from "lucide-react";
+import {
+  Sparkles,
+  Compass,
+  RotateCcw,
+  Loader2,
+  X,
+  MessageCircle,
+} from "lucide-react";
 
 // Fallback real packages with real generated images in case API is cold-starting
 const FALLBACK_PACKAGES: PackageSummary[] = [
@@ -95,6 +105,18 @@ export default function ToursPage() {
     string | undefined
   >(undefined);
 
+  // Listen for global enquiry events (e.g. from floating chat widget)
+  useEffect(() => {
+    const handleGlobalEnquiry = () => {
+      setEnquiryPackageId(undefined);
+      setEnquiryPackageTitle(undefined);
+      setIsEnquiryOpen(true);
+    };
+    window.addEventListener("flyora:open-enquiry", handleGlobalEnquiry);
+    return () =>
+      window.removeEventListener("flyora:open-enquiry", handleGlobalEnquiry);
+  }, []);
+
   // Fetch live packages from API
   useEffect(() => {
     async function loadPackages() {
@@ -134,6 +156,20 @@ export default function ToursPage() {
     return Array.from(list);
   }, [packages]);
 
+  // Count packages by category (All, International, Domestic)
+  const categoryCounts = useMemo(() => {
+    let international = 0;
+    let domestic = 0;
+    packages.forEach((pkg) => {
+      if (isDomesticPackage(pkg)) {
+        domestic++;
+      } else {
+        international++;
+      }
+    });
+    return { all: packages.length, international, domestic };
+  }, [packages]);
+
   // Update filter helper
   const handleFilterChange = (updated: Partial<TourFilterState>) => {
     setFilters((prev) => ({ ...prev, ...updated }));
@@ -143,6 +179,13 @@ export default function ToursPage() {
   const handleResetFilters = () => {
     setFilters(INITIAL_FILTERS);
   };
+
+  const hasActiveFilters =
+    filters.categoryTab !== "all" ||
+    filters.searchQuery.trim() !== "" ||
+    filters.selectedDestinations.length > 0 ||
+    filters.durationCategory !== "all" ||
+    filters.budgetRange !== "all";
 
   // Open Enquiry modal with pre-selected package
   const handleCustomizePackage = (pkgId: string, pkgTitle: string) => {
@@ -155,7 +198,15 @@ export default function ToursPage() {
   const filteredPackages = useMemo(() => {
     let result = [...packages];
 
-    // 1. Search Query
+    // 1. Category Tab (All / International / Domestic)
+    if (filters.categoryTab !== "all") {
+      result = result.filter((p) => {
+        const isDom = isDomesticPackage(p);
+        return filters.categoryTab === "domestic" ? isDom : !isDom;
+      });
+    }
+
+    // 2. Search Query
     if (filters.searchQuery.trim()) {
       const q = filters.searchQuery.toLowerCase();
       result = result.filter(
@@ -165,7 +216,7 @@ export default function ToursPage() {
       );
     }
 
-    // 2. Selected Destinations
+    // 3. Selected Destinations
     if (filters.selectedDestinations.length > 0) {
       result = result.filter((p) =>
         filters.selectedDestinations.some((d) =>
@@ -174,7 +225,7 @@ export default function ToursPage() {
       );
     }
 
-    // 3. Duration Category
+    // 4. Duration Category
     if (filters.durationCategory !== "all") {
       result = result.filter((p) => {
         if (filters.durationCategory === "short") return p.durationDays <= 3;
@@ -185,19 +236,21 @@ export default function ToursPage() {
       });
     }
 
-    // 4. Budget Range
+    // 5. Budget Range
     if (filters.budgetRange !== "all") {
       result = result.filter((p) => {
         const price = Number(p.startingPrice || 0);
-        if (filters.budgetRange === "under60k") return price < 60000;
-        if (filters.budgetRange === "60k-100k")
-          return price >= 60000 && price <= 100000;
+        if (filters.budgetRange === "under30k") return price < 30000;
+        if (filters.budgetRange === "30k-50k")
+          return price >= 30000 && price <= 50000;
+        if (filters.budgetRange === "50k-100k")
+          return price >= 50000 && price <= 100000;
         if (filters.budgetRange === "above100k") return price > 100000;
         return true;
       });
     }
 
-    // 5. Sorting
+    // 6. Sorting
     result.sort((a, b) => {
       const priceA = Number(a.startingPrice || 0);
       const priceB = Number(b.startingPrice || 0);
@@ -205,6 +258,8 @@ export default function ToursPage() {
       if (filters.sortBy === "price-desc") return priceB - priceA;
       if (filters.sortBy === "duration-asc")
         return a.durationDays - b.durationDays;
+      if (filters.sortBy === "duration-desc")
+        return b.durationDays - a.durationDays;
       return 0; // recommended
     });
 
@@ -230,6 +285,11 @@ export default function ToursPage() {
           totalResults={filteredPackages.length}
           sortBy={filters.sortBy}
           onSortChange={(sortBy) => handleFilterChange({ sortBy })}
+          categoryTab={filters.categoryTab}
+          onCategoryChange={(categoryTab) =>
+            handleFilterChange({ categoryTab })
+          }
+          categoryCounts={categoryCounts}
           onOpenMobileFilter={() => setMobileFilterOpen(true)}
           isLoading={loading}
         />
@@ -248,6 +308,121 @@ export default function ToursPage() {
 
           {/* Right Tour Cards Grid */}
           <div className="lg:col-span-3">
+            {/* Active Filter Chips with 1-click Clear */}
+            {hasActiveFilters && (
+              <div className="mb-6 p-3 sm:p-3.5 bg-stone-50 border border-stone-200/80 rounded-xl flex flex-wrap items-center gap-2">
+                <span className="text-xs font-semibold text-stone-500 font-mono mr-1">
+                  Active Filters:
+                </span>
+
+                {/* Category Pill */}
+                {filters.categoryTab !== "all" && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-xs text-stone-700 shadow-2xs">
+                    <span className="text-stone-400">Category:</span>
+                    <span className="font-semibold text-stone-900 capitalize">
+                      {filters.categoryTab === "domestic"
+                        ? "Domestic"
+                        : "International"}
+                    </span>
+                    <button
+                      onClick={() => handleFilterChange({ categoryTab: "all" })}
+                      className="text-stone-400 hover:text-stone-700 p-0.5 ml-0.5 cursor-pointer"
+                      title="Clear category filter"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+
+                {/* Search Pill */}
+                {filters.searchQuery.trim() && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-xs text-stone-700 shadow-2xs">
+                    <span className="text-stone-400">Search:</span>
+                    <span className="font-semibold text-stone-900">
+                      "{filters.searchQuery}"
+                    </span>
+                    <button
+                      onClick={() => handleFilterChange({ searchQuery: "" })}
+                      className="text-stone-400 hover:text-stone-700 p-0.5 ml-0.5 cursor-pointer"
+                      title="Clear search query"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+
+                {/* Destination Pills */}
+                {filters.selectedDestinations.map((dest) => (
+                  <span
+                    key={dest}
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-xs text-stone-700 shadow-2xs"
+                  >
+                    <span className="text-stone-400">Destination:</span>
+                    <span className="font-semibold text-stone-900">{dest}</span>
+                    <button
+                      onClick={() => {
+                        const updated = filters.selectedDestinations.filter(
+                          (d) => d !== dest,
+                        );
+                        handleFilterChange({ selectedDestinations: updated });
+                      }}
+                      className="text-stone-400 hover:text-stone-700 p-0.5 ml-0.5 cursor-pointer"
+                      title={`Remove ${dest}`}
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                ))}
+
+                {/* Duration Pill */}
+                {filters.durationCategory !== "all" && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-xs text-stone-700 shadow-2xs">
+                    <span className="text-stone-400">Duration:</span>
+                    <span className="font-semibold text-stone-900">
+                      {DURATION_LABELS[filters.durationCategory] ||
+                        filters.durationCategory}
+                    </span>
+                    <button
+                      onClick={() =>
+                        handleFilterChange({ durationCategory: "all" })
+                      }
+                      className="text-stone-400 hover:text-stone-700 p-0.5 ml-0.5 cursor-pointer"
+                      title="Clear duration filter"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+
+                {/* Budget Pill */}
+                {filters.budgetRange !== "all" && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-xs text-stone-700 shadow-2xs">
+                    <span className="text-stone-400">Budget:</span>
+                    <span className="font-semibold text-stone-900">
+                      {BUDGET_LABELS[filters.budgetRange] ||
+                        filters.budgetRange}
+                    </span>
+                    <button
+                      onClick={() => handleFilterChange({ budgetRange: "all" })}
+                      className="text-stone-400 hover:text-stone-700 p-0.5 ml-0.5 cursor-pointer"
+                      title="Clear budget filter"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </span>
+                )}
+
+                {/* Clear All */}
+                <button
+                  onClick={handleResetFilters}
+                  className="sm:ml-auto text-xs text-[#002f89] hover:underline font-semibold flex items-center gap-1 cursor-pointer"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  <span>Clear all</span>
+                </button>
+              </div>
+            )}
+
             {loading ? (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-2 gap-6">
                 {[1, 2].map((i) => (
@@ -284,39 +459,54 @@ export default function ToursPage() {
                 ))}
               </div>
             ) : (
-              /* Empty State */
-              <div className="bg-stone-50 border border-stone-200/90 rounded-[8px] p-12 text-center space-y-4 max-w-lg mx-auto my-8">
-                <div className="w-12 h-12 rounded-full bg-blue-50 text-[#002f89] flex items-center justify-center mx-auto shadow-xs">
-                  <Compass className="w-6 h-6 stroke-[1.8]" />
+              /* Luxury Concierge Empty State */
+              <div className="bg-gradient-to-b from-stone-50 to-stone-100/50 border border-stone-200/90 rounded-2xl p-8 sm:p-12 text-center space-y-6 max-w-xl mx-auto my-6 shadow-xs">
+                <div className="w-14 h-14 rounded-2xl bg-[#002f89]/10 text-[#002f89] flex items-center justify-center mx-auto ring-4 ring-blue-50/80">
+                  <Compass className="w-7 h-7 stroke-[1.8]" />
                 </div>
-                <div className="space-y-1">
-                  <h3 className="text-base font-bold text-stone-900">
-                    No matching tour packages found
+                <div className="space-y-2">
+                  <h3 className="text-lg sm:text-xl font-bold text-stone-900">
+                    No tour packages match your filters
                   </h3>
-                  <p className="text-xs text-stone-500 leading-relaxed">
-                    We could not find packages matching your current filter
-                    criteria. Try resetting your filters or chatting with our
-                    coordinator for a custom itinerary.
+                  <p className="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-md mx-auto">
+                    We don’t have a standard package matching these exact
+                    criteria right now, but{" "}
+                    <strong>
+                      Flyora crafts 100% bespoke private itineraries
+                    </strong>{" "}
+                    tailored to your dates, airline choices, luxury hotels, and
+                    exact budget.
                   </p>
                 </div>
                 <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
-                  <button
-                    onClick={handleResetFilters}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 text-xs font-semibold hover:bg-white transition flex items-center justify-center gap-2"
+                  <a
+                    href="https://wa.me/919876543210?text=Hi%20Flyora%20Concierge%2C%20I'm%20looking%20for%20a%20custom%20bespoke%20holiday%20itinerary%20tailored%20to%20my%20dates%20and%20budget.%20Can%20you%20help%3F"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold shadow-xs transition flex items-center justify-center gap-2"
                   >
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    <span>Reset All Filters</span>
-                  </button>
+                    <MessageCircle className="w-4 h-4" />
+                    <span>WhatsApp Concierge</span>
+                  </a>
                   <button
                     onClick={() => {
                       setEnquiryPackageId(undefined);
-                      setEnquiryPackageTitle(undefined);
+                      setEnquiryPackageTitle(
+                        "Custom Bespoke Holiday Itinerary",
+                      );
                       setIsEnquiryOpen(true);
                     }}
-                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#002f89] text-white text-xs font-semibold shadow-xs hover:bg-[#00246b] transition flex items-center justify-center gap-2"
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
                   >
                     <Sparkles className="w-3.5 h-3.5 text-blue-200" />
                     <span>Request Custom Trip</span>
+                  </button>
+                  <button
+                    onClick={handleResetFilters}
+                    className="w-full sm:w-auto px-5 py-2.5 rounded-xl border border-stone-300 text-stone-700 text-xs font-semibold hover:bg-white transition flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    <span>Reset All Filters</span>
                   </button>
                 </div>
               </div>
@@ -343,9 +533,6 @@ export default function ToursPage() {
         defaultPackageId={enquiryPackageId}
         packageTitle={enquiryPackageTitle}
       />
-
-      {/* Floating WhatsApp Action */}
-      <FloatingWhatsApp />
 
       {/* Luxury Footer */}
       <Footer

@@ -322,6 +322,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
   const [serviceAttempt, setServiceAttempt] = useState(0);
   const submitting = useRef(false);
   const dialog = useRef<HTMLDialogElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const submission = useRef<AbortController | null>(null);
 
   const close = () => {
@@ -332,12 +333,45 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     const element = dialog.current;
     const previousFocus = document.activeElement as HTMLElement | null;
     element?.showModal();
+
+    // 1. Lock background scrolling on html and body
+    const originalBodyOverflow = document.body.style.overflow;
+    const originalHtmlOverflow = document.documentElement.style.overflow;
+    const originalBodyPaddingRight = document.body.style.paddingRight;
+
+    // Compensate scrollbar width to prevent page shift
+    const scrollbarWidth =
+      window.innerWidth - document.documentElement.clientWidth;
+    if (scrollbarWidth > 0) {
+      document.body.style.paddingRight = `${scrollbarWidth}px`;
+    }
+
+    document.body.style.overflow = "hidden";
+    document.documentElement.style.overflow = "hidden";
+
     return () => {
       element?.close();
       submission.current?.abort();
       previousFocus?.focus();
+      document.body.style.overflow = originalBodyOverflow;
+      document.documentElement.style.overflow = originalHtmlOverflow;
+      document.body.style.paddingRight = originalBodyPaddingRight;
     };
   }, []);
+
+  // Forward scroll wheel on header to the scrollable content container
+  const handleHeaderWheel = (e: React.WheelEvent) => {
+    if (contentRef.current) {
+      contentRef.current.scrollTop += e.deltaY;
+    }
+  };
+
+  // Close when clicking directly on the backdrop
+  const handleDialogClick = (e: React.MouseEvent<HTMLDialogElement>) => {
+    if (e.target === dialog.current && !submitting.current) {
+      handleReset();
+    }
+  };
 
   const isIsoDate =
     prefill?.travelDate && /^\d{4}-\d{2}-\d{2}$/.test(prefill.travelDate);
@@ -722,15 +756,20 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     <dialog
       ref={dialog}
       aria-labelledby="enquiry-title"
+      data-lenis-prevent="true"
+      onClick={handleDialogClick}
       onCancel={(event) => {
         event.preventDefault();
         close();
       }}
-      className="fixed inset-0 m-auto w-[94vw] max-w-[840px] max-h-[92vh] p-0 rounded-[30px] sm:rounded-[36px] bg-transparent backdrop:bg-black/60 backdrop:backdrop-blur-sm shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-0"
+      className="fixed inset-0 m-auto w-[94vw] max-w-[840px] max-h-[92vh] h-auto p-0 rounded-[30px] sm:rounded-[36px] bg-transparent backdrop:bg-black/60 backdrop:backdrop-blur-sm shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-0 overflow-hidden outline-none"
     >
-      <div className="bg-white rounded-[30px] sm:rounded-[36px] shadow-2xl border border-neutral-100 w-full overflow-hidden flex flex-col max-h-[92vh]">
+      <div className="bg-white rounded-[30px] sm:rounded-[36px] shadow-2xl border border-neutral-100 w-full max-h-[92vh] flex flex-col overflow-hidden min-h-0">
         {/* Header matching exact user uploaded mockup in media_1793685416686_e324fab2.jpg */}
-        <div className="relative pt-8 sm:pt-9 px-7 sm:px-10 pb-5 bg-white flex items-start justify-between gap-5">
+        <div
+          onWheel={handleHeaderWheel}
+          className="relative pt-8 sm:pt-9 px-7 sm:px-10 pb-5 bg-white flex items-start justify-between gap-5 shrink-0 select-none border-b border-neutral-100/60"
+        >
           <div className="max-w-lg">
             <h3
               id="enquiry-title"
@@ -780,8 +819,12 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
           </div>
         </div>
 
-        {/* Content Body */}
-        <div className="px-7 sm:px-10 pb-6 sm:pb-8 overflow-y-auto flex-1 no-scrollbar">
+        {/* Content Body - Smoothly scrollable with subtle scrollbar */}
+        <div
+          ref={contentRef}
+          data-lenis-prevent="true"
+          className="px-7 sm:px-10 pb-6 sm:pb-8 overflow-y-auto flex-1 min-h-0 overscroll-contain focus:outline-none scrollbar-thin [scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-neutral-400"
+        >
           {submissionSuccess ? (
             /* Success State */
             <div className="text-center py-8 animate-in zoom-in-95 duration-200">

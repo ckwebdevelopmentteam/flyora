@@ -17,7 +17,6 @@ import { Footer } from "../components/layout/Footer";
 import { HeroSection } from "../components/HeroSection";
 import { EnquiryModal } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
-import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
 import CarouselCards from "@/components/ui/carousel-cards";
 import { DestinationsShowcase } from "../components/DestinationsShowcase";
 import { CloudMarquee } from "../components/CloudMarquee";
@@ -336,6 +335,13 @@ export default function Home() {
     setSelectedDestination(destination);
     setIsModalOpen(true);
   };
+
+  useEffect(() => {
+    const handleGlobalEnquiry = () => openEnquiry();
+    window.addEventListener("flyora:open-enquiry", handleGlobalEnquiry);
+    return () =>
+      window.removeEventListener("flyora:open-enquiry", handleGlobalEnquiry);
+  }, []);
 
   const toggleFaq = (index: number) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
@@ -658,7 +664,6 @@ export default function Home() {
         isOpen={isAdvisorModalOpen}
         onClose={() => setIsAdvisorModalOpen(false)}
       />
-      <FloatingWhatsApp onOpenEnquiry={() => openEnquiry()} />
     </div>
   );
 }

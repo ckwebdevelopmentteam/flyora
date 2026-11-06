@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -45,7 +46,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <FloatingWhatsApp />
+      </body>
     </html>
   );
 }
