@@ -181,7 +181,14 @@ export default function Home() {
   >(undefined);
   const [initialTripMode, setInitialTripMode] = useState<
     "domestic" | "international"
-  >("domestic");
+  >(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const m = params.get("mode");
+      if (m === "domestic" || m === "international") return m;
+    }
+    return "domestic";
+  });
   const [enquiryPrefill, setEnquiryPrefill] = useState<
     EnquiryPrefill | undefined
   >(undefined);
@@ -325,16 +332,6 @@ export default function Home() {
     checkScroll();
     window.addEventListener("resize", checkScroll);
     return () => window.removeEventListener("resize", checkScroll);
-  }, []);
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const m = params.get("mode");
-      if (m === "domestic" || m === "international") {
-        setInitialTripMode(m);
-      }
-    }
   }, []);
 
   const handleScroll = (direction: "left" | "right") => {

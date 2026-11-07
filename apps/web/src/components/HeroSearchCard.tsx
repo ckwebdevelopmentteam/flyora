@@ -851,14 +851,6 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsScrollRef = useRef<HTMLDivElement>(null);
 
-  const prevDefaultModeRef = useRef(defaultTripMode);
-  useEffect(() => {
-    if (defaultTripMode && defaultTripMode !== prevDefaultModeRef.current) {
-      prevDefaultModeRef.current = defaultTripMode;
-      handleTripModeChange(defaultTripMode);
-    }
-  }, [defaultTripMode]);
-
   const apiUrl =
     process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000/api/v1";
 
@@ -993,6 +985,14 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
       }
     }
   };
+
+  const prevDefaultModeRef = useRef(defaultTripMode);
+  useEffect(() => {
+    if (defaultTripMode && defaultTripMode !== prevDefaultModeRef.current) {
+      prevDefaultModeRef.current = defaultTripMode;
+      handleTripModeChange(defaultTripMode);
+    }
+  }, [defaultTripMode]);
 
   // Options for Dropdowns
   const originOptions: OptionDropdownItem[] = useMemo(() => {
