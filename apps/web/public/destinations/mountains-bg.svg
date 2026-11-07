@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 240" preserveAspectRatio="none" fill="none" class="w-full h-full">
+  <defs>
+    <!-- Soft, flowing abstract blue gradient shape rising subtly from the bottom-right corner -->
+    <linearGradient id="softRiseGrad1" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0" />
+      <stop offset="35%" stop-color="#EBF4FD" stop-opacity="0.25" />
+      <stop offset="70%" stop-color="#D1E6FB" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#B5D7F8" stop-opacity="0.8" />
+    </linearGradient>
+
+    <linearGradient id="softRiseGrad2" x1="25%" y1="100%" x2="100%" y2="15%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0" />
+      <stop offset="45%" stop-color="#E3F0FC" stop-opacity="0.2" />
+      <stop offset="80%" stop-color="#C5E0FA" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#A6CEF6" stop-opacity="0.75" />
+    </linearGradient>
+
+    <!-- Flight path line gradient: soft blue fading subtly toward the start -->
+    <linearGradient id="flightPathGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.15" />
+      <stop offset="35%" stop-color="#60A5FA" stop-opacity="0.45" />
+      <stop offset="70%" stop-color="#3B82F6" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0.8" />
+    </linearGradient>
+  </defs>
+
+  <!-- Base soft sky shape rising subtly from bottom-right -->
+  <path
+    d="M 120,240 C 500,240 850,215 1120,165 C 1260,135 1365,105 1440,78 L 1440,240 Z"
+    fill="url(#softRiseGrad1)"
+  />
+
+  <!-- Secondary subtle highlight shape for depth -->
+  <path
+    d="M 450,240 C 780,240 1040,195 1220,145 C 1330,115 1400,90 1440,68 L 1440,240 Z"
+    fill="url(#softRiseGrad2)"
+  />
+
+  <!-- Single thin curved flight-path line following the shape -->
+  <path
+    d="M 40,198 C 360,218 720,205 950,158 C 1060,135 1200,102 1420,72"
+    fill="none"
+    stroke="url(#flightPathGrad)"
+    stroke-width="1.25"
+    stroke-linecap="round"
+  />
+
+  <!-- Tiny elegant airplane silhouette flying along the curve -->
+  <!-- Positioned at (1045, 137), angle -16deg pointing up and right -->
+  <g transform="translate(1045, 137) rotate(-16) scale(0.92)">
+    <path
+      d="M 11,0 L -2,-7 L -1,-2 L -7.5,-2 L -9.5,-4.5 L -11,-4.5 L -10,-0.5 L -10,0.5 L -11,4.5 L -9.5,4.5 L -7.5,2 L -1,2 L -2,7 Z"
+      fill="#0A2540"
+      opacity="0.9"
+    />
+  </g>
+</svg>
