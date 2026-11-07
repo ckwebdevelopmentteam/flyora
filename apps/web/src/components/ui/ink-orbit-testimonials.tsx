@@ -701,7 +701,7 @@ const IT_CSS = `
 .it-reveal[data-in="true"] { opacity: 1; transform: none }
 .it-head { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 12px; margin-bottom: clamp(28px, 4.5cqw, 48px) }
 .it-tag { display: block; font-size: 11px; font-family: "DM Sans", var(--font-dm-sans), sans-serif; text-transform: uppercase; letter-spacing: .2em; color: #7A7167; background: transparent; border: none; padding: 0; margin-bottom: 2px; }
-.it-h2 { font-family: "DM Sans", var(--font-dm-sans), sans-serif; font-size: clamp(28px, 4.2cqw, 46px); line-height: 1.14; letter-spacing: -0.015em; font-weight: 400; color: var(--it-ink); }
+.it-h2 { font-family: "DM Sans", var(--font-dm-sans), sans-serif; font-size: clamp(22px, 4.2cqw, 46px); line-height: 1.14; letter-spacing: -0.015em; font-weight: 400; color: var(--it-ink); }
 .it-h2 > span { display: block }
 .it-muted { color: var(--it-muted); font-style: italic; }
 .it-frame { position: relative }

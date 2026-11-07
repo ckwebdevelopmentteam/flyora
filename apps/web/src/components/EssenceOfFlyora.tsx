@@ -77,7 +77,7 @@ export function EssenceOfFlyora({ onOpenEnquiry }: EssenceOfFlyoraProps) {
     <section
       id="essence-of-flyora"
       aria-label="About Flyora"
-      className="relative w-full bg-[var(--about-bg,#ffffff)] text-[var(--about-navy,#0A192F)] pt-[88px] pb-[96px] px-6 sm:px-10 lg:px-[105px] selection:bg-[var(--about-accent,#002f89)] selection:text-white"
+      className="relative w-full bg-[var(--about-bg,#ffffff)] text-[var(--about-navy,#0A192F)] pt-10 sm:pt-16 lg:pt-[88px] pb-12 sm:pb-20 lg:pb-[96px] px-4 sm:px-10 lg:px-[105px] selection:bg-[var(--about-accent,#002f89)] selection:text-white"
       style={{
         ["--about-bg" as string]: "#ffffff",
         ["--about-navy" as string]: "#0A192F",
@@ -184,7 +184,7 @@ export function EssenceOfFlyora({ onOpenEnquiry }: EssenceOfFlyoraProps) {
               Bracketed words are italic in the accent color
               ================================================================= */}
           <div className="about-grid-headline lg:self-end">
-            <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
+            <h2 className="font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
               {d.heroText.headlinePrefix}{" "}
               <span className="italic text-[#002f89] font-normal">
                 {d.heroText.headlineAccent}
@@ -243,7 +243,7 @@ export function EssenceOfFlyora({ onOpenEnquiry }: EssenceOfFlyoraProps) {
                         <span className="text-[#002f89] font-serif font-semibold text-xs sm:text-sm shrink-0">
                           {day.num}
                         </span>
-                        <span className="text-[#5C534A] text-xs sm:text-[13px] leading-snug whitespace-nowrap">
+                        <span className="text-[#5C534A] text-xs sm:text-[13px] leading-snug sm:whitespace-nowrap overflow-hidden text-ellipsis">
                           {day.text}
                         </span>
                       </div>
@@ -281,8 +281,8 @@ export function EssenceOfFlyora({ onOpenEnquiry }: EssenceOfFlyoraProps) {
                 </div>
               </div>
 
-              {/* d) Seal: overlapping bottom-left of photo, ~150px wide on desktop, 110px on mobile */}
-              <div className="collage-item-4 absolute -left-2 sm:left-[2%] top-[60%] sm:top-[66%] lg:top-[68%] w-[110px] sm:w-[135px] lg:w-[150px] aspect-square select-none z-40 drop-shadow-[0_10px_25px_rgba(10,25,47,0.18)]">
+              {/* d) Seal: overlapping bottom-left of photo, ~150px wide on desktop, 92px on mobile */}
+              <div className="collage-item-4 absolute -left-2 sm:left-[2%] top-[60%] sm:top-[66%] lg:top-[68%] w-[92px] sm:w-[130px] lg:w-[150px] aspect-square select-none z-40 drop-shadow-[0_10px_25px_rgba(10,25,47,0.18)]">
                 <svg
                   viewBox="0 0 200 200"
                   className="w-full h-full text-[var(--about-accent,#002f89)]"
@@ -506,10 +506,10 @@ export function EssenceOfFlyora({ onOpenEnquiry }: EssenceOfFlyoraProps) {
             </div>
 
             {/* In-line STAT ROW with Button moved horizontally next to 10 years */}
-            <div className="my-7 py-6">
+            <div className="my-5 sm:my-7 py-5 sm:py-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-8">
                 <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
-                  <div className="font-serif text-5xl sm:text-6xl font-normal leading-none tracking-tight text-[#1E1A17] shrink-0">
+                  <div className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal leading-none tracking-tight text-[#1E1A17] shrink-0">
                     {d.heroText.statRow.number}
                     <span className="text-[#002f89] font-normal">
                       {d.heroText.statRow.plus}
@@ -528,7 +528,7 @@ export function EssenceOfFlyora({ onOpenEnquiry }: EssenceOfFlyoraProps) {
                       ? onOpenEnquiry(d.heroText.ctaPrimary.label)
                       : undefined
                   }
-                  className="w-full sm:w-auto shrink-0 px-5 sm:px-6 py-2.5 sm:py-3 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs sm:text-[12.5px] font-sans font-semibold uppercase tracking-[0.12em] inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89] focus-visible:ring-offset-2"
+                  className="w-full sm:w-auto shrink-0 px-4 sm:px-6 py-2.5 sm:py-3 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[11px] sm:text-[12.5px] font-sans font-semibold uppercase tracking-[0.12em] inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89] focus-visible:ring-offset-2"
                 >
                   <span>{d.heroText.ctaPrimary.label}</span>
                   <ArrowRight

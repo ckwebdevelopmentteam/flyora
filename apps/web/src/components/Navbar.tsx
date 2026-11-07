@@ -435,7 +435,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Primary Action Button */}
             <button
               onClick={handleCtaClick}
-              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
+              className="px-4 sm:px-5 py-2.5 min-h-[44px] sm:min-h-0 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
             >
               <span>{ctaLabel}</span>
             </button>
@@ -444,7 +444,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              className="md:hidden p-1.5 rounded-lg text-[#38312B] hover:text-black hover:bg-zinc-100 transition cursor-pointer"
+              className="md:hidden p-2.5 rounded-lg text-[#38312B] hover:text-black hover:bg-zinc-100 transition cursor-pointer"
             >
               {mobileMenuOpen ? (
                 <X className="w-5 h-5 stroke-[1.75]" />
@@ -594,7 +594,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   key={item.label}
                   href={item.href}
                   onClick={(e) => handleNavClick(e, item)}
-                  className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 transition-colors border-b border-black/[0.04] ${
+                  className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-3 px-1 transition-colors border-b border-black/[0.04] ${
                     isActive
                       ? "text-[#1C1815] font-semibold"
                       : "text-[#38312B] hover:text-black"
@@ -611,7 +611,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => setMobileServicesOpen((p) => !p)}
-                className="w-full flex items-center justify-between gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 text-[#38312B] hover:text-black transition-colors border-b border-black/[0.04] cursor-pointer"
+                className="w-full flex items-center justify-between gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-3 px-1 text-[#38312B] hover:text-black transition-colors border-b border-black/[0.04] cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <Star className="w-3.5 h-3.5 text-stone-400" />
@@ -663,7 +663,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Link
               href="/about"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 transition-colors border-b border-black/[0.04] ${
+              className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-3 px-1 transition-colors border-b border-black/[0.04] ${
                 activePath === "/about"
                   ? "text-[#1C1815] font-semibold"
                   : "text-[#38312B] hover:text-black"
@@ -691,7 +691,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setMobileMenuOpen(false);
                   handleCtaClick();
                 }}
-                className="w-full py-2.5 rounded-md bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold uppercase tracking-[0.12em] transition text-center flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                className="w-full py-3 min-h-[44px] rounded-md bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold uppercase tracking-[0.12em] transition text-center flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#E6D5C7]" />
                 <span>{ctaLabel}</span>

@@ -23,10 +23,10 @@ export const AboutTestimonials: React.FC<AboutTestimonialsProps> = ({
   };
 
   return (
-    <section className="py-20 sm:py-28 bg-[#FAF7F2] border-t border-black/[0.05]">
+    <section className="py-12 sm:py-28 bg-[#FAF7F2] border-t border-black/[0.05]">
       <div className="container-standard">
         {/* Section Header with Left Heading and Right Navigation Arrows */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12 sm:mb-16">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-16">
           <div>
             <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-black/[0.06] text-[#6B6156] text-[10.5px] font-sans font-medium uppercase tracking-[0.2em] mb-3">
               <span className="text-[9px] text-[#002f89]">♥</span>
@@ -34,7 +34,7 @@ export const AboutTestimonials: React.FC<AboutTestimonialsProps> = ({
               <span className="text-[9px] text-[#002f89]">♥</span>
             </div>
 
-            <h2 className="font-serif text-[32px] sm:text-[42px] font-normal tracking-tight text-[#1C1815]">
+            <h2 className="font-serif text-2xl sm:text-[32px] md:text-[42px] font-normal tracking-tight text-[#1C1815]">
               {data.heading}
             </h2>
 

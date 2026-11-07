@@ -249,16 +249,16 @@ export const PackageCard = ({
 
   return (
     <div
-      className="group relative flex h-[395px] w-full flex-col overflow-hidden rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl transform-gpu hover:-translate-y-1"
+      className="group relative flex h-[350px] sm:h-[395px] w-full flex-col overflow-hidden rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl transform-gpu hover:-translate-y-1"
       style={{ backgroundColor: cardBg }}
     >
       {/* Top Image Section - Seamless fade into card background without sharp border */}
-      <div className="relative h-[275px] w-full overflow-hidden">
+      <div className="relative h-[235px] sm:h-[275px] w-full overflow-hidden">
         <Image
           alt={packageItem.title}
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           fill
-          sizes="(max-width: 640px) 270px, (max-width: 1024px) 290px, 320px"
+          sizes="(max-width: 640px) 240px, (max-width: 1024px) 290px, 320px"
           src={packageItem.image}
         />
         {/* Soft themed color gradient spreading seamlessly upward over the title */}
@@ -272,7 +272,7 @@ export const PackageCard = ({
 
         {/* Title placed at the bottom-left inside the image over the soft color spread */}
         <div className="absolute bottom-2.5 left-4 right-4 z-10">
-          <h3 className="font-bold text-lg sm:text-[19px] text-white tracking-tight leading-snug drop-shadow-sm line-clamp-1">
+          <h3 className="font-bold text-base sm:text-[19px] text-white tracking-tight leading-snug drop-shadow-sm line-clamp-1">
             {packageItem.title}
           </h3>
         </div>
@@ -306,7 +306,7 @@ export const PackageCard = ({
           </div>
 
           {/* View Details Action Button */}
-          <span className="inline-flex items-center justify-center px-3.5 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#1C1815] text-xs sm:text-[13px] font-semibold shadow-xs transition-colors whitespace-nowrap">
+          <span className="inline-flex items-center justify-center px-3 sm:px-3.5 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#1C1815] text-[11px] sm:text-[13px] font-semibold shadow-xs transition-colors whitespace-nowrap">
             View Details
           </span>
         </div>
@@ -342,15 +342,15 @@ export const PackageCarouselSection = ({
   };
 
   return (
-    <div className="w-full py-4 sm:py-6">
-      <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+    <div className="w-full py-3 sm:py-6">
+      <div className="w-full px-4 sm:px-10 lg:px-[105px]">
         {/* Section Header */}
         <div className="mb-4 sm:mb-6 flex items-end justify-between gap-4">
           <div>
             <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-1">
               {eyebrow}
             </span>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1E1A17] tracking-tight">
+            <h2 className="font-serif text-xl sm:text-3xl lg:text-4xl font-normal text-[#1E1A17] tracking-tight">
               {title}
             </h2>
           </div>
@@ -405,7 +405,7 @@ export const PackageCarouselSection = ({
         >
           {items.map((item) => (
             <div
-              className="w-[270px] sm:w-[290px] md:w-[305px] flex-none snap-start"
+              className="w-[240px] sm:w-[280px] md:w-[305px] flex-none snap-start"
               key={item.id}
             >
               <Link

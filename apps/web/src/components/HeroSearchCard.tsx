@@ -1187,29 +1187,31 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           <button
             type="button"
             onClick={() => handleTripModeChange("domestic")}
-            className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 rounded-full text-xs sm:text-[13px] font-sans font-medium transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 md:px-5 py-1.5 rounded-full text-[10px] sm:text-xs md:text-[13px] font-sans font-medium transition-all duration-200 cursor-pointer ${
               tripMode === "domestic"
                 ? "bg-white text-neutral-900 shadow-xs font-semibold"
                 : "text-white/80 hover:text-white"
             }`}
           >
-            <span>Domestic Travel</span>
+            <span>Domestic</span>
+            <span className="hidden sm:inline">Travel</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleTripModeChange("international")}
-            className={`flex items-center gap-1.5 px-4 sm:px-5 py-1.5 rounded-full text-xs sm:text-[13px] font-sans font-medium transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 md:px-5 py-1.5 rounded-full text-[10px] sm:text-xs md:text-[13px] font-sans font-medium transition-all duration-200 cursor-pointer ${
               tripMode === "international"
                 ? "bg-white text-neutral-900 shadow-xs font-semibold"
                 : "text-white/80 hover:text-white"
             }`}
           >
             <Globe2
-              className="w-3.5 h-3.5 text-neutral-500"
+              className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-neutral-500"
               strokeWidth={1.75}
             />
-            <span>International Travel</span>
+            <span>Intl</span>
+            <span className="hidden sm:inline">ernational Travel</span>
           </button>
         </div>
       </div>
@@ -1240,7 +1242,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                   setOpenDropdown(null);
                   setIsSubmitted(false);
                 }}
-                className={`group relative shrink-0 w-[190px] sm:w-[210px] md:w-auto min-h-[165px] sm:min-h-[180px] md:h-[195px] lg:h-[205px] rounded-[22px] sm:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-4 sm:p-5 flex flex-col justify-between overflow-hidden ${
+                className={`group relative shrink-0 w-[155px] sm:w-[190px] md:w-auto min-h-[140px] sm:min-h-[165px] md:h-[195px] lg:h-[205px] rounded-[18px] sm:rounded-[22px] md:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden ${
                   isActive
                     ? "ring-2 ring-white shadow-[0_12px_28px_rgba(0,0,0,0.35)] -translate-y-1 scale-[1.02]"
                     : "ring-1 ring-white/25 hover:ring-white/70 hover:-translate-y-0.5 opacity-90 hover:opacity-100"
@@ -1258,15 +1260,15 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
 
                 {/* Top Row: Small, Consistent Outline Icon (No Boxy Container) */}
                 <div className="relative z-10 flex items-center justify-start w-full">
-                  <IconComponent className="w-5 h-5 sm:w-6 sm:h-6 text-white/95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" />
+                  <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white/95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" />
                 </div>
 
                 {/* Bottom Row: Simple, Balanced Typography */}
                 <div className="relative z-10 w-full mt-auto">
-                  <h4 className="text-[15px] sm:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.85)]">
+                  <h4 className="text-[13px] sm:text-[15px] md:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.85)]">
                     {service.label}
                   </h4>
-                  <p className="text-white/80 text-xs font-normal mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] truncate">
+                  <p className="text-white/80 text-[10px] sm:text-xs font-normal mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] truncate">
                     {service.subtitle}
                   </p>
                 </div>
@@ -1873,7 +1875,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           <button
             type="button"
             onClick={handleRequestQuote}
-            className="w-full sm:w-auto h-[48px] sm:h-[50px] px-7 sm:px-8 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-medium text-[14px] sm:text-[14.5px] flex items-center justify-center gap-2 transition-all shadow-[0_4px_14px_rgba(0,47,137,0.25)] hover:shadow-[0_6px_20px_rgba(0,47,137,0.35)] cursor-pointer whitespace-nowrap shrink-0 sm:ml-3 select-none"
+            className="w-full sm:w-auto h-[44px] sm:h-[48px] lg:h-[50px] px-5 sm:px-7 lg:px-8 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-medium text-[13px] sm:text-[14px] lg:text-[14.5px] flex items-center justify-center gap-2 transition-all shadow-[0_4px_14px_rgba(0,47,137,0.25)] hover:shadow-[0_6px_20px_rgba(0,47,137,0.35)] cursor-pointer whitespace-nowrap shrink-0 sm:ml-3 select-none"
           >
             {isSubmitted ? (
               <>

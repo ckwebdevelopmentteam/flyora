@@ -213,9 +213,9 @@ const Team: React.FC<TeamProps> = ({
                   {badge}
                 </Badge>
               )}
-              <div className="flex flex-col items-center justify-center gap-3">
+              <div className="flex flex-col items-center justify-center gap-2 sm:gap-3">
                 <h2
-                  className={`text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight ${
+                  className={`text-2xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight ${
                     isDark
                       ? "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
                       : "text-foreground"
@@ -224,7 +224,7 @@ const Team: React.FC<TeamProps> = ({
                   {title}
                 </h2>
                 <p
-                  className={`text-base font-normal ${
+                  className={`text-sm sm:text-base font-normal ${
                     isDark ? "text-white/80" : "text-muted-foreground"
                   }`}
                 >
@@ -249,7 +249,7 @@ const Team: React.FC<TeamProps> = ({
                     className="group flex flex-col items-start gap-4 sm:gap-6"
                   >
                     <div
-                      className={`relative w-full h-72 sm:h-80 overflow-hidden rounded-md cursor-pointer ${
+                      className={`relative w-full h-64 sm:h-80 overflow-hidden rounded-md cursor-pointer ${
                         isDark
                           ? "bg-white/5 border border-white/10 shadow-lg"
                           : "bg-stone-100"

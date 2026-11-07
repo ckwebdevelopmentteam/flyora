@@ -85,14 +85,14 @@ export function StraightCardsCarousel({
   // Calculate card sizing based on container width
   const isMobile = containerWidth < 640;
   const leadWidth = isMobile
-    ? Math.min(300, Math.max(260, containerWidth - 40))
+    ? Math.min(260, Math.max(210, containerWidth - 48))
     : Math.min(360, Math.max(300, containerWidth * 0.44));
   const leadHeight = isMobile
     ? Math.round(leadWidth * 1.35)
     : Math.round(leadWidth * 1.41); // ~480px-510px
   const inactiveScale = 0.81;
   const trailingWidth = Math.round(leadWidth * inactiveScale);
-  const gap = isMobile ? 12 : 16;
+  const gap = isMobile ? 10 : 16;
 
   // Layout function for position of card relative to current pos
   const getLayout = useCallback(
@@ -434,12 +434,12 @@ export function StraightCardsCarousel({
         className="mt-5 sm:mt-6 flex items-center justify-between gap-4 w-full z-20"
       >
         {/* Sharp Arrow Buttons */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={() => step(-1)}
             aria-label="Previous destination"
-            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
+            className="group relative overflow-hidden w-[42px] h-[38px] sm:w-[52px] sm:h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
           >
             <span
               aria-hidden="true"
@@ -465,7 +465,7 @@ export function StraightCardsCarousel({
             type="button"
             onClick={() => step(1)}
             aria-label="Next destination"
-            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
+            className="group relative overflow-hidden w-[42px] h-[38px] sm:w-[52px] sm:h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
           >
             <span
               aria-hidden="true"

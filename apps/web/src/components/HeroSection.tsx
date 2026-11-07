@@ -217,19 +217,19 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           className="relative z-30 w-full max-w-[1360px] mx-auto px-4 sm:px-5 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none will-change-transform"
         >
           {/* Eyebrow Tagline */}
-          <span className="animate-hero-eyebrow font-heading text-xs sm:text-sm lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">
+          <span className="animate-hero-eyebrow font-heading text-[11px] sm:text-xs lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">
             Flyora Tours & Travels • Est. 2014
           </span>
 
           {/* Main Editorial Heading */}
-          <h1 className="animate-hero-heading font-heading max-md:text-[26px] max-md:leading-[1.15] sm:text-[34px] sm:leading-[1.1] md:max-xl:text-[40px] md:max-xl:leading-[1.1] xl:text-[46px] xl:leading-[1.1] text-white max-w-4xl font-normal tracking-[-0.01em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
+          <h1 className="animate-hero-heading font-heading text-[22px] leading-[1.18] sm:text-[34px] sm:leading-[1.1] md:max-xl:text-[40px] md:max-xl:leading-[1.1] xl:text-[46px] xl:leading-[1.1] text-white max-w-4xl font-normal tracking-[-0.01em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
             It’s not where you go,
             <br className="hidden sm:inline" /> but{" "}
             <span className="font-serif italic font-normal">how you feel.</span>
           </h1>
 
           {/* Subheading / Description */}
-          <p className="animate-hero-description text-xs sm:text-sm leading-relaxed max-w-2xl text-white/90 font-light px-2 sm:px-4 drop-shadow-sm">
+          <p className="animate-hero-description text-[11px] sm:text-sm leading-relaxed max-w-2xl text-white/90 font-light px-2 sm:px-4 drop-shadow-sm">
             {description}
           </p>
 

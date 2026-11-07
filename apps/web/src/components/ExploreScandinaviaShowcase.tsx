@@ -105,13 +105,13 @@ export default function ExploreScandinaviaShowcase({
     const w = window.innerWidth;
     if (w < 640) {
       setDimensions({
-        activeWidth: 290,
-        inactiveWidth: 220,
-        activePhotoHeight: 360,
-        inactivePhotoHeight: 300,
+        activeWidth: Math.min(290, Math.max(240, w - 100)),
+        inactiveWidth: Math.min(200, Math.max(160, w - 190)),
+        activePhotoHeight: 340,
+        inactivePhotoHeight: 280,
         inactiveTopOffset: 12,
-        cardGap: 16,
-        buttonOffset: 32,
+        cardGap: 14,
+        buttonOffset: 20,
       });
     } else if (w < 1024) {
       setDimensions({
@@ -233,17 +233,17 @@ export default function ExploreScandinaviaShowcase({
       onTouchEnd={handleTouchEnd}
     >
       {/* Header (Top-Left matching site starting column, font, and styling used in other sections) */}
-      <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] mb-8 sm:mb-9 lg:mb-10">
+      <div className="relative z-10 w-full px-4 sm:px-10 lg:px-[105px] mb-6 sm:mb-9 lg:mb-10">
         <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-1 sm:mb-1.5">
           FEATURED DESTINATIONS
         </span>
-        <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1E1A17] tracking-tight">
+        <h2 className="font-serif text-xl sm:text-3xl lg:text-4xl font-normal text-[#1E1A17] tracking-tight">
           Explore Featured Destinations
         </h2>
       </div>
 
       {/* Cards Carousel Viewport with Navigation Arrow Buttons flanking the Selected Center Card */}
-      <div className="relative z-10 w-full overflow-hidden py-3 pb-8">
+      <div className="relative z-10 w-full overflow-hidden py-2 sm:py-3 pb-8">
         {/* Left Arrow Button (Positioned with clear breathing space from the card) */}
         <button
           type="button"
@@ -253,11 +253,11 @@ export default function ExploreScandinaviaShowcase({
             left: `calc(50% - ${activeWidth / 2 + buttonOffset}px)`,
             top: `${activePhotoHeight + 85}px`,
           }}
-          className="absolute -translate-x-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-[#2D540E]/30 bg-white/95 hover:bg-white text-[#1C300C] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+          className="absolute -translate-x-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full border border-[#2D540E]/30 bg-white/95 hover:bg-white text-[#1C300C] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
         >
           <svg
             viewBox="0 0 7.75 13.5"
-            className="w-3 h-4 fill-[#1C300C] rotate-180"
+            className="w-2.5 h-3.5 sm:w-3 sm:h-4 fill-[#1C300C] rotate-180"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path d="M0,1.414l1.414,-1.414l6.707,6.707l-6.707,6.707l-1.414,-1.414l5.293,-5.293l-5.293,-5.293Z" />
@@ -273,11 +273,11 @@ export default function ExploreScandinaviaShowcase({
             left: `calc(50% + ${activeWidth / 2 + buttonOffset}px)`,
             top: `${activePhotoHeight + 85}px`,
           }}
-          className="absolute -translate-x-1/2 -translate-y-1/2 z-30 w-11 h-11 sm:w-12 sm:h-12 rounded-full border border-[#2D540E]/30 bg-white/95 hover:bg-white text-[#1C300C] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+          className="absolute -translate-x-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full border border-[#2D540E]/30 bg-white/95 hover:bg-white text-[#1C300C] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
         >
           <svg
             viewBox="0 0 7.75 13.5"
-            className="w-3 h-4 fill-[#1C300C]"
+            className="w-2.5 h-3.5 sm:w-3 sm:h-4 fill-[#1C300C]"
             xmlns="http://www.w3.org/2000/svg"
           >
             <path d="M0,1.414l1.414,-1.414l6.707,6.707l-6.707,6.707l-1.414,-1.414l5.293,-5.293l-5.293,-5.293Z" />
@@ -357,11 +357,11 @@ export default function ExploreScandinaviaShowcase({
                     </div>
 
                     {/* Content Box beneath photo */}
-                    <div className="p-5 sm:p-6 bg-white animate-in fade-in duration-300">
-                      <h3 className="font-montaga text-xl sm:text-[23px] text-[#2D540E] font-normal leading-snug">
+                    <div className="p-4 sm:p-5 lg:p-6 bg-white animate-in fade-in duration-300">
+                      <h3 className="font-montaga text-lg sm:text-xl lg:text-[23px] text-[#2D540E] font-normal leading-snug">
                         {slide.title}
                       </h3>
-                      <p className="text-[13px] sm:text-[13.5px] text-[#3D3A36] leading-relaxed mt-2 mb-4 font-normal max-w-[370px]">
+                      <p className="text-xs sm:text-[13px] lg:text-[13.5px] text-[#3D3A36] leading-relaxed mt-1.5 sm:mt-2 mb-3 sm:mb-4 font-normal max-w-[370px]">
                         {slide.desc}
                       </p>
 
@@ -373,7 +373,7 @@ export default function ExploreScandinaviaShowcase({
                         }
                         className="inline-flex items-center gap-2 group/btn cursor-pointer text-[#2D540E] hover:text-[#1e3b09] select-none text-left"
                       >
-                        <span className="text-[13.5px] font-normal tracking-wide">
+                        <span className="text-xs sm:text-[13.5px] font-normal tracking-wide">
                           Find out more
                         </span>
                         <svg

@@ -82,8 +82,8 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
       </div>
 
       {/* Card Content */}
-      <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
-        <div className="space-y-3">
+      <div className="p-3.5 sm:p-5 flex-1 flex flex-col justify-between space-y-3 sm:space-y-4">
+        <div className="space-y-2.5 sm:space-y-3">
           {/* Title */}
           <div>
             <Link
@@ -99,28 +99,28 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
           </div>
 
           {/* Inclusion Pills (Thrillophilia style) */}
-          <div className="grid grid-cols-2 gap-2 pt-1 border-t border-stone-100">
-            <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Plane className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
+          <div className="grid grid-cols-2 gap-1.5 sm:gap-2 pt-1 border-t border-stone-100">
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-stone-600 bg-stone-50/80 px-1.5 sm:px-2 py-1 rounded-md sm:rounded-lg">
+              <Plane className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#002f89] shrink-0" />
               <span className="truncate">Flights Included</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Building2 className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-stone-600 bg-stone-50/80 px-1.5 sm:px-2 py-1 rounded-md sm:rounded-lg">
+              <Building2 className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#002f89] shrink-0" />
               <span className="truncate">4★/5★ Luxury Stay</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Car className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-stone-600 bg-stone-50/80 px-1.5 sm:px-2 py-1 rounded-md sm:rounded-lg">
+              <Car className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#002f89] shrink-0" />
               <span className="truncate">Private Transfers</span>
             </div>
-            <div className="flex items-center gap-1.5 text-xs text-stone-600 bg-stone-50/80 px-2 py-1 rounded-lg">
-              <Utensils className="w-3.5 h-3.5 text-[#002f89] shrink-0" />
+            <div className="flex items-center gap-1.5 text-[11px] sm:text-xs text-stone-600 bg-stone-50/80 px-1.5 sm:px-2 py-1 rounded-md sm:rounded-lg">
+              <Utensils className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-[#002f89] shrink-0" />
               <span className="truncate">Daily Breakfast</span>
             </div>
           </div>
         </div>
 
         {/* Pricing and Action Buttons */}
-        <div className="pt-4 border-t border-stone-100 space-y-3">
+        <div className="pt-3 sm:pt-4 border-t border-stone-100 space-y-2.5 sm:space-y-3">
           {/* Price Bar */}
           <div className="flex items-baseline justify-between">
             <div>
@@ -128,7 +128,7 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
                 Starting From
               </span>
               <div className="flex items-baseline gap-1">
-                <span className="text-xl sm:text-2xl font-bold text-stone-900 tracking-tight">
+                <span className="text-lg sm:text-2xl font-bold text-stone-900 tracking-tight">
                   ₹{formattedPrice}
                 </span>
                 <span className="text-xs text-stone-500 font-normal">
@@ -150,7 +150,7 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
             {/* View Itinerary Button in Brand Blue */}
             <Link
               href={`/tours/${pkg.slug}`}
-              className="w-full py-2.5 px-3 rounded-xl bg-[#002f89] hover:bg-[#00246b] active:scale-98 text-white text-xs font-semibold text-center shadow-xs transition flex items-center justify-center gap-1.5"
+              className="w-full py-2 sm:py-2.5 px-2.5 sm:px-3 rounded-lg sm:rounded-xl bg-[#002f89] hover:bg-[#00246b] active:scale-98 text-white text-[11px] sm:text-xs font-semibold text-center shadow-xs transition flex items-center justify-center gap-1.5"
             >
               <span>View Itinerary</span>
               <ArrowRight className="w-3.5 h-3.5 text-blue-200" />
@@ -161,7 +161,7 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold text-center transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
+              className="w-full py-2 sm:py-2.5 px-2.5 sm:px-3 rounded-lg sm:rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] sm:text-xs font-semibold text-center transition-all shadow-xs flex items-center justify-center gap-1.5 cursor-pointer active:scale-98"
             >
               <MessageCircle className="w-3.5 h-3.5 text-white" />
               <span>WhatsApp</span>

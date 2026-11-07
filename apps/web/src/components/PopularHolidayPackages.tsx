@@ -91,9 +91,9 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
   return (
     <section
       id="packages"
-      className="w-full bg-[#FAF7F2] text-[#1E1A17] py-12 sm:py-16 lg:py-24 border-t border-black/[0.06] scroll-mt-20 sm:scroll-mt-24"
+      className="w-full bg-[#FAF7F2] text-[#1E1A17] py-10 sm:py-16 lg:py-24 border-t border-black/[0.06] scroll-mt-20 sm:scroll-mt-24"
     >
-      <div className="w-full px-6 sm:px-10 lg:px-[105px] flex flex-wrap gap-y-8 sm:gap-y-12 gap-x-10 lg:gap-x-14 xl:gap-x-16 items-start">
+      <div className="w-full px-4 sm:px-10 lg:px-[105px] flex flex-wrap gap-y-8 sm:gap-y-12 gap-x-10 lg:gap-x-14 xl:gap-x-16 items-start">
         {/* =================================================================
             LEFT INFO COLUMN (Sticky on desktop, full-width below 980px)
             ================================================================= */}
@@ -104,7 +104,7 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
           </span>
 
           {/* Section Heading (Consistent with entire website) */}
-          <h2 className="font-serif text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
+          <h2 className="font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
             Popular <br className="hidden sm:inline" />
             Holiday Packages
           </h2>
@@ -160,7 +160,7 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
             >
               {/* Card Image Area */}
               <div
-                className="sm:w-[260px] md:w-[280px] lg:w-[300px] shrink-0 h-[190px] sm:h-auto min-h-[190px] sm:min-h-[220px] relative rounded-[8px] overflow-hidden select-none"
+                className="sm:w-[260px] md:w-[280px] lg:w-[300px] shrink-0 h-[160px] sm:h-auto min-h-[160px] sm:min-h-[220px] relative rounded-[8px] overflow-hidden select-none"
                 style={{
                   background: pkg.tintGradient,
                 }}
@@ -209,7 +209,7 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
                   </div>
 
                   {/* Package Title */}
-                  <h3 className="font-serif mt-1.5 sm:mt-2 text-xl sm:text-2xl md:text-[26px] font-normal text-[#1E1A17] tracking-tight leading-tight">
+                  <h3 className="font-serif mt-1.5 sm:mt-2 text-lg sm:text-2xl md:text-[26px] font-normal text-[#1E1A17] tracking-tight leading-tight">
                     {pkg.name}
                   </h3>
 
@@ -227,7 +227,7 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
                     </span>
                     <div className="flex items-baseline gap-1.5 mt-0.5">
                       <span className="text-xs text-[#7A7167]">From</span>
-                      <span className="text-xl sm:text-2xl font-bold text-[#1E1A17] font-sans tracking-tight">
+                      <span className="text-lg sm:text-2xl font-bold text-[#1E1A17] font-sans tracking-tight">
                         {pkg.price}
                       </span>
                       <span className="text-xs text-[#7A7167]">per person</span>
@@ -238,7 +238,7 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
                   <button
                     type="button"
                     onClick={() => onOpenEnquiry && onOpenEnquiry(pkg.name)}
-                    className="inline-flex items-center gap-2 bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold px-4 sm:px-5 py-2 sm:py-2.5 rounded-[2px] transition shadow-xs cursor-pointer active:scale-95"
+                    className="inline-flex items-center gap-2 bg-[#002f89] hover:bg-[#00246b] text-white text-[11px] sm:text-xs font-semibold px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-[2px] transition shadow-xs cursor-pointer active:scale-95"
                   >
                     <span>View Package</span>
                     <ArrowRight className="w-3.5 h-3.5" />

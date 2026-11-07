@@ -191,7 +191,7 @@ export function DestinationsShowcase({
   return (
     <section
       id="destination-packages"
-      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[820px] lg:min-h-[880px] ${className}`}
+      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[600px] sm:min-h-[680px] lg:min-h-[820px] xl:min-h-[880px] ${className}`}
     >
       {/* Background Images Layer: Base + Smooth Center Expansion with ZERO Blink */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-black">
@@ -234,7 +234,7 @@ export function DestinationsShowcase({
       </div>
 
       {/* Main Showcase Content with 105px horizontal padding: ALWAYS on top at z-20 */}
-      <div className="relative z-20 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start py-12 lg:py-16">
+      <div className="relative z-20 w-full px-4 sm:px-10 lg:px-[105px] flex flex-col justify-start py-8 sm:py-12 lg:py-16">
         {/* Centered Section Header: Honeymoon & Romantic Getaways */}
         <div className="w-full flex flex-col items-center text-center mb-6 lg:mb-8">
           <div className="inline-flex items-center px-3.5 py-1 rounded-md bg-white/10 backdrop-blur-md border border-white/20 mb-3 sm:mb-3.5 shadow-xs">
@@ -242,10 +242,10 @@ export function DestinationsShowcase({
               HONEYMOON & ROMANTIC GETAWAYS
             </span>
           </div>
-          <h2 className="font-sans font-bold text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] text-white tracking-tight leading-[1.14] mb-3.5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+          <h2 className="font-sans font-bold text-2xl sm:text-4xl lg:text-[44px] xl:text-[48px] text-white tracking-tight leading-[1.14] mb-3.5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
             Curated Romantic Escapes Designed for Two
           </h2>
-          <p className="text-sm sm:text-base text-white/85 max-w-2xl font-light leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.65)]">
+          <p className="text-xs sm:text-base text-white/85 max-w-2xl font-light leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.65)]">
             Handcrafted international and domestic journeys crafted for couples
             and newlyweds — private retreats, sunset horizons, and intimate
             memories to last a lifetime.
@@ -254,11 +254,11 @@ export function DestinationsShowcase({
 
         {/* Category Switcher: Placed on the right side with 'Destinations' plural */}
         <div className="w-full flex justify-end items-center mb-6 lg:mb-7 shrink-0">
-          <div className="inline-flex items-center gap-3 sm:gap-4 text-sm sm:text-base tracking-wide">
+          <div className="flex flex-wrap justify-end items-center gap-2 sm:gap-4 text-xs sm:text-sm md:text-base tracking-wide">
             <button
               type="button"
               onClick={() => handleCategoryChange("International")}
-              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-3 sm:px-6 py-1.5 sm:py-2.5 border-l border-r text-xs sm:text-sm md:text-base ${
                 activeCategory === "International"
                   ? "bg-white text-black font-semibold shadow-sm border-white"
                   : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10 backdrop-blur-[2px]"
@@ -270,14 +270,14 @@ export function DestinationsShowcase({
                   className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
               )}
-              <span className="relative z-10 tracking-wide">
+              <span className="relative z-10 tracking-wide whitespace-nowrap">
                 International Destinations
               </span>
             </button>
             <button
               type="button"
               onClick={() => handleCategoryChange("Domestic")}
-              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-3 sm:px-6 py-2 sm:py-2.5 border-l border-r text-xs sm:text-sm md:text-base ${
                 activeCategory === "Domestic"
                   ? "bg-white text-black font-semibold shadow-sm border-white"
                   : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10 backdrop-blur-[2px]"
@@ -289,7 +289,7 @@ export function DestinationsShowcase({
                   className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
               )}
-              <span className="relative z-10 tracking-wide">
+              <span className="relative z-10 tracking-wide whitespace-nowrap">
                 Domestic Destinations
               </span>
             </button>
@@ -327,12 +327,12 @@ export function DestinationsShowcase({
                   </div>
 
                   {/* Main Heading Title */}
-                  <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+                  <h2 className="font-serif text-xl sm:text-3xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-3 sm:mb-4.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
                     {current.title}
                   </h2>
 
                   {/* Description Text */}
-                  <p className="text-sm sm:text-base text-white leading-relaxed mb-8 max-w-lg font-light drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+                  <p className="text-xs sm:text-base text-white leading-relaxed mb-4 sm:mb-8 max-w-lg font-light drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
                     {current.description}
                   </p>
                 </motion.div>
@@ -348,7 +348,7 @@ export function DestinationsShowcase({
                     ? onOpenEnquiry(`${current.location}: ${current.title}`)
                     : undefined
                 }
-                className="group relative overflow-hidden inline-flex items-center px-6 py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] shadow-sm"
+                className="group relative overflow-hidden inline-flex items-center px-4 sm:px-6 py-2 sm:py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-xs sm:text-base transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] shadow-sm"
               >
                 <span
                   aria-hidden="true"

@@ -85,12 +85,12 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:grid-cols-[585px_minmax(0,1fr)] xl:gap-[154px] items-end xl:items-start">
             {/* Left Column (5 Cols): ABOUT US + Mountain Image (Image 1) */}
             <div className="lg:col-span-5 xl:col-auto">
-              <h1 className="font-heading font-bold text-5xl sm:text-6xl lg:text-[76px] xl:text-[98px] text-[#5BC3A6] leading-none tracking-tight uppercase mb-6 sm:mb-8 xl:mt-[77px] xl:mb-[40px] select-none">
+              <h1 className="font-heading font-bold text-4xl sm:text-6xl lg:text-[76px] xl:text-[98px] text-[#5BC3A6] leading-none tracking-tight uppercase mb-6 sm:mb-8 xl:mt-[77px] xl:mb-[40px] select-none">
                 ABOUT US
               </h1>
 
               {/* Mountain Image: Tall Portrait aspect-[3/4], hanging down across Section 1 into Section 2 */}
-              <div className="relative w-full max-w-[460px] xl:max-w-[585px] aspect-[3/4] bg-[#0E3553] shadow-[0_25px_60px_-15px_rgba(20,74,114,0.35)] z-20 overflow-hidden -mb-40 sm:-mb-52 lg:-mb-64 xl:mb-0">
+              <div className="relative w-full max-w-[460px] xl:max-w-[585px] aspect-[3/4] bg-[#0E3553] shadow-[0_25px_60px_-15px_rgba(20,74,114,0.35)] z-20 overflow-hidden -mb-28 sm:-mb-52 lg:-mb-64 xl:mb-0">
                 <Image
                   src="/about/mountain-ridge.jpg"
                   alt="Dramatic mountain ridge rising above the ocean coastline"
@@ -107,7 +107,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
               <span className="block text-[#5BC3A6] text-xs sm:text-[13px] font-sans font-medium tracking-[0.25em] uppercase mb-3">
                 ABOUT FLYORA • TOURS &amp; TRAVELS
               </span>
-              <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] text-white tracking-tight leading-[1.15] max-w-xl">
+              <h2 className="font-serif font-bold text-2xl sm:text-4xl lg:text-[40px] xl:text-[44px] text-white tracking-tight leading-[1.15] max-w-xl">
                 Premier Travel &amp; Tourism Agency: Flights, Visas &amp;
                 Curated Holidays
               </h2>

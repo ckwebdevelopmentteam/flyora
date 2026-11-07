@@ -37,7 +37,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
   return (
     <section
       id="our-team"
-      className="relative w-full bg-white border-t border-black/[0.06] py-16 sm:py-24"
+      className="relative w-full bg-white border-t border-black/[0.06] py-10 sm:py-16 lg:py-24"
       aria-label="Meet Our Team"
     >
       <span id="meet-our-team" className="sr-only" aria-hidden="true" />

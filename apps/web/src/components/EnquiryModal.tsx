@@ -761,18 +761,18 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
         event.preventDefault();
         close();
       }}
-      className="fixed inset-0 m-auto w-[94vw] max-w-[840px] max-h-[92vh] h-auto p-0 rounded-[30px] sm:rounded-[36px] bg-transparent backdrop:bg-black/60 backdrop:backdrop-blur-sm shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-0 overflow-hidden outline-none"
+      className="fixed inset-0 m-auto w-[94vw] max-w-[840px] max-h-[92dvh] h-auto p-0 rounded-[20px] sm:rounded-[36px] bg-transparent backdrop:bg-black/60 backdrop:backdrop-blur-sm shadow-[0_30px_90px_rgba(0,0,0,0.35)] border-0 overflow-hidden outline-none"
     >
-      <div className="bg-white rounded-[30px] sm:rounded-[36px] shadow-2xl border border-neutral-100 w-full max-h-[92vh] flex flex-col overflow-hidden min-h-0">
+      <div className="bg-white rounded-[20px] sm:rounded-[36px] shadow-2xl border border-neutral-100 w-full max-h-[92dvh] flex flex-col overflow-hidden min-h-0">
         {/* Header matching exact user uploaded mockup in media_1793685416686_e324fab2.jpg */}
         <div
           onWheel={handleHeaderWheel}
-          className="relative pt-8 sm:pt-9 px-7 sm:px-10 pb-5 bg-white flex items-start justify-between gap-5 shrink-0 select-none border-b border-neutral-100/60"
+          className="relative pt-5 sm:pt-9 px-5 sm:px-10 pb-4 sm:pb-5 bg-white flex items-start justify-between gap-3 sm:gap-5 shrink-0 select-none border-b border-neutral-100/60"
         >
-          <div className="max-w-lg">
+          <div className="max-w-lg min-w-0">
             <h3
               id="enquiry-title"
-              className="text-2xl sm:text-[27px] font-bold text-neutral-900 tracking-tight leading-tight font-sans"
+              className="text-xl sm:text-[27px] font-bold text-neutral-900 tracking-tight leading-tight font-sans"
             >
               Plan Your Trip with Us
             </h3>
@@ -782,26 +782,26 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center gap-3.5 shrink-0 pt-0.5">
-            {/* Triple Overlapping Destination Circular Avatars */}
+          <div className="flex items-center gap-2 sm:gap-3.5 shrink-0 pt-0.5">
+            {/* Triple Overlapping Destination Circular Avatars — hidden on very small screens */}
             <div
-              className="flex items-center -space-x-3.5 select-none"
+              className="hidden xs:flex sm:flex items-center -space-x-3.5 select-none"
               aria-hidden="true"
             >
               <img
                 src="/services/hajj-packages.jpg"
                 alt=""
-                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
+                className="w-9 h-9 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
               />
               <img
                 src="/destinations/maldives_hd.jpg"
                 alt=""
-                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
+                className="w-9 h-9 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
               />
               <img
                 src="/destinations/dubai_hd.jpg"
                 alt=""
-                className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
+                className="w-9 h-9 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
               />
             </div>
 
@@ -822,7 +822,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
         <div
           ref={contentRef}
           data-lenis-prevent="true"
-          className="px-7 sm:px-10 pb-6 sm:pb-8 overflow-y-auto flex-1 min-h-0 overscroll-contain focus:outline-none scrollbar-thin [scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-neutral-400"
+          className="px-5 sm:px-10 pb-5 sm:pb-8 overflow-y-auto flex-1 min-h-0 overscroll-contain focus:outline-none scrollbar-thin [scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-neutral-400"
         >
           {submissionSuccess ? (
             /* Success State */
@@ -1707,7 +1707,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                     type="button"
                     disabled={isSubmitting}
                     onClick={handleReset}
-                    className="px-6 py-2.5 sm:py-3 rounded-[8px] text-xs sm:text-sm font-semibold text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
+                    className="px-4 sm:px-6 py-2 sm:py-3 rounded-[8px] text-xs sm:text-sm font-semibold text-neutral-700 hover:bg-neutral-100 transition-colors cursor-pointer"
                   >
                     Cancel
                   </button>
@@ -1721,7 +1721,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                       !!servicesError ||
                       services.length === 0
                     }
-                    className="px-7 sm:px-8 py-3 sm:py-3.5 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs sm:text-sm font-semibold flex items-center gap-2.5 shadow-[0_4px_14px_rgba(0,47,137,0.3)] hover:shadow-[0_6px_20px_rgba(0,47,137,0.45)] transition-all cursor-pointer disabled:opacity-60 active:scale-95"
+                    className="px-5 sm:px-8 py-2.5 sm:py-3.5 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs sm:text-sm font-semibold flex items-center gap-2.5 shadow-[0_4px_14px_rgba(0,47,137,0.3)] hover:shadow-[0_6px_20px_rgba(0,47,137,0.45)] transition-all cursor-pointer disabled:opacity-60 active:scale-95"
                   >
                     {isSubmitting ? (
                       <>
