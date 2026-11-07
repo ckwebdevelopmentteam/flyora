@@ -255,7 +255,7 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
           }}
           aria-hidden={journeyStage.opacity < 0.05}
         >
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-hidden border-b border-black/10 lg:border-b-0 lg:border-r border-black/10">
             <div
               className="relative w-full h-full transition-transform duration-300 ease-out"
               style={{
@@ -270,17 +270,9 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
                 sizes="(max-width: 1024px) 100vw, 50vw"
                 className="object-cover object-center"
               />
-              {/* Soft atmospheric gradient blending into #F9F8F4 on white background */}
+              {/* Subtle top/bottom contrast overlay */}
               <div
-                className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"
-                aria-hidden="true"
-              />
-              <div
-                className="absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-[#F9F8F4] via-[#F9F8F4]/50 to-transparent pointer-events-none hidden lg:block"
-                aria-hidden="true"
-              />
-              <div
-                className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#F9F8F4] to-transparent pointer-events-none lg:hidden"
+                className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/10 pointer-events-none"
                 aria-hidden="true"
               />
             </div>
