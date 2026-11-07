@@ -19,7 +19,6 @@ import {
   Train,
   Hotel,
   Luggage,
-  Package,
   Compass,
   PenLine,
   MapPin,

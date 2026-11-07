@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Volume2, VolumeX } from "lucide-react";
 import { HeroSearchCard } from "./HeroSearchCard";
+import type { EnquiryPrefill } from "./EnquiryModal";
 
 export interface HeroSectionProps {
   eyebrow?: string;
@@ -17,7 +18,8 @@ export interface HeroSectionProps {
   onSecondaryCtaClick?: () => void;
   secondaryCtaHref?: string;
   onExploreClick?: () => void;
-  onOpenEnquiry?: (serviceOrDest?: string) => void;
+  onOpenEnquiry?: (serviceOrDest?: string, prefill?: EnquiryPrefill) => void;
+  defaultTripMode?: "domestic" | "international";
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
@@ -33,6 +35,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onSecondaryCtaClick,
   secondaryCtaHref = "#destinations",
   onOpenEnquiry,
+  defaultTripMode,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -233,6 +236,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           {/* Luxury Search & Visa CTA Widget matching reference design */}
           <div className="animate-hero-cta w-full mt-2 sm:mt-2.5">
             <HeroSearchCard
+              defaultTripMode={defaultTripMode}
               onOpenEnquiry={onOpenEnquiry || onPrimaryCtaClick}
               onExploreJourneys={onSecondaryCtaClick}
             />

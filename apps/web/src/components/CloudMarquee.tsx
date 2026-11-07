@@ -21,7 +21,7 @@ export function CloudMarquee({
 }: CloudMarqueeProps) {
   return (
     <div
-      className={`relative z-10 -mt-10 lg:-mt-16 ${className}`.trim()}
+      className={`relative z-10 -mt-10 lg:-mt-16 -mb-6 sm:-mb-8 lg:-mb-10 ${className}`.trim()}
       aria-hidden="true"
       data-navbar-solid-from=""
       style={{ pointerEvents: "none" }}

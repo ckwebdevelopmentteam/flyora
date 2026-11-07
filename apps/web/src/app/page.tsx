@@ -15,7 +15,7 @@ import {
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/layout/Footer";
 import { HeroSection } from "../components/HeroSection";
-import { EnquiryModal } from "../components/EnquiryModal";
+import { EnquiryModal, type EnquiryPrefill } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import CarouselCards from "@/components/ui/carousel-cards";
 import { DestinationsShowcase } from "../components/DestinationsShowcase";
@@ -177,6 +177,12 @@ export default function Home() {
   const [selectedDestination, setSelectedDestination] = useState<
     string | undefined
   >(undefined);
+  const [initialTripMode, setInitialTripMode] = useState<
+    "domestic" | "international"
+  >("domestic");
+  const [enquiryPrefill, setEnquiryPrefill] = useState<
+    EnquiryPrefill | undefined
+  >(undefined);
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
   const destinationsRef = useRef<HTMLDivElement>(null);
   const carouselTrackRef = useRef<HTMLDivElement>(null);
@@ -319,20 +325,32 @@ export default function Home() {
     return () => window.removeEventListener("resize", checkScroll);
   }, []);
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const m = params.get("mode");
+      if (m === "domestic" || m === "international") {
+        setInitialTripMode(m);
+      }
+    }
+  }, []);
+
   const handleScroll = (direction: "left" | "right") => {
     if (carouselTrackRef.current) {
       const containerWidth = carouselTrackRef.current.clientWidth;
       const scrollAmount =
-        containerWidth < 640 ? containerWidth * 0.8 : containerWidth * 0.5;
+        direction === "left" ? -(containerWidth * 0.75) : containerWidth * 0.75;
       carouselTrackRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
+        left: scrollAmount,
         behavior: "smooth",
       });
+      setTimeout(checkScroll, 350);
     }
   };
 
-  const openEnquiry = (destination?: string) => {
+  const openEnquiry = (destination?: string, prefill?: EnquiryPrefill) => {
     setSelectedDestination(destination);
+    setEnquiryPrefill(prefill);
     setIsModalOpen(true);
   };
 
@@ -367,9 +385,10 @@ export default function Home() {
         eyebrow="Flyora Tours & Travels, Est. 2006"
         title={"It’s not where you go,\nbut how you feel."}
         description="Custom journeys across India and the world, built around you since 2006."
+        defaultTripMode={initialTripMode}
         primaryCtaLabel="Start Planning"
         onPrimaryCtaClick={() => openEnquiry()}
-        onOpenEnquiry={(service) => openEnquiry(service)}
+        onOpenEnquiry={(service, prefill) => openEnquiry(service, prefill)}
         secondaryCtaLabel="See Our Journeys"
         onSecondaryCtaClick={() => {
           if (lenisRef.current) {
@@ -397,14 +416,14 @@ export default function Home() {
         <section
           id="destinations"
           ref={destinationsRef}
-          className="relative z-10 pt-28 sm:pt-32 lg:pt-36 pb-16 sm:pb-20 lg:pb-24 overflow-hidden scroll-mt-0"
+          className="relative z-10 pt-6 sm:pt-8 lg:pt-10 pb-16 sm:pb-20 lg:pb-24 overflow-hidden scroll-mt-0"
         >
           {/* Top gradient matching exact cloud white, transitioning softly into Featured Destinations sky blue */}
           <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,#ffffff_0%,#F2F7FC_20%,#F8FBFE_80%,#ffffff_100%)]" />
           <div
             className="absolute bottom-0 inset-x-0 h-36 sm:h-48 lg:h-56 pointer-events-none opacity-100 bg-cover bg-bottom bg-no-repeat"
             style={{
-              backgroundImage: `url('/destinations/mountains-bg.svg?v=brand')`,
+              backgroundImage: `url('/destinations/mountains-bg.svg?v=minimal-travel')`,
             }}
           />
 
@@ -657,8 +676,12 @@ export default function Home() {
             --------------------------------------------------------------------- */}
       <EnquiryModal
         isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+        onClose={() => {
+          setIsModalOpen(false);
+          setEnquiryPrefill(undefined);
+        }}
         packageTitle={selectedDestination}
+        prefill={enquiryPrefill}
       />
       <BecomeAdvisorModal
         isOpen={isAdvisorModalOpen}
