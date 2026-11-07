@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 
 /**
@@ -55,13 +56,8 @@ export const ABOUT_SECTION_DATA = {
       label: "Plan my trip",
     },
     ctaSecondary: {
-      label: "Meet the people planning your trip",
+      label: "Know more about Flyora",
       href: "/about",
-      avatars: [
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80",
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80",
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=150&q=80",
-      ],
     },
   },
 };
@@ -184,9 +180,9 @@ export function EssenceOfFlyora({ onOpenEnquiry }: EssenceOfFlyoraProps) {
               Bracketed words are italic in the accent color
               ================================================================= */}
           <div className="about-grid-headline lg:self-end">
-            <h2 className="font-serif text-xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.12]">
+            <h2 className="font-heading text-xl sm:text-3xl md:text-4xl lg:text-5xl font-normal text-[#1E1A17] tracking-tight leading-[1.15]">
               {d.heroText.headlinePrefix}{" "}
-              <span className="italic text-[#002f89] font-normal">
+              <span className="font-serif italic text-[#002f89] font-normal">
                 {d.heroText.headlineAccent}
               </span>
               {d.heroText.headlineSuffix ? ` ${d.heroText.headlineSuffix}` : ""}
@@ -505,37 +501,50 @@ export function EssenceOfFlyora({ onOpenEnquiry }: EssenceOfFlyoraProps) {
               ))}
             </div>
 
-            {/* In-line STAT ROW with Button moved horizontally next to 10 years */}
-            <div className="my-5 sm:my-7 py-5 sm:py-6">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 sm:gap-8">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-5">
+            {/* In-line STAT ROW with Action Buttons */}
+            <div className="my-5 sm:my-7 py-4 sm:py-5">
+              <div className="flex flex-col gap-5 sm:gap-6">
+                <div className="flex items-center gap-4 sm:gap-6">
                   <div className="font-serif text-4xl sm:text-5xl lg:text-6xl font-normal leading-none tracking-tight text-[#1E1A17] shrink-0">
                     {d.heroText.statRow.number}
                     <span className="text-[#002f89] font-normal">
                       {d.heroText.statRow.plus}
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm md:text-base text-[#5C534A] leading-relaxed max-w-[260px]">
+                  <p className="text-xs sm:text-sm md:text-base text-[#5C534A] leading-snug sm:leading-relaxed max-w-[360px]">
                     {d.heroText.statRow.description}
                   </p>
                 </div>
 
-                {/* Primary Button: moved horizontally next to 10 years, matching navbar button color (#002f89) & rounded-md */}
-                <button
-                  type="button"
-                  onClick={() =>
-                    onOpenEnquiry
-                      ? onOpenEnquiry(d.heroText.ctaPrimary.label)
-                      : undefined
-                  }
-                  className="w-full sm:w-auto shrink-0 px-4 sm:px-6 py-2.5 sm:py-3 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[11px] sm:text-[12.5px] font-sans font-semibold uppercase tracking-[0.12em] inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89] focus-visible:ring-offset-2"
-                >
-                  <span>{d.heroText.ctaPrimary.label}</span>
-                  <ArrowRight
-                    className="w-4 h-4 stroke-[2]"
-                    aria-hidden="true"
-                  />
-                </button>
+                {/* Action CTAs: Primary Button & Underlined CTA directly after */}
+                <div className="flex flex-col sm:flex-row items-center gap-3.5 sm:gap-5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      onOpenEnquiry
+                        ? onOpenEnquiry(d.heroText.ctaPrimary.label)
+                        : undefined
+                    }
+                    className="w-full sm:w-auto shrink-0 px-4 sm:px-6 py-2.5 sm:py-3 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[11px] sm:text-[12.5px] font-sans font-semibold uppercase tracking-[0.12em] inline-flex items-center justify-center gap-2 transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89] focus-visible:ring-offset-2"
+                  >
+                    <span>{d.heroText.ctaPrimary.label}</span>
+                    <ArrowRight
+                      className="w-4 h-4 stroke-[2]"
+                      aria-hidden="true"
+                    />
+                  </button>
+
+                  <Link
+                    href={d.heroText.ctaSecondary.href}
+                    className="group inline-flex items-center justify-center sm:justify-start gap-1.5 text-xs sm:text-[13px] font-semibold text-[#002f89] hover:text-[#00246b] underline underline-offset-4 decoration-1 hover:decoration-2 transition-all cursor-pointer whitespace-nowrap"
+                  >
+                    <span>{d.heroText.ctaSecondary.label}</span>
+                    <ArrowRight
+                      className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </div>
               </div>
             </div>
           </div>
