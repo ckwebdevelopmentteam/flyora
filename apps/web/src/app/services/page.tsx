@@ -2899,12 +2899,12 @@ export default function ServicesPage() {
                         <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
                       </div>
 
-                      {/* Luminous white border & spread highlight like old */}
+                      {/* White glowing shadow highlight with thin subtle border */}
                       <div
                         className={`absolute inset-0 rounded-[8px] transition-all duration-300 pointer-events-none z-20 ${
                           isActive
-                            ? "border-2 border-white ring-2 ring-white/80 shadow-[0_0_28px_rgba(255,255,255,0.75)]"
-                            : "border border-white/20 group-hover:border-white group-hover:ring-1 group-hover:ring-white/40 group-hover:shadow-[0_0_18px_rgba(255,255,255,0.4)]"
+                            ? "border border-white/20 shadow-[0_0_28px_rgba(255,255,255,0.75)]"
+                            : "border border-white/15 group-hover:border-white/30 group-hover:shadow-[0_0_18px_rgba(255,255,255,0.35)]"
                         }`}
                       />
 
