@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface StraightCardItem {
   id: string;
@@ -433,58 +434,34 @@ export function StraightCardsCarousel({
         data-carousel-controls=""
         className="mt-5 sm:mt-6 flex items-center justify-between gap-4 w-full z-20"
       >
-        {/* Sharp Arrow Buttons */}
-        <div className="flex items-center gap-2 sm:gap-3">
+        {/* Arrow Buttons matching Popular Packages section arrow mark and hover effect */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
           <button
             type="button"
             onClick={() => step(-1)}
             aria-label="Previous destination"
-            className="group relative overflow-hidden w-[42px] h-[38px] sm:w-[52px] sm:h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
+            className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
           >
             <span
               aria-hidden="true"
               className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
             />
             <span className="relative z-10 flex items-center justify-center">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white"
-              >
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
+              <ChevronLeft className="h-4 w-4 stroke-[2.4]" />
             </span>
           </button>
           <button
             type="button"
             onClick={() => step(1)}
             aria-label="Next destination"
-            className="group relative overflow-hidden w-[42px] h-[38px] sm:w-[52px] sm:h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
+            className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
           >
             <span
               aria-hidden="true"
               className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
             />
             <span className="relative z-10 flex items-center justify-center">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white"
-              >
-                <path d="M9 18l6-6-6-6" />
-              </svg>
+              <ChevronRight className="h-4 w-4 stroke-[2.4]" />
             </span>
           </button>
         </div>

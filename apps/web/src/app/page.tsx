@@ -456,26 +456,42 @@ export default function Home() {
                     onClick={() => handleScroll("left")}
                     disabled={!canScrollLeft}
                     aria-label="Previous destination"
-                    className={`w-10 h-10 rounded-md border flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 ${
+                    className={`group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                       canScrollLeft
-                        ? "bg-[#0A2540] text-white border-[#0A2540] hover:bg-[#071C30]"
-                        : "bg-white text-neutral-400 border-neutral-200 cursor-not-allowed opacity-60"
+                        ? "border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white cursor-pointer"
+                        : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-50"
                     }`}
                   >
-                    <ChevronLeft className="w-4 h-4 stroke-[2.2]" />
+                    {canScrollLeft && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                      />
+                    )}
+                    <span className="relative z-10 flex items-center justify-center">
+                      <ChevronLeft className="w-4 h-4 stroke-[2.4]" />
+                    </span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleScroll("right")}
                     disabled={!canScrollRight}
                     aria-label="Next destination"
-                    className={`w-10 h-10 rounded-md border flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 ${
+                    className={`group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                       canScrollRight
-                        ? "bg-[#0A2540] text-white border-[#0A2540] hover:bg-[#071C30] shadow-sm"
-                        : "bg-white text-neutral-400 border-neutral-200 cursor-not-allowed opacity-60"
+                        ? "border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white cursor-pointer"
+                        : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-50"
                     }`}
                   >
-                    <ChevronRight className="w-4 h-4 stroke-[2.2]" />
+                    {canScrollRight && (
+                      <span
+                        aria-hidden="true"
+                        className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                      />
+                    )}
+                    <span className="relative z-10 flex items-center justify-center">
+                      <ChevronRight className="w-4 h-4 stroke-[2.4]" />
+                    </span>
                   </button>
                 </div>
               </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 export interface DestinationSlide {
   id: string;
@@ -244,7 +245,7 @@ export default function ExploreScandinaviaShowcase({
 
       {/* Cards Carousel Viewport with Navigation Arrow Buttons flanking the Selected Center Card */}
       <div className="relative z-10 w-full overflow-hidden py-2 sm:py-3 pb-8">
-        {/* Left Arrow Button (Positioned with clear breathing space from the card) */}
+        {/* Left Arrow Button matching Popular Packages section arrow mark and hover effect */}
         <button
           type="button"
           onClick={handlePrev}
@@ -253,18 +254,18 @@ export default function ExploreScandinaviaShowcase({
             left: `calc(50% - ${activeWidth / 2 + buttonOffset}px)`,
             top: `${activePhotoHeight + 85}px`,
           }}
-          className="absolute -translate-x-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full border border-[#2D540E]/30 bg-white/95 hover:bg-white text-[#1C300C] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+          className="group relative overflow-hidden absolute -translate-x-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-md grid place-items-center transition-all duration-300 cursor-pointer shadow-md active:scale-95"
         >
-          <svg
-            viewBox="0 0 7.75 13.5"
-            className="w-2.5 h-3.5 sm:w-3 sm:h-4 fill-[#1C300C] rotate-180"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M0,1.414l1.414,-1.414l6.707,6.707l-6.707,6.707l-1.414,-1.414l5.293,-5.293l-5.293,-5.293Z" />
-          </svg>
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+          />
+          <span className="relative z-10 flex items-center justify-center">
+            <ChevronLeft className="h-4 w-4 stroke-[2.4]" />
+          </span>
         </button>
 
-        {/* Right Arrow Button (Positioned with clear breathing space from the card) */}
+        {/* Right Arrow Button matching Popular Packages section arrow mark and hover effect */}
         <button
           type="button"
           onClick={handleNext}
@@ -273,15 +274,15 @@ export default function ExploreScandinaviaShowcase({
             left: `calc(50% + ${activeWidth / 2 + buttonOffset}px)`,
             top: `${activePhotoHeight + 85}px`,
           }}
-          className="absolute -translate-x-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-11 sm:h-11 lg:w-12 lg:h-12 rounded-full border border-[#2D540E]/30 bg-white/95 hover:bg-white text-[#1C300C] flex items-center justify-center transition-all duration-200 cursor-pointer shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+          className="group relative overflow-hidden absolute -translate-x-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-md grid place-items-center transition-all duration-300 cursor-pointer shadow-md active:scale-95"
         >
-          <svg
-            viewBox="0 0 7.75 13.5"
-            className="w-2.5 h-3.5 sm:w-3 sm:h-4 fill-[#1C300C]"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path d="M0,1.414l1.414,-1.414l6.707,6.707l-6.707,6.707l-1.414,-1.414l5.293,-5.293l-5.293,-5.293Z" />
-          </svg>
+          <span
+            aria-hidden="true"
+            className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+          />
+          <span className="relative z-10 flex items-center justify-center">
+            <ChevronRight className="h-4 w-4 stroke-[2.4]" />
+          </span>
         </button>
 
         {/* Sliding Track */}
