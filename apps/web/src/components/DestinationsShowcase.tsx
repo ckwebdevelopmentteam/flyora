@@ -236,9 +236,8 @@ export function DestinationsShowcase({
       {/* Main Showcase Content with 105px horizontal padding: ALWAYS on top at z-20 */}
       <div className="relative z-20 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start py-12 lg:py-16">
         {/* Centered Section Header: Honeymoon & Romantic Getaways */}
-        <div className="w-full flex flex-col items-center text-center mb-8 lg:mb-10">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-3 sm:mb-3.5 shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#5BC3A6]" />
+        <div className="w-full flex flex-col items-center text-center mb-6 lg:mb-8">
+          <div className="inline-flex items-center px-3.5 py-1 rounded-md bg-white/10 backdrop-blur-md border border-white/20 mb-3 sm:mb-3.5 shadow-xs">
             <span className="text-[11px] sm:text-xs font-sans font-semibold uppercase tracking-[0.22em] text-white/95">
               HONEYMOON & ROMANTIC GETAWAYS
             </span>
@@ -253,8 +252,8 @@ export function DestinationsShowcase({
           </p>
         </div>
 
-        {/* Category Switcher: Centered below the heading with 4 vertical lines */}
-        <div className="w-full flex justify-center items-center mb-8 lg:mb-10 shrink-0">
+        {/* Category Switcher: Placed on the right side with 'Destinations' plural */}
+        <div className="w-full flex justify-end items-center mb-6 lg:mb-7 shrink-0">
           <div className="inline-flex items-center gap-3 sm:gap-4 text-sm sm:text-base tracking-wide">
             <button
               type="button"
@@ -272,7 +271,7 @@ export function DestinationsShowcase({
                 />
               )}
               <span className="relative z-10 tracking-wide">
-                International Destination
+                International Destinations
               </span>
             </button>
             <button
@@ -291,7 +290,7 @@ export function DestinationsShowcase({
                 />
               )}
               <span className="relative z-10 tracking-wide">
-                Domestic Destination
+                Domestic Destinations
               </span>
             </button>
           </div>
