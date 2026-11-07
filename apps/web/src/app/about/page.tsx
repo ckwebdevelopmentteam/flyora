@@ -42,17 +42,19 @@ export default function AboutPage() {
         {/* Editorial Story matching 4 reference screenshots: Hero, Overlapping Mountain, It Began With A Feeling, Unique Different & Daring, Regenerative Travel */}
         <AboutEditorialStory onOpenEnquiry={handleOpenEnquiry} />
 
-        {/* A scroll-led purpose story replaces the transition, curators, and
-            standalone approach sections. */}
-        <AboutPurposeJourney data={ABOUT_DATA.approach} />
+        {/* A scroll-led purpose story: Purpose, What We Offer, and Meet Our Team on grape background */}
+        <AboutPurposeJourney
+          curators={ABOUT_DATA.curators}
+          onOpenEnquiry={handleOpenEnquiry}
+        />
 
         {/* Start the white stage one viewport before the purple story ends.
             Its sticky surface rises over the still-pinned purpose scene,
-            creating the requested bottom-to-top curtain handoff. */}
+            creating the requested bottom-to-top curtain handoff:
+            Mission, How We Plan Our Journeys, and Our Values on white background */}
         <div className="relative z-10 -mt-[100svh]">
           <AboutValuesExperience
             approach={ABOUT_DATA.approach}
-            curators={ABOUT_DATA.curators}
             onOpenEnquiry={handleOpenEnquiry}
           />
         </div>

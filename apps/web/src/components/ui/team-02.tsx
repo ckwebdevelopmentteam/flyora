@@ -173,6 +173,7 @@ export interface TeamProps {
   className?: string;
   containerClassName?: string;
   onMemberClick?: (member: TeamMember) => void;
+  isDark?: boolean;
 }
 
 const Team: React.FC<TeamProps> = ({
@@ -183,6 +184,7 @@ const Team: React.FC<TeamProps> = ({
   className = "",
   containerClassName = "lg:py-20 sm:py-16 py-8",
   onMemberClick,
+  isDark = false,
 }) => {
   return (
     <section className={className}>
@@ -202,16 +204,30 @@ const Team: React.FC<TeamProps> = ({
               {badge && (
                 <Badge
                   variant={"outline"}
-                  className="border-none px-3 py-1 h-auto text-sm"
+                  className={
+                    isDark
+                      ? "px-3.5 py-1 h-auto text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-md bg-white/10 text-[#5BC3A6] border border-white/15 backdrop-blur-md"
+                      : "border-none px-3 py-1 h-auto text-sm"
+                  }
                 >
                   {badge}
                 </Badge>
               )}
               <div className="flex flex-col items-center justify-center gap-3">
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight text-foreground">
+                <h2
+                  className={`text-3xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight ${
+                    isDark
+                      ? "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
+                      : "text-foreground"
+                  }`}
+                >
                   {title}
                 </h2>
-                <p className="text-base font-normal text-muted-foreground">
+                <p
+                  className={`text-base font-normal ${
+                    isDark ? "text-white/80" : "text-muted-foreground"
+                  }`}
+                >
                   {description}
                 </p>
               </div>
@@ -233,7 +249,11 @@ const Team: React.FC<TeamProps> = ({
                     className="group flex flex-col items-start gap-4 sm:gap-6"
                   >
                     <div
-                      className="relative w-full h-72 sm:h-80 overflow-hidden rounded-md bg-stone-100 cursor-pointer"
+                      className={`relative w-full h-72 sm:h-80 overflow-hidden rounded-md cursor-pointer ${
+                        isDark
+                          ? "bg-white/5 border border-white/10 shadow-lg"
+                          : "bg-stone-100"
+                      }`}
                       onClick={() => onMemberClick?.(value)}
                     >
                       <img
@@ -265,10 +285,20 @@ const Team: React.FC<TeamProps> = ({
                       </div>
                     </div>
                     <div className="flex flex-col gap-1 text-left">
-                      <h3 className="text-xl font-medium text-foreground">
+                      <h3
+                        className={`text-xl font-medium ${
+                          isDark ? "text-white" : "text-foreground"
+                        }`}
+                      >
                         {value.name}
                       </h3>
-                      <p className="text-sm font-normal text-muted-foreground">
+                      <p
+                        className={`text-sm font-normal ${
+                          isDark
+                            ? "text-[#5BC3A6]/90 font-mono text-xs uppercase tracking-wider"
+                            : "text-muted-foreground"
+                        }`}
+                      >
                         {value.role}
                       </p>
                     </div>

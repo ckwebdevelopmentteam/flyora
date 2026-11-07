@@ -3,13 +3,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowUpRight } from "lucide-react";
-import Team, {
-  type TeamMember,
-  InstagramIcon,
-  LinkedinIcon,
-  DribbbleIcon,
-} from "@/components/ui/team-02";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import {
   useRobotoFlex,
   ProximityLetters,
@@ -18,7 +12,7 @@ import type { AboutPageData } from "../aboutData";
 
 interface AboutValuesExperienceProps {
   approach: AboutPageData["approach"];
-  curators: AboutPageData["curators"];
+  curators?: AboutPageData["curators"];
   onOpenEnquiry?: (serviceId?: string) => void;
 }
 
@@ -120,6 +114,7 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
   const sectionRef = useRef<HTMLElement>(null);
   const missionStageRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
+  const [activeItem, setActiveItem] = useState(approach.items[0]?.id ?? "");
 
   useEffect(() => {
     let frameId = 0;
@@ -151,7 +146,7 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
 
   // Carefully calibrated 2-scroll rhythm with lag hold:
   // - Scene 1 ("OUR MISSION"): enters 0.0 to 0.04, holds 0.04 to 0.18, 1st scroll lags to 0.33, 2nd scroll exits to 0.40
-  // - Scene 2 ("MEET OUR TEAM"): enters 0.33, holds 0.41 to 0.55, 1st scroll lags to 0.69, 2nd scroll exits to 0.76
+  // - Scene 2 ("HOW WE PLAN OUR JOURNEYS"): enters 0.33, holds 0.41 to 0.55, 1st scroll lags to 0.69, 2nd scroll exits to 0.76
   // - Scene 3 ("OUR VALUES"): enters 0.70, header settles, then 3 cards stagger in from 0.76 to 0.94 and hold stable!
   const missionStage = computeLightStage(
     progress,
@@ -162,7 +157,7 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
     0.33,
     0.4,
   );
-  const teamStage = computeLightStage(
+  const journeyStage = computeLightStage(
     progress,
     0.33,
     0.41,
@@ -173,6 +168,10 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
   );
   const valuesHeaderOpacity = clamp((progress - 0.7) / 0.07);
   const cards = approach.items.slice(0, 3);
+
+  // Subtle parallax lag transforms for Scene 2
+  const scene2ImageLag = (progress - 0.48) * -35;
+  const scene2TextLag = (progress - 0.48) * -15;
 
   const values = [
     {
@@ -245,47 +244,99 @@ export const AboutValuesExperience: React.FC<AboutValuesExperienceProps> = ({
           </div>
         </div>
 
+        {/* Scene 2: HOW WE PLAN OUR JOURNEYS (On the white/light background) */}
         <div
-          className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-8 transition-[opacity,transform,filter] duration-300 ease-out sm:px-8 lg:px-12"
+          className="absolute inset-0 z-10 grid grid-rows-[42%_58%] transition-[opacity,transform,filter] duration-300 ease-out lg:grid-cols-2 lg:grid-rows-1"
           style={{
-            opacity: teamStage.opacity,
-            filter: teamStage.filter,
-            transform: teamStage.transform,
-            pointerEvents: teamStage.pointerEvents,
+            opacity: journeyStage.opacity,
+            filter: journeyStage.filter,
+            transform: journeyStage.transform,
+            pointerEvents: journeyStage.pointerEvents,
           }}
-          aria-hidden={teamStage.opacity < 0.05}
+          aria-hidden={journeyStage.opacity < 0.05}
         >
-          <div className="mx-auto w-full max-w-7xl my-auto">
-            <Team
-              badge="Team"
-              title="Meet Our Team"
-              description="Our team is committed to redefining digital experiences through innovative web solutions while fostering a diverse and collaborative environment."
-              members={curators.items.map((curator) => ({
-                name: curator.name,
-                role: curator.role,
-                image: curator.image,
-                socials: [
-                  {
-                    icon: <InstagramIcon size={16} />,
-                    link: "#",
-                  },
-                  {
-                    icon: <DribbbleIcon size={16} />,
-                    link: "#",
-                  },
-                  {
-                    icon: <LinkedinIcon size={16} />,
-                    link: "#",
-                  },
-                ],
-              }))}
-              containerClassName="py-2 sm:py-4 lg:py-6"
-              onMemberClick={(member) =>
-                onOpenEnquiry
-                  ? onOpenEnquiry(`Consultation with ${member.name}`)
-                  : undefined
-              }
-            />
+          <div className="relative overflow-hidden">
+            <div
+              className="relative w-full h-full transition-transform duration-300 ease-out"
+              style={{
+                transform: `scale(1.08) translateY(${scene2ImageLag}px)`,
+                willChange: "transform",
+              }}
+            >
+              <Image
+                src="/about/flyora_about_travel_photo.png"
+                alt="Traveler on a mountain peak admiring the sunset over scenic coastal bays and islands"
+                fill
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover object-center"
+              />
+              {/* Soft atmospheric gradient blending into #F9F8F4 on white background */}
+              <div
+                className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/10 pointer-events-none"
+                aria-hidden="true"
+              />
+              <div
+                className="absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-[#F9F8F4] via-[#F9F8F4]/50 to-transparent pointer-events-none hidden lg:block"
+                aria-hidden="true"
+              />
+              <div
+                className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-[#F9F8F4] to-transparent pointer-events-none lg:hidden"
+                aria-hidden="true"
+              />
+            </div>
+          </div>
+
+          <div
+            className="flex min-h-0 items-center overflow-y-auto px-6 py-8 sm:px-10 lg:px-[12%] transition-transform duration-300 ease-out"
+            style={{
+              transform: `translateY(${scene2TextLag}px)`,
+              willChange: "transform",
+            }}
+          >
+            <div className="w-full max-w-xl">
+              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#002f89] sm:text-[11px]">
+                {approach.eyebrow}
+              </p>
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[1.15] tracking-tight text-[#1C1815]">
+                {approach.heading}
+              </h2>
+
+              <div className="mt-6 border-t border-black/10">
+                {approach.items.map((item) => {
+                  const isOpen = activeItem === item.id;
+
+                  return (
+                    <div key={item.id} className="border-b border-black/10">
+                      <button
+                        type="button"
+                        onClick={() => setActiveItem(isOpen ? "" : item.id)}
+                        className="flex w-full items-center justify-between gap-4 py-4 text-left cursor-pointer"
+                      >
+                        <span className="flex items-center gap-3">
+                          <span className="text-[11px] font-semibold tracking-[0.12em] text-[#B86A3B]">
+                            /{item.number}
+                          </span>
+                          <span className="text-[14px] font-medium sm:text-[15px] text-[#1C1815]">
+                            {item.title}
+                          </span>
+                        </span>
+                        <ChevronDown
+                          className={
+                            "h-4 w-4 shrink-0 text-stone-500 transition-transform duration-300 " +
+                            (isOpen ? "rotate-180" : "")
+                          }
+                        />
+                      </button>
+                      {isOpen && (
+                        <p className="max-w-lg pb-4 text-[13px] leading-relaxed text-[#6B6156] sm:text-[14px]">
+                          {item.fullDesc}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
           </div>
         </div>
 
