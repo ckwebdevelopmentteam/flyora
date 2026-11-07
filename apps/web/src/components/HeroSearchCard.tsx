@@ -888,6 +888,12 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
 
   // Determine applicable services based on backend data and tripMode
   const visibleServices = useMemo(() => {
+    const defaultList = ALL_SERVICES_CATALOG.filter((srv) =>
+      tripMode === "domestic"
+        ? srv.isDomesticApplicable
+        : srv.isInternationalApplicable,
+    );
+
     if (backendServices.length > 0) {
       const filteredBackend = filterServicesByTripMode(
         backendServices,
@@ -905,14 +911,22 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
         );
       });
 
-      if (mapped.length > 0) return mapped.slice(0, 5);
+      // Merge backend-mapped services with standard core catalog services so that essential offerings
+      // (such as Train Booking in domestic travel) remain present even if not yet configured in backend DB
+      const merged = [...mapped];
+      defaultList.forEach((defSrv) => {
+        if (!merged.some((m) => m.id === defSrv.id)) {
+          merged.push(defSrv);
+        }
+      });
+
+      // Maintain catalog order and display up to 5 services
+      return ALL_SERVICES_CATALOG.filter((cat) =>
+        merged.some((m) => m.id === cat.id),
+      ).slice(0, 5);
     }
 
-    return ALL_SERVICES_CATALOG.filter((srv) =>
-      tripMode === "domestic"
-        ? srv.isDomesticApplicable
-        : srv.isInternationalApplicable,
-    ).slice(0, 5);
+    return defaultList.slice(0, 5);
   }, [backendServices, tripMode, selectedDestination]);
 
   // Cascading update: if active service is no longer valid in current tripMode, fallback
