@@ -191,7 +191,7 @@ export function DestinationsShowcase({
   return (
     <section
       id="destination-packages"
-      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[720px] lg:min-h-[760px] ${className}`}
+      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[820px] lg:min-h-[880px] ${className}`}
     >
       {/* Background Images Layer: Base + Smooth Center Expansion with ZERO Blink */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-black">
@@ -234,9 +234,27 @@ export function DestinationsShowcase({
       </div>
 
       {/* Main Showcase Content with 105px horizontal padding: ALWAYS on top at z-20 */}
-      <div className="relative z-20 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start py-12 lg:py-14">
-        {/* Top-Right Category Switcher: 4 lines total (each button has 2 vertical lines: border-l & border-r) */}
-        <div className="w-full flex justify-end items-center mb-5 lg:mb-4 shrink-0">
+      <div className="relative z-20 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start py-12 lg:py-16">
+        {/* Centered Section Header: Honeymoon & Romantic Getaways */}
+        <div className="w-full flex flex-col items-center text-center mb-8 lg:mb-10">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 mb-3 sm:mb-3.5 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#5BC3A6]" />
+            <span className="text-[11px] sm:text-xs font-sans font-semibold uppercase tracking-[0.22em] text-white/95">
+              HONEYMOON & ROMANTIC GETAWAYS
+            </span>
+          </div>
+          <h2 className="font-sans font-bold text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] text-white tracking-tight leading-[1.14] mb-3.5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+            Curated Romantic Escapes Designed for Two
+          </h2>
+          <p className="text-sm sm:text-base text-white/85 max-w-2xl font-light leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.65)]">
+            Handcrafted international and domestic journeys crafted for couples
+            and newlyweds — private retreats, sunset horizons, and intimate
+            memories to last a lifetime.
+          </p>
+        </div>
+
+        {/* Category Switcher: Centered below the heading with 4 vertical lines */}
+        <div className="w-full flex justify-center items-center mb-8 lg:mb-10 shrink-0">
           <div className="inline-flex items-center gap-3 sm:gap-4 text-sm sm:text-base tracking-wide">
             <button
               type="button"
@@ -244,7 +262,7 @@ export function DestinationsShowcase({
               className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
                 activeCategory === "International"
                   ? "bg-white text-black font-semibold shadow-sm border-white"
-                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
+                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10 backdrop-blur-[2px]"
               }`}
             >
               {activeCategory !== "International" && (
@@ -263,7 +281,7 @@ export function DestinationsShowcase({
               className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
                 activeCategory === "Domestic"
                   ? "bg-white text-black font-semibold shadow-sm border-white"
-                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
+                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10 backdrop-blur-[2px]"
               }`}
             >
               {activeCategory !== "Domestic" && (
