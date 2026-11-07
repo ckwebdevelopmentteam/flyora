@@ -249,7 +249,7 @@ export const PackageCard = ({
 
   return (
     <div
-      className="group relative flex h-[395px] w-full flex-col overflow-hidden rounded-md shadow-md transition-all duration-300 hover:shadow-xl transform-gpu hover:-translate-y-1"
+      className="group relative flex h-[395px] w-full flex-col overflow-hidden rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl transform-gpu hover:-translate-y-1"
       style={{ backgroundColor: cardBg }}
     >
       {/* Top Image Section - Seamless fade into card background without sharp border */}
@@ -409,7 +409,7 @@ export const PackageCarouselSection = ({
               key={item.id}
             >
               <Link
-                className="block rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89] focus-visible:ring-offset-2"
+                className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89] focus-visible:ring-offset-2"
                 href={item.href || "/tours"}
               >
                 <PackageCard packageItem={item} />

@@ -501,7 +501,7 @@ export default function Home() {
                       openEnquiry(`${dest.name}, ${dest.country}`);
                     }
                   }}
-                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-16px)] aspect-[3/4.4] rounded-md overflow-hidden cursor-pointer select-none snap-start shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-all duration-400 transform hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A2540]"
+                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-16px)] aspect-[3/4.4] rounded-2xl overflow-hidden cursor-pointer select-none snap-start shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-all duration-400 transform hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A2540]"
                 >
                   {/* Crisp High-Definition Destination Card Image */}
                   <img
@@ -515,7 +515,7 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
 
                   {/* Soft interactive card border ring */}
-                  <div className="absolute inset-0 rounded-md ring-1 ring-black/10 group-hover:ring-white/40 transition-all duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 rounded-2xl ring-1 ring-black/10 group-hover:ring-white/40 transition-all duration-300 pointer-events-none" />
 
                   {/* Card Content Footer: Location Info + Real Interactive Action Button */}
                   <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex items-end justify-between gap-2.5 z-10 pointer-events-none">

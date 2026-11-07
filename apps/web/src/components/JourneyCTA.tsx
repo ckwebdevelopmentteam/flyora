@@ -48,8 +48,8 @@ export function JourneyCTA({ onStart }: { onStart: () => void }) {
           className="absolute inset-x-0 -bottom-2 h-[calc(50%+8px)] bg-[#002f89] pointer-events-none"
         />
 
-        {/* Featured Panoramic Image: same height as before, standard rounded-md */}
-        <div className="relative z-10 w-full h-[240px] sm:h-[320px] md:h-[380px] lg:h-[400px] xl:h-[430px] rounded-md overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
+        {/* Featured Panoramic Image: same height as before, rounded-2xl matching package cards */}
+        <div className="relative z-10 w-full h-[240px] sm:h-[320px] md:h-[380px] lg:h-[400px] xl:h-[430px] rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.22)]">
           <Image
             src="/home/travel-team-curators.jpg"
             alt="Flyora travel curators team planning bespoke journeys"

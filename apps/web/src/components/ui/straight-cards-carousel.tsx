@@ -347,7 +347,7 @@ export function StraightCardsCarousel({
                   goTo(i);
                 }
               }}
-              className="absolute bottom-0 left-0 overflow-hidden rounded-md border border-white/25 shadow-2xl cursor-pointer group"
+              className="absolute bottom-0 left-0 overflow-hidden rounded-2xl border border-white/25 shadow-2xl cursor-pointer group"
               style={{
                 width: `${leadWidth}px`,
                 height: `${leadHeight}px`,
@@ -364,10 +364,10 @@ export function StraightCardsCarousel({
               />
 
               {/* Gentle non-hovered gradient at the bottom solely for location text legibility */}
-              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-md transition-opacity duration-300 group-hover:opacity-0" />
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300 group-hover:opacity-0" />
 
               {/* Smooth full-card dark gradient that fades in on hover to highlight details */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
 
               {/* Location & Interactive Details Overlay */}
               <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 z-10 flex flex-col justify-end pointer-events-none">
