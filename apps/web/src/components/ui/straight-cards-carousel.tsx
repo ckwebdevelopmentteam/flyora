@@ -347,7 +347,7 @@ export function StraightCardsCarousel({
                   goTo(i);
                 }
               }}
-              className="absolute bottom-0 left-0 overflow-hidden rounded-[8px] border border-white/25 shadow-2xl cursor-pointer group"
+              className="absolute bottom-0 left-0 overflow-hidden rounded-md border border-white/25 shadow-2xl cursor-pointer group"
               style={{
                 width: `${leadWidth}px`,
                 height: `${leadHeight}px`,
@@ -364,10 +364,10 @@ export function StraightCardsCarousel({
               />
 
               {/* Gentle non-hovered gradient at the bottom solely for location text legibility */}
-              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-[8px] transition-opacity duration-300 group-hover:opacity-0" />
+              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-md transition-opacity duration-300 group-hover:opacity-0" />
 
               {/* Smooth full-card dark gradient that fades in on hover to highlight details */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
 
               {/* Location & Interactive Details Overlay */}
               <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 z-10 flex flex-col justify-end pointer-events-none">
@@ -383,7 +383,7 @@ export function StraightCardsCarousel({
                   {/* Top Row: Duration Badge */}
                   {item.duration && (
                     <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-0.5 rounded-[5px] bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold tracking-wide border border-white/25">
+                      <span className="px-2.5 py-0.5 rounded-md bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold tracking-wide border border-white/25">
                         {item.duration}
                       </span>
                     </div>
@@ -439,7 +439,7 @@ export function StraightCardsCarousel({
             type="button"
             onClick={() => step(-1)}
             aria-label="Previous destination"
-            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-[2px] text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
+            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
           >
             <span
               aria-hidden="true"
@@ -465,7 +465,7 @@ export function StraightCardsCarousel({
             type="button"
             onClick={() => step(1)}
             aria-label="Next destination"
-            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-[2px] text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
+            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
           >
             <span
               aria-hidden="true"

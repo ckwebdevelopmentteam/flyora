@@ -457,7 +457,7 @@ export default function Home() {
                     onClick={() => handleScroll("left")}
                     disabled={!canScrollLeft}
                     aria-label="Previous destination"
-                    className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 ${
+                    className={`w-10 h-10 rounded-md border flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 ${
                       canScrollLeft
                         ? "bg-[#0A2540] text-white border-[#0A2540] hover:bg-[#071C30]"
                         : "bg-white text-neutral-400 border-neutral-200 cursor-not-allowed opacity-60"
@@ -470,7 +470,7 @@ export default function Home() {
                     onClick={() => handleScroll("right")}
                     disabled={!canScrollRight}
                     aria-label="Next destination"
-                    className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 ${
+                    className={`w-10 h-10 rounded-md border flex items-center justify-center transition-all cursor-pointer shadow-2xs active:scale-95 ${
                       canScrollRight
                         ? "bg-[#0A2540] text-white border-[#0A2540] hover:bg-[#071C30] shadow-sm"
                         : "bg-white text-neutral-400 border-neutral-200 cursor-not-allowed opacity-60"
@@ -501,7 +501,7 @@ export default function Home() {
                       openEnquiry(`${dest.name}, ${dest.country}`);
                     }
                   }}
-                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-16px)] aspect-[3/4.4] rounded-[22px] sm:rounded-[24px] overflow-hidden cursor-pointer select-none snap-start shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-all duration-400 transform hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A2540]"
+                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-16px)] aspect-[3/4.4] rounded-md overflow-hidden cursor-pointer select-none snap-start shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-all duration-400 transform hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A2540]"
                 >
                   {/* Crisp High-Definition Destination Card Image */}
                   <img
@@ -515,7 +515,7 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
 
                   {/* Soft interactive card border ring */}
-                  <div className="absolute inset-0 rounded-[22px] sm:rounded-[24px] ring-1 ring-black/10 group-hover:ring-white/40 transition-all duration-300 pointer-events-none" />
+                  <div className="absolute inset-0 rounded-md ring-1 ring-black/10 group-hover:ring-white/40 transition-all duration-300 pointer-events-none" />
 
                   {/* Card Content Footer: Location Info + Real Interactive Action Button */}
                   <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex items-end justify-between gap-2.5 z-10 pointer-events-none">
@@ -532,8 +532,8 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Right: REAL Interactive Circular Action Button */}
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-white/60 bg-white/10 backdrop-blur-md flex items-center justify-center text-white shrink-0 transition-all duration-300 group-hover:bg-white group-hover:text-[#0A2540] group-hover:border-white group-hover:scale-110 shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
+                    {/* Right: Interactive Action Button with standard rounded-md */}
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md border border-white/60 bg-white/10 backdrop-blur-md flex items-center justify-center text-white shrink-0 transition-all duration-300 group-hover:bg-white group-hover:text-[#0A2540] group-hover:border-white group-hover:scale-110 shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
                       <ArrowUpRight className="w-4 h-4 stroke-[2.2] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                     </div>
                   </div>
@@ -541,11 +541,11 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Explore All Destinations Pill Button */}
+            {/* Explore All Destinations Button with standard rounded-md */}
             <div className="flex justify-center items-center mt-10 sm:mt-12">
               <Link
                 href="/tours"
-                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-full border border-neutral-300 bg-white/95 backdrop-blur-md text-[#0A2540] hover:text-black hover:bg-white hover:border-neutral-400 font-medium text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group cursor-pointer"
+                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-md border border-neutral-300 bg-white/95 backdrop-blur-md text-[#0A2540] hover:text-black hover:bg-white hover:border-neutral-400 font-medium text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group cursor-pointer"
               >
                 <span>Explore All Destinations</span>
                 <ArrowRight className="w-4 h-4 stroke-[2] transition-transform duration-300 group-hover:translate-x-1" />

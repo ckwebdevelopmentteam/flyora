@@ -249,7 +249,7 @@ export const PackageCard = ({
 
   return (
     <div
-      className="group relative flex h-[395px] w-full flex-col overflow-hidden rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl transform-gpu hover:-translate-y-1"
+      className="group relative flex h-[395px] w-full flex-col overflow-hidden rounded-md shadow-md transition-all duration-300 hover:shadow-xl transform-gpu hover:-translate-y-1"
       style={{ backgroundColor: cardBg }}
     >
       {/* Top Image Section - Seamless fade into card background without sharp border */}
@@ -285,7 +285,7 @@ export const PackageCard = ({
       >
         {/* Row 1: Duration Chip + Location Text */}
         <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded-[5px] bg-black/45 text-white text-[11px] sm:text-xs font-semibold tracking-wide shrink-0 backdrop-blur-xs">
+          <span className="px-2.5 py-0.5 rounded-md bg-black/45 text-white text-[11px] sm:text-xs font-semibold tracking-wide shrink-0 backdrop-blur-xs">
             {durationText}
           </span>
           <span className="text-white/95 text-xs sm:text-[13px] font-medium truncate">
@@ -359,7 +359,7 @@ export const PackageCarouselSection = ({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-[2px] grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-2xs"
+              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-md grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-2xs"
               onClick={handleScrollLeft}
               aria-label={`Scroll left in ${title}`}
             >
@@ -373,7 +373,7 @@ export const PackageCarouselSection = ({
             </button>
             <button
               type="button"
-              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-[2px] grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-2xs"
+              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-md grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-2xs"
               onClick={handleScrollRight}
               aria-label={`Scroll right in ${title}`}
             >
@@ -409,7 +409,7 @@ export const PackageCarouselSection = ({
               key={item.id}
             >
               <Link
-                className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89] focus-visible:ring-offset-2"
+                className="block rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89] focus-visible:ring-offset-2"
                 href={item.href || "/tours"}
               >
                 <PackageCard packageItem={item} />
