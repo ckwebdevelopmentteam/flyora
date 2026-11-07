@@ -2690,7 +2690,7 @@ export default function ServicesPage() {
 
   // Listen to hash changes on initial mount and external navigation (back/forward or navbar links)
   useEffect(() => {
-    const syncFromHash = () => {
+    const syncFromHash = (shouldScroll = false) => {
       if (typeof window === "undefined") return;
       const hash = window.location.hash.replace("#", "");
       if (!hash) return;
@@ -2704,15 +2704,28 @@ export default function ServicesPage() {
           }
           return curr;
         });
+        if (shouldScroll) {
+          setTimeout(() => {
+            const el =
+              document.getElementById("service-details-hub") ||
+              document.getElementById(hash);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+            }
+          }, 150);
+        }
       }
     };
 
-    // Run once on initial page load
-    syncFromHash();
+    // Run once on initial page load if hash is present
+    if (typeof window !== "undefined" && window.location.hash) {
+      syncFromHash(false);
+    }
 
     // Listen to external hash changes (e.g. from navbar anchor clicks or browser back/forward)
-    window.addEventListener("hashchange", syncFromHash);
-    return () => window.removeEventListener("hashchange", syncFromHash);
+    const onHashChange = () => syncFromHash(true);
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
   // Motion effect: Parallax scroll for the coastal counter strip image

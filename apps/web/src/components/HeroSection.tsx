@@ -23,9 +23,9 @@ export interface HeroSectionProps {
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
-  eyebrow = "Flyora Tours & Travels, Est. 2006",
+  eyebrow = "Flyora Tours & Travels, Est. 2014",
   title = "It’s not where you go, but how you feel.",
-  description = "Custom journeys across India and the world, built around you since 2006.",
+  description = "Custom journeys across India and the world, built around you since 2014.",
   videoSrc = "/hero/hero-one.mp4",
   posterSrc,
   primaryCtaLabel = "Start Planning",
@@ -218,7 +218,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         >
           {/* Eyebrow Tagline */}
           <span className="animate-hero-eyebrow font-heading text-xs sm:text-sm lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">
-            Flyora Tours & Travels • Est. 2006
+            Flyora Tours & Travels • Est. 2014
           </span>
 
           {/* Main Editorial Heading */}

@@ -231,6 +231,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       onFindAdvisor();
     } else if (onBecomeAdvisor) {
       onBecomeAdvisor();
+    } else if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("flyora:open-enquiry"));
     }
   };
 

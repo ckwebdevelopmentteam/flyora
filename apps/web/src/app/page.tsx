@@ -384,9 +384,9 @@ export default function Home() {
           --------------------------------------------------------------------- */}
       <HeroSection
         videoSrc="/hero/hero-one.mp4?v=new"
-        eyebrow="Flyora Tours & Travels, Est. 2006"
+        eyebrow="Flyora Tours & Travels, Est. 2014"
         title={"It’s not where you go,\nbut how you feel."}
-        description="Custom journeys across India and the world, built around you since 2006."
+        description="Custom journeys across India and the world, built around you since 2014."
         defaultTripMode={initialTripMode}
         primaryCtaLabel="Start Planning"
         onPrimaryCtaClick={() => openEnquiry()}
