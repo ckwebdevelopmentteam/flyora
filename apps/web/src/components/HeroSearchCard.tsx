@@ -1183,35 +1183,39 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           TOP BAR: MINIMAL TRIP CONTEXT TOGGLE (Clean, Subtle, No Excessive AI Badges)
           ======================================================================= */}
       <div className="flex items-center justify-between gap-3 mb-3 px-1 sm:px-2">
-        <div className="inline-flex items-center p-1 rounded-full bg-black/25 backdrop-blur-md border border-white/15">
+        <div className="inline-flex items-center p-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 shadow-md">
           <button
             type="button"
             onClick={() => handleTripModeChange("domestic")}
-            className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 md:px-5 py-1.5 rounded-full text-[10px] sm:text-xs md:text-[13px] font-sans font-medium transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-1 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
               tripMode === "domestic"
-                ? "bg-white text-neutral-900 shadow-xs font-semibold"
-                : "text-white/80 hover:text-white"
+                ? "bg-white text-neutral-950 shadow-xs font-bold"
+                : "text-white/90 hover:text-white font-medium hover:bg-white/10"
             }`}
           >
             <span>Domestic</span>
-            <span className="hidden sm:inline">Travel</span>
+            <span className="hidden sm:inline">&nbsp;Travel</span>
           </button>
 
           <button
             type="button"
             onClick={() => handleTripModeChange("international")}
-            className={`flex items-center gap-1 sm:gap-1.5 px-2.5 sm:px-4 md:px-5 py-1.5 rounded-full text-[10px] sm:text-xs md:text-[13px] font-sans font-medium transition-all duration-200 cursor-pointer ${
+            className={`flex items-center gap-1.5 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
               tripMode === "international"
-                ? "bg-white text-neutral-900 shadow-xs font-semibold"
-                : "text-white/80 hover:text-white"
+                ? "bg-white text-neutral-950 shadow-xs font-bold"
+                : "text-white/90 hover:text-white font-medium hover:bg-white/10"
             }`}
           >
             <Globe2
-              className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-neutral-500"
-              strokeWidth={1.75}
+              className={`w-3.5 h-3.5 shrink-0 ${
+                tripMode === "international"
+                  ? "text-[#002f89]"
+                  : "text-white/90"
+              }`}
+              strokeWidth={2}
             />
-            <span>Intl</span>
-            <span className="hidden sm:inline">ernational Travel</span>
+            <span>International</span>
+            <span className="hidden sm:inline">&nbsp;Travel</span>
           </button>
         </div>
       </div>

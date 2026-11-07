@@ -258,10 +258,10 @@ export function DestinationsShowcase({
             <button
               type="button"
               onClick={() => handleCategoryChange("International")}
-              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-3 sm:px-6 py-1.5 sm:py-2.5 border-l border-r text-xs sm:text-sm md:text-base ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-3.5 sm:px-6 py-2 sm:py-2.5 border-l border-r text-xs sm:text-sm md:text-base ${
                 activeCategory === "International"
-                  ? "bg-white text-black font-semibold shadow-sm border-white"
-                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10 backdrop-blur-[2px]"
+                  ? "bg-white text-neutral-950 font-bold shadow-md border-white"
+                  : "border-white/70 hover:border-transparent text-white font-medium bg-black/35 backdrop-blur-md"
               }`}
             >
               {activeCategory !== "International" && (
@@ -271,16 +271,17 @@ export function DestinationsShowcase({
                 />
               )}
               <span className="relative z-10 tracking-wide whitespace-nowrap">
-                International Destinations
+                International
+                <span className="hidden sm:inline">&nbsp;Destinations</span>
               </span>
             </button>
             <button
               type="button"
               onClick={() => handleCategoryChange("Domestic")}
-              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-3 sm:px-6 py-2 sm:py-2.5 border-l border-r text-xs sm:text-sm md:text-base ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-3.5 sm:px-6 py-2 sm:py-2.5 border-l border-r text-xs sm:text-sm md:text-base ${
                 activeCategory === "Domestic"
-                  ? "bg-white text-black font-semibold shadow-sm border-white"
-                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10 backdrop-blur-[2px]"
+                  ? "bg-white text-neutral-950 font-bold shadow-md border-white"
+                  : "border-white/70 hover:border-transparent text-white font-medium bg-black/35 backdrop-blur-md"
               }`}
             >
               {activeCategory !== "Domestic" && (
@@ -290,7 +291,8 @@ export function DestinationsShowcase({
                 />
               )}
               <span className="relative z-10 tracking-wide whitespace-nowrap">
-                Domestic Destinations
+                Domestic
+                <span className="hidden sm:inline">&nbsp;Destinations</span>
               </span>
             </button>
           </div>

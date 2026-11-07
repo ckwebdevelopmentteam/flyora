@@ -21,7 +21,7 @@ export function CloudMarquee({
 }: CloudMarqueeProps) {
   return (
     <div
-      className={`relative z-10 -mt-6 sm:-mt-10 lg:-mt-16 -mb-4 sm:-mb-8 lg:-mb-10 overflow-hidden ${className}`.trim()}
+      className={`relative z-10 -mt-10 lg:-mt-16 overflow-hidden ${className}`.trim()}
       aria-hidden="true"
       data-navbar-solid-from=""
       style={{ pointerEvents: "none" }}
@@ -41,14 +41,14 @@ export function CloudMarquee({
               alt=""
               width={cloud.w}
               height={cloud.h}
-              sizes="(max-width: 640px) 520px, (max-width: 1024px) 960px, 1580px"
+              sizes="1580px"
               style={{
                 display: "block",
                 flexShrink: 0,
-                width: "clamp(460px, 80vw, 1580px)",
+                width: 1580,
                 height: "auto",
                 margin: 0,
-                marginRight: "-12%",
+                marginRight: -240,
                 padding: 0,
                 border: "none",
               }}
