@@ -51,6 +51,7 @@ import {
   MapPin,
   Star,
   XCircle,
+  X,
 } from "lucide-react";
 
 // Pixel-perfect SVG icons matching the reference design
@@ -421,6 +422,9 @@ interface ConciergePillFieldProps {
   onSelect: (val: string) => void;
   dropdownWidth?: string;
   className?: string;
+  isEditable?: boolean;
+  placeholder?: string;
+  onChangeText?: (val: string) => void;
 }
 
 const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
@@ -433,71 +437,208 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
   onSelect,
   dropdownWidth = "w-72 sm:w-88",
   className = "flex-1 min-w-0",
+  isEditable = false,
+  placeholder,
+  onChangeText,
 }) => {
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // If editable, filter options based on user text
+  const trimmedValue = value?.trim().toLowerCase() || "";
+  const filteredOptions =
+    isEditable && trimmedValue
+      ? options.filter(
+          (opt) =>
+            opt.label.toLowerCase().includes(trimmedValue) ||
+            (opt.sub && opt.sub.toLowerCase().includes(trimmedValue)),
+        )
+      : options;
+
+  const hasExactMatch = options.some(
+    (opt) => opt.label.toLowerCase() === trimmedValue,
+  );
+
   return (
     <div className={`relative ${className}`}>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full flex items-center gap-3 sm:gap-4 group cursor-pointer text-left focus:outline-none transition-transform duration-150 active:scale-[0.99] py-1.5 select-none px-2.5 sm:px-3.5 rounded-[8px] hover:bg-black/[0.03]"
-      >
-        {/* Soft Circular Icon Container */}
-        <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#F4F1EA] group-hover:bg-[#EAE5DC] flex items-center justify-center shrink-0 transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
-          <IconComponent className="w-5 h-5 sm:w-[22px] sm:h-[22px] text-[#2C241E] stroke-[1.7]" />
-        </div>
+      {isEditable ? (
+        <div
+          onClick={() => {
+            if (!isOpen) onToggle();
+            inputRef.current?.focus();
+          }}
+          className="w-full flex items-center gap-3 sm:gap-4 group cursor-pointer text-left py-1.5 px-2.5 sm:px-3.5 rounded-[8px] hover:bg-black/[0.03] transition-colors"
+        >
+          {/* Soft Circular Icon Container */}
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#F4F1EA] group-hover:bg-[#EAE5DC] flex items-center justify-center shrink-0 transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
+            <IconComponent className="w-5 h-5 sm:w-[22px] sm:h-[22px] text-[#2C241E] stroke-[1.7]" />
+          </div>
 
-        {/* Text Block: Label on top, Value + Chevron below */}
-        <div className="flex flex-col min-w-0 flex-1 pr-1">
-          <span className="text-[12px] sm:text-[13px] text-[#78716A] font-medium leading-tight mb-1 select-none truncate">
-            {label}
-          </span>
-          <div className="flex items-center justify-between gap-2 w-full">
-            <span className="text-[15px] sm:text-[16px] lg:text-[17px] font-bold sm:font-semibold text-[#1C1917] tracking-tight leading-tight group-hover:text-[#002f89] transition-colors truncate">
-              {value}
+          {/* Text Block: Label on top, Editable Input + Chevron below */}
+          <div className="flex flex-col min-w-0 flex-1 pr-1">
+            <span className="text-[12px] sm:text-[13px] text-[#78716A] font-medium leading-tight mb-1 select-none truncate">
+              {label}
             </span>
-            <ChevronDown
-              className={`w-4 h-4 text-[#78716A] group-hover:text-[#1C1917] shrink-0 transition-transform duration-200 ${
-                isOpen ? "rotate-180 text-[#002f89]" : ""
-              }`}
-            />
+            <div className="flex items-center justify-between gap-1 w-full">
+              <input
+                ref={inputRef}
+                type="text"
+                value={value}
+                onChange={(e) => {
+                  onChangeText?.(e.target.value);
+                  if (!isOpen) onToggle();
+                }}
+                onFocus={(e) => {
+                  e.target.select();
+                  if (!isOpen) onToggle();
+                }}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (!isOpen) onToggle();
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    if (isOpen) onToggle();
+                  }
+                }}
+                placeholder={
+                  placeholder || `Enter or select ${label.toLowerCase()}...`
+                }
+                className="w-full bg-transparent border-none outline-none p-0 focus:outline-none focus:ring-0 text-[15px] sm:text-[16px] lg:text-[17px] font-bold sm:font-semibold text-[#1C1917] tracking-tight leading-tight placeholder:text-[#A8A29E] placeholder:font-normal truncate cursor-text"
+              />
+              <div className="flex items-center gap-0.5 shrink-0">
+                {value && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeText?.("");
+                      inputRef.current?.focus();
+                    }}
+                    className="p-1 text-[#78716A] hover:text-[#1C1917] transition-colors cursor-pointer rounded-full hover:bg-black/[0.05]"
+                    title={`Clear ${label}`}
+                    aria-label={`Clear ${label}`}
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggle();
+                  }}
+                  className="p-1 text-[#78716A] group-hover:text-[#1C1917] transition-colors cursor-pointer"
+                  aria-label={`Toggle ${label} options`}
+                >
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-200 ${
+                      isOpen ? "rotate-180 text-[#002f89]" : ""
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
           </div>
         </div>
-      </button>
+      ) : (
+        <button
+          type="button"
+          onClick={onToggle}
+          className="w-full flex items-center gap-3 sm:gap-4 group cursor-pointer text-left focus:outline-none transition-transform duration-150 active:scale-[0.99] py-1.5 select-none px-2.5 sm:px-3.5 rounded-[8px] hover:bg-black/[0.03]"
+        >
+          {/* Soft Circular Icon Container */}
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-[#F4F1EA] group-hover:bg-[#EAE5DC] flex items-center justify-center shrink-0 transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
+            <IconComponent className="w-5 h-5 sm:w-[22px] sm:h-[22px] text-[#2C241E] stroke-[1.7]" />
+          </div>
+
+          {/* Text Block: Label on top, Value + Chevron below */}
+          <div className="flex flex-col min-w-0 flex-1 pr-1">
+            <span className="text-[12px] sm:text-[13px] text-[#78716A] font-medium leading-tight mb-1 select-none truncate">
+              {label}
+            </span>
+            <div className="flex items-center justify-between gap-2 w-full">
+              <span className="text-[15px] sm:text-[16px] lg:text-[17px] font-bold sm:font-semibold text-[#1C1917] tracking-tight leading-tight group-hover:text-[#002f89] transition-colors truncate">
+                {value}
+              </span>
+              <ChevronDown
+                className={`w-4 h-4 text-[#78716A] group-hover:text-[#1C1917] shrink-0 transition-transform duration-200 ${
+                  isOpen ? "rotate-180 text-[#002f89]" : ""
+                }`}
+              />
+            </div>
+          </div>
+        </button>
+      )}
 
       {/* Upward luxury dropdown with standard rounded-[8px] */}
       {isOpen && (
         <div
           className={`absolute left-0 bottom-[calc(100%+12px)] z-50 ${dropdownWidth} bg-white rounded-[8px] p-2.5 shadow-[0_24px_55px_rgba(0,0,0,0.25),0_6px_20px_rgba(0,0,0,0.12)] border border-neutral-200/90 animate-in fade-in slide-in-from-bottom-2 duration-150 max-h-[320px] overflow-y-auto no-scrollbar`}
         >
-          {options.map((opt, idx) => {
-            const isSelected = value === opt.label;
-            return (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => onSelect(opt.label)}
-                className={`w-full px-4 py-2.5 rounded-[6px] text-left flex items-center justify-between gap-3 transition-colors cursor-pointer ${
-                  isSelected
-                    ? "bg-[#F4F1EA] text-[#002f89] font-semibold"
-                    : "hover:bg-neutral-50 text-neutral-800 font-normal"
-                }`}
-              >
-                <div className="min-w-0 pr-1">
-                  <div className="text-[14px] sm:text-[14.5px] truncate">
-                    {opt.label}
-                  </div>
-                  {opt.sub && (
-                    <div className="text-[12px] text-neutral-400 truncate mt-0.5">
-                      {opt.sub}
-                    </div>
-                  )}
+          {/* Custom option prompt if user typed a custom place/route */}
+          {isEditable && trimmedValue && !hasExactMatch && (
+            <button
+              type="button"
+              onClick={() => {
+                onSelect(value.trim());
+              }}
+              className="w-full px-3.5 py-2.5 rounded-[6px] text-left flex items-center justify-between gap-3 bg-[#002f89]/5 hover:bg-[#002f89]/10 text-[#002f89] transition-colors cursor-pointer mb-2 border border-[#002f89]/15"
+            >
+              <div className="min-w-0 pr-1">
+                <div className="text-[11px] uppercase font-bold tracking-wider text-[#002f89] flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#002f89]" />
+                  Custom Place / Route
                 </div>
-                {isSelected && (
-                  <Check className="w-4 h-4 text-[#002f89] shrink-0" />
-                )}
-              </button>
-            );
-          })}
+                <div className="text-[14px] sm:text-[14.5px] truncate font-bold text-[#1C1917] mt-0.5">
+                  &ldquo;{value.trim()}&rdquo;
+                </div>
+              </div>
+              <span className="text-[11px] font-semibold text-[#002f89] bg-[#002f89]/10 px-2 py-0.5 rounded shrink-0">
+                Use this
+              </span>
+            </button>
+          )}
+
+          {isEditable && (
+            <div className="px-3 py-1 text-[10.5px] font-semibold uppercase tracking-wider text-[#78716A] select-none">
+              {filteredOptions.length > 0
+                ? "Popular suggestions"
+                : "Available options"}
+            </div>
+          )}
+
+          {(filteredOptions.length > 0 ? filteredOptions : options).map(
+            (opt, idx) => {
+              const isSelected = value === opt.label;
+              return (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => onSelect(opt.label)}
+                  className={`w-full px-4 py-2.5 rounded-[6px] text-left flex items-center justify-between gap-3 transition-colors cursor-pointer ${
+                    isSelected
+                      ? "bg-[#F4F1EA] text-[#002f89] font-semibold"
+                      : "hover:bg-neutral-50 text-neutral-800 font-normal"
+                  }`}
+                >
+                  <div className="min-w-0 pr-1">
+                    <div className="text-[14px] sm:text-[14.5px] truncate">
+                      {opt.label}
+                    </div>
+                    {opt.sub && (
+                      <div className="text-[12px] text-neutral-400 truncate mt-0.5">
+                        {opt.sub}
+                      </div>
+                    )}
+                  </div>
+                  {isSelected && (
+                    <Check className="w-4 h-4 text-[#002f89] shrink-0" />
+                  )}
+                </button>
+              );
+            },
+          )}
         </div>
       )}
     </div>
@@ -2796,6 +2937,9 @@ export default function ServicesPage() {
                         icon={Compass}
                         label="Destination"
                         value={holidayDest}
+                        isEditable={true}
+                        placeholder="Type destination or select..."
+                        onChangeText={setHolidayDest}
                         isOpen={openDropdown === "holiday-dest"}
                         onToggle={() =>
                           setOpenDropdown(
@@ -2859,6 +3003,9 @@ export default function ServicesPage() {
                         icon={PassportIcon}
                         label="Visa Country"
                         value={visaCountry}
+                        isEditable={true}
+                        placeholder="Type country or select..."
+                        onChangeText={setVisaCountry}
                         isOpen={openDropdown === "visa-country"}
                         onToggle={() =>
                           setOpenDropdown(
@@ -2920,6 +3067,9 @@ export default function ServicesPage() {
                         icon={PlaneTakeoff}
                         label="Flying Route"
                         value={flightRoute}
+                        isEditable={true}
+                        placeholder="Type route (e.g. BOM → DXB)..."
+                        onChangeText={setFlightRoute}
                         isOpen={openDropdown === "flight-route"}
                         onToggle={() =>
                           setOpenDropdown(
@@ -2983,6 +3133,9 @@ export default function ServicesPage() {
                         icon={Train}
                         label="Train Route"
                         value={trainRoute}
+                        isEditable={true}
+                        placeholder="Type route (e.g. Delhi → Mumbai)..."
+                        onChangeText={setTrainRoute}
                         isOpen={openDropdown === "train-route"}
                         onToggle={() =>
                           setOpenDropdown(
@@ -3044,6 +3197,9 @@ export default function ServicesPage() {
                         icon={Bus}
                         label="Bus Route"
                         value={busRoute}
+                        isEditable={true}
+                        placeholder="Type route (e.g. Bangalore → Goa)..."
+                        onChangeText={setBusRoute}
                         isOpen={openDropdown === "bus-route"}
                         onToggle={() =>
                           setOpenDropdown(
@@ -3099,8 +3255,11 @@ export default function ServicesPage() {
                     <>
                       <ConciergePillField
                         icon={MosqueIcon}
-                        label="Package Tier"
+                        label="Package / Preference"
                         value={umrahTier}
+                        isEditable={true}
+                        placeholder="Type preference, city or select..."
+                        onChangeText={setUmrahTier}
                         isOpen={openDropdown === "umrah-tier"}
                         onToggle={() =>
                           setOpenDropdown(
@@ -3160,8 +3319,11 @@ export default function ServicesPage() {
                     <>
                       <ConciergePillField
                         icon={MosqueIcon}
-                        label="Package Tier"
+                        label="Package / Preference"
                         value={hajjTier}
+                        isEditable={true}
+                        placeholder="Type preference, city or select..."
+                        onChangeText={setHajjTier}
                         isOpen={openDropdown === "hajj-tier"}
                         onToggle={() =>
                           setOpenDropdown(
