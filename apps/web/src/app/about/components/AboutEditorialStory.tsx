@@ -105,10 +105,11 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
             {/* Right Column (7 Cols): Blue Banner text (Aligned inside the blue banner) */}
             <div className="lg:col-span-7 xl:col-auto lg:pl-4 xl:pl-0 pb-4 sm:pb-6 lg:pb-8 xl:pt-[216px] xl:pb-0">
               <span className="block text-[#5BC3A6] text-xs sm:text-[13px] font-sans font-medium tracking-[0.25em] uppercase mb-3">
-                ABOUT US
+                ABOUT FLYORA • TOURS &amp; TRAVELS
               </span>
-              <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] text-white tracking-tight leading-[1.15] max-w-lg">
-                Award-Winning Creators of Remarkable Travel Experiences
+              <h2 className="font-serif font-bold text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] text-white tracking-tight leading-[1.15] max-w-xl">
+                Premier Travel &amp; Tourism Agency: Flights, Visas &amp;
+                Curated Holidays
               </h2>
             </div>
           </div>
@@ -129,26 +130,29 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
             <div className="lg:col-span-5 xl:col-auto pt-44 sm:pt-56 lg:pt-68 xl:pt-[530px]">
               <div className="max-w-md">
                 <h2 className="font-serif font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#111111] leading-[1.12] tracking-tight mb-4">
-                  It Began With a Vision
+                  Built for Total Travel Freedom
                 </h2>
 
                 <span className="block text-[11px] sm:text-xs font-sans font-medium tracking-[0.2em] text-[#777777] uppercase mb-6">
-                  FLYORA • CRAFTING EXTRAORDINARY JOURNEYS WORLDWIDE
+                  FLYORA • YOUR FULL-SERVICE TRAVEL, VISA &amp; TOURISM AGENCY
                 </span>
 
                 <div className="space-y-4 text-[14.5px] sm:text-[15.5px] text-[#444444] font-sans font-light leading-relaxed">
                   <p>
-                    Flyora was founded on a simple conviction: travel should be
-                    seamless, inspiring, and completely personal. We set out to
-                    sweep aside the stress of generic tour packages and
-                    one-size-fits-all itineraries.
+                    Flyora was founded on a simple conviction: securing visas,
+                    booking global flights, and discovering new destinations
+                    should be effortless, transparent, and completely personal.
+                    We set out to eliminate the friction of modern travel —
+                    replacing fragmented embassy queues and confusing booking
+                    portals with unified, expert care.
                   </p>
                   <p>
-                    Today, we curate bespoke international journeys, luxury
-                    stays, and seamless travel logistics for travelers across
-                    the globe. From the first spark of inspiration to your
-                    journey home, we shape every detail around how you want to
-                    feel.
+                    Today, as an integrated travel and tourism agency, we
+                    specialize in high-success visa processing for 100+
+                    countries, competitive worldwide flight ticketing, and
+                    handcrafted international and domestic holidays. From
+                    fast-track documentation to your return flight, our
+                    dedicated specialists manage every detail with precision.
                   </p>
                 </div>
               </div>
@@ -159,18 +163,21 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
               {/* WHAT WE'RE ABOUT & WE'RE A TEAM... */}
               <div className="max-w-xl">
                 <span className="block text-xs sm:text-[13px] font-sans font-medium tracking-[0.25em] text-[#111111] uppercase mb-3">
-                  WHAT WE&apos;RE ABOUT
+                  WHAT WE&apos;RE ABOUT • INTEGRATED AGENCY EXPERTISE
                 </span>
 
                 <h2 className="font-serif font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#111111] leading-[1.1] tracking-tight">
-                  Your Complete Travel Partner for Every Destination
+                  End-to-End Travel, Visa &amp; Air Mobility Solutions
                 </h2>
 
                 <p className="mt-6 text-base sm:text-lg lg:text-[18px] text-[#333333] font-sans font-light leading-relaxed">
-                  We bring international holiday packages, fast-track visa
-                  approvals, air ticketing, and 24/7 global concierge care
-                  together under one roof — ensuring every trip is effortless,
-                  enriching, and unforgettable.
+                  We bring together expedited visa processing, competitive
+                  commercial and corporate air ticketing, hand-curated holiday
+                  packages, and 24/7 concierge support under one roof. Whether
+                  you are traveling for business, planning a dream family
+                  getaway, or embarking on a sacred pilgrimage, Flyora provides
+                  the certified agency backing and personal attention you
+                  deserve.
                 </p>
               </div>
 
@@ -201,19 +208,22 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
             {/* Left Column: Complete Travel Management & PLAN YOUR TRIP Button */}
             <div className="lg:col-span-5 xl:col-auto xl:pt-[137px]">
               <h2 className="font-serif font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#111111] leading-[1.12] tracking-tight mb-3">
-                Complete Travel Management
+                Full-Spectrum Agency Services: Visas, Flights &amp; Holidays
               </h2>
 
               <span className="block text-[11px] sm:text-xs font-sans font-medium tracking-[0.2em] text-[#777777] uppercase mb-5">
-                FROM VISA TO RETURN FLIGHT • WE HANDLE EVERYTHING
+                GLOBAL MOBILITY • EMBASSY FILINGS • AIR TICKETING • BESPOKE
+                TOURS
               </span>
 
               <p className="text-[14.5px] sm:text-[15.5px] text-[#444444] font-sans font-light leading-relaxed mb-8 max-w-md">
-                At Flyora, we handle the complexities of global travel so you
-                can savor every moment. From expedited visa approvals for 100+
-                countries to premier flights, 5-star hotel partnerships, and
-                round-the-clock advisory, your journey is always in expert
-                hands.
+                At Flyora Tours &amp; Travels, we remove the friction of global
+                travel and documentation. Our certified visa consultants manage
+                rigorous dossier pre-checks and express embassy submissions for
+                100+ nations. Simultaneously, our air desk secures unpublished
+                airline partner fares and 24/7 rebooking assistance, seamlessly
+                integrating with bespoke holiday itineraries and curated hotel
+                stays.
               </p>
 
               {/* Exact Solid Black Button from Reference */}
@@ -221,12 +231,12 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
                 type="button"
                 onClick={() =>
                   onOpenEnquiry
-                    ? onOpenEnquiry("Custom Travel Inquiry")
+                    ? onOpenEnquiry("Travel & Visa Inquiry")
                     : undefined
                 }
                 className="inline-flex items-center justify-center px-8 py-3.5 bg-black hover:bg-zinc-800 active:bg-zinc-900 text-white text-xs font-sans font-semibold uppercase tracking-[0.2em] transition-colors rounded-none cursor-pointer shadow-xs"
               >
-                PLAN YOUR JOURNEY
+                TALK TO OUR TRAVEL &amp; VISA DESK
               </button>
             </div>
 

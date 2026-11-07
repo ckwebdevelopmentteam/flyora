@@ -243,8 +243,9 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
             <p className="font-heading text-[56px] font-bold leading-none tracking-[0.015em] text-[#5BC3A6] sm:text-[84px] lg:text-[112px]">
               OUR PURPOSE
             </p>
-            <h2 className="mx-auto mt-4 max-w-3xl font-heading text-[31px] font-bold uppercase leading-[1.12] tracking-[0.1em] sm:text-[44px] lg:text-[58px]">
-              To turn every journey into a remarkable travel experience
+            <h2 className="mx-auto mt-4 max-w-4xl font-heading text-[28px] font-bold uppercase leading-[1.14] tracking-[0.08em] sm:text-[40px] lg:text-[54px]">
+              To make global visas, flights, and travel seamless, reliable, and
+              remarkable
             </h2>
           </div>
         </div>
