@@ -1,7 +1,11 @@
 "use client";
 
 import React from "react";
-import { ArrowUpRight } from "lucide-react";
+import {
+  InstagramIcon,
+  LinkedinIcon,
+  DribbbleIcon,
+} from "@/components/ui/team-02";
 import { ABOUT_DATA } from "@/app/about/aboutData";
 
 export interface MeetOurTeamSectionProps {
@@ -14,7 +18,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
   return (
     <section
       id="our-team"
-      className="relative w-full overflow-hidden border-t border-rose-100/70 border-b border-rose-100/50 pt-10 sm:pt-12 lg:pt-14 pb-[96px] sm:pb-[104px] lg:pb-[112px]"
+      className="relative w-full overflow-hidden border-t border-rose-100/70 border-b border-rose-100/50 pt-12 sm:pt-16 lg:pt-20 pb-28 sm:pb-32 lg:pb-36"
       style={{
         background:
           "linear-gradient(180deg, #FFFFFF 0%, #FFF8F7 12%, #FFF4F3 40%, #FFF7F6 75%, #FFF5F6 100%)",
@@ -25,7 +29,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
       <span id="meet-our-team-section" className="sr-only" aria-hidden="true" />
 
       {/* =========================================================================
-          BACKGROUND DECORATIVE LAYERS (100% Exact Matching Screenshot)
+          BACKGROUND DECORATIVE LAYERS (100% Preserved Exact Current BG)
           ========================================================================= */}
       <div
         className="pointer-events-none absolute inset-0 select-none overflow-hidden"
@@ -132,13 +136,13 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
       </div>
 
       {/* =========================================================================
-          MAIN CONTENT: HEADER & 4 TEAM CARDS (100% Exact Matching Screenshot)
+          MAIN CONTENT: HEADER & 4 TEAM CARDS (Copied from About Page)
           ========================================================================= */}
-      <div className="relative z-10 mx-auto w-full max-w-[740px] lg:max-w-[780px] px-4 sm:px-2 lg:px-0">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8 xl:px-12">
         {/* Section Header */}
-        <div className="flex flex-col items-center justify-center text-center mb-8 sm:mb-10 lg:mb-11">
+        <div className="flex flex-col items-center justify-center text-center mb-10 sm:mb-12 lg:mb-14">
           {/* Eyebrow with flanking red lines */}
-          <div className="flex items-center justify-center gap-3 mb-2">
+          <div className="flex items-center justify-center gap-3 mb-2.5">
             <div className="w-8 sm:w-12 h-[1.5px] bg-[#c5221f]" />
             <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-[0.22em] text-[#c5221f]">
               THE PEOPLE BEHIND FLYORA
@@ -147,52 +151,83 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
           </div>
 
           {/* Heading with "Meet" in black and "Our Team" in red */}
-          <h2 className="text-3xl sm:text-4xl md:text-[42px] font-sans font-bold tracking-tight text-[#111827] mb-2.5">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans font-bold tracking-tight text-[#111827] mb-3">
             Meet <span className="text-[#c5221f]">Our Team</span>
           </h2>
 
           {/* Description Subtitle */}
-          <p className="text-sm sm:text-[15px] text-[#4b5563] max-w-2xl mx-auto font-normal leading-relaxed">
+          <p className="text-sm sm:text-base text-[#4b5563] max-w-2xl mx-auto font-normal leading-relaxed">
             Care from the team who listens well, shaping bespoke journeys
             tailored to your personal pace and passion.
           </p>
         </div>
 
-        {/* 4 Team Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3.5 sm:gap-4.5 w-full">
-          {curators.map((member) => (
+        {/* 4 Portrait Cards Grid matching About Page */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 w-full">
+          {curators.map((curator) => (
             <div
-              key={member.id}
+              key={curator.id}
               onClick={() =>
-                onOpenEnquiry?.(`Consultation with ${member.name}`)
+                onOpenEnquiry?.(`Consultation with ${curator.name}`)
               }
-              className="group bg-white rounded-3xl p-2.5 pb-3 shadow-[0_8px_30px_rgba(0,0,0,0.06)] hover:shadow-[0_16px_40px_rgba(225,29,72,0.12)] transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer flex flex-col border border-black/[0.04]"
+              className="group flex flex-col items-start cursor-pointer text-left transition-all duration-300"
             >
-              {/* Member Photo */}
-              <div className="relative w-full aspect-[4/3.8] sm:aspect-[4/3.9] overflow-hidden rounded-2xl bg-neutral-100">
+              {/* Rounded Portrait Frame matching About Page */}
+              <div className="relative w-full h-64 sm:h-72 lg:h-[280px] xl:h-[300px] overflow-hidden rounded-2xl bg-neutral-100 border border-black/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.06)] group-hover:shadow-[0_16px_36px_rgba(225,29,72,0.12)] transition-all duration-300">
                 <img
-                  src={member.image}
-                  alt={member.name}
+                  src={curator.image}
+                  alt={curator.name}
                   className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   loading="lazy"
                 />
+
+                {/* Dark Hover Overlay with Social Icons from About Page */}
+                <div className="absolute inset-0 bg-gray-950/45 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-end p-4 sm:p-5">
+                  <div className="flex gap-2">
+                    <span
+                      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white text-[#1C1815] rounded-full hover:bg-rose-50 hover:text-[#e11d48] transition-colors duration-200 shadow-md"
+                      title="Instagram"
+                    >
+                      <InstagramIcon size={16} />
+                    </span>
+                    <span
+                      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white text-[#1C1815] rounded-full hover:bg-rose-50 hover:text-[#e11d48] transition-colors duration-200 shadow-md"
+                      title="LinkedIn"
+                    >
+                      <LinkedinIcon size={16} />
+                    </span>
+                    <span
+                      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white text-[#1C1815] rounded-full hover:bg-rose-50 hover:text-[#e11d48] transition-colors duration-200 shadow-md"
+                      title="Dribbble"
+                    >
+                      <DribbbleIcon size={16} />
+                    </span>
+                  </div>
+                </div>
               </div>
 
-              {/* Card Footer: Name, Role & Arrow Up-Right Pill Button */}
-              <div className="pt-2.5 px-1.5 flex items-center justify-between gap-2">
-                <div className="flex flex-col text-left min-w-0">
-                  <h3 className="text-sm sm:text-[15px] font-bold text-[#111827] truncate leading-snug">
-                    {member.name}
-                  </h3>
-                  <p className="text-[11px] sm:text-xs text-[#6b7280] font-normal truncate mt-0.5">
-                    {member.role}
-                  </p>
-                </div>
+              {/* Name & Role from About Page */}
+              <div className="flex flex-col gap-0.5 mt-4 w-full">
+                <h3 className="text-lg sm:text-xl font-bold text-[#111827] group-hover:text-[#c5221f] transition-colors duration-200">
+                  {curator.name}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#6b7280] font-normal">
+                  {curator.role}
+                </p>
 
-                {/* Circular Action Button with ArrowUpRight */}
-                <div className="w-7 h-7 sm:w-7.5 sm:h-7.5 rounded-full bg-[#FFF1F2] border border-rose-100 flex items-center justify-center text-[#e11d48] shrink-0 group-hover:bg-[#e11d48] group-hover:text-white transition-all duration-200 shadow-2xs">
-                  <ArrowUpRight className="w-3.5 h-3.5 stroke-[2.2]" />
-                </div>
+                {/* Specialties Pill Badges from About Page */}
+                {curator.specialties && curator.specialties.length > 0 && (
+                  <div className="mt-2.5 flex flex-wrap gap-1.5">
+                    {curator.specialties.map((spec, i) => (
+                      <span
+                        key={i}
+                        className="text-[10px] font-sans uppercase tracking-wider text-[#6B6156] bg-white/90 px-2.5 py-1 rounded-full border border-black/[0.06] shadow-2xs"
+                      >
+                        {spec}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ))}
