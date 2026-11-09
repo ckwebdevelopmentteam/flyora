@@ -93,22 +93,55 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
         />
 
         {/* =======================================================================
-            AUTHENTIC 3D WORLD MAP GLOBE DOME, FLIGHT ARCS, PINS & CORNER WAVES
+            AUTHENTIC 3D WORLD MAP GLOBE DOME, FLIGHT ARCS, PINS & SMOOTH CORNER WAVES
             ======================================================================= */}
-        {/* Bottom-Left Soft Blush Curved Wave Sweep */}
-        <div className="pointer-events-none absolute bottom-0 left-0 w-[120px] sm:w-[160px] md:w-[200px] select-none overflow-hidden leading-none z-0">
-          <picture className="block w-full">
-            <source srcSet="/home/team-wave-left.webp" type="image/webp" />
-            <img
-              src="/home/team-wave-left.png"
-              alt=""
-              className="w-full h-auto object-contain object-left-bottom pointer-events-none select-none block"
-              loading="eager"
+        {/* Bottom-Left Smooth Curved Red Wave Sweep */}
+        <div className="pointer-events-none absolute bottom-0 left-0 w-[160px] sm:w-[220px] md:w-[280px] lg:w-[340px] xl:w-[400px] h-[80px] sm:h-[110px] md:h-[140px] lg:h-[170px] xl:h-[190px] select-none overflow-hidden leading-none z-0">
+          <svg
+            viewBox="0 0 400 190"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full block"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient
+                id="teamWaveLeftGrad"
+                x1="100%"
+                y1="100%"
+                x2="0%"
+                y2="0%"
+              >
+                <stop offset="0%" stopColor="#fb7185" stopOpacity="0.85" />
+                <stop offset="45%" stopColor="#e11d48" stopOpacity="0.95" />
+                <stop offset="100%" stopColor="#be123c" stopOpacity="1" />
+              </linearGradient>
+              <linearGradient
+                id="teamWaveLeftSoft"
+                x1="100%"
+                y1="100%"
+                x2="0%"
+                y2="0%"
+              >
+                <stop offset="0%" stopColor="#fecdd3" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#fda4af" stopOpacity="0.3" />
+              </linearGradient>
+            </defs>
+            {/* Layer 1: Soft blush halo wave curve */}
+            <path
+              d="M 430 190 C 300 180, 130 115, 0 35 L 0 190 Z"
+              fill="url(#teamWaveLeftSoft)"
             />
-          </picture>
+            {/* Layer 2: Main vibrant crimson-red wave curve */}
+            <path
+              d="M 380 190 C 260 188, 105 138, 0 65 L 0 190 Z"
+              fill="url(#teamWaveLeftGrad)"
+            />
+          </svg>
         </div>
 
-        {/* Centered Smaller Globe Dome with Flight Route Arcs & 3 Location Pins */}
+        {/* Centered Smaller Globe Dome with Flight Route Arcs & 3 Location Pins (Untouched) */}
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center select-none overflow-hidden leading-none z-0">
           <picture className="block w-full max-w-[580px] sm:max-w-[640px] md:max-w-[700px] lg:max-w-[740px] mx-auto px-4 sm:px-0">
             <source srcSet="/home/team-globe-center.webp" type="image/webp" />
@@ -121,17 +154,50 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
           </picture>
         </div>
 
-        {/* Bottom-Right Vibrant Curved Red Wave Sweep */}
-        <div className="pointer-events-none absolute bottom-0 right-0 w-[140px] sm:w-[180px] md:w-[220px] select-none overflow-hidden leading-none z-0">
-          <picture className="block w-full">
-            <source srcSet="/home/team-wave-right.webp" type="image/webp" />
-            <img
-              src="/home/team-wave-right.png"
-              alt=""
-              className="w-full h-auto object-contain object-right-bottom pointer-events-none select-none block"
-              loading="eager"
+        {/* Bottom-Right Smooth Curved Red Wave Sweep */}
+        <div className="pointer-events-none absolute bottom-0 right-0 w-[160px] sm:w-[220px] md:w-[280px] lg:w-[340px] xl:w-[400px] h-[80px] sm:h-[110px] md:h-[140px] lg:h-[170px] xl:h-[190px] select-none overflow-hidden leading-none z-0">
+          <svg
+            viewBox="0 0 400 190"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-full h-full block"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+          >
+            <defs>
+              <linearGradient
+                id="teamWaveRightGrad"
+                x1="0%"
+                y1="100%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop offset="0%" stopColor="#fb7185" stopOpacity="0.85" />
+                <stop offset="45%" stopColor="#e11d48" stopOpacity="0.95" />
+                <stop offset="100%" stopColor="#be123c" stopOpacity="1" />
+              </linearGradient>
+              <linearGradient
+                id="teamWaveRightSoft"
+                x1="0%"
+                y1="100%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop offset="0%" stopColor="#fecdd3" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#fda4af" stopOpacity="0.3" />
+              </linearGradient>
+            </defs>
+            {/* Layer 1: Soft blush halo wave curve */}
+            <path
+              d="M -30 190 C 100 180, 270 115, 400 35 L 400 190 Z"
+              fill="url(#teamWaveRightSoft)"
             />
-          </picture>
+            {/* Layer 2: Main vibrant crimson-red wave curve */}
+            <path
+              d="M 20 190 C 140 188, 295 138, 400 65 L 400 190 Z"
+              fill="url(#teamWaveRightGrad)"
+            />
+          </svg>
         </div>
       </div>
 
