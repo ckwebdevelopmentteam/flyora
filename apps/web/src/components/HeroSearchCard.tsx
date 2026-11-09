@@ -6,8 +6,6 @@ import {
   Users,
   Check,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   ArrowRight,
   Plane,
   Train,

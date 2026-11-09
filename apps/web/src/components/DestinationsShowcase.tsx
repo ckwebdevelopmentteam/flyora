@@ -379,7 +379,7 @@ export function DestinationsShowcase({
               footerRight={
                 <a
                   href="/tours"
-                  className="group relative overflow-hidden inline-flex items-center px-6 py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base tracking-wide transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] select-none whitespace-nowrap shadow-sm"
+                  className="group relative overflow-hidden inline-flex items-center justify-center h-10 sm:h-11 px-5 sm:px-6 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base tracking-wide transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] select-none whitespace-nowrap shadow-sm"
                 >
                   <span
                     aria-hidden="true"

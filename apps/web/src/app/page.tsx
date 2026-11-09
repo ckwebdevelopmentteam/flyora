@@ -6,9 +6,8 @@ import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import {
   Plus,
+  ArrowLeft,
   ArrowRight,
-  ChevronLeft,
-  ChevronRight,
   MapPin,
   ArrowUpRight,
 } from "lucide-react";
@@ -456,10 +455,10 @@ export default function Home() {
                     onClick={() => handleScroll("left")}
                     disabled={!canScrollLeft}
                     aria-label="Previous destination"
-                    className={`group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
+                    className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                       canScrollLeft
-                        ? "border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white cursor-pointer"
-                        : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-50"
+                        ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                        : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
                     }`}
                   >
                     {canScrollLeft && (
@@ -469,7 +468,7 @@ export default function Home() {
                       />
                     )}
                     <span className="relative z-10 flex items-center justify-center">
-                      <ChevronLeft className="w-4 h-4 stroke-[2.4]" />
+                      <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
                     </span>
                   </button>
                   <button
@@ -477,10 +476,10 @@ export default function Home() {
                     onClick={() => handleScroll("right")}
                     disabled={!canScrollRight}
                     aria-label="Next destination"
-                    className={`group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
+                    className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                       canScrollRight
-                        ? "border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white cursor-pointer"
-                        : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-50"
+                        ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                        : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
                     }`}
                   >
                     {canScrollRight && (
@@ -490,7 +489,7 @@ export default function Home() {
                       />
                     )}
                     <span className="relative z-10 flex items-center justify-center">
-                      <ChevronRight className="w-4 h-4 stroke-[2.4]" />
+                      <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
                     </span>
                   </button>
                 </div>
@@ -556,14 +555,20 @@ export default function Home() {
               ))}
             </div>
 
-            {/* Explore All Destinations Button with standard rounded-md */}
+            {/* Explore All Destinations Button with sliding blue fill hover effect */}
             <div className="flex justify-center items-center mt-10 sm:mt-12">
               <Link
                 href="/tours"
-                className="inline-flex items-center gap-2.5 px-8 py-3.5 rounded-md border border-neutral-300 bg-white/95 backdrop-blur-md text-[#0A2540] hover:text-black hover:bg-white hover:border-neutral-400 font-medium text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all group cursor-pointer"
+                className="group relative overflow-hidden inline-flex items-center gap-2.5 px-8 py-3.5 rounded-md border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white font-medium text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
               >
-                <span>Explore All Destinations</span>
-                <ArrowRight className="w-4 h-4 stroke-[2] transition-transform duration-300 group-hover:translate-x-1" />
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+                <span className="relative z-10 flex items-center gap-2.5">
+                  <span>Explore All Destinations</span>
+                  <ArrowRight className="w-4 h-4 stroke-[2] transition-transform duration-300 group-hover:translate-x-1" />
+                </span>
               </Link>
             </div>
           </div>

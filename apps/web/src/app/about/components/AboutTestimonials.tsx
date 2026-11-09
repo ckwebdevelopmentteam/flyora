@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import type { AboutPageData } from "../aboutData";
 
 interface AboutTestimonialsProps {
@@ -14,12 +14,19 @@ export const AboutTestimonials: React.FC<AboutTestimonialsProps> = ({
 }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  const canGoLeft = currentIndex > 0;
+  const canGoRight = currentIndex < (data?.items?.length ?? 1) - 1;
+
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? data.items.length - 1 : prev - 1));
+    if (currentIndex > 0) {
+      setCurrentIndex((prev) => prev - 1);
+    }
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev === data.items.length - 1 ? 0 : prev + 1));
+    if (currentIndex < (data?.items?.length ?? 1) - 1) {
+      setCurrentIndex((prev) => prev + 1);
+    }
   };
 
   return (
@@ -43,34 +50,48 @@ export const AboutTestimonials: React.FC<AboutTestimonialsProps> = ({
             </p>
           </div>
 
-          {/* Navigation Arrows - sharp ends matching destination */}
+          {/* Navigation Arrows */}
           <div className="flex items-center gap-2 self-start sm:self-end">
             <button
               type="button"
               onClick={handlePrev}
+              disabled={!canGoLeft}
               aria-label="Previous testimonial"
-              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 rounded-[2px] bg-white border border-black/[0.1] hover:border-transparent grid place-items-center text-[#1C1815] hover:text-white transition-all duration-300 cursor-pointer shadow-2xs active:scale-95"
+              className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 rounded-md grid place-items-center transition-all duration-300 shadow-2xs ${
+                canGoLeft
+                  ? "border border-black/[0.1] hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer active:scale-95"
+                  : "border border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
+              }`}
             >
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-              />
+              {canGoLeft && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
               <span className="relative z-10 flex items-center justify-center">
-                <ChevronLeft className="w-4 h-4 stroke-[2.4]" />
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
               </span>
             </button>
             <button
               type="button"
               onClick={handleNext}
+              disabled={!canGoRight}
               aria-label="Next testimonial"
-              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 rounded-[2px] bg-white border border-black/[0.1] hover:border-transparent grid place-items-center text-[#1C1815] hover:text-white transition-all duration-300 cursor-pointer shadow-2xs active:scale-95"
+              className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 rounded-md grid place-items-center transition-all duration-300 shadow-2xs ${
+                canGoRight
+                  ? "border border-black/[0.1] hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer active:scale-95"
+                  : "border border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
+              }`}
             >
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-              />
+              {canGoRight && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
               <span className="relative z-10 flex items-center justify-center">
-                <ChevronRight className="w-4 h-4 stroke-[2.4]" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
               </span>
             </button>
           </div>

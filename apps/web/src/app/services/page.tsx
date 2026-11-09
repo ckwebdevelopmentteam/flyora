@@ -45,8 +45,7 @@ import {
   UserCheck,
   CreditCard,
   FileCheck2,
-  ChevronLeft,
-  ChevronRight,
+  ArrowLeft,
   Search,
   MapPin,
   Star,
@@ -3491,26 +3490,42 @@ export default function ServicesPage() {
                       onClick={() => handleDestScroll("left")}
                       disabled={!canScrollDestLeft}
                       aria-label="Previous destination"
-                      className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                      className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                         canScrollDestLeft
-                          ? "bg-[#002f89] text-white border-[#002f89] hover:bg-[#00246b] shadow-xs active:scale-95"
-                          : "bg-white text-stone-300 border-stone-200 cursor-not-allowed opacity-50"
+                          ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                          : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
                       }`}
                     >
-                      <ChevronLeft className="w-4 h-4" />
+                      {canScrollDestLeft && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                        />
+                      )}
+                      <span className="relative z-10 flex items-center justify-center">
+                        <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+                      </span>
                     </button>
                     <button
                       type="button"
                       onClick={() => handleDestScroll("right")}
                       disabled={!canScrollDestRight}
                       aria-label="Next destination"
-                      className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                      className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                         canScrollDestRight
-                          ? "bg-[#002f89] text-white border-[#002f89] hover:bg-[#00246b] shadow-xs active:scale-95"
-                          : "bg-white text-stone-300 border-stone-200 cursor-not-allowed opacity-50"
+                          ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                          : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
                       }`}
                     >
-                      <ChevronRight className="w-4 h-4" />
+                      {canScrollDestRight && (
+                        <span
+                          aria-hidden="true"
+                          className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                        />
+                      )}
+                      <span className="relative z-10 flex items-center justify-center">
+                        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -3617,7 +3632,7 @@ export default function ServicesPage() {
                         value={visaSearchQuery}
                         onChange={(e) => setVisaSearchQuery(e.target.value)}
                         placeholder="Search country (e.g. Schengen, UK, Dubai)..."
-                        className="w-full pl-10 pr-8 py-2.5 rounded-full border border-black/[0.12] bg-white text-xs sm:text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-[#002f89] focus:ring-1 focus:ring-[#002f89] transition-all shadow-2xs"
+                        className="w-full pl-10 pr-8 py-2.5 rounded-md border border-neutral-300/90 bg-white text-xs sm:text-sm text-stone-800 placeholder:text-neutral-400 focus:outline-none focus:border-[#002f89] focus:ring-1 focus:ring-[#002f89] transition-all shadow-2xs"
                       />
                       {visaSearchQuery && (
                         <button
@@ -3637,26 +3652,42 @@ export default function ServicesPage() {
                         onClick={() => handleVisaScroll("left")}
                         disabled={!canScrollVisaLeft}
                         aria-label="Previous visa country"
-                        className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                        className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                           canScrollVisaLeft
-                            ? "bg-[#002f89] text-white border-[#002f89] hover:bg-[#00246b] shadow-xs active:scale-95"
-                            : "bg-white text-stone-300 border-stone-200 cursor-not-allowed opacity-50"
+                            ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                            : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
                         }`}
                       >
-                        <ChevronLeft className="w-4 h-4" />
+                        {canScrollVisaLeft && (
+                          <span
+                            aria-hidden="true"
+                            className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                          />
+                        )}
+                        <span className="relative z-10 flex items-center justify-center">
+                          <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+                        </span>
                       </button>
                       <button
                         type="button"
                         onClick={() => handleVisaScroll("right")}
                         disabled={!canScrollVisaRight}
                         aria-label="Next visa country"
-                        className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all cursor-pointer ${
+                        className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                           canScrollVisaRight
-                            ? "bg-[#002f89] text-white border-[#002f89] hover:bg-[#00246b] shadow-xs active:scale-95"
-                            : "bg-white text-stone-300 border-stone-200 cursor-not-allowed opacity-50"
+                            ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                            : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
                         }`}
                       >
-                        <ChevronRight className="w-4 h-4" />
+                        {canScrollVisaRight && (
+                          <span
+                            aria-hidden="true"
+                            className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                          />
+                        )}
+                        <span className="relative z-10 flex items-center justify-center">
+                          <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+                        </span>
                       </button>
                     </div>
                   </div>
