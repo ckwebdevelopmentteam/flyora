@@ -50,7 +50,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
           className="absolute left-[5%] sm:left-[8%] lg:left-[11%] top-12 sm:top-16 w-24 sm:w-28 h-20 sm:h-24 pointer-events-none opacity-40"
           style={{
             backgroundImage:
-              "radial-gradient(circle, #e11d48 1.4px, transparent 1.4px)",
+              "radial-gradient(circle, #ed0d0f 1.4px, transparent 1.4px)",
             backgroundSize: "16px 16px",
             maskImage:
               "radial-gradient(ellipse at center, black 40%, transparent 80%)",
@@ -74,7 +74,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
           className="absolute right-[3%] sm:right-[5%] top-1/3 w-20 sm:w-24 h-32 pointer-events-none opacity-30"
           style={{
             backgroundImage:
-              "radial-gradient(circle, #e11d48 1.3px, transparent 1.3px)",
+              "radial-gradient(circle, #ed0d0f 1.3px, transparent 1.3px)",
             backgroundSize: "16px 16px",
             maskImage:
               "radial-gradient(ellipse at center, black 35%, transparent 80%)",
@@ -113,9 +113,9 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
                 x2="0%"
                 y2="0%"
               >
-                <stop offset="0%" stopColor="#fb7185" stopOpacity="0.85" />
-                <stop offset="45%" stopColor="#e11d48" stopOpacity="0.95" />
-                <stop offset="100%" stopColor="#be123c" stopOpacity="1" />
+                <stop offset="0%" stopColor="#ff4648" stopOpacity="0.85" />
+                <stop offset="45%" stopColor="#ed0d0f" stopOpacity="0.95" />
+                <stop offset="100%" stopColor="#c50a0c" stopOpacity="1" />
               </linearGradient>
               <linearGradient
                 id="teamWaveLeftSoft"
@@ -133,7 +133,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
               d="M 430 190 C 300 180, 130 115, 0 35 L 0 190 Z"
               fill="url(#teamWaveLeftSoft)"
             />
-            {/* Layer 2: Main vibrant crimson-red wave curve */}
+            {/* Layer 2: Main vibrant Flyora logo red wave curve */}
             <path
               d="M 380 190 C 260 188, 105 138, 0 65 L 0 190 Z"
               fill="url(#teamWaveLeftGrad)"
@@ -175,9 +175,9 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
                 x2="100%"
                 y2="0%"
               >
-                <stop offset="0%" stopColor="#fb7185" stopOpacity="0.85" />
-                <stop offset="45%" stopColor="#e11d48" stopOpacity="0.95" />
-                <stop offset="100%" stopColor="#be123c" stopOpacity="1" />
+                <stop offset="0%" stopColor="#ff4648" stopOpacity="0.85" />
+                <stop offset="45%" stopColor="#ed0d0f" stopOpacity="0.95" />
+                <stop offset="100%" stopColor="#c50a0c" stopOpacity="1" />
               </linearGradient>
               <linearGradient
                 id="teamWaveRightSoft"
@@ -195,7 +195,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
               d="M -30 190 C 100 180, 270 115, 400 35 L 400 190 Z"
               fill="url(#teamWaveRightSoft)"
             />
-            {/* Layer 2: Main vibrant crimson-red wave curve */}
+            {/* Layer 2: Main vibrant Flyora logo red wave curve */}
             <path
               d="M 20 190 C 140 188, 295 138, 400 65 L 400 190 Z"
               fill="url(#teamWaveRightGrad)"
@@ -212,16 +212,16 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
         <div className="flex flex-col items-center justify-center text-center mb-10 sm:mb-12 lg:mb-14">
           {/* Eyebrow with flanking red lines */}
           <div className="flex items-center justify-center gap-3 mb-2.5">
-            <div className="w-8 sm:w-12 h-[1.5px] bg-[#c5221f]" />
-            <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-[0.22em] text-[#c5221f]">
+            <div className="w-8 sm:w-12 h-[1.5px] bg-[#ed0d0f]" />
+            <span className="text-[11px] sm:text-xs font-sans font-bold uppercase tracking-[0.22em] text-[#ed0d0f]">
               THE PEOPLE BEHIND FLYORA
             </span>
-            <div className="w-8 sm:w-12 h-[1.5px] bg-[#c5221f]" />
+            <div className="w-8 sm:w-12 h-[1.5px] bg-[#ed0d0f]" />
           </div>
 
-          {/* Heading with "Meet" in black and "Our Team" in red */}
+          {/* Heading with "Meet" in black and "Our Team" in Flyora red */}
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-sans font-bold tracking-tight text-[#111827] mb-3">
-            Meet <span className="text-[#c5221f]">Our Team</span>
+            Meet <span className="text-[#ed0d0f]">Our Team</span>
           </h2>
 
           {/* Description Subtitle */}
@@ -242,7 +242,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
               className="group flex flex-col items-start cursor-pointer text-left transition-all duration-300"
             >
               {/* Rounded Portrait Frame matching About Page */}
-              <div className="relative w-full h-64 sm:h-72 lg:h-[280px] xl:h-[300px] overflow-hidden rounded-2xl bg-neutral-100 border border-black/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.06)] group-hover:shadow-[0_16px_36px_rgba(225,29,72,0.12)] transition-all duration-300">
+              <div className="relative w-full h-64 sm:h-72 lg:h-[280px] xl:h-[300px] overflow-hidden rounded-2xl bg-neutral-100 border border-black/[0.06] shadow-[0_8px_24px_rgba(0,0,0,0.06)] group-hover:shadow-[0_16px_36px_rgba(237,13,15,0.14)] transition-all duration-300">
                 <img
                   src={curator.image}
                   alt={curator.name}
@@ -254,19 +254,19 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
                 <div className="absolute inset-0 bg-gray-950/45 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-end p-4 sm:p-5">
                   <div className="flex gap-2">
                     <span
-                      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white text-[#1C1815] rounded-full hover:bg-rose-50 hover:text-[#e11d48] transition-colors duration-200 shadow-md"
+                      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white text-[#1C1815] rounded-full hover:bg-rose-50 hover:text-[#ed0d0f] transition-colors duration-200 shadow-md"
                       title="Instagram"
                     >
                       <InstagramIcon size={16} />
                     </span>
                     <span
-                      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white text-[#1C1815] rounded-full hover:bg-rose-50 hover:text-[#e11d48] transition-colors duration-200 shadow-md"
+                      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white text-[#1C1815] rounded-full hover:bg-rose-50 hover:text-[#ed0d0f] transition-colors duration-200 shadow-md"
                       title="LinkedIn"
                     >
                       <LinkedinIcon size={16} />
                     </span>
                     <span
-                      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white text-[#1C1815] rounded-full hover:bg-rose-50 hover:text-[#e11d48] transition-colors duration-200 shadow-md"
+                      className="flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 bg-white text-[#1C1815] rounded-full hover:bg-rose-50 hover:text-[#ed0d0f] transition-colors duration-200 shadow-md"
                       title="Dribbble"
                     >
                       <DribbbleIcon size={16} />
@@ -277,7 +277,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
 
               {/* Name & Role from About Page */}
               <div className="flex flex-col gap-0.5 mt-4 w-full">
-                <h3 className="text-lg sm:text-xl font-bold text-[#111827] group-hover:text-[#c5221f] transition-colors duration-200">
+                <h3 className="text-lg sm:text-xl font-bold text-[#111827] group-hover:text-[#ed0d0f] transition-colors duration-200">
                   {curator.name}
                 </h3>
                 <p className="text-xs sm:text-sm text-[#6b7280] font-normal">
