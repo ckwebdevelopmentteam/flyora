@@ -25,72 +25,12 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
       <span id="meet-our-team-section" className="sr-only" aria-hidden="true" />
 
       {/* =========================================================================
-          BACKGROUND DECORATIVE LAYERS (Flyora Signature Brand Blue Theme)
+          BACKGROUND DECORATIVE LAYERS (Synced Pure White Topside & Bottom Waves + Globe)
           ========================================================================= */}
       <div
         className="pointer-events-none absolute inset-0 select-none overflow-hidden"
         aria-hidden="true"
       >
-        {/* 1. Large Top-Left Soft Azure/Blue Crescent Disk */}
-        <div
-          className="absolute -top-16 -left-28 sm:-top-24 sm:-left-36 lg:-top-32 lg:-left-44 w-[380px] h-[380px] sm:w-[540px] sm:h-[540px] lg:w-[680px] lg:h-[680px] rounded-full pointer-events-none opacity-80"
-          style={{
-            background:
-              "radial-gradient(circle at 45% 45%, rgba(191,219,254,0.65) 0%, rgba(219,234,254,0.4) 45%, rgba(239,246,255,0.1) 75%, transparent 100%)",
-            filter: "blur(20px)",
-          }}
-        />
-
-        {/* 2. Top-Left Subtle Blue Dot Grid Matrix (Next to Heading) */}
-        <div
-          className="absolute left-[5%] sm:left-[8%] lg:left-[11%] top-12 sm:top-16 w-24 sm:w-28 h-20 sm:h-24 pointer-events-none opacity-40"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, #002f89 1.4px, transparent 1.4px)",
-            backgroundSize: "16px 16px",
-            maskImage:
-              "radial-gradient(ellipse at center, black 40%, transparent 80%)",
-            WebkitMaskImage:
-              "radial-gradient(ellipse at center, black 40%, transparent 80%)",
-          }}
-        />
-
-        {/* 3. Large Right-Edge Soft Azure/Blue Crescent Disk */}
-        <div
-          className="absolute top-6 -right-28 sm:top-10 sm:-right-36 lg:top-14 lg:-right-44 w-[380px] h-[520px] sm:w-[520px] sm:h-[680px] lg:w-[660px] lg:h-[800px] rounded-[50%_50%_55%_45%/45%_55%_45%_55%] pointer-events-none opacity-80"
-          style={{
-            background:
-              "radial-gradient(circle at 75% 50%, rgba(191,219,254,0.6) 0%, rgba(219,234,254,0.35) 45%, rgba(239,246,255,0.08) 75%, transparent 100%)",
-            filter: "blur(24px)",
-          }}
-        />
-
-        {/* 4. Right Edge Subtle Blue Dot Grid Matrix */}
-        <div
-          className="absolute right-[3%] sm:right-[5%] top-1/3 w-20 sm:w-24 h-32 pointer-events-none opacity-30"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, #002f89 1.3px, transparent 1.3px)",
-            backgroundSize: "16px 16px",
-            maskImage:
-              "radial-gradient(ellipse at center, black 35%, transparent 80%)",
-            WebkitMaskImage:
-              "radial-gradient(ellipse at center, black 35%, transparent 80%)",
-          }}
-        />
-
-        {/* 5. Center Warm White Illumination */}
-        <div
-          className="absolute inset-x-[15%] top-6 bottom-24 rounded-full opacity-90 blur-3xl pointer-events-none"
-          style={{
-            background:
-              "radial-gradient(ellipse at center, rgba(255,255,255,0.96) 0%, rgba(244,248,255,0.65) 60%, transparent 100%)",
-          }}
-        />
-
-        {/* =======================================================================
-            AUTHENTIC 3D WORLD MAP GLOBE DOME, FLIGHT ARCS, PINS & SMOOTH CORNER WAVES
-            ======================================================================= */}
         {/* Bottom-Left Smooth Curved Blue Wave Sweep */}
         <div className="pointer-events-none absolute bottom-0 left-0 w-[160px] sm:w-[220px] md:w-[280px] lg:w-[340px] xl:w-[400px] h-[80px] sm:h-[110px] md:h-[140px] lg:h-[170px] xl:h-[190px] select-none overflow-hidden leading-none z-0">
           <svg
