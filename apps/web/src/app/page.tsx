@@ -21,7 +21,6 @@ import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import CarouselCards from "@/components/ui/carousel-cards";
 import { DestinationsShowcase } from "../components/DestinationsShowcase";
 import { EssenceOfFlyora } from "../components/EssenceOfFlyora";
-import { TransitBookingCTA } from "../components/TransitBookingCTA";
 import { MeetOurTeamSection } from "../components/MeetOurTeamSection";
 import { CloudMarquee } from "../components/CloudMarquee";
 import InkOrbitTestimonials, {
@@ -643,11 +642,6 @@ export default function Home() {
             SECTION: THE ESSENCE OF FLYORA
             =================================================================== */}
         <EssenceOfFlyora onOpenEnquiry={openEnquiry} />
-
-        {/* ===================================================================
-            SECTION: TRAIN & BUS TRANSIT BOOKING CTA
-            =================================================================== */}
-        <TransitBookingCTA onOpenEnquiry={openEnquiry} />
 
         {/* ===================================================================
             SECTION: MEET OUR TEAM (Copied from About Page)
