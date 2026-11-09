@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
@@ -8,8 +9,9 @@ import {
   Plus,
   ArrowLeft,
   ArrowRight,
-  MapPin,
-  ArrowUpRight,
+  Search,
+  Clock,
+  CheckCircle2,
 } from "lucide-react";
 import { Navbar } from "../components/Navbar";
 import { Footer } from "../components/layout/Footer";
@@ -25,6 +27,7 @@ import InkOrbitTestimonials, {
   type InkTestimonial,
 } from "@/components/ui/ink-orbit-testimonials";
 import { JourneyCTA } from "../components/JourneyCTA";
+import { POPULAR_VISA_COUNTRIES } from "@/lib/visaCountriesData";
 
 // Verified Traveler Testimonials for InkOrbitTestimonials
 const TRAVEL_TESTIMONIALS: InkTestimonial[] = [
@@ -88,58 +91,6 @@ const TRAVEL_TESTIMONIALS: InkTestimonial[] = [
 // HOMEPAGE DATA STRUCTURES
 // =============================================================================
 
-// Section 1: Featured Destinations matching reference design (Lisbon, Tulum, Swiss Alps, Dubai, Maldives)
-const FEATURED_DESTINATIONS = [
-  {
-    id: "dest-lisbon",
-    name: "Lisbon",
-    country: "Portugal",
-    image: "/destinations/card-lisbon.jpg",
-  },
-  {
-    id: "dest-tulum",
-    name: "Tulum",
-    country: "Mexico",
-    image: "/destinations/card-tulum.jpg",
-  },
-  {
-    id: "dest-swiss",
-    name: "Swiss Alps",
-    country: "Switzerland",
-    image: "/destinations/card-swiss.jpg",
-  },
-  {
-    id: "dest-dubai",
-    name: "Dubai",
-    country: "UAE",
-    image: "/destinations/card-dubai.jpg",
-  },
-  {
-    id: "dest-maldives",
-    name: "Maldives",
-    country: "Maldives Islands",
-    image: "/destinations/card-maldives.jpg",
-  },
-  {
-    id: "dest-bali",
-    name: "Bali",
-    country: "Indonesia",
-    image: "/destinations/card-bali.jpg",
-  },
-  {
-    id: "dest-rome",
-    name: "Rome",
-    country: "Italy",
-    image: "/destinations/card-rome.jpg",
-  },
-  {
-    id: "dest-kyoto",
-    name: "Kyoto",
-    country: "Japan",
-    image: "/destinations/card-kyoto.jpg",
-  },
-];
-
 // Section 9: Frequently Asked Questions (5 questions)
 const FAQS = [
   {
@@ -197,6 +148,23 @@ export default function Home() {
   const lenisRef = useRef<Lenis | null>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const [visaSearchQuery, setVisaSearchQuery] = useState("");
+  const [visaSelectedRegion, setVisaSelectedRegion] = useState("All");
+
+  const filteredVisaCountries = useMemo(() => {
+    return POPULAR_VISA_COUNTRIES.filter((country) => {
+      const query = visaSearchQuery.toLowerCase().trim();
+      const matchesSearch =
+        !query ||
+        country.name.toLowerCase().includes(query) ||
+        country.popularFor.toLowerCase().includes(query) ||
+        country.visaType.toLowerCase().includes(query) ||
+        country.region.toLowerCase().includes(query);
+      const matchesRegion =
+        visaSelectedRegion === "All" || country.region === visaSelectedRegion;
+      return matchesSearch && matchesRegion;
+    });
+  }, [visaSearchQuery, visaSelectedRegion]);
 
   // Initialize Lenis Smooth Scrolling and 1-viewport-height auto-scroll/snap
   useEffect(() => {
@@ -333,6 +301,11 @@ export default function Home() {
     return () => window.removeEventListener("resize", checkScroll);
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(checkScroll, 100);
+    return () => clearTimeout(timer);
+  }, [filteredVisaCountries]);
+
   const handleScroll = (direction: "left" | "right") => {
     if (carouselTrackRef.current) {
       const containerWidth = carouselTrackRef.current.clientWidth;
@@ -409,7 +382,7 @@ export default function Home() {
         <CloudMarquee />
 
         {/* ===================================================================
-            SECTION 1: FEATURED DESTINATIONS (Matching Attachment Reference)
+            SECTION 1: POPULAR COUNTRIES WE PROVIDE VISAS FOR (formerly Featured Destinations)
             =================================================================== */}
         <section
           id="destinations"
@@ -426,35 +399,55 @@ export default function Home() {
           />
 
           <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px]">
-            {/* Header: Left title + Right description & navigation arrows */}
-            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-12 mb-8 sm:mb-10 lg:mb-12">
+            {/* Header: Left title + Search Bar + Right Arrows */}
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-10 mb-8 sm:mb-10">
               <div className="max-w-xl">
                 <div className="flex items-center gap-3 mb-2.5 sm:mb-3">
-                  <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-[#2C4875]">
-                    FEATURED DESTINATIONS
+                  <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-[#002f89]">
+                    GLOBAL VISA ASSISTANCE
                   </span>
                   <span className="w-10 sm:w-14 h-px bg-[#B0C4DE]" />
                 </div>
-                <h2 className="text-3xl sm:text-4xl lg:text-[46px] font-bold text-[#0A192F] tracking-tight leading-[1.12]">
-                  Explore Our <br />
-                  Featured Destinations
+                <h2 className="text-3xl sm:text-4xl lg:text-[42px] font-serif font-bold text-[#1C1815] tracking-tight leading-[1.14]">
+                  Popular Countries We Provide Visas For
                 </h2>
+                <p className="text-xs sm:text-sm text-stone-600 mt-2.5 max-w-lg leading-relaxed font-sans">
+                  Express appointment booking, multi-point document audit, and
+                  99.2% approval success rate for 100+ embassies and electronic
+                  visas.
+                </p>
               </div>
 
-              <div className="flex flex-col sm:flex-row sm:items-center gap-5 sm:gap-6 lg:gap-8">
-                <div className="hidden lg:block w-px h-12 bg-neutral-300/80 shrink-0" />
-                <p className="text-xs sm:text-[13.5px] text-[#4A5568] max-w-[340px] leading-relaxed">
-                  Handpicked international destinations, curated for
-                  unforgettable journeys and cultural experiences.
-                </p>
+              {/* Search Bar + Navigation Buttons */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 shrink-0">
+                {/* Country Search Bar */}
+                <div className="relative min-w-[260px] sm:min-w-[320px]">
+                  <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                  <input
+                    type="text"
+                    value={visaSearchQuery}
+                    onChange={(e) => setVisaSearchQuery(e.target.value)}
+                    placeholder="Search country (e.g. Schengen, UK, Dubai)..."
+                    className="w-full pl-10 pr-8 py-2.5 rounded-md border border-neutral-300/90 bg-white text-xs sm:text-sm text-stone-800 placeholder:text-neutral-400 focus:outline-none focus:border-[#002f89] focus:ring-1 focus:ring-[#002f89] transition-all shadow-2xs"
+                  />
+                  {visaSearchQuery && (
+                    <button
+                      type="button"
+                      onClick={() => setVisaSearchQuery("")}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 text-xs cursor-pointer p-1"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
 
-                {/* Carousel navigation buttons */}
-                <div className="flex items-center gap-2.5 shrink-0">
+                {/* Navigation Buttons */}
+                <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
                   <button
                     type="button"
                     onClick={() => handleScroll("left")}
                     disabled={!canScrollLeft}
-                    aria-label="Previous destination"
+                    aria-label="Previous visa country"
                     className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                       canScrollLeft
                         ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
@@ -475,7 +468,7 @@ export default function Home() {
                     type="button"
                     onClick={() => handleScroll("right")}
                     disabled={!canScrollRight}
-                    aria-label="Next destination"
+                    aria-label="Next visa country"
                     className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
                       canScrollRight
                         ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
@@ -496,69 +489,128 @@ export default function Home() {
               </div>
             </div>
 
-            {/* Destination Cards Track */}
+            {/* Region Filter Chips */}
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-6">
+              {[
+                "All",
+                "Europe",
+                "Middle East",
+                "Asia",
+                "Americas",
+                "Oceania",
+              ].map((region) => (
+                <button
+                  key={region}
+                  type="button"
+                  onClick={() => setVisaSelectedRegion(region)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-sans font-medium transition-all shrink-0 cursor-pointer ${
+                    visaSelectedRegion === region
+                      ? "bg-[#002f89] text-white shadow-2xs font-semibold"
+                      : "bg-stone-100 hover:bg-stone-200/80 text-stone-700 border border-stone-200/60"
+                  }`}
+                >
+                  {region}
+                </button>
+              ))}
+              {filteredVisaCountries.length === 0 && (
+                <span className="text-xs text-stone-500 pl-2">
+                  No countries found for "{visaSearchQuery}"
+                </span>
+              )}
+            </div>
+
+            {/* 10 Popular Visa Country Cards Track */}
             <div
               ref={carouselTrackRef}
               onScroll={checkScroll}
-              className="flex gap-4 sm:gap-4.5 lg:gap-5 overflow-x-auto scroll-smooth no-scrollbar pb-4 pt-1 px-1 -mx-1 snap-x snap-mandatory"
+              className="flex gap-4 sm:gap-5 overflow-x-auto scroll-smooth no-scrollbar pb-4 pt-1 px-1 -mx-1"
             >
-              {FEATURED_DESTINATIONS.map((dest) => (
+              {filteredVisaCountries.map((country) => (
                 <div
-                  key={dest.id}
-                  onClick={() => openEnquiry(`${dest.name}, ${dest.country}`)}
+                  key={country.id}
+                  onClick={() =>
+                    openEnquiry(`Visa Application: ${country.name}`, {
+                      serviceId: "visa-assistance",
+                      serviceName: "Visa Assistance",
+                      destination: country.name,
+                      travelDate: "",
+                      tierOrClass: country.visaType,
+                      summaryLabel: `${country.name} · ${country.visaType}`,
+                    })
+                  }
                   role="button"
                   tabIndex={0}
-                  aria-label={`Explore ${dest.name}, ${dest.country}`}
+                  aria-label={`Apply for ${country.name} visa`}
                   onKeyDown={(e) => {
                     if (e.key === "Enter" || e.key === " ") {
                       e.preventDefault();
-                      openEnquiry(`${dest.name}, ${dest.country}`);
+                      openEnquiry(`Visa Application: ${country.name}`, {
+                        serviceId: "visa-assistance",
+                        serviceName: "Visa Assistance",
+                        destination: country.name,
+                        travelDate: "",
+                        tierOrClass: country.visaType,
+                        summaryLabel: `${country.name} · ${country.visaType}`,
+                      });
                     }
                   }}
-                  className="group relative flex-none w-[72vw] sm:w-[calc(50%-10px)] md:w-[calc(33.333%-12px)] lg:w-[calc(20%-16px)] aspect-[3/4.4] rounded-2xl overflow-hidden cursor-pointer select-none snap-start shadow-[0_8px_24px_rgba(0,0,0,0.08)] hover:shadow-[0_20px_40px_rgba(0,0,0,0.18)] transition-all duration-400 transform hover:-translate-y-2 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0A2540]"
+                  className="group relative flex-none w-[260px] sm:w-[280px] lg:w-[300px] h-[370px] sm:h-[390px] rounded-[8px] overflow-hidden cursor-pointer select-none shadow-sm hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1.5 border border-black/[0.08] flex flex-col justify-between"
                 >
-                  {/* Crisp High-Definition Destination Card Image */}
-                  <img
-                    src={dest.image}
-                    alt={`${dest.name}, ${dest.country}`}
-                    loading="lazy"
-                    className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-108 pointer-events-none select-none"
+                  {/* Background Image */}
+                  <Image
+                    src={country.image}
+                    alt={country.name}
+                    fill
+                    sizes="(max-width: 768px) 260px, 300px"
+                    className="object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
                   />
 
-                  {/* Cinematic gradient scrim at bottom for text contrast */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent pointer-events-none" />
+                  {/* Gentle Gradient Overlays */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-black/20" />
 
-                  {/* Soft interactive card border ring */}
-                  <div className="absolute inset-0 rounded-2xl ring-1 ring-black/10 group-hover:ring-white/40 transition-all duration-300 pointer-events-none" />
+                  {/* Top Badges */}
+                  <div className="relative z-10 p-4 flex items-center justify-between gap-2">
+                    <span className="px-2.5 py-1 rounded-[6px] bg-white/20 backdrop-blur-md text-[10.5px] font-mono font-bold uppercase tracking-wider text-white border border-white/20">
+                      {country.region}
+                    </span>
+                    <span className="px-2 py-0.5 rounded-[6px] bg-emerald-500/90 text-[10.5px] font-sans font-bold text-white shadow-xs">
+                      {country.approvalRate}
+                    </span>
+                  </div>
 
-                  {/* Card Content Footer: Location Info + Real Interactive Action Button */}
-                  <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex items-end justify-between gap-2.5 z-10 pointer-events-none">
-                    {/* Left: Location Pin + Destination Name + Country */}
-                    <div className="flex items-start gap-2 max-w-[calc(100%-44px)]">
-                      <MapPin className="w-4 h-4 text-white shrink-0 mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" />
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-white font-bold text-sm sm:text-base lg:text-[17px] leading-tight tracking-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.7)] truncate">
-                          {dest.name}
-                        </span>
-                        <span className="text-white/85 text-[11px] sm:text-xs font-normal leading-tight mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)] truncate">
-                          {dest.country}
-                        </span>
+                  {/* Bottom Content */}
+                  <div className="relative z-10 p-5 text-white">
+                    <h3 className="text-xl sm:text-2xl font-serif font-bold text-white leading-tight mb-1">
+                      {country.name}
+                    </h3>
+                    <p className="text-xs text-amber-200 font-sans font-medium mb-3">
+                      {country.visaType}
+                    </p>
+
+                    <div className="space-y-1.5 text-xs text-stone-200/90 font-sans border-t border-white/15 pt-2.5">
+                      <div className="flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                        <span>Processing: {country.processingTime}</span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-stone-300 text-[11px]">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                        <span>Popular: {country.popularFor}</span>
                       </div>
                     </div>
 
-                    {/* Right: Interactive Action Button with standard rounded-md */}
-                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-md border border-white/60 bg-white/10 backdrop-blur-md flex items-center justify-center text-white shrink-0 transition-all duration-300 group-hover:bg-white group-hover:text-[#0A2540] group-hover:border-white group-hover:scale-110 shadow-[0_2px_8px_rgba(0,0,0,0.25)]">
-                      <ArrowUpRight className="w-4 h-4 stroke-[2.2] transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                    <div className="mt-3.5 pt-2 flex items-center justify-between text-xs font-semibold text-white group-hover:text-amber-300 transition-colors">
+                      <span>Apply for Visa</span>
+                      <ArrowRight className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" />
                     </div>
                   </div>
                 </div>
               ))}
             </div>
 
-            {/* Explore All Destinations Button with sliding blue fill hover effect */}
+            {/* View All Visa Services Button with sliding blue fill hover effect */}
             <div className="flex justify-center items-center mt-10 sm:mt-12">
               <Link
-                href="/tours"
+                href="/services#visa-assistance"
                 className="group relative overflow-hidden inline-flex items-center gap-2.5 px-8 py-3.5 rounded-md border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white font-medium text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
               >
                 <span
@@ -566,7 +618,7 @@ export default function Home() {
                   className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
                 <span className="relative z-10 flex items-center gap-2.5">
-                  <span>Explore All Destinations</span>
+                  <span>View All Visa Services</span>
                   <ArrowRight className="w-4 h-4 stroke-[2] transition-transform duration-300 group-hover:translate-x-1" />
                 </span>
               </Link>
