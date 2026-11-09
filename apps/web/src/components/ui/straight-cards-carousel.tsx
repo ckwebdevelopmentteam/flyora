@@ -367,23 +367,43 @@ export function StraightCardsCarousel({
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
 
-              {/* Gentle non-hovered gradient at the bottom solely for location text legibility */}
-              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300 group-hover:opacity-0" />
+              {/* Gentle non-hovered gradient at the bottom solely for location text legibility on trailing cards */}
+              <div
+                className={`absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300 ${
+                  isLead ? "opacity-0" : "group-hover:opacity-0"
+                }`}
+              />
 
-              {/* Smooth full-card dark gradient that fades in on hover to highlight details */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
+              {/* Smooth full-card dark gradient that is sticky on lead card and fades in on hover for trailing cards */}
+              <div
+                className={`absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-2xl transition-opacity duration-300 ease-out ${
+                  isLead ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                }`}
+              />
 
               {/* Location & Interactive Details Overlay */}
               <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 z-10 flex flex-col justify-end pointer-events-none">
-                {/* Default State: Location Caption (slides smoothly up and fades out on hover) */}
-                <div className="transition-all duration-300 ease-out group-hover:opacity-0 group-hover:-translate-y-3">
+                {/* Default State: Location Caption (hidden on lead card since details are sticky, slides up and fades on hover for trailing cards) */}
+                <div
+                  className={`transition-all duration-300 ease-out ${
+                    isLead
+                      ? "opacity-0 -translate-y-3 pointer-events-none"
+                      : "group-hover:opacity-0 group-hover:-translate-y-3"
+                  }`}
+                >
                   <p className="text-white font-medium text-base sm:text-lg tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
                     {item.location}
                   </p>
                 </div>
 
-                {/* Hover State: Details Panel (slides smoothly up from below on hover, slides down on unhover) */}
-                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex flex-col gap-2.5 opacity-0 translate-y-6 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none group-hover:pointer-events-auto">
+                {/* Details Panel: Sticky on first/lead card, and hover-revealed on other cards */}
+                <div
+                  className={`absolute inset-x-0 bottom-0 p-4 sm:p-5 flex flex-col gap-2.5 transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    isLead
+                      ? "opacity-100 translate-y-0 pointer-events-auto"
+                      : "opacity-0 translate-y-6 group-hover:opacity-100 group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto"
+                  }`}
+                >
                   {/* Top Row: Duration Badge */}
                   {item.duration && (
                     <div className="flex items-center gap-2">
@@ -421,7 +441,13 @@ export function StraightCardsCarousel({
                       </div>
                     </div>
 
-                    <span className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap">
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectLead?.(item, i);
+                      }}
+                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap"
+                    >
                       View Details
                     </span>
                   </div>
