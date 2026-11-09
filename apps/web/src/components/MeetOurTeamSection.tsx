@@ -81,11 +81,11 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex justify-center select-none overflow-hidden leading-none z-0">
           <picture className="block w-full max-w-[580px] sm:max-w-[640px] md:max-w-[700px] lg:max-w-[740px] mx-auto px-4 sm:px-0">
             <source
-              srcSet="/home/team-globe-center-blue.webp?v=1"
+              srcSet="/home/team-globe-center-blue.webp?v=2"
               type="image/webp"
             />
             <img
-              src="/home/team-globe-center-blue.png?v=1"
+              src="/home/team-globe-center-blue.png?v=2"
               alt=""
               className="w-full h-auto max-h-[80px] sm:max-h-[90px] md:max-h-[100px] object-contain object-bottom pointer-events-none select-none block mx-auto"
               loading="eager"
