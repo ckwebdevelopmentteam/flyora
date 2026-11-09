@@ -283,20 +283,6 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
                 <p className="text-xs sm:text-sm text-[#6b7280] font-normal">
                   {curator.role}
                 </p>
-
-                {/* Specialties Pill Badges from About Page */}
-                {curator.specialties && curator.specialties.length > 0 && (
-                  <div className="mt-2.5 flex flex-wrap gap-1.5">
-                    {curator.specialties.map((spec, i) => (
-                      <span
-                        key={i}
-                        className="text-[10px] font-sans uppercase tracking-wider text-[#6B6156] bg-white/90 px-2.5 py-1 rounded-full border border-black/[0.06] shadow-2xs"
-                      >
-                        {spec}
-                      </span>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           ))}
