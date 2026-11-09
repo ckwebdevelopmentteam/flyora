@@ -10,8 +10,8 @@ import {
   MessageCircle,
   Phone,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
+  ArrowLeft,
+  ArrowRight,
   Plane,
   Train,
   Bus,
@@ -474,7 +474,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
 
-              {/* Left and Right Arrow Navigation - sharp ends matching destination */}
+              {/* Left and Right Arrow Navigation */}
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
@@ -482,10 +482,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setServicePage(0)}
                   disabled={servicePage === 0}
                   aria-label="Previous services"
-                  className={`group relative overflow-hidden w-7 h-7 sm:w-8 sm:h-8 rounded-[2px] border border-black/10 grid place-items-center transition-all ${
+                  className={`group relative overflow-hidden w-8 h-7 sm:w-9 sm:h-8 rounded-md border border-black/10 grid place-items-center transition-all ${
                     servicePage === 0
                       ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
-                      : "opacity-100 cursor-pointer text-stone-700 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
+                      : "opacity-100 cursor-pointer text-stone-500 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
                   }`}
                 >
                   <span
@@ -493,7 +493,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                   />
                   <span className="relative z-10 flex items-center justify-center">
-                    <ChevronLeft className="w-3.5 h-3.5 stroke-[2.2]" />
+                    <ArrowLeft className="w-3.5 h-3.5 stroke-[2]" />
                   </span>
                 </button>
                 <button
@@ -502,10 +502,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setServicePage(1)}
                   disabled={servicePage === 1}
                   aria-label="Next services"
-                  className={`group relative overflow-hidden w-7 h-7 sm:w-8 sm:h-8 rounded-[2px] border border-black/10 grid place-items-center transition-all ${
+                  className={`group relative overflow-hidden w-8 h-7 sm:w-9 sm:h-8 rounded-md border border-black/10 grid place-items-center transition-all ${
                     servicePage === 1
                       ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
-                      : "opacity-100 cursor-pointer text-stone-700 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
+                      : "opacity-100 cursor-pointer text-stone-500 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
                   }`}
                 >
                   <span
@@ -513,7 +513,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                   />
                   <span className="relative z-10 flex items-center justify-center">
-                    <ChevronRight className="w-3.5 h-3.5 stroke-[2.2]" />
+                    <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
                   </span>
                 </button>
               </div>

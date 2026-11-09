@@ -1,9 +1,9 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 
 export interface PackageCardItem {
   id: string;
@@ -325,6 +325,27 @@ export const PackageCarouselSection = ({
   viewAllHref = "/tours",
 }: PackageGridSectionProps) => {
   const scrollContainer = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollContainer.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 5);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 5);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+    const el = scrollContainer.current;
+    if (!el) return;
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    window.addEventListener("resize", checkScroll);
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [checkScroll, items]);
 
   const handleScrollLeft = () => {
     if (scrollContainer.current) {
@@ -359,30 +380,44 @@ export const PackageCarouselSection = ({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-md grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-2xs"
+              disabled={!canScrollLeft}
+              className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
+                canScrollLeft
+                  ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                  : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
+              }`}
               onClick={handleScrollLeft}
               aria-label={`Scroll left in ${title}`}
             >
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-              />
+              {canScrollLeft && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
               <span className="relative z-10 flex items-center justify-center">
-                <ChevronLeft className="h-4 w-4 stroke-[2.4]" />
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
               </span>
             </button>
             <button
               type="button"
-              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-md grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-2xs"
+              disabled={!canScrollRight}
+              className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
+                canScrollRight
+                  ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                  : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
+              }`}
               onClick={handleScrollRight}
               aria-label={`Scroll right in ${title}`}
             >
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-              />
+              {canScrollRight && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
               <span className="relative z-10 flex items-center justify-center">
-                <ChevronRight className="h-4 w-4 stroke-[2.4]" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
               </span>
             </button>
             <Link

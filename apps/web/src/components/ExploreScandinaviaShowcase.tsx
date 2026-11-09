@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export interface DestinationSlide {
   id: string;
@@ -254,14 +254,14 @@ export default function ExploreScandinaviaShowcase({
             left: `calc(50% - ${activeWidth / 2 + buttonOffset}px)`,
             top: `${activePhotoHeight + 85}px`,
           }}
-          className="group relative overflow-hidden absolute -translate-x-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-md grid place-items-center transition-all duration-300 cursor-pointer shadow-md active:scale-95"
+          className="group relative overflow-hidden absolute -translate-x-1/2 -translate-y-1/2 z-30 w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white rounded-md grid place-items-center transition-all duration-300 cursor-pointer shadow-md active:scale-95"
         >
           <span
             aria-hidden="true"
             className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
           />
           <span className="relative z-10 flex items-center justify-center">
-            <ChevronLeft className="h-4 w-4 stroke-[2.4]" />
+            <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
           </span>
         </button>
 
@@ -274,14 +274,14 @@ export default function ExploreScandinaviaShowcase({
             left: `calc(50% + ${activeWidth / 2 + buttonOffset}px)`,
             top: `${activePhotoHeight + 85}px`,
           }}
-          className="group relative overflow-hidden absolute -translate-x-1/2 -translate-y-1/2 z-30 w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-md grid place-items-center transition-all duration-300 cursor-pointer shadow-md active:scale-95"
+          className="group relative overflow-hidden absolute -translate-x-1/2 -translate-y-1/2 z-30 w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white rounded-md grid place-items-center transition-all duration-300 cursor-pointer shadow-md active:scale-95"
         >
           <span
             aria-hidden="true"
             className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
           />
           <span className="relative z-10 flex items-center justify-center">
-            <ChevronRight className="h-4 w-4 stroke-[2.4]" />
+            <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
           </span>
         </button>
 

@@ -1,13 +1,17 @@
 "use client";
 
-import React, { useState, useRef, useEffect, useMemo } from "react";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   CalendarDays,
   Users,
   Check,
   ChevronDown,
-  ChevronLeft,
-  ChevronRight,
   ArrowRight,
   Plane,
   Train,
@@ -91,6 +95,11 @@ export interface HeroSearchCardProps {
   onExploreJourneys?: () => void;
   defaultTripMode?: TripMode;
   className?: string;
+  activeServiceSlug?: DynamicServiceSlug;
+  onServiceChange?: (slug: DynamicServiceSlug) => void;
+  hideTopCards?: boolean;
+  hideTripModeToggle?: boolean;
+  fullWidth?: boolean;
 }
 
 export type DynamicServiceSlug =
@@ -816,13 +825,34 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   onExploreJourneys,
   defaultTripMode = "domestic",
   className = "",
+  activeServiceSlug: propActiveServiceSlug,
+  onServiceChange,
+  hideTopCards = false,
+  hideTripModeToggle = false,
+  fullWidth = false,
 }) => {
   // 1. Trip Context State (Domestic vs International)
   const [tripMode, setTripMode] = useState<TripMode>(defaultTripMode);
 
-  // 2. Active Service Tab
-  const [activeServiceSlug, setActiveServiceSlug] =
-    useState<DynamicServiceSlug>("flight-booking");
+  // 2. Active Service Tab (Controlled or Uncontrolled)
+  const [internalActiveServiceSlug, setInternalActiveServiceSlug] =
+    useState<DynamicServiceSlug>(propActiveServiceSlug || "flight-booking");
+
+  useEffect(() => {
+    if (propActiveServiceSlug) {
+      setInternalActiveServiceSlug(propActiveServiceSlug);
+    }
+  }, [propActiveServiceSlug]);
+
+  const activeServiceSlug = propActiveServiceSlug || internalActiveServiceSlug;
+
+  const setActiveServiceSlug = useCallback(
+    (slug: DynamicServiceSlug) => {
+      setInternalActiveServiceSlug(slug);
+      onServiceChange?.(slug);
+    },
+    [onServiceChange],
+  );
 
   // 3. Selections: Origin & Destination
   const [selectedOrigin, setSelectedOrigin] = useState<string>("");
@@ -921,15 +951,22 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
     return defaultList.slice(0, 5);
   }, [backendServices, tripMode, selectedDestination]);
 
-  // Cascading update: if active service is no longer valid in current tripMode, fallback
+  // Cascading update: if active service is no longer valid in current tripMode, fallback (uncontrolled only)
   useEffect(() => {
+    if (propActiveServiceSlug || hideTopCards) return;
     const isCurrentValid = visibleServices.some(
       (s) => s.id === activeServiceSlug,
     );
     if (!isCurrentValid && visibleServices.length > 0) {
       setActiveServiceSlug(visibleServices[0].id);
     }
-  }, [visibleServices, activeServiceSlug]);
+  }, [
+    visibleServices,
+    activeServiceSlug,
+    propActiveServiceSlug,
+    hideTopCards,
+    setActiveServiceSlug,
+  ]);
 
   // Current service type definitions
   const serviceTypeDefinition = useMemo(() => {
@@ -1177,48 +1214,52 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`w-full max-w-[1360px] mx-auto select-none ${className}`}
+      className={`w-full ${fullWidth ? "max-w-none" : "max-w-[1360px] mx-auto"} select-none ${className}`}
     >
       {/* =======================================================================
           TOP BAR: MINIMAL TRIP CONTEXT TOGGLE (Clean, Subtle, No Excessive AI Badges)
           ======================================================================= */}
-      <div className="flex items-center justify-between gap-3 mb-3 px-1 sm:px-2">
-        <div className="inline-flex items-center p-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 shadow-md">
-          <button
-            type="button"
-            onClick={() => handleTripModeChange("domestic")}
-            className={`flex items-center gap-1 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
-              tripMode === "domestic"
-                ? "bg-white text-neutral-950 shadow-xs font-bold"
-                : "text-white/90 hover:text-white font-medium hover:bg-white/10"
-            }`}
-          >
-            <span>Domestic</span>
-            <span className="hidden sm:inline">&nbsp;Travel</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleTripModeChange("international")}
-            className={`flex items-center gap-1.5 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
-              tripMode === "international"
-                ? "bg-white text-neutral-950 shadow-xs font-bold"
-                : "text-white/90 hover:text-white font-medium hover:bg-white/10"
-            }`}
-          >
-            <Globe2
-              className={`w-3.5 h-3.5 shrink-0 ${
-                tripMode === "international"
-                  ? "text-[#002f89]"
-                  : "text-white/90"
+      {!hideTripModeToggle && (
+        <div className="flex items-center justify-between gap-3 mb-3 px-1 sm:px-2">
+          <div className="inline-flex items-center p-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 shadow-md">
+            <button
+              type="button"
+              aria-label="Domestic Travel"
+              onClick={() => handleTripModeChange("domestic")}
+              className={`flex items-center gap-1 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
+                tripMode === "domestic"
+                  ? "bg-white text-neutral-950 shadow-xs font-bold"
+                  : "text-white/90 hover:text-white font-medium hover:bg-white/10"
               }`}
-              strokeWidth={2}
-            />
-            <span>International</span>
-            <span className="hidden sm:inline">&nbsp;Travel</span>
-          </button>
+            >
+              <span>Domestic</span>
+              <span className="hidden sm:inline">&nbsp;Travel</span>
+            </button>
+
+            <button
+              type="button"
+              aria-label="International Travel"
+              onClick={() => handleTripModeChange("international")}
+              className={`flex items-center gap-1.5 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
+                tripMode === "international"
+                  ? "bg-white text-neutral-950 shadow-xs font-bold"
+                  : "text-white/90 hover:text-white font-medium hover:bg-white/10"
+              }`}
+            >
+              <Globe2
+                className={`w-3.5 h-3.5 shrink-0 ${
+                  tripMode === "international"
+                    ? "text-[#002f89]"
+                    : "text-white/90"
+                }`}
+                strokeWidth={2}
+              />
+              <span>International</span>
+              <span className="hidden sm:inline">&nbsp;Travel</span>
+            </button>
+          </div>
         </div>
-      </div>
+      )}
 
       {/* =======================================================================
           TOP SERVICE CARDS:
@@ -1228,59 +1269,61 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - Small outline icon at top-left, clean title and subtitle at bottom
           - No excessive badges, pills, or artificial glow effects
           ======================================================================= */}
-      <div className="relative mb-3.5">
-        <div
-          ref={cardsScrollRef}
-          className="flex md:grid md:grid-cols-5 items-stretch gap-2.5 sm:gap-3.5 lg:gap-4 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth px-1 md:px-0 py-1"
-        >
-          {visibleServices.map((service) => {
-            const IconComponent = service.icon;
-            const isActive = activeServiceSlug === service.id;
+      {!hideTopCards && (
+        <div className="relative mb-3.5">
+          <div
+            ref={cardsScrollRef}
+            className="flex md:grid md:grid-cols-5 items-stretch gap-2.5 sm:gap-3.5 lg:gap-4 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth px-1 md:px-0 py-1"
+          >
+            {visibleServices.map((service) => {
+              const IconComponent = service.icon;
+              const isActive = activeServiceSlug === service.id;
 
-            return (
-              <button
-                key={service.id}
-                type="button"
-                onClick={() => {
-                  setActiveServiceSlug(service.id);
-                  setOpenDropdown(null);
-                  setIsSubmitted(false);
-                }}
-                className={`group relative shrink-0 w-[155px] sm:w-[190px] md:w-auto min-h-[140px] sm:min-h-[165px] md:h-[195px] lg:h-[205px] rounded-[18px] sm:rounded-[22px] md:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden ${
-                  isActive
-                    ? "ring-2 ring-white shadow-[0_12px_28px_rgba(0,0,0,0.35)] -translate-y-1 scale-[1.02]"
-                    : "ring-1 ring-white/25 hover:ring-white/70 hover:-translate-y-0.5 opacity-90 hover:opacity-100"
-                }`}
-              >
-                {/* Natural Photographic Background & Contrast Scrim */}
-                <img
-                  src={service.imageSrc}
-                  alt=""
-                  className={`absolute inset-0 w-full h-full object-cover ${
-                    service.imagePosition || "object-center"
-                  } scale-[1.04] transition-transform duration-500 ease-out group-hover:scale-[1.1] pointer-events-none`}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 pointer-events-none" />
+              return (
+                <button
+                  key={service.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveServiceSlug(service.id);
+                    setOpenDropdown(null);
+                    setIsSubmitted(false);
+                  }}
+                  className={`group relative shrink-0 w-[155px] sm:w-[190px] md:w-auto min-h-[140px] sm:min-h-[165px] md:h-[195px] lg:h-[205px] rounded-[18px] sm:rounded-[22px] md:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden ${
+                    isActive
+                      ? "ring-2 ring-white shadow-[0_12px_28px_rgba(0,0,0,0.35)] -translate-y-1 scale-[1.02]"
+                      : "ring-1 ring-white/25 hover:ring-white/70 hover:-translate-y-0.5 opacity-90 hover:opacity-100"
+                  }`}
+                >
+                  {/* Natural Photographic Background & Contrast Scrim */}
+                  <img
+                    src={service.imageSrc}
+                    alt=""
+                    className={`absolute inset-0 w-full h-full object-cover ${
+                      service.imagePosition || "object-center"
+                    } scale-[1.04] transition-transform duration-500 ease-out group-hover:scale-[1.1] pointer-events-none`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 pointer-events-none" />
 
-                {/* Top Row: Small, Consistent Outline Icon (No Boxy Container) */}
-                <div className="relative z-10 flex items-center justify-start w-full">
-                  <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white/95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" />
-                </div>
+                  {/* Top Row: Small, Consistent Outline Icon (No Boxy Container) */}
+                  <div className="relative z-10 flex items-center justify-start w-full">
+                    <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white/95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" />
+                  </div>
 
-                {/* Bottom Row: Simple, Balanced Typography */}
-                <div className="relative z-10 w-full mt-auto">
-                  <h4 className="text-[13px] sm:text-[15px] md:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.85)]">
-                    {service.label}
-                  </h4>
-                  <p className="text-white/80 text-[10px] sm:text-xs font-normal mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] truncate">
-                    {service.subtitle}
-                  </p>
-                </div>
-              </button>
-            );
-          })}
+                  {/* Bottom Row: Simple, Balanced Typography */}
+                  <div className="relative z-10 w-full mt-auto">
+                    <h4 className="text-[13px] sm:text-[15px] md:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.85)]">
+                      {service.label}
+                    </h4>
+                    <p className="text-white/80 text-[10px] sm:text-xs font-normal mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] truncate">
+                      {service.subtitle}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* =======================================================================
           MAIN ADAPTIVE SEARCH BAR:

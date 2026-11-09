@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export interface StraightCardItem {
   id: string;
@@ -194,9 +194,12 @@ export function StraightCardsCarousel({
 
   const step = useCallback(
     (by: number) => {
-      setTarget(Math.round(state.current.target) + by);
+      const next = Math.round(state.current.target) + by;
+      if (next >= 0 && next < n) {
+        setTarget(next);
+      }
     },
-    [setTarget],
+    [setTarget, n],
   );
 
   const goTo = useCallback(
@@ -436,34 +439,56 @@ export function StraightCardsCarousel({
       >
         {/* Arrow Buttons matching Popular Packages section arrow mark and hover effect */}
         <div className="flex items-center gap-2 sm:gap-2.5">
-          <button
-            type="button"
-            onClick={() => step(-1)}
-            aria-label="Previous destination"
-            className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
-          >
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-            />
-            <span className="relative z-10 flex items-center justify-center">
-              <ChevronLeft className="h-4 w-4 stroke-[2.4]" />
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={() => step(1)}
-            aria-label="Next destination"
-            className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-md text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
-          >
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-            />
-            <span className="relative z-10 flex items-center justify-center">
-              <ChevronRight className="h-4 w-4 stroke-[2.4]" />
-            </span>
-          </button>
+          {(() => {
+            const canGoLeft = active > 0;
+            const canGoRight = active < n - 1;
+            return (
+              <>
+                <button
+                  type="button"
+                  onClick={() => canGoLeft && step(-1)}
+                  disabled={!canGoLeft}
+                  aria-label="Previous destination"
+                  className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 ${
+                    canGoLeft
+                      ? "border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md text-white cursor-pointer active:scale-95 shadow-md"
+                      : "border-white/20 bg-black/20 text-white/30 cursor-not-allowed opacity-35 pointer-events-none shadow-none"
+                  }`}
+                >
+                  {canGoLeft && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center justify-center">
+                    <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => canGoRight && step(1)}
+                  disabled={!canGoRight}
+                  aria-label="Next destination"
+                  className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 ${
+                    canGoRight
+                      ? "border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md text-white cursor-pointer active:scale-95 shadow-md"
+                      : "border-white/20 bg-black/20 text-white/30 cursor-not-allowed opacity-35 pointer-events-none shadow-none"
+                  }`}
+                >
+                  {canGoRight && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center justify-center">
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+                  </span>
+                </button>
+              </>
+            );
+          })()}
         </div>
 
         {/* View all destinations button */}

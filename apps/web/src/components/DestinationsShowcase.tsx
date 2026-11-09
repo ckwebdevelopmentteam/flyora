@@ -21,6 +21,90 @@ export interface ShowcaseDestination {
 export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
   // International Destinations
   {
+    id: "dest-swiss",
+    category: "International",
+    location: "Zermatt & Lucerne, Switzerland",
+    title: "Glacier summits & scenic alpine rail.",
+    description:
+      "Ascend through dramatic snow-capped alpine passes aboard world-renowned scenic railways, relaxing in five-star mountain chalets with panoramic Matterhorn views.",
+    src: "/destinations/switzerland_hd.jpg",
+    duration: "7D & 6N",
+    price: "₹1,45,000",
+    originalPrice: "₹1,62,000",
+    rating: 4.98,
+    reviewCount: 194,
+  },
+  {
+    id: "dest-bali",
+    category: "International",
+    location: "Ubud & Seminyak, Bali",
+    title: "Tropical haven & emerald rice terraces.",
+    description:
+      "Awaken to mist-kissed rainforest villas in Ubud, private infinity pools overlooking sacred ravines, and sunset dinners upon Seminyak shores.",
+    src: "/destinations/bali_hd.jpg",
+    duration: "6D & 5N",
+    price: "₹48,000",
+    originalPrice: "₹56,000",
+    rating: 4.97,
+    reviewCount: 184,
+  },
+  {
+    id: "dest-dubai",
+    category: "International",
+    location: "Downtown & Dunes, Dubai",
+    title: "Futuristic skyline & private desert dunes.",
+    description:
+      "Marvel at shimmering architecture, cruise private luxury yachts past Palm Jumeirah, and unwind in secluded royal desert pavilions under Arabian stars.",
+    src: "/destinations/dubai_hd.jpg",
+    duration: "5D & 4N",
+    price: "₹55,000",
+    originalPrice: "₹65,000",
+    rating: 4.96,
+    reviewCount: 215,
+  },
+  {
+    id: "dest-maldives",
+    category: "International",
+    location: "Private Island Atolls, Maldives",
+    title: "Overwater villas & turquoise lagoons.",
+    description:
+      "Escape to private stilted bungalows above crystal-clear coral atolls, indulge in submerged fine dining, and glide across bioluminescent ocean waters.",
+    src: "/destinations/maldives_hd.jpg",
+    duration: "5D & 4N",
+    price: "₹85,000",
+    originalPrice: "₹98,000",
+    rating: 4.99,
+    reviewCount: 260,
+  },
+  {
+    id: "dest-kyoto",
+    category: "International",
+    location: "Kyoto & Arashiyama, Japan",
+    title: "Lanterns in bamboo sanctuaries.",
+    description:
+      "Step into timeless tranquility among centuries-old wooden shrines, peaceful zen rock gardens, and private evening tea ceremonies steeped in ancient harmony.",
+    src: "/destinations/kyoto_hd.jpg",
+    duration: "7D & 6N",
+    price: "₹1,20,000",
+    originalPrice: "₹1,35,000",
+    rating: 4.99,
+    reviewCount: 165,
+  },
+  {
+    id: "dest-rome",
+    category: "International",
+    location: "Rome & Amalfi, Italy",
+    title: "Pastel cliffs & historic elegance.",
+    description:
+      "Stroll timeless cobblestones past historic Roman marvels before retreating to sun-drenched Mediterranean balconies and private coastal yacht charters.",
+    src: "/destinations/rome_hd.jpg",
+    duration: "6D & 5N",
+    price: "₹1,10,000",
+    originalPrice: "₹1,25,000",
+    rating: 4.96,
+    reviewCount: 152,
+  },
+  {
     id: "dest-cappadocia",
     category: "International",
     location: "Cappadocia, Türkiye",
@@ -33,48 +117,6 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     originalPrice: "₹72,000",
     rating: 4.98,
     reviewCount: 142,
-  },
-  {
-    id: "dest-amalfi",
-    category: "International",
-    location: "Positano, Amalfi Coast",
-    title: "Pastel cliffs over azure waters.",
-    description:
-      "Wander fragrant lemon groves and cliffside Mediterranean balconies overlooking sun-drenched coastal waters, private yachts, and dramatic seaside vistas.",
-    src: "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=800&auto=format&fit=crop",
-    duration: "6D & 5N",
-    price: "₹88,900",
-    originalPrice: "₹98,500",
-    rating: 4.96,
-    reviewCount: 118,
-  },
-  {
-    id: "dest-kyoto",
-    category: "International",
-    location: "Kyoto & Arashiyama, Japan",
-    title: "Lanterns in bamboo sanctuaries.",
-    description:
-      "Step into timeless tranquility among centuries-old wooden shrines, peaceful zen rock gardens, and private evening tea ceremonies steeped in ancient harmony.",
-    src: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop",
-    duration: "7D & 6N",
-    price: "₹94,500",
-    originalPrice: "₹1,05,000",
-    rating: 4.99,
-    reviewCount: 165,
-  },
-  {
-    id: "dest-swiss",
-    category: "International",
-    location: "Zermatt & Lucerne, Switzerland",
-    title: "Glacier summits & scenic rail.",
-    description:
-      "Ascend through dramatic snow-capped alpine passes aboard world-renowned scenic railways, relaxing in five-star mountain chalets with panoramic Matterhorn views.",
-    src: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=800&auto=format&fit=crop",
-    duration: "7D & 6N",
-    price: "₹1,18,000",
-    originalPrice: "₹1,32,000",
-    rating: 4.97,
-    reviewCount: 194,
   },
 
   // Domestic Destinations
@@ -379,7 +421,7 @@ export function DestinationsShowcase({
               footerRight={
                 <a
                   href="/tours"
-                  className="group relative overflow-hidden inline-flex items-center px-6 py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base tracking-wide transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] select-none whitespace-nowrap shadow-sm"
+                  className="group relative overflow-hidden inline-flex items-center justify-center h-10 sm:h-11 px-5 sm:px-6 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base tracking-wide transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] select-none whitespace-nowrap shadow-sm"
                 >
                   <span
                     aria-hidden="true"

@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Volume2, VolumeX } from "lucide-react";
 import { HeroSearchCard } from "./HeroSearchCard";
 import type { EnquiryPrefill } from "./EnquiryModal";
 
@@ -39,10 +38,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(900);
-  const userInteractedRef = useRef(false);
 
   useEffect(() => {
     let ticking = false;
@@ -121,31 +118,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       }),
     );
 
-    const onVolumeChange = () => {
-      setIsMuted(video.muted);
-    };
-    video.addEventListener("volumechange", onVolumeChange);
-
     return () => {
       video.removeEventListener("canplay", tryPlay);
-      video.removeEventListener("volumechange", onVolumeChange);
       events.forEach((ev) =>
         window.removeEventListener(ev, onUserInteraction, { capture: true }),
       );
     };
   }, [videoSrc]);
-
-  const toggleSound = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    userInteractedRef.current = true;
-    const nextMuted = !video.muted;
-    video.muted = nextMuted;
-    if (!nextMuted) {
-      video.play().catch(() => {});
-    }
-    setIsMuted(nextMuted);
-  };
 
   const handlePrimaryClick = (e: React.MouseEvent) => {
     if (onPrimaryCtaClick) {
@@ -242,31 +221,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
             />
           </div>
         </div>
-
-        {/* Audio Mute / Unmute Button */}
-        <button
-          type="button"
-          onClick={toggleSound}
-          aria-label={isMuted ? "Unmute video" : "Mute video"}
-          aria-pressed={!isMuted}
-          className={`absolute bottom-6 left-6 sm:bottom-8 sm:left-8 z-30 flex items-center justify-center text-white transition-all duration-300 hover:opacity-80 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 max-md:bottom-6 max-md:left-4 cursor-pointer p-2 rounded-full ${
-            progress > 0.05 ? "opacity-0 pointer-events-none" : "opacity-100"
-          }`}
-        >
-          {isMuted ? (
-            <VolumeX
-              className="h-7 w-7 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
-              strokeWidth={1.25}
-              aria-hidden="true"
-            />
-          ) : (
-            <Volume2
-              className="h-7 w-7 text-sky drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] animate-pulse"
-              strokeWidth={1.25}
-              aria-hidden="true"
-            />
-          )}
-        </button>
       </section>
     </div>
   );
