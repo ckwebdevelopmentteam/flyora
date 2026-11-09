@@ -18,11 +18,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
   return (
     <section
       id="our-team"
-      className="relative w-full overflow-hidden border-t border-blue-100/70 border-b border-blue-100/50 pt-12 sm:pt-16 lg:pt-20 pb-28 sm:pb-32 lg:pb-36"
-      style={{
-        background:
-          "linear-gradient(180deg, #FFFFFF 0%, #F5F9FF 12%, #EDF4FF 40%, #F3F7FF 75%, #F0F5FF 100%)",
-      }}
+      className="relative w-full overflow-hidden border-t border-black/[0.06] border-b border-black/[0.06] bg-white pt-12 sm:pt-16 lg:pt-20 pb-28 sm:pb-32 lg:pb-36"
       aria-label="Meet Our Team"
     >
       <span id="meet-our-team" className="sr-only" aria-hidden="true" />
