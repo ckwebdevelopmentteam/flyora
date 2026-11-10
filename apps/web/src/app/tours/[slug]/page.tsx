@@ -22,7 +22,6 @@ import {
 import { Navbar } from "../../../components/layout/Navbar";
 import { Footer } from "../../../components/layout/Footer";
 import { EnquiryModal } from "../../../components/EnquiryModal";
-import { FloatingWhatsApp } from "../../../components/FloatingWhatsApp";
 import type { PackageDetails } from "@flyora/types";
 
 export default function TourDetailPage() {
@@ -53,7 +52,15 @@ function TourDetails({ currentSlug }: { currentSlug: string }) {
   };
 
   useEffect(() => {
+    const handleGlobal = () => setIsEnquiryOpen(true);
+    window.addEventListener("flyora:open-enquiry", handleGlobal);
+    return () =>
+      window.removeEventListener("flyora:open-enquiry", handleGlobal);
+  }, []);
+
+  useEffect(() => {
     const controller = new AbortController();
+
     async function loadDetails() {
       try {
         const apiUrl =
@@ -426,9 +433,9 @@ function TourDetails({ currentSlug }: { currentSlug: string }) {
                   href={whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full py-3.5 px-4 rounded-xl border-2 border-emerald-500 text-emerald-800 bg-emerald-50/50 hover:bg-emerald-100/70 active:scale-98 text-xs sm:text-sm font-semibold text-center transition flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white text-xs sm:text-sm font-semibold text-center transition shadow-xs flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <MessageCircle className="w-4 h-4 text-emerald-600" />
+                  <MessageCircle className="w-4 h-4 text-white" />
                   <span>Chat on WhatsApp</span>
                 </a>
               </div>
@@ -461,9 +468,6 @@ function TourDetails({ currentSlug }: { currentSlug: string }) {
         defaultPackageId={enquiryService ? undefined : pkg.id}
         packageTitle={enquiryService ? undefined : pkg.title}
       />
-
-      {/* Floating WhatsApp Action */}
-      <FloatingWhatsApp />
 
       {/* Footer */}
       <Footer onOpenEnquiry={openEnquiry} />

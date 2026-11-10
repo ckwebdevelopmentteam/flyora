@@ -14,6 +14,12 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  ArrowLeft,
+  ArrowRight,
+  Plane,
+  Train,
+  Bus,
+  Globe,
   Compass,
   Star,
   Info,
@@ -174,6 +180,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       onFindAdvisor();
     } else if (onBecomeAdvisor) {
       onBecomeAdvisor();
+    } else if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("flyora:open-enquiry"));
     }
   };
 
@@ -288,6 +296,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               priority
               className="h-8 sm:h-9 md:h-10 w-auto object-contain transition-opacity group-hover:opacity-90"
             />
+            <span className="sr-only">FLYORA</span>
           </Link>
 
           {/* Center: Nav Links */}
@@ -380,17 +389,17 @@ export const Navbar: React.FC<NavbarProps> = ({
               href="https://wa.me/919876543210?text=Hi%20Flyora%20Travels,%20I%20am%20looking%20for%20a%20customized%20tour%20package."
               target="_blank"
               rel="noopener noreferrer"
-              className="hidden xl:flex items-center gap-1.5 px-3 py-2 rounded-md border border-black/[0.08] text-[#38312B] hover:text-emerald-700 hover:border-emerald-500/50 hover:bg-emerald-50/40 text-[11px] font-medium transition cursor-pointer"
+              className="hidden xl:flex items-center gap-1.5 px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-md bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap"
               title="Chat on WhatsApp"
             >
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+              <MessageCircle className="w-3.5 h-3.5 text-white shrink-0" />
               <span>WhatsApp</span>
             </a>
 
             {/* Primary Action Button */}
             <button
               onClick={handleCtaClick}
-              className="px-4 sm:px-5 py-2 sm:py-2.5 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
+              className="px-4 sm:px-5 py-2.5 min-h-[44px] sm:min-h-0 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-[11px] sm:text-[11.5px] font-sans font-semibold uppercase tracking-[0.12em] transition-all duration-200 active:scale-[0.98] cursor-pointer shadow-xs whitespace-nowrap flex items-center gap-1.5"
             >
               <span>{ctaLabel}</span>
             </button>
@@ -399,7 +408,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
-              className="md:hidden p-1.5 rounded-lg text-[#38312B] hover:text-black hover:bg-zinc-100 transition cursor-pointer"
+              className="md:hidden p-2.5 rounded-lg text-[#38312B] hover:text-black hover:bg-zinc-100 transition cursor-pointer"
             >
               {mobileMenuOpen ? (
                 <X className="w-5 h-5 stroke-[1.75]" />
@@ -431,7 +440,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </span>
               </div>
 
-              {/* Left and Right Arrow Navigation - sharp ends matching destination */}
+              {/* Left and Right Arrow Navigation */}
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
@@ -439,10 +448,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={() => setServicePage(Math.max(0, currentPage - 1))}
                   disabled={currentPage === 0}
                   aria-label="Previous services"
-                  className={`group relative overflow-hidden w-7 h-7 sm:w-8 sm:h-8 rounded-[2px] border border-black/10 grid place-items-center transition-all ${
+                  className={`group relative overflow-hidden w-8 h-7 sm:w-9 sm:h-8 rounded-md border border-black/10 grid place-items-center transition-all ${
                     currentPage === 0
                       ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
-                      : "opacity-100 cursor-pointer text-stone-700 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
+                      : "opacity-100 cursor-pointer text-stone-500 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
                   }`}
                 >
                   <span
@@ -450,7 +459,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                   />
                   <span className="relative z-10 flex items-center justify-center">
-                    <ChevronLeft className="w-3.5 h-3.5 stroke-[2.2]" />
+                    <ArrowLeft className="w-3.5 h-3.5 stroke-[2]" />
                   </span>
                 </button>
                 <button
@@ -461,10 +470,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   }
                   disabled={currentPage === pageCount - 1}
                   aria-label="Next services"
-                  className={`group relative overflow-hidden w-7 h-7 sm:w-8 sm:h-8 rounded-[2px] border border-black/10 grid place-items-center transition-all ${
+                  className={`group relative overflow-hidden w-8 h-7 sm:w-9 sm:h-8 rounded-md border border-black/10 grid place-items-center transition-all ${
                     currentPage === pageCount - 1
                       ? "opacity-25 cursor-not-allowed text-stone-400 pointer-events-none bg-stone-50"
-                      : "opacity-100 cursor-pointer text-stone-700 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
+                      : "opacity-100 cursor-pointer text-stone-500 hover:text-white hover:border-transparent active:scale-95 shadow-2xs"
                   }`}
                 >
                   <span
@@ -472,7 +481,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-300 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                   />
                   <span className="relative z-10 flex items-center justify-center">
-                    <ChevronRight className="w-3.5 h-3.5 stroke-[2.2]" />
+                    <ArrowRight className="w-3.5 h-3.5 stroke-[2]" />
                   </span>
                 </button>
               </div>
@@ -546,7 +555,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   key={item.label}
                   href={item.href}
                   onClick={(e) => handleNavClick(e, item)}
-                  className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 transition-colors border-b border-black/[0.04] ${
+                  className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-3 px-1 transition-colors border-b border-black/[0.04] ${
                     isActive
                       ? "text-[#1C1815] font-semibold"
                       : "text-[#38312B] hover:text-black"
@@ -563,7 +572,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 type="button"
                 onClick={() => setMobileServicesOpen((p) => !p)}
-                className="w-full flex items-center justify-between gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 text-[#38312B] hover:text-black transition-colors border-b border-black/[0.04] cursor-pointer"
+                className="w-full flex items-center justify-between gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-3 px-1 text-[#38312B] hover:text-black transition-colors border-b border-black/[0.04] cursor-pointer"
               >
                 <span className="flex items-center gap-2">
                   <Star className="w-3.5 h-3.5 text-stone-400" />
@@ -612,7 +621,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Link
               href="/about"
               onClick={() => setMobileMenuOpen(false)}
-              className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-2.5 px-1 transition-colors border-b border-black/[0.04] ${
+              className={`flex items-center gap-2 text-left text-xs font-sans font-medium uppercase tracking-[0.14em] py-3 px-1 transition-colors border-b border-black/[0.04] ${
                 activePath === "/about"
                   ? "text-[#1C1815] font-semibold"
                   : "text-[#38312B] hover:text-black"
@@ -640,7 +649,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   setMobileMenuOpen(false);
                   handleCtaClick();
                 }}
-                className="w-full py-2.5 rounded-md bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold uppercase tracking-[0.12em] transition text-center flex items-center justify-center gap-2 cursor-pointer shadow-xs"
+                className="w-full py-3 min-h-[44px] rounded-md bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold uppercase tracking-[0.12em] transition text-center flex items-center justify-center gap-2 cursor-pointer shadow-xs"
               >
                 <Sparkles className="w-3.5 h-3.5 text-[#E6D5C7]" />
                 <span>{ctaLabel}</span>
@@ -651,9 +660,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                   href="https://wa.me/919876543210?text=Hello%20Flyora%20Travels"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="py-2 px-3 rounded-md bg-emerald-50 text-emerald-800 text-[11px] font-medium flex items-center justify-center gap-1.5 hover:bg-emerald-100 transition"
+                  className="py-2 px-3 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 text-emerald-600" />
+                  <MessageCircle className="w-3.5 h-3.5 text-white" />
                   <span>WhatsApp</span>
                 </a>
                 <a

@@ -12,6 +12,7 @@ import {
   Award,
   HeartHandshake,
   CheckCircle2,
+  Plane,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -42,29 +43,29 @@ interface OfferTab {
 const OFFER_TABS: OfferTab[] = [
   {
     value: "journeys",
-    label: "Curated Journeys",
+    label: "Tours & Holidays",
     features: [
       {
         icon: Globe,
-        title: "International Tour Packages",
+        title: "International & Domestic Tours",
         description:
-          "Explore the world's best attractions like Dubai, Malaysia, Singapore, Thailand, Bali, and beyond.",
+          "Handpicked holiday packages covering top global escapes like Dubai, Bali, Europe, Thailand, and scenic domestic destinations.",
         badgeText: "100+ Destinations",
         accent: "#5BC3A6",
       },
       {
         icon: Sliders,
-        title: "Customisation of Journey",
+        title: "Customized Itineraries",
         description:
-          "We always put you first. We help you customise tour packages according to your exact preferences.",
+          "Bespoke holiday planning tailored to your exact pace, hotel preferences, private transfers, and unique style.",
         badgeText: "Bespoke Itineraries",
         accent: "#F08B4C",
       },
       {
         icon: Compass,
-        title: "Dream Destinations",
+        title: "Signature Tourism & Stays",
         description:
-          "Tailor-made discovery shaped around how you want to feel, leaving nothing to generic templates.",
+          "Luxury resorts, overwater villas, scenic boutique stays, and curated excursions without generic templates.",
         badgeText: "Signature Curation",
         accent: "#7DB3D6",
       },
@@ -72,30 +73,30 @@ const OFFER_TABS: OfferTab[] = [
   },
   {
     value: "services",
-    label: "Visa & Services",
+    label: "Visas & Flights",
     features: [
       {
         icon: ShieldCheck,
-        title: "Visa Services",
+        title: "Fast-Track Visa Assistance",
         description:
-          "Complete visa assistance and document support for over 100 countries, including UK, USA, Schengen, and more.",
+          "Complete visa filing, document audits, and express appointment booking for 100+ countries with 99.2% approval success.",
         badgeText: "100+ Countries",
         accent: "#5BC3A6",
       },
       {
-        icon: FileCheck,
-        title: "Seamless Documentation",
+        icon: Plane,
+        title: "Global Flight Ticketing",
         description:
-          "Fast-track verification, compliance checks, and guided appointment coordination without the friction.",
-        badgeText: "Hassle-Free",
+          "Commercial & corporate air ticketing with unpublished partner fares, optimal routing, and 24/7 flight rebooking support.",
+        badgeText: "Best Airfares",
         accent: "#7DB3D6",
       },
       {
         icon: Headphones,
-        title: "24/7 Global Concierge",
+        title: "24/7 Travel & Concierge Desk",
         description:
-          "Round-the-clock advisory, airport guidance, and dedicated support from start to journey's end.",
-        badgeText: "Always Here",
+          "Round-the-clock emergency support, flight schedule updates, and dedicated agency coordination from takeoff to return.",
+        badgeText: "24/7 Dedicated",
         accent: "#E5B869",
       },
     ],
@@ -106,25 +107,25 @@ const OFFER_TABS: OfferTab[] = [
     features: [
       {
         icon: Users,
-        title: "350+ Travel Professionals",
+        title: "350+ Travel & Visa Specialists",
         description:
-          "Our strength lies in our team of 350+ wanderlust professionals, ensuring your travel is seamless and memorable.",
-        badgeText: "Expert Curators",
+          "Our strength lies in our experienced visa officers, flight dispatchers, and holiday planners dedicated to your journey.",
+        badgeText: "Certified Experts",
         accent: "#5BC3A6",
       },
       {
         icon: Award,
-        title: "2 Million+ Customers",
+        title: "2 Million+ Satisfied Clients",
         description:
-          "Our customers are our biggest strength. We have proudly served over 2 million travelers across 1,000+ international trips.",
-        badgeText: "1,000+ Journeys",
+          "Trusted by over 2 million travelers across corporate delegations, family vacations, and sacred pilgrimages worldwide.",
+        badgeText: "Proven Track Record",
         accent: "#F08B4C",
       },
       {
         icon: HeartHandshake,
-        title: "Trusted Excellence",
+        title: "Authorized Agency Trust",
         description:
-          "Award-winning service benchmarks and verified global networks across five continents.",
+          "Verified embassy documentation standards, accredited airline partners, and round-the-clock client advocacy.",
         badgeText: "Verified Trust",
         accent: "#E5B869",
       },
@@ -153,18 +154,18 @@ export const AboutWhatWeOffer: React.FC<AboutWhatWeOfferProps> = ({
         {/* Header Block */}
         <div className="flex flex-col items-center text-center">
           <p className="text-xs sm:text-[13px] font-spartan font-bold uppercase tracking-[0.25em] text-[#5BC3A6]">
-            WHAT WE OFFER
+            WHAT WE OFFER • COMPLETE AGENCY SOLUTIONS
           </p>
 
           <h2 className="mt-3 font-serif text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold tracking-tight text-white leading-tight">
-            Everything You Need for Remarkable Journeys
+            End-to-End Solutions for Visas, Flights &amp; World Tours
           </h2>
 
           <p className="mt-2 max-w-2xl text-[14px] sm:text-[15.5px] text-white/80 font-sans font-light leading-relaxed">
-            The next time you plan a trip or need assistance with visa
-            applications,{" "}
-            <span className="font-semibold text-white">Flyora</span> is here for
-            you. Let us fly together to your dream destinations.
+            From expedited embassy visa approvals and best-fare air ticketing to
+            bespoke holiday curation and round-the-clock advisory,{" "}
+            <span className="font-semibold text-white">Flyora</span> is your
+            dedicated full-service travel and tourism agency.
           </p>
         </div>
 

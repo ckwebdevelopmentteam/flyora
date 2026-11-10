@@ -16,7 +16,7 @@ export const AboutCurators: React.FC<AboutCuratorsProps> = ({
   onOpenEnquiry,
 }) => {
   return (
-    <section className="py-20 sm:py-28 bg-[#FAF7F2] border-y border-black/[0.05]">
+    <section className="py-12 sm:py-28 bg-[#FAF7F2] border-y border-black/[0.05]">
       <div className="container-standard">
         {/* Top Centered Pill Action matching reference */}
         <div className="flex justify-center mb-6">
@@ -32,14 +32,14 @@ export const AboutCurators: React.FC<AboutCuratorsProps> = ({
         </div>
 
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-14 sm:mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white border border-black/[0.06] text-[#6B6156] text-[10.5px] font-sans font-medium uppercase tracking-[0.2em] mb-4">
             <span className="text-[9px] text-[#002f89]">♥</span>
             <span>{data.eyebrow}</span>
             <span className="text-[9px] text-[#002f89]">♥</span>
           </div>
 
-          <h2 className="font-serif text-[32px] sm:text-[42px] font-normal tracking-tight text-[#1C1815]">
+          <h2 className="font-serif text-2xl sm:text-[32px] md:text-[42px] font-normal tracking-tight text-[#1C1815]">
             {data.heading}
           </h2>
         </div>
@@ -52,7 +52,7 @@ export const AboutCurators: React.FC<AboutCuratorsProps> = ({
               className="flex flex-col items-center text-center group"
             >
               {/* Rounded Portrait Frame */}
-              <div className="relative h-[290px] sm:h-[320px] w-full rounded-[28px] overflow-hidden border border-black/[0.07] bg-[#EFE9DF] shadow-xs group-hover:shadow-md transition-shadow duration-300">
+              <div className="relative h-[250px] sm:h-[320px] w-full rounded-[28px] overflow-hidden border border-black/[0.07] bg-[#EFE9DF] shadow-xs group-hover:shadow-md transition-shadow duration-300">
                 <Image
                   src={curator.image}
                   alt={curator.name}

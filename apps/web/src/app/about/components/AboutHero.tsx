@@ -28,7 +28,7 @@ export const AboutHero: React.FC<AboutHeroProps> = ({
       {/* =========================================================================
           SECTION 1: THE SIGNATURE BLACK TOMATO DEEP SLATE-BLUE HEADER BANNER
           ========================================================================= */}
-      <div className="relative w-full bg-[#144A72] text-white pt-20 sm:pt-28 lg:pt-36 pb-36 sm:pb-48 lg:pb-64 overflow-hidden">
+      <div className="relative w-full bg-[#144A72] text-white pt-16 sm:pt-28 lg:pt-36 pb-24 sm:pb-48 lg:pb-64 overflow-hidden">
         {/* Subtle Topographical Elevation Contour Lines SVG Background */}
         <div
           className="absolute inset-0 pointer-events-none select-none opacity-25"
@@ -96,7 +96,7 @@ export const AboutHero: React.FC<AboutHeroProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             {/* Top Left: Gigantic Mint-Green Display Typography */}
             <div className="lg:col-span-6 xl:col-span-5">
-              <span className="block font-spartan font-extrabold text-[58px] sm:text-[84px] lg:text-[104px] xl:text-[118px] text-[#5BC3A6] leading-[0.95] tracking-tight uppercase select-none">
+              <span className="block font-spartan font-extrabold text-[38px] sm:text-[84px] lg:text-[104px] xl:text-[118px] text-[#5BC3A6] leading-[0.95] tracking-tight uppercase select-none">
                 ABOUT US
               </span>
             </div>
@@ -108,7 +108,7 @@ export const AboutHero: React.FC<AboutHeroProps> = ({
               </div>
 
               {/* Exact Headline from Screenshot */}
-              <h2 className="font-spartan font-extrabold text-2xl sm:text-3xl lg:text-[42px] xl:text-[46px] text-white tracking-tight leading-[1.1] uppercase">
+              <h2 className="font-spartan font-extrabold text-xl sm:text-3xl lg:text-[42px] xl:text-[46px] text-white tracking-tight leading-[1.1] uppercase">
                 AWARD-WINNING CREATORS OF REMARKABLE TRAVEL EXPERIENCES
               </h2>
 
@@ -128,7 +128,7 @@ export const AboutHero: React.FC<AboutHeroProps> = ({
         <div className="container-standard relative z-20">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 xl:gap-20 items-start">
             {/* Left Column: Overlapping Vertical Mountain Card breaking through the Blue Canvas */}
-            <div className="lg:col-span-6 xl:col-span-5 -mt-28 sm:-mt-36 lg:-mt-52">
+            <div className="lg:col-span-6 xl:col-span-5 -mt-20 sm:-mt-36 lg:-mt-52">
               <div className="relative w-full max-w-[480px] mx-auto lg:mx-0 aspect-[3/4] rounded-sm overflow-hidden shadow-[0_25px_60px_-15px_rgba(20,74,114,0.4)] border-2 border-white/80 bg-[#0E3553] group">
                 <Image
                   src={data.image.src || "/about/mountain-hero.jpg"}

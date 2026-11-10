@@ -2,13 +2,18 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { ChevronDown } from "lucide-react";
+import Team, {
+  InstagramIcon,
+  LinkedinIcon,
+  DribbbleIcon,
+} from "@/components/ui/team-02";
 import type { AboutPageData } from "../aboutData";
 
 import { AboutWhatWeOffer } from "./AboutWhatWeOffer";
 
 interface AboutPurposeJourneyProps {
-  data: AboutPageData["approach"];
+  curators: AboutPageData["curators"];
+  onOpenEnquiry?: (serviceId?: string) => void;
 }
 
 const clamp = (value: number) => Math.min(1, Math.max(0, value));
@@ -98,11 +103,11 @@ const computeDarkStage = (
 };
 
 export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
-  data,
+  curators,
+  onOpenEnquiry,
 }) => {
   const sectionRef = useRef<HTMLElement>(null);
   const [progress, setProgress] = useState(0);
-  const [activeItem, setActiveItem] = useState(data.items[0]?.id ?? "");
 
   useEffect(() => {
     let frameId = 0;
@@ -135,7 +140,7 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
   // Carefully calibrated 2-scroll rhythm with half-shadow color-less lag hold:
   // - Scene 1 ("OUR PURPOSE"): holds 0 to 0.12, 1st scroll lags (dim/desaturate) to 0.25, 2nd scroll exits to 0.32
   // - Scene 2 ("WHAT WE OFFER"): enters 0.24, holds 0.31 to 0.44, 1st scroll lags to 0.57, 2nd scroll exits to 0.64
-  // - Scene 3 ("HOW WE PLAN OUR JOURNEYS"): enters 0.57, holds 0.64 to 0.78, 1st scroll lags to 0.85, white curtain rises from 0.85 to 1.0!
+  // - Scene 3 ("MEET OUR TEAM"): enters 0.57, holds 0.64 to 0.78, 1st scroll lags to 0.85, white curtain rises from 0.85 to 1.0!
   const purposeStage = computeDarkStage(progress, 0, 0, 0.12, 0.18, 0.25, 0.32);
   const offerStage = computeDarkStage(
     progress,
@@ -146,7 +151,7 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
     0.57,
     0.64,
   );
-  const journeyStage = computeDarkStage(
+  const teamStage = computeDarkStage(
     progress,
     0.57,
     0.64,
@@ -155,10 +160,6 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
     0.9,
     1.0,
   );
-
-  // Subtle parallax lag transforms for Scene 3
-  const scene3ImageLag = (progress - 0.71) * -35;
-  const scene3TextLag = (progress - 0.71) * -15;
 
   return (
     <section
@@ -242,8 +243,9 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
             <p className="font-heading text-[56px] font-bold leading-none tracking-[0.015em] text-[#5BC3A6] sm:text-[84px] lg:text-[112px]">
               OUR PURPOSE
             </p>
-            <h2 className="mx-auto mt-4 max-w-3xl font-heading text-[31px] font-bold uppercase leading-[1.12] tracking-[0.1em] sm:text-[44px] lg:text-[58px]">
-              To turn every journey into a remarkable travel experience
+            <h2 className="mx-auto mt-4 max-w-4xl font-heading text-[28px] font-bold uppercase leading-[1.14] tracking-[0.08em] sm:text-[40px] lg:text-[54px]">
+              To make global visas, flights, and travel seamless, reliable, and
+              remarkable
             </h2>
           </div>
         </div>
@@ -257,95 +259,49 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
           progress={progress}
         />
 
-        {/* Scene 3: HOW WE PLAN OUR JOURNEYS (Matching exact UI from screenshot, with dedicated hold scroll time & lag effect) */}
+        {/* Scene 3: MEET OUR TEAM on the Grape Background */}
         <div
-          className="absolute inset-0 grid grid-rows-[42%_58%] transition-[opacity,transform,filter] duration-300 ease-out lg:grid-cols-2 lg:grid-rows-1"
+          className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-8 transition-[opacity,transform,filter] duration-300 ease-out sm:px-8 lg:px-12"
           style={{
-            opacity: journeyStage.opacity,
-            filter: journeyStage.filter,
-            transform: journeyStage.transform,
-            pointerEvents: journeyStage.pointerEvents,
+            opacity: teamStage.opacity,
+            filter: teamStage.filter,
+            transform: teamStage.transform,
+            pointerEvents: teamStage.pointerEvents,
           }}
-          aria-hidden={journeyStage.opacity < 0.05}
+          aria-hidden={teamStage.opacity < 0.05}
         >
-          <div className="relative overflow-hidden">
-            <div
-              className="relative w-full h-full transition-transform duration-300 ease-out"
-              style={{
-                transform: `scale(1.08) translateY(${scene3ImageLag}px)`,
-                willChange: "transform",
-              }}
-            >
-              <Image
-                src="/about/flyora_about_travel_photo.png"
-                alt="Traveler on a mountain peak admiring the sunset over scenic coastal bays and islands"
-                fill
-                sizes="(max-width: 1024px) 100vw, 50vw"
-                className="object-cover object-center"
-              />
-              {/* Atmospheric Vignette & Seamless Right Edge Blend into #2A2733 */}
-              <div
-                className="absolute inset-0 bg-gradient-to-t from-[#14111d]/70 via-transparent to-[#14111d]/30 pointer-events-none"
-                aria-hidden="true"
-              />
-              <div
-                className="absolute inset-y-0 right-0 w-28 bg-gradient-to-l from-[#2A2733] via-[#2A2733]/50 to-transparent pointer-events-none hidden lg:block"
-                aria-hidden="true"
-              />
-            </div>
-          </div>
-
-          <div
-            className="flex min-h-0 items-center overflow-y-auto px-6 py-8 sm:px-10 lg:px-[12%] transition-transform duration-300 ease-out"
-            style={{
-              transform: `translateY(${scene3TextLag}px)`,
-              willChange: "transform",
-            }}
-          >
-            <div className="w-full max-w-xl">
-              <p className="mb-3 text-[10px] font-semibold uppercase tracking-[0.24em] text-[#5BC3A6] sm:text-[11px]">
-                {data.eyebrow}
-              </p>
-              <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] font-bold leading-[1.15] tracking-tight text-white">
-                {data.heading}
-              </h2>
-
-              <div className="mt-6 border-t border-white/20">
-                {data.items.map((item) => {
-                  const isOpen = activeItem === item.id;
-
-                  return (
-                    <div key={item.id} className="border-b border-white/20">
-                      <button
-                        type="button"
-                        onClick={() => setActiveItem(isOpen ? "" : item.id)}
-                        className="flex w-full items-center justify-between gap-4 py-4 text-left cursor-pointer"
-                      >
-                        <span className="flex items-center gap-3">
-                          <span className="text-[11px] font-semibold tracking-[0.12em] text-[#F08B4C]">
-                            /{item.number}
-                          </span>
-                          <span className="text-[14px] font-medium sm:text-[15px]">
-                            {item.title}
-                          </span>
-                        </span>
-                        <ChevronDown
-                          className={
-                            "h-4 w-4 shrink-0 transition-transform duration-300 " +
-                            (isOpen ? "rotate-180" : "")
-                          }
-                        />
-                      </button>
-                      {isOpen && (
-                        <p className="max-w-lg pb-4 text-[13px] leading-relaxed text-white/75 sm:text-[14px]">
-                          {item.fullDesc}
-                        </p>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+          <div className="mx-auto w-full max-w-7xl my-auto">
+            <Team
+              isDark={true}
+              badge="Curators"
+              title="Meet Our Team"
+              description="Our team is committed to redefining digital experiences through innovative web solutions while fostering a diverse and collaborative environment."
+              members={curators.items.map((curator) => ({
+                name: curator.name,
+                role: curator.role,
+                image: curator.image,
+                socials: [
+                  {
+                    icon: <InstagramIcon size={16} />,
+                    link: "#",
+                  },
+                  {
+                    icon: <DribbbleIcon size={16} />,
+                    link: "#",
+                  },
+                  {
+                    icon: <LinkedinIcon size={16} />,
+                    link: "#",
+                  },
+                ],
+              }))}
+              containerClassName="py-2 sm:py-4 lg:py-6"
+              onMemberClick={(member) =>
+                onOpenEnquiry
+                  ? onOpenEnquiry(`Consultation with ${member.name}`)
+                  : undefined
+              }
+            />
           </div>
         </div>
       </div>

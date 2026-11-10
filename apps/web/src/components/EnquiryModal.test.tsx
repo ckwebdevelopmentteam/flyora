@@ -159,6 +159,15 @@ describe("public capture", () => {
         .getAttribute("href"),
     ).toMatch(/^https:\/\/wa.me\/919876543210/);
   });
+  it("locks background document scroll when opened and restores it when closed", async () => {
+    expect(document.body.style.overflow).toBe("");
+    const { unmount } = render(<EnquiryModal isOpen onClose={vi.fn()} />);
+    expect(document.body.style.overflow).toBe("hidden");
+    expect(document.documentElement.style.overflow).toBe("hidden");
+    unmount();
+    expect(document.body.style.overflow).toBe("");
+    expect(document.documentElement.style.overflow).toBe("");
+  });
   it("offers callback without a fake WhatsApp link when no number is configured", async () => {
     const open = vi.fn();
     render(<FloatingWhatsApp onOpenEnquiry={open} />);

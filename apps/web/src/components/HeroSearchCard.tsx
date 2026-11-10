@@ -1,6 +1,15 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
+import { useServicesCatalog } from "../lib/use-services-catalog";
+import { resolveService } from "../lib/service-catalog";
+import { serviceImage } from "../lib/service-visuals";
+import React, {
+  useState,
+  useRef,
+  useEffect,
+  useMemo,
+  useCallback,
+} from "react";
 import {
   CalendarDays,
   Users,
@@ -14,19 +23,31 @@ import {
   MapPin,
   Compass,
   CheckCircle2,
-  Package,
+  Hotel,
+  Layers,
+  Globe2,
+  X,
 } from "lucide-react";
+import {
+  type TripMode,
+  POPULAR_ORIGINS,
+  POPULAR_DESTINATIONS,
+  filterServicesByTripMode,
+  getServiceTypeDefinition,
+} from "../lib/dynamicServices";
+import type { EnquiryPrefill } from "./EnquiryModal";
 
-// Pixel-perfect SVG icons matching the reference mockup
+// Clean outline SVG icons matching luxury commercial travel sites
 const PassportIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
   <svg
     className={className}
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="2"
+    strokeWidth="1.75"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
   >
     <rect x="5" y="3" width="14" height="18" rx="2" />
     <circle cx="12" cy="10" r="2.5" />
@@ -44,290 +65,215 @@ const VacationPlaneIcon = ({
     viewBox="0 0 24 24"
     fill="none"
     stroke="currentColor"
-    strokeWidth="2"
+    strokeWidth="1.75"
     strokeLinecap="round"
     strokeLinejoin="round"
+    aria-hidden="true"
   >
     <path d="M17.8 19.2 16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.3c.4-.2.6-.6.5-1.1z" />
   </svg>
 );
 
+const MosqueIcon = ({ className = "w-4 h-4" }: { className?: string }) => (
+  <svg
+    className={className}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.75"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M12 3c-1.5 1.5-2 3-2 5h4c0-2-.5-3.5-2-5z" />
+    <path d="M4 10h16v11H4z" />
+    <path d="M9 21v-5a3 3 0 0 1 6 0v5" />
+    <path d="M2 13h2v8H2z" />
+    <path d="M20 13h2v8h-2z" />
+  </svg>
+);
+
 export interface HeroSearchCardProps {
-  onOpenEnquiry?: (serviceOrDest?: string) => void;
+  onOpenEnquiry?: (serviceOrDest?: string, prefill?: EnquiryPrefill) => void;
   onExploreJourneys?: () => void;
+  defaultTripMode?: TripMode;
   className?: string;
+  activeServiceSlug?: DynamicServiceSlug;
+  onServiceChange?: (slug: DynamicServiceSlug) => void;
+  hideTopCards?: boolean;
+  hideTripModeToggle?: boolean;
+  fullWidth?: boolean;
+  unavailable?: boolean;
 }
 
-export type ServiceId =
-  | "hajj-packages"
-  | "custom-holidays"
-  | "visa-assistance"
+export type DynamicServiceSlug =
   | "flight-booking"
+  | "holiday-packages"
+  | "hotel-booking"
+  | "visa-assistance"
+  | "umrah-hajj"
   | "train-booking"
-  | "bus-booking";
+  | "bus-booking"
+  | (string & {});
 
 interface ServiceMetadata {
-  id: ServiceId;
+  id: DynamicServiceSlug;
+  backendSlug: string;
   label: string;
   subtitle: string;
   imageSrc: string;
   imagePosition?: string;
   icon: React.ComponentType<{ className?: string }>;
+  isDomesticApplicable: boolean;
+  isInternationalApplicable: boolean;
 }
 
-const SERVICES_DATA: ServiceMetadata[] = [
-  {
-    id: "hajj-packages",
-    label: "Hajj Packages",
-    subtitle: "Spiritual Journeys",
-    imageSrc: "/services/umrah-packages.jpg",
-    imagePosition: "object-[82%_45%]",
-    icon: Package,
-  },
-  {
-    id: "custom-holidays",
-    label: "Custom Holidays",
-    subtitle: "International & Local",
-    imageSrc: "/services/custom-holidays.jpg",
-    imagePosition: "object-[72%_50%]",
-    icon: VacationPlaneIcon,
-  },
-  {
-    id: "visa-assistance",
-    label: "Visa Assistance",
-    subtitle: "Hassle-free Process",
-    imageSrc: "/services/visa-assistance.jpg",
-    imagePosition: "object-[30%_55%]",
-    icon: PassportIcon,
-  },
+// 5 core services for domestic travel + international alternates
+const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
   {
     id: "flight-booking",
+    backendSlug: "flight-booking",
     label: "Flight Booking",
-    subtitle: "Best Fares",
+    subtitle: "Best fares & routes",
     imageSrc: "/services/flight-booking.jpg",
     imagePosition: "object-[65%_45%]",
     icon: Plane,
+    isDomesticApplicable: true,
+    isInternationalApplicable: true,
+  },
+  {
+    id: "holiday-packages",
+    backendSlug: "holiday-packages",
+    label: "Custom Holidays",
+    subtitle: "Tailored journeys",
+    imageSrc: "/services/custom-holidays.jpg",
+    imagePosition: "object-[72%_50%]",
+    icon: VacationPlaneIcon,
+    isDomesticApplicable: true,
+    isInternationalApplicable: true,
+  },
+  {
+    id: "hotel-booking",
+    backendSlug: "hotel-booking",
+    label: "Hotel & Resorts",
+    subtitle: "Luxury stays & villas",
+    imageSrc: "/destinations/card-maldives.jpg",
+    imagePosition: "object-center",
+    icon: Hotel,
+    isDomesticApplicable: true,
+    isInternationalApplicable: true,
   },
   {
     id: "train-booking",
+    backendSlug: "train-booking",
     label: "Train Booking",
-    subtitle: "Easy & Fast",
+    subtitle: "Express & scenic rail",
     imageSrc: "/services/train-booking.jpg",
     imagePosition: "object-[70%_55%]",
     icon: Train,
+    isDomesticApplicable: true,
+    isInternationalApplicable: false,
   },
   {
     id: "bus-booking",
+    backendSlug: "bus-booking",
     label: "Bus Booking",
-    subtitle: "Comfort Travel",
+    subtitle: "Volvo sleeper comfort",
     imageSrc: "/services/bus-booking.jpg",
     imagePosition: "object-[24%_65%]",
     icon: Bus,
+    isDomesticApplicable: true,
+    isInternationalApplicable: false,
+  },
+  {
+    id: "visa-assistance",
+    backendSlug: "visa-assistance",
+    label: "Visa Assistance",
+    subtitle: "Hassle-free approvals",
+    imageSrc: "/services/visa-assistance.jpg",
+    imagePosition: "object-[30%_55%]",
+    icon: PassportIcon,
+    isDomesticApplicable: false,
+    isInternationalApplicable: true,
+  },
+  {
+    id: "umrah-hajj",
+    backendSlug: "umrah-hajj",
+    label: "Umrah & Hajj",
+    subtitle: "Spiritual journeys",
+    imageSrc: "/services/umrah-packages.jpg",
+    imagePosition: "object-[82%_45%]",
+    icon: MosqueIcon,
+    isDomesticApplicable: false,
+    isInternationalApplicable: true,
   },
 ];
 
-// ---------------------------------------------------------------------------
-// SERVICE-SPECIFIC OPTIONS (Curated & Clean)
-// ---------------------------------------------------------------------------
-
-interface OptionItem {
+interface OptionDropdownItem {
+  id?: string;
   label: string;
+  sub?: string;
+  badge?: string;
+}
+
+export interface ParsedOption {
+  title: string;
+  codeOrBadge?: string;
+  isBadge?: boolean;
   sub?: string;
 }
 
-// 1. Flights
-const FLIGHT_ORIGINS: OptionItem[] = [
-  { label: "Mumbai (BOM)", sub: "Chhatrapati Shivaji Maharaj Intl" },
-  { label: "New Delhi (DEL)", sub: "Indira Gandhi International" },
-  { label: "Bengaluru (BLR)", sub: "Kempegowda International" },
-  { label: "Hyderabad (HYD)", sub: "Rajiv Gandhi International" },
-  { label: "Dubai (DXB)", sub: "Dubai International Airport" },
-];
+export function parseOptionLabel(
+  label: string,
+  sub?: string,
+  badge?: string,
+): ParsedOption {
+  if (badge) {
+    return {
+      title: label,
+      codeOrBadge: badge,
+      isBadge: true,
+      sub,
+    };
+  }
 
-const FLIGHT_DESTINATIONS: OptionItem[] = [
-  { label: "Dubai (DXB)", sub: "United Arab Emirates" },
-  { label: "London (LHR)", sub: "Heathrow Airport, UK" },
-  { label: "Singapore (SIN)", sub: "Changi International" },
-  { label: "Jeddah (JED)", sub: "King Abdulaziz Intl, Saudi Arabia" },
-  { label: "Bangkok (BKK)", sub: "Suvarnabhumi Airport, Thailand" },
-];
+  // Check for "City (CODE)" or "Name (Details)" pattern: e.g. "Mumbai (BOM)", "Goa (Beaches & Heritage)"
+  const parenMatch = label.match(/^(.*?)\s*\(([^)]+)\)$/);
+  if (parenMatch) {
+    const rawSub = sub || "";
+    // Clean out redundant parenthetical code in sub if it repeats the code
+    const cleanSub = rawSub.replace(/\s*\([^)]*\)$/, "").trim();
+    return {
+      title: parenMatch[1].trim(),
+      codeOrBadge: parenMatch[2].trim(),
+      isBadge: false,
+      sub: cleanSub || undefined,
+    };
+  }
 
-const FLIGHT_DATES: OptionItem[] = [
-  { label: "Tomorrow", sub: "Express departure" },
-  { label: "This Weekend", sub: "Weekend getaway" },
-  { label: "15 Nov 2026", sub: "Best fare available" },
-  { label: "Next 30 Days", sub: "Advance booking" },
-  { label: "Flexible Dates", sub: "Lowest fare calendar" },
-];
-
-const FLIGHT_CLASSES: OptionItem[] = [
-  { label: "1 Adult, Economy" },
-  { label: "2 Adults, Economy" },
-  { label: "1 Adult, Business Class" },
-  { label: "2 Adults, Business Class" },
-  { label: "Family (2 Adults, 2 Children)" },
-  { label: "Group (5+ Passengers)" },
-];
-
-// 2. Trains
-const TRAIN_ORIGINS: OptionItem[] = [
-  { label: "New Delhi (NDLS)", sub: "New Delhi Railway Station" },
-  { label: "Mumbai Central (MMCT)", sub: "Mumbai Central Terminus" },
-  { label: "Howrah Junction (HWH)", sub: "Kolkata Railway Station" },
-  { label: "KSR Bengaluru (SBC)", sub: "Bengaluru City Junction" },
-  { label: "Chennai Central (MAS)", sub: "Dr. MGR Central" },
-];
-
-const TRAIN_DESTINATIONS: OptionItem[] = [
-  { label: "Mumbai Central (MMCT)", sub: "Mumbai Central Terminus" },
-  { label: "Madgaon, Goa (MAO)", sub: "Konkan Railway Terminus" },
-  { label: "Varanasi Junction (BSB)", sub: "Varanasi Cantt Station" },
-  { label: "Jaipur Junction (JP)", sub: "Pink City Railway Station" },
-  { label: "Agra Cantt (AGC)", sub: "Taj Express Route" },
-];
-
-const TRAIN_DATES: OptionItem[] = [
-  { label: "Tomorrow (Tatkal)", sub: "Immediate quota booking" },
-  { label: "18 Nov 2026", sub: "General reservation" },
-  { label: "This Weekend", sub: "Scenic route express" },
-  { label: "Next 30 Days", sub: "Advance 120-day window" },
-];
-
-const TRAIN_CLASSES: OptionItem[] = [
-  { label: "1st AC (1A) Confirmed" },
-  { label: "2nd AC (2A)" },
-  { label: "3rd AC (3A)" },
-  { label: "Executive Chair Car (EC)" },
-  { label: "Sleeper Class (SL)" },
-];
-
-// 3. Buses
-const BUS_ORIGINS: OptionItem[] = [
-  { label: "Bangalore", sub: "Majestic / Electronic City" },
-  { label: "Mumbai", sub: "Borivali / Dadar / Vashi" },
-  { label: "Pune", sub: "Swargate / Hinjawadi" },
-  { label: "Hyderabad", sub: "Gachibowli / Ameerpet" },
-  { label: "Delhi", sub: "Kashmiri Gate / Anand Vihar" },
-];
-
-const BUS_DESTINATIONS: OptionItem[] = [
-  { label: "Goa (Panjim)", sub: "Panjim / Mapusa" },
-  { label: "Manali", sub: "Mall Road Private Stand" },
-  { label: "Shimla", sub: "Victory Tunnel Stand" },
-  { label: "Ooty", sub: "Central Bus Stand" },
-  { label: "Jaipur", sub: "Sindhi Camp Stand" },
-];
-
-const BUS_DATES: OptionItem[] = [
-  { label: "Tonight / Tomorrow", sub: "Instant boarding" },
-  { label: "This Weekend", sub: "Friday roundtrip" },
-  { label: "Next 7–10 Days", sub: "Advance sleeper" },
-  { label: "Flexible Dates", sub: "Best seat availability" },
-];
-
-const BUS_SEATS: OptionItem[] = [
-  { label: "2 Sleeper Berths (Volvo AC)" },
-  { label: "1 Single Lower Sleeper" },
-  { label: "2 Semi-Sleeper Seats" },
-  { label: "Full Luxury Coach Charter (35+)" },
-];
-
-// 4. Visa Assistance
-const VISA_COUNTRIES: OptionItem[] = [
-  {
-    label: "Schengen Europe (29 Countries)",
-    sub: "Tourist & Business Multi-entry",
-  },
-  { label: "United Kingdom", sub: "Standard Visitor & Express" },
-  { label: "United States (B1/B2)", sub: "Appointment prep & filing" },
-  { label: "Dubai / UAE", sub: "30 & 60 Days E-Visa" },
-  { label: "Saudi Arabia", sub: "Tourist & Umrah E-Visa" },
-  { label: "Singapore", sub: "Fast Tourist E-Visa" },
-];
-
-const VISA_DATES: OptionItem[] = [
-  { label: "Express (Within 14 Days)", sub: "Urgent slot assistance" },
-  { label: "Within 30 Days", sub: "Standard embassy timeline" },
-  { label: "Next 1–3 Months", sub: "Advance vacation planning" },
-  { label: "Flexible Schedule", sub: "Document consultation first" },
-];
-
-const VISA_APPLICANTS: OptionItem[] = [
-  { label: "Single Applicant (1 Person)" },
-  { label: "Couple (2 Applicants)" },
-  { label: "Family (3–4 Applicants)" },
-  { label: "Corporate Group (5+ Applicants)" },
-];
-
-// 5. Hajj Packages
-const HAJJ_TIERS: OptionItem[] = [
-  {
-    label: "Executive Non-Shifting (Mina A)",
-    sub: "5★ Makkah hotel & VIP air-conditioned Mina tents",
-  },
-  {
-    label: "Deluxe Shifting (30 Days)",
-    sub: "Full season with Azizia transit & 5★ Haram frontage",
-  },
-  {
-    label: "Express Hajj (14 Days)",
-    sub: "Executive short duration for working professionals",
-  },
-  {
-    label: "VIP Private Pilgrimage",
-    sub: "Dedicated Islamic scholar & private transport",
-  },
-];
-
-const HAJJ_SEASONS: OptionItem[] = [
-  { label: "May – Jun 2027", sub: "Upcoming Hajj pilgrimage season" },
-  { label: "May – Jun 2028", sub: "Advance pilgrimage registration" },
-  { label: "Flexible Dates", sub: "Consult with pilgrimage curator" },
-];
-
-const HAJJ_PILGRIMS: OptionItem[] = [
-  { label: "2 Adults", sub: "Couple / Dual pilgrims" },
-  { label: "1 Adult", sub: "Solo pilgrim" },
-  { label: "Family (3–4 Pilgrims)", sub: "Quad sharing accommodation" },
-  { label: "Private Group (5+ Pilgrims)", sub: "Custom group arrangement" },
-];
-
-// 6. Custom Holidays
-const HOLIDAY_DESTINATIONS: OptionItem[] = [
-  { label: "Switzerland & The Alps", sub: "Scenic trains & luxury chalets" },
-  { label: "Bali, Indonesia", sub: "Private pool villas & cultural retreat" },
-  { label: "Dubai & Abu Dhabi", sub: "5-star luxury & desert experience" },
-  { label: "Kyoto & Tokyo, Japan", sub: "Traditional ryokans & modern Tokyo" },
-  { label: "Amalfi Coast, Italy", sub: "Cliffside suites & coastal drives" },
-  { label: "Maldives Islands", sub: "Overwater bungalows & private reef" },
-];
-
-const HOLIDAY_MONTHS: OptionItem[] = [
-  { label: "Nov – Dec 2026", sub: "Festive & new year getaways" },
-  { label: "Jan – Feb 2027", sub: "Winter escapes & alpine snow" },
-  { label: "March – April 2027", sub: "Spring blossoms & pleasant climate" },
-  { label: "Flexible Dates", sub: "Year-round bespoke availability" },
-];
-
-const HOLIDAY_TRAVELERS: OptionItem[] = [
-  { label: "2 Adults", sub: "Couple / Dual travelers" },
-  { label: "Solo Traveler", sub: "Single luxury journey" },
-  { label: "Family (3–4 Guests)", sub: "Private suite / villa" },
-  { label: "Private Group (5+ Guests)", sub: "Bespoke chartered itinerary" },
-];
+  return {
+    title: label,
+    sub,
+  };
+}
 
 // ---------------------------------------------------------------------------
-// LUXURY ARTISAN PILL FIELD
+// MINIMAL LUXURY FIELD COMPONENT (Clean Horizontal Floating Options Panel)
 // ---------------------------------------------------------------------------
 
 interface ConciergePillFieldProps {
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
   label: string;
   value: string;
   isOpen: boolean;
   onToggle: () => void;
-  options: OptionItem[];
-  onSelect: (val: string) => void;
+  onClose?: () => void;
+  options: OptionDropdownItem[];
+  onSelect: (val: string, item?: OptionDropdownItem) => void;
+  onChangeText?: (val: string) => void;
+  isEditable?: boolean;
+  placeholder?: string;
+  align?: "left" | "right";
   dropdownWidth?: string;
   className?: string;
 }
@@ -338,163 +284,670 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
   value,
   isOpen,
   onToggle,
+  onClose,
   options,
   onSelect,
-  dropdownWidth = "w-72 sm:w-80",
+  onChangeText,
+  isEditable = false,
+  placeholder,
   className = "flex-1 min-w-0",
 }) => {
+  const fieldRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Close dropdown when clicking outside or pressing Escape
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if (fieldRef.current && !fieldRef.current.contains(e.target as Node)) {
+        onClose?.();
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose?.();
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  // Dynamically filter options based on user typing (dynamic typing / typeahead)
+  const displayedOptions = useMemo(() => {
+    if (!isEditable || !value || !value.trim()) {
+      return options;
+    }
+
+    const query = value.trim().toLowerCase();
+
+    // Find matching items across title, airport code/badge, and subtitle
+    const matches = options.filter((opt) => {
+      const parsed = parseOptionLabel(opt.label, opt.sub, opt.badge);
+      const titleMatch = parsed.title.toLowerCase().includes(query);
+      const codeMatch = parsed.codeOrBadge?.toLowerCase().includes(query);
+      const subMatch = parsed.sub?.toLowerCase().includes(query);
+      const rawLabelMatch = opt.label.toLowerCase().includes(query);
+      return titleMatch || codeMatch || subMatch || rawLabelMatch;
+    });
+
+    // Check if the typed value is an exact match for one of the options
+    const hasExactMatch = options.some((opt) => {
+      const parsed = parseOptionLabel(opt.label, opt.sub, opt.badge);
+      return (
+        parsed.title.toLowerCase() === query ||
+        parsed.codeOrBadge?.toLowerCase() === query ||
+        opt.label.toLowerCase() === query
+      );
+    });
+
+    // If the user typed a custom destination/origin that is not an exact match,
+    // dynamically prepend a "Custom" suggestion card so they can select it
+    if (!hasExactMatch && query.length >= 1) {
+      const customItem: OptionDropdownItem = {
+        id: `custom-choice-${query}`,
+        label: value.trim(),
+        sub: `Use "${value.trim()}" as custom location`,
+        badge: "Custom",
+      };
+      return matches.length > 0
+        ? [customItem, ...matches]
+        : [customItem, ...options];
+    }
+
+    return matches.length > 0 ? matches : options;
+  }, [options, isEditable, value]);
+
   return (
-    <div className={`relative ${className}`}>
-      <button
-        type="button"
-        onClick={onToggle}
-        className="w-full flex items-center gap-3 sm:gap-3.5 group cursor-pointer text-left focus:outline-none transition-transform duration-150 active:scale-[0.99] py-1 select-none px-2 sm:px-3 rounded-2xl hover:bg-black/[0.02]"
+    <div ref={fieldRef} className={`group ${className}`}>
+      <div
+        onClick={() => {
+          if (!isOpen) onToggle();
+          if (isEditable && inputRef.current) {
+            inputRef.current.focus();
+          }
+        }}
+        className={`w-full flex items-center justify-between text-left py-2 px-3 sm:px-3.5 rounded-xl transition-all duration-150 cursor-pointer ${
+          isOpen
+            ? "bg-white text-neutral-900 ring-1 ring-neutral-300/80 shadow-xs"
+            : "hover:bg-neutral-100/70 active:bg-neutral-200/50"
+        }`}
       >
-        {/* Soft Circular Icon Container - Exact background from user mockup */}
-        <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-[#F4F1EA] group-hover:bg-[#EAE5DC] flex items-center justify-center shrink-0 transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
-          <IconComponent className="w-[18px] h-[18px] sm:w-5 sm:h-5 text-[#2C241E] stroke-[1.6]" />
-        </div>
-
-        {/* Text Block: Label on top, Value + Chevron below */}
-        <div className="flex flex-col min-w-0 flex-1 pr-1">
-          <span className="text-[11.5px] sm:text-[12px] text-[#78716A] font-normal leading-tight mb-0.5 select-none truncate">
-            {label}
-          </span>
-          <div className="flex items-center justify-between gap-1.5 w-full">
-            <span className="text-[14px] sm:text-[15px] font-semibold text-[#1C1917] tracking-tight leading-tight group-hover:text-[#38312B] transition-colors truncate">
-              {value}
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+          <IconComponent
+            className={`w-4 h-4 transition-colors shrink-0 ${
+              isOpen
+                ? "text-neutral-800"
+                : "text-neutral-400 group-hover:text-neutral-700"
+            }`}
+            strokeWidth={1.8}
+          />
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-[11px] sm:text-[11.5px] font-sans text-neutral-500 font-normal leading-none mb-1 truncate select-none">
+              {label}
             </span>
-            <ChevronDown
-              className={`w-3.5 h-3.5 text-[#78716A] group-hover:text-[#1C1917] shrink-0 transition-transform duration-200 ${
-                isOpen ? "rotate-180 text-[#38312B]" : ""
-              }`}
-            />
-          </div>
-        </div>
-      </button>
-
-      {/* Upward luxury dropdown (always fully visible above search bar and clouds) */}
-      {isOpen && (
-        <div
-          className={`absolute left-0 bottom-[calc(100%+12px)] z-50 ${dropdownWidth} bg-white rounded-2xl p-2 shadow-[0_24px_55px_rgba(0,0,0,0.25),0_6px_20px_rgba(0,0,0,0.12)] border border-neutral-200/90 animate-in fade-in slide-in-from-bottom-2 duration-150 max-h-[300px] overflow-y-auto no-scrollbar`}
-        >
-          {options.map((opt, idx) => {
-            const isSelected = value === opt.label;
-            return (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => onSelect(opt.label)}
-                className={`w-full px-3.5 py-2.5 rounded-xl text-left flex items-center justify-between gap-2.5 transition-colors cursor-pointer ${
-                  isSelected
-                    ? "bg-[#F4F1EA] text-[#38312B] font-semibold"
-                    : "hover:bg-neutral-50 text-neutral-800 font-normal"
+            {isEditable ? (
+              <div className="flex items-center w-full">
+                <input
+                  ref={inputRef}
+                  type="text"
+                  aria-label={label}
+                  value={value}
+                  onChange={(e) => {
+                    onChangeText?.(e.target.value);
+                    if (!isOpen) onToggle();
+                  }}
+                  onFocus={(e) => {
+                    e.target.select();
+                    if (!isOpen) onToggle();
+                  }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    if (!isOpen) onToggle();
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      if (value.trim()) {
+                        onSelect(value.trim());
+                      }
+                      onClose?.();
+                    }
+                  }}
+                  placeholder={placeholder || "Where do you want to go?"}
+                  className="w-full bg-transparent border-none outline-none p-0 focus:ring-0 text-[13.5px] sm:text-[14px] font-sans font-medium text-neutral-900 tracking-tight truncate leading-tight placeholder:text-neutral-400 placeholder:font-normal cursor-text"
+                />
+                {value && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onChangeText?.("");
+                      inputRef.current?.focus();
+                    }}
+                    title="Clear input"
+                    aria-label={`Clear ${label}`}
+                    className="p-0.5 text-neutral-300 hover:text-neutral-600 transition-colors ml-1 shrink-0 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            ) : (
+              <span
+                className={`text-[13.5px] sm:text-[14px] font-sans font-medium tracking-tight truncate leading-tight select-none ${
+                  !value ? "text-neutral-400 font-normal" : "text-neutral-900"
                 }`}
               >
-                <div className="min-w-0 pr-1">
-                  <div className="text-[13.5px] truncate">{opt.label}</div>
-                  {opt.sub && (
-                    <div className="text-[11px] text-neutral-400 truncate mt-0.5">
-                      {opt.sub}
-                    </div>
-                  )}
-                </div>
-                {isSelected && (
-                  <Check className="w-3.5 h-3.5 text-[#38312B] shrink-0" />
-                )}
+                {value || placeholder || "Where do you want to go?"}
+              </span>
+            )}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+          aria-label={`Toggle ${label} options`}
+          className="p-1 -mr-1 text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
+        >
+          <ChevronDown
+            className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${
+              isOpen ? "rotate-180 text-neutral-800" : ""
+            }`}
+            strokeWidth={1.8}
+          />
+        </button>
+      </div>
+
+      {/* Popover Dropdown Menu: Clean Full-Width Options Grid (Shows on Top) */}
+      {isOpen && (
+        <div
+          role="listbox"
+          aria-label={label}
+          className="absolute left-0 right-0 bottom-[calc(100%+8px)] z-50 w-full bg-white border border-neutral-200/90 rounded-2xl p-3 sm:p-4 shadow-[0_16px_40px_rgba(0,0,0,0.14)] animate-dropdown-in"
+        >
+          {/* Header Row */}
+          <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-neutral-100 px-1 select-none">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-xs font-sans font-semibold text-neutral-800 uppercase tracking-wider shrink-0">
+                {label}
+              </span>
+              <span className="text-[11.5px] font-sans text-neutral-400 truncate">
+                {isEditable && value.trim()
+                  ? `• Matching "${value.trim()}"`
+                  : "• Select a place or type as you wish"}
+              </span>
+            </div>
+            {onClose && (
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                title="Close"
+                className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-700 font-medium px-2 py-0.5 rounded-md hover:bg-neutral-100 transition-colors cursor-pointer shrink-0"
+              >
+                <span>Close</span>
+                <X
+                  className="w-3.5 h-3.5 text-neutral-500 hover:text-neutral-800"
+                  strokeWidth={2.2}
+                />
               </button>
-            );
-          })}
+            )}
+          </div>
+
+          {/* Options Grid: Multi-column, Increased Height, NO sliding sideways, Dynamically Filtered */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3 max-h-[420px] overflow-y-auto overflow-x-hidden p-0.5">
+            {displayedOptions.map((option) => {
+              const isSelected =
+                value &&
+                (value.toLowerCase() === option.label.toLowerCase() ||
+                  value.toLowerCase().startsWith(option.label.toLowerCase()) ||
+                  option.label.toLowerCase().startsWith(value.toLowerCase()));
+
+              const parsed = parseOptionLabel(
+                option.label,
+                option.sub,
+                option.badge,
+              );
+
+              return (
+                <button
+                  key={option.id || option.label}
+                  type="button"
+                  onClick={() => {
+                    onSelect(option.label, option);
+                    onClose?.();
+                  }}
+                  className={`group/opt relative min-h-[76px] sm:min-h-[82px] p-3.5 sm:p-4 rounded-xl border text-left transition-all duration-150 cursor-pointer select-none flex flex-col justify-center ${
+                    isSelected
+                      ? "bg-[#002f89]/5 border-[#002f89] ring-1 ring-[#002f89]/30 text-neutral-900"
+                      : "bg-neutral-50/50 border-neutral-200/80 hover:bg-neutral-100/70 hover:border-neutral-300 text-neutral-700"
+                  }`}
+                >
+                  <div className="flex items-center justify-between gap-1.5 w-full leading-tight">
+                    <span className="text-[14px] sm:text-[14.5px] font-sans font-semibold text-neutral-900 truncate">
+                      {parsed.title}
+                    </span>
+
+                    <div className="flex items-center gap-1 shrink-0">
+                      {parsed.codeOrBadge && (
+                        <span
+                          className={`text-[11px] font-sans leading-none px-2 py-0.5 rounded-md ${
+                            parsed.isBadge
+                              ? "bg-neutral-200/80 text-neutral-700 font-medium"
+                              : "bg-neutral-200/50 text-neutral-600 font-normal"
+                          }`}
+                        >
+                          {parsed.codeOrBadge}
+                        </span>
+                      )}
+                      {isSelected && (
+                        <Check
+                          className="w-4 h-4 text-[#002f89] shrink-0"
+                          strokeWidth={2.5}
+                          aria-hidden="true"
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  {parsed.sub && (
+                    <span className="text-[11.5px] sm:text-[12px] font-sans text-neutral-500 font-normal leading-tight mt-1.5 truncate">
+                      {parsed.sub}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       )}
     </div>
   );
 };
 
+// ---------------------------------------------------------------------------
+// MEMBERS & CHILDREN (BELOW 11 YEARS) PICKER COMPONENT
+// ---------------------------------------------------------------------------
+
+interface TravelersPickerProps {
+  label?: string;
+  adults: number;
+  childrenCount: number;
+  isOpen: boolean;
+  onToggle: () => void;
+  onClose: () => void;
+  onChangeAdults: (val: number) => void;
+  onChangeChildren: (val: number) => void;
+  align?: "left" | "right";
+  className?: string;
+}
+
+const TravelersPicker: React.FC<TravelersPickerProps> = ({
+  label = "Travelers",
+  adults,
+  childrenCount,
+  isOpen,
+  onToggle,
+  onClose,
+  onChangeAdults,
+  onChangeChildren,
+  className = "flex-1 min-w-0",
+}) => {
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handlePointerDown = (e: MouseEvent | TouchEvent) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(e.target as Node)
+      ) {
+        onClose();
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
+    document.addEventListener("touchstart", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("touchstart", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen, onClose]);
+
+  const displayValue =
+    childrenCount > 0
+      ? `${adults} ${adults === 1 ? "Member" : "Members"}, ${childrenCount} ${
+          childrenCount === 1 ? "Child" : "Children"
+        } (below 11y)`
+      : `${adults} ${adults === 1 ? "Member" : "Members"}`;
+
+  return (
+    <div ref={containerRef} className={`group ${className}`}>
+      <div
+        onClick={onToggle}
+        className={`w-full flex items-center justify-between text-left py-2 px-3 sm:px-3.5 rounded-xl transition-all duration-150 cursor-pointer ${
+          isOpen
+            ? "bg-white text-neutral-900 ring-1 ring-neutral-300/80 shadow-xs"
+            : "hover:bg-neutral-100/70 active:bg-neutral-200/50"
+        }`}
+      >
+        <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
+          <Users
+            className={`w-4 h-4 transition-colors shrink-0 ${
+              isOpen
+                ? "text-neutral-800"
+                : "text-neutral-400 group-hover:text-neutral-700"
+            }`}
+            strokeWidth={1.8}
+          />
+          <div className="flex flex-col min-w-0 flex-1">
+            <span className="text-[11px] sm:text-[11.5px] font-sans text-neutral-500 font-normal leading-none mb-1 truncate select-none">
+              {label}
+            </span>
+            <span className="text-[13.5px] sm:text-[14px] font-sans font-medium text-neutral-900 tracking-tight truncate leading-tight select-none">
+              {displayValue}
+            </span>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggle();
+          }}
+          aria-label={`Toggle ${label} options`}
+          className="p-1 -mr-1 text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
+        >
+          <ChevronDown
+            className={`w-3.5 h-3.5 shrink-0 transition-transform duration-200 ${
+              isOpen ? "rotate-180 text-neutral-800" : ""
+            }`}
+            strokeWidth={1.8}
+          />
+        </button>
+      </div>
+
+      {/* Popover Panel: Only ask how much members and children (below 11 years) (Shows on Top) */}
+      {isOpen && (
+        <div
+          role="dialog"
+          aria-label={label}
+          className="absolute left-0 right-0 bottom-[calc(100%+8px)] z-50 w-full bg-white border border-neutral-200/90 rounded-2xl p-4 sm:p-5 shadow-[0_16px_40px_rgba(0,0,0,0.14)] animate-dropdown-in"
+        >
+          {/* Header Row */}
+          <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-neutral-100 px-1 select-none">
+            <div className="flex items-center gap-2 min-w-0">
+              <span className="text-xs font-sans font-semibold text-neutral-800 uppercase tracking-wider shrink-0">
+                {label}
+              </span>
+              <span className="text-[11.5px] font-sans text-neutral-400 truncate">
+                • Specify number of members & children (below 11 years)
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              aria-label="Close"
+              title="Close"
+              className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-700 font-medium px-2 py-0.5 rounded-md hover:bg-neutral-100 transition-colors cursor-pointer shrink-0"
+            >
+              <span>Close</span>
+              <X
+                className="w-3.5 h-3.5 text-neutral-500 hover:text-neutral-800"
+                strokeWidth={2.2}
+              />
+            </button>
+          </div>
+
+          {/* 2 Focused Counter Cards: Members & Children */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-xl mx-auto py-1">
+            {/* 1. Members Counter */}
+            <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 transition-colors select-none">
+              <div className="pr-3">
+                <div className="text-[14px] sm:text-[14.5px] font-sans font-semibold text-neutral-900 leading-tight">
+                  Members
+                </div>
+                <div className="text-[11.5px] font-sans text-neutral-500 mt-0.5">
+                  Adults & teens (12+ years)
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 shrink-0">
+                <button
+                  type="button"
+                  disabled={adults <= 1}
+                  onClick={() => onChangeAdults(Math.max(1, adults - 1))}
+                  aria-label="Decrease members"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
+                >
+                  −
+                </button>
+                <span className="w-7 sm:w-8 text-center text-[15px] sm:text-[16px] font-sans font-bold text-neutral-900 select-none">
+                  {adults}
+                </span>
+                <button
+                  type="button"
+                  disabled={adults >= 30}
+                  onClick={() => onChangeAdults(Math.min(30, adults + 1))}
+                  aria-label="Increase members"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+
+            {/* 2. Children Counter (Below 11 years) */}
+            <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 transition-colors select-none">
+              <div className="pr-3">
+                <div className="text-[14px] sm:text-[14.5px] font-sans font-semibold text-neutral-900 leading-tight">
+                  Children
+                </div>
+                <div className="text-[11.5px] font-sans text-[#002f89] font-medium mt-0.5">
+                  Below 11 years
+                </div>
+              </div>
+              <div className="flex items-center gap-2.5 shrink-0">
+                <button
+                  type="button"
+                  disabled={childrenCount <= 0}
+                  onClick={() =>
+                    onChangeChildren(Math.max(0, childrenCount - 1))
+                  }
+                  aria-label="Decrease children"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
+                >
+                  −
+                </button>
+                <span className="w-7 sm:w-8 text-center text-[15px] sm:text-[16px] font-sans font-bold text-neutral-900 select-none">
+                  {childrenCount}
+                </span>
+                <button
+                  type="button"
+                  disabled={childrenCount >= 15}
+                  onClick={() =>
+                    onChangeChildren(Math.min(15, childrenCount + 1))
+                  }
+                  aria-label="Increase children"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Row */}
+          <div className="flex items-center justify-between pt-3 mt-3 border-t border-neutral-100 px-1">
+            <span className="text-xs font-sans text-neutral-500">
+              Total:{" "}
+              <strong className="text-neutral-900 font-semibold">
+                {adults + childrenCount}{" "}
+                {adults + childrenCount === 1 ? "Traveler" : "Travelers"}
+              </strong>
+            </span>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-1.5 rounded-md bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold transition-colors cursor-pointer"
+            >
+              Done
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// ---------------------------------------------------------------------------
+// MAIN HERO SEARCH CARD COMPONENT
+// ---------------------------------------------------------------------------
+
 export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   onOpenEnquiry,
   onExploreJourneys,
+  defaultTripMode = "domestic",
   className = "",
+  activeServiceSlug: propActiveServiceSlug,
+  onServiceChange,
+  hideTopCards = false,
+  hideTripModeToggle = false,
+  fullWidth = false,
+  unavailable = false,
 }) => {
-  // Active Tab state (defaults to Hajj Packages)
-  const [activeTab, setActiveTab] = useState<ServiceId>("hajj-packages");
+  // 1. Trip Context State (Domestic vs International)
+  const [tripMode, setTripMode] = useState<TripMode>(defaultTripMode);
 
-  // Route-based states (Flights, Trains, Buses)
-  const [flightFrom, setFlightFrom] = useState<string>("Mumbai (BOM)");
-  const [flightTo, setFlightTo] = useState<string>("Dubai (DXB)");
-  const [trainFrom, setTrainFrom] = useState<string>("New Delhi (NDLS)");
-  const [trainTo, setTrainTo] = useState<string>("Mumbai Central (MMCT)");
-  const [busFrom, setBusFrom] = useState<string>("Bangalore");
-  const [busTo, setBusTo] = useState<string>("Goa (Panjim)");
-  const [routeDate, setRouteDate] = useState<string>("This Weekend");
-  const [routeClassOrSeats, setRouteClassOrSeats] =
-    useState<string>("1 Adult, Economy");
+  // 2. Active Service Tab (Controlled or Uncontrolled)
+  const [internalActiveServiceSlug, setInternalActiveServiceSlug] =
+    useState<DynamicServiceSlug>(propActiveServiceSlug || "flight-booking");
 
-  // Visa states
-  const [visaCountry, setVisaCountry] = useState<string>(
-    "Schengen Europe (29 Countries)",
+  useEffect(() => {
+    if (propActiveServiceSlug) {
+      setInternalActiveServiceSlug(propActiveServiceSlug);
+    }
+  }, [propActiveServiceSlug]);
+
+  const activeServiceSlug = propActiveServiceSlug || internalActiveServiceSlug;
+
+  const setActiveServiceSlug = useCallback(
+    (slug: DynamicServiceSlug) => {
+      setInternalActiveServiceSlug(slug);
+      onServiceChange?.(slug);
+    },
+    [onServiceChange],
   );
-  const [visaDate, setVisaDate] = useState<string>("Within 30 Days");
-  const [visaApplicants, setVisaApplicants] = useState<string>(
-    "Single Applicant (1 Person)",
-  );
 
-  // Custom Holidays states
-  const [holidayDest, setHolidayDest] = useState<string>(
-    "Switzerland & The Alps",
-  );
-  const [holidayMonth, setHolidayMonth] = useState<string>("Nov – Dec 2026");
-  const [holidayTravelers, setHolidayTravelers] = useState<string>("2 Adults");
+  // 3. Selections: Origin & Destination
+  const [selectedOrigin, setSelectedOrigin] = useState<string>("");
+  const [selectedDestination, setSelectedDestination] = useState<string>("");
 
-  // Hajj states
-  const [hajjTier, setHajjTier] = useState<string>(
-    "Executive Non-Shifting (Mina A)",
-  );
-  const [hajjSeason, setHajjSeason] = useState<string>("May – Jun 2027");
-  const [hajjPilgrims, setHajjPilgrims] = useState<string>("2 Adults");
+  // 4. Available Services from Backend API
+  const {
+    services: backendServices,
+    loaded,
+    error,
+    retry,
+  } = useServicesCatalog();
+  // 5. Dynamic Service Types (Primary & Secondary)
+  const [selectedPrimaryType, setSelectedPrimaryType] =
+    useState<string>("Round-trip");
+  const [selectedSecondaryType, setSelectedSecondaryType] =
+    useState<string>("Economy Class");
 
-  // Popover / Dropdown Manager (only 1 open at a time)
+  // 6. Travel Timeline & Travellers
+  const [selectedDatePeriod, setSelectedDatePeriod] =
+    useState<string>("This Weekend");
+  const [adultsCount, setAdultsCount] = useState<number>(2);
+  const [kidsCount, setKidsCount] = useState<number>(0);
+
+  // 7. UI Dropdown and Submission State
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
+  const isSubmitted = false;
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsScrollRef = useRef<HTMLDivElement>(null);
 
-  const handleCardClick = (serviceId: ServiceId) => {
-    setActiveTab(serviceId);
-    setOpenDropdown(null);
-    setIsSubmitted(false);
-
-    if (serviceId === "flight-booking") {
-      setFlightFrom("Mumbai (BOM)");
-      setFlightTo("Dubai (DXB)");
-      setRouteDate("This Weekend");
-      setRouteClassOrSeats("1 Adult, Economy");
-    } else if (serviceId === "train-booking") {
-      setTrainFrom("New Delhi (NDLS)");
-      setTrainTo("Mumbai Central (MMCT)");
-      setRouteDate("18 Nov 2026");
-      setRouteClassOrSeats("1st AC (1A) Confirmed");
-    } else if (serviceId === "bus-booking") {
-      setBusFrom("Bangalore");
-      setBusTo("Goa (Panjim)");
-      setRouteDate("Tonight / Tomorrow");
-      setRouteClassOrSeats("2 Sleeper Berths (Volvo AC)");
-    } else if (serviceId === "visa-assistance") {
-      setVisaCountry("Schengen Europe (29 Countries)");
-      setVisaDate("Within 30 Days");
-      setVisaApplicants("Single Applicant (1 Person)");
-    } else if (serviceId === "hajj-packages") {
-      setHajjTier("Executive Non-Shifting (Mina A)");
-      setHajjSeason("May – Jun 2027");
-      setHajjPilgrims("2 Adults");
-    } else if (serviceId === "custom-holidays") {
-      setHolidayDest("Switzerland & The Alps");
-      setHolidayMonth("Nov – Dec 2026");
-      setHolidayTravelers("2 Adults");
+  const visibleServices = useMemo(
+    () =>
+      filterServicesByTripMode(
+        backendServices,
+        tripMode,
+        selectedDestination,
+      ).map((service) => {
+        const template = ALL_SERVICES_CATALOG.find((item) =>
+          resolveService([service], item.backendSlug),
+        );
+        return {
+          ...ALL_SERVICES_CATALOG[0],
+          ...template,
+          id: service.slug,
+          backendSlug: service.slug,
+          label: service.name,
+          imageSrc: template?.imageSrc || serviceImage(service.slug),
+        };
+      }),
+    [backendServices, tripMode, selectedDestination],
+  );
+  const selectedBackendService = resolveService(
+    backendServices,
+    activeServiceSlug,
+  );
+  // Cascading update: if active service is no longer valid in current tripMode, fallback (uncontrolled only)
+  useEffect(() => {
+    if (propActiveServiceSlug || hideTopCards) return;
+    const isCurrentValid = visibleServices.some(
+      (s) => s.id === activeServiceSlug,
+    );
+    if (!isCurrentValid && visibleServices.length > 0) {
+      setActiveServiceSlug(visibleServices[0].id);
     }
-  };
+  }, [
+    visibleServices,
+    activeServiceSlug,
+    propActiveServiceSlug,
+    hideTopCards,
+    setActiveServiceSlug,
+  ]);
 
+  // Current service type definitions
+  const serviceTypeDefinition = useMemo(() => {
+    return getServiceTypeDefinition(activeServiceSlug);
+  }, [activeServiceSlug]);
+
+  // Sync primary & secondary types when service changes
+  useEffect(() => {
+    const def = getServiceTypeDefinition(activeServiceSlug);
+    if (def.primaryTypes && def.primaryTypes.length > 0) {
+      setSelectedPrimaryType(def.primaryTypes[0].label);
+    }
+    if (def.secondaryTypes && def.secondaryTypes.length > 0) {
+      setSelectedSecondaryType(def.secondaryTypes[0].label);
+    }
+  }, [activeServiceSlug]);
+
+  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -508,521 +961,952 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  // Handle switching trip mode (Domestic vs International)
+  const handleTripModeChange = (mode: TripMode) => {
+    if (mode === tripMode) return;
+    setTripMode(mode);
+    setOpenDropdown(null);
+    setSelectedDestination("");
+    setSelectedOrigin("");
+
+    if (mode === "domestic") {
+      if (
+        activeServiceSlug === "visa-assistance" ||
+        activeServiceSlug === "umrah-hajj"
+      ) {
+        setActiveServiceSlug("flight-booking");
+      }
+    } else {
+      if (
+        activeServiceSlug === "train-booking" ||
+        activeServiceSlug === "bus-booking"
+      ) {
+        setActiveServiceSlug("flight-booking");
+      }
+    }
+  };
+
+  const prevDefaultModeRef = useRef(defaultTripMode);
+  useEffect(() => {
+    if (defaultTripMode && defaultTripMode !== prevDefaultModeRef.current) {
+      prevDefaultModeRef.current = defaultTripMode;
+      handleTripModeChange(defaultTripMode);
+    }
+  }, [defaultTripMode]);
+
+  // Options for Dropdowns
+  const originOptions: OptionDropdownItem[] = useMemo(() => {
+    const filtered = POPULAR_ORIGINS.filter((o) =>
+      tripMode === "domestic" ? o.isDomestic : true,
+    );
+    return filtered.map((o) => ({
+      id: o.code,
+      label: `${o.name} (${o.code})`,
+      sub: o.sub,
+    }));
+  }, [tripMode]);
+
+  const destinationOptions: OptionDropdownItem[] = useMemo(() => {
+    const filtered = POPULAR_DESTINATIONS.filter((d) =>
+      tripMode === "domestic" ? d.isDomestic : !d.isDomestic,
+    );
+    return filtered.map((d) => ({
+      id: d.id,
+      label: d.name,
+      sub: d.country,
+    }));
+  }, [tripMode]);
+
+  // Comprehensive Flight Origins (Airports + Cities)
+  const flightOriginOptions: OptionDropdownItem[] = useMemo(() => {
+    const list: OptionDropdownItem[] = [];
+    const seen = new Set<string>();
+
+    const hubs = POPULAR_ORIGINS.filter((o) =>
+      tripMode === "domestic" ? o.isDomestic : true,
+    );
+    for (const h of hubs) {
+      list.push({
+        id: `hub-${h.code}`,
+        label: `${h.name} (${h.code})`,
+        sub: h.sub || `${h.city}, ${h.country}`,
+        badge: h.code,
+      });
+      seen.add(h.name.toLowerCase());
+      seen.add(h.code.toLowerCase());
+    }
+
+    const intlHubs = POPULAR_ORIGINS.filter((o) => !o.isDomestic);
+    for (const h of intlHubs) {
+      if (!seen.has(h.name.toLowerCase()) && !seen.has(h.code.toLowerCase())) {
+        list.push({
+          id: `hub-${h.code}`,
+          label: `${h.name} (${h.code})`,
+          sub: h.sub || `${h.city}, ${h.country}`,
+          badge: h.code,
+        });
+        seen.add(h.name.toLowerCase());
+      }
+    }
+
+    return list;
+  }, [tripMode]);
+
+  // Comprehensive Flight Destinations (Destinations + Airport Hubs)
+  const flightDestinationOptions: OptionDropdownItem[] = useMemo(() => {
+    const list: OptionDropdownItem[] = [];
+    const seen = new Set<string>();
+
+    // 1. Destination places from catalog
+    const dests = POPULAR_DESTINATIONS.filter((d) =>
+      tripMode === "domestic" ? d.isDomestic : !d.isDomestic,
+    );
+    for (const d of dests) {
+      list.push({
+        id: d.id,
+        label: d.name,
+        sub: d.country,
+        badge: d.isDomestic ? "Domestic" : "Intl",
+      });
+      seen.add(d.name.toLowerCase());
+    }
+
+    // 2. Airport hubs as destinations (Delhi, Mumbai, Bengaluru, Hyderabad, Chennai, Kolkata, etc.)
+    const hubs = POPULAR_ORIGINS.filter((o) =>
+      tripMode === "domestic" ? o.isDomestic : true,
+    );
+    for (const h of hubs) {
+      const parsedLabel = `${h.name} (${h.code})`;
+      if (
+        !seen.has(h.name.toLowerCase()) &&
+        !seen.has(parsedLabel.toLowerCase())
+      ) {
+        list.push({
+          id: `flyto-${h.code}`,
+          label: parsedLabel,
+          sub: h.sub || `${h.city}, ${h.country}`,
+          badge: h.code,
+        });
+        seen.add(h.name.toLowerCase());
+      }
+    }
+
+    // 3. International hubs as destinations
+    const intlHubs = POPULAR_ORIGINS.filter((o) => !o.isDomestic);
+    for (const h of intlHubs) {
+      const parsedLabel = `${h.name} (${h.code})`;
+      if (
+        !seen.has(h.name.toLowerCase()) &&
+        !seen.has(parsedLabel.toLowerCase())
+      ) {
+        list.push({
+          id: `flyto-intl-${h.code}`,
+          label: parsedLabel,
+          sub: h.sub || `${h.city}, ${h.country}`,
+          badge: h.code,
+        });
+        seen.add(h.name.toLowerCase());
+      }
+    }
+
+    return list;
+  }, [tripMode]);
+
+  const dateOptions: OptionDropdownItem[] = [
+    { label: "Tomorrow", sub: "Urgent departure / immediate booking" },
+    { label: "This Weekend", sub: "Quick getaway" },
+    { label: "Next 15–30 Days", sub: "Planned travel window" },
+    { label: "Next 2–3 Months", sub: "Advance booking & best fares" },
+    { label: "Flexible Dates", sub: "Customizable date range" },
+  ];
+
+  const travellerOptions: OptionDropdownItem[] = [
+    { label: "1 Adult", sub: "Solo traveller" },
+    { label: "2 Adults", sub: "Couple / Dual travellers" },
+    { label: "Family (2 Adults, 1 Child)", sub: "Family package" },
+    { label: "Family (2 Adults, 2 Children)", sub: "Spacious family setup" },
+    { label: "Small Group (4–6 Adults)", sub: "Shared tour / private vehicle" },
+    { label: "Large Group (7+ Travellers)", sub: "Bespoke chartered group" },
+  ];
+
+  // Request Quote Handler passing rich prefill into existing flow
   const handleRequestQuote = (e?: React.MouseEvent) => {
     if (e) e.preventDefault();
+    if (!loaded || error || unavailable || !selectedBackendService) return;
 
-    let enquirySummary = "";
-    if (activeTab === "hajj-packages") {
-      enquirySummary = `Hajj Packages | Tier: ${hajjTier} | Season: ${hajjSeason} | Party: ${hajjPilgrims}`;
-    } else if (activeTab === "custom-holidays") {
-      enquirySummary = `Custom Holidays to ${holidayDest} | Season: ${holidayMonth} | Guests: ${holidayTravelers}`;
-    } else if (activeTab === "visa-assistance") {
-      enquirySummary = `Visa Assistance: ${visaCountry} | Timeline: ${visaDate} | Applicants: ${visaApplicants}`;
-    } else if (activeTab === "flight-booking") {
-      enquirySummary = `Flight: ${flightFrom} → ${flightTo} | Date: ${routeDate} | Passengers: ${routeClassOrSeats}`;
-    } else if (activeTab === "train-booking") {
-      enquirySummary = `Train: ${trainFrom} → ${trainTo} | Date: ${routeDate} | Class: ${routeClassOrSeats}`;
-    } else if (activeTab === "bus-booking") {
-      enquirySummary = `Bus: ${busFrom} → ${busTo} | Date: ${routeDate} | Seats: ${routeClassOrSeats}`;
-    }
+    const serviceName = selectedBackendService.name;
+    const originDisplay = selectedOrigin.trim() || "Mumbai (BOM)";
+    const destinationDisplay =
+      selectedDestination.trim() || "All Destinations / Open";
+
+    const summaryParts = [
+      `[${tripMode.toUpperCase()}] ${serviceName}`,
+      `From: ${originDisplay}`,
+      `To: ${destinationDisplay}`,
+      selectedPrimaryType ? `Type: ${selectedPrimaryType}` : "",
+      selectedSecondaryType ? `Tier/Class: ${selectedSecondaryType}` : "",
+      `Date: ${selectedDatePeriod}`,
+      `Party: ${adultsCount} Adult(s)${kidsCount > 0 ? `, ${kidsCount} Child(ren)` : ""}`,
+    ].filter(Boolean);
+
+    const fullSummary = summaryParts.join(" | ");
+
+    const prefill: EnquiryPrefill = {
+      serviceId: selectedBackendService.id,
+      serviceName,
+      destination: destinationDisplay,
+      origin: originDisplay,
+      travelDate: selectedDatePeriod,
+      adults: adultsCount,
+      children: kidsCount,
+      tierOrClass: `${selectedPrimaryType}${selectedSecondaryType ? ` • ${selectedSecondaryType}` : ""}`,
+      summaryLabel: fullSummary,
+    };
 
     if (onOpenEnquiry) {
-      onOpenEnquiry(enquirySummary);
+      onOpenEnquiry(selectedBackendService.id, prefill);
     }
-
-    setIsSubmitted(true);
-    setTimeout(() => {
-      setIsSubmitted(false);
-    }, 4500);
   };
 
   return (
     <div
       ref={containerRef}
-      className={`w-full max-w-[1360px] mx-auto select-none ${className}`}
+      className={`w-full ${fullWidth ? "max-w-none" : "max-w-[1360px] mx-auto"} select-none ${className}`}
     >
+      {error && (
+        <p role="alert" className="p-3 text-sm">
+          Services could not load.{" "}
+          <button
+            type="button"
+            onClick={() => void retry()}
+            className="underline"
+          >
+            Try again
+          </button>
+        </p>
+      )}
+      {/* =======================================================================
+          TOP BAR: MINIMAL TRIP CONTEXT TOGGLE (Clean, Subtle, No Excessive AI Badges)
+          ======================================================================= */}
+      {!hideTripModeToggle && (
+        <div className="flex items-center justify-between gap-3 mb-3 px-1 sm:px-2">
+          <div className="inline-flex items-center p-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 shadow-md">
+            <button
+              type="button"
+              aria-label="Domestic Travel"
+              onClick={() => handleTripModeChange("domestic")}
+              className={`flex items-center gap-1 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
+                tripMode === "domestic"
+                  ? "bg-white text-neutral-950 shadow-xs font-bold"
+                  : "text-white/90 hover:text-white font-medium hover:bg-white/10"
+              }`}
+            >
+              <span>Domestic</span>
+              <span className="hidden sm:inline">&nbsp;Travel</span>
+            </button>
+
+            <button
+              type="button"
+              aria-label="International Travel"
+              onClick={() => handleTripModeChange("international")}
+              className={`flex items-center gap-1.5 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
+                tripMode === "international"
+                  ? "bg-white text-neutral-950 shadow-xs font-bold"
+                  : "text-white/90 hover:text-white font-medium hover:bg-white/10"
+              }`}
+            >
+              <Globe2
+                className={`w-3.5 h-3.5 shrink-0 ${
+                  tripMode === "international"
+                    ? "text-[#002f89]"
+                    : "text-white/90"
+                }`}
+                strokeWidth={2}
+              />
+              <span>International</span>
+              <span className="hidden sm:inline">&nbsp;Travel</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* =======================================================================
           TOP SERVICE CARDS:
-          - Active card is highlighted with luminous white border & subtle lift.
-          - Sized luxuriously along the exact same length as navbar and search bar.
-          - Glowing white aura on hover.
+          - RESTORED PREVIOUS DIMENSIONS: min-h-[165px] md:h-[195px] lg:h-[205px]
+          - 5 equal columns spanning full width
+          - Natural photography with subtle gradient scrim
+          - Small outline icon at top-left, clean title and subtitle at bottom
+          - No excessive badges, pills, or artificial glow effects
           ======================================================================= */}
-      <div className="relative mb-3.5 -mt-4 sm:-mt-5">
-        <div
-          ref={cardsScrollRef}
-          className="flex md:grid md:grid-cols-6 items-stretch gap-2.5 sm:gap-3 lg:gap-3.5 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth px-1 md:px-0 pt-7 pb-5"
-        >
-          {SERVICES_DATA.map((service) => {
-            const IconComponent = service.icon;
-            const isActive = activeTab === service.id;
+      {!hideTopCards && (
+        <div className="relative mb-3.5">
+          <div
+            ref={cardsScrollRef}
+            className="flex md:grid md:grid-cols-5 items-stretch gap-2.5 sm:gap-3.5 lg:gap-4 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth px-1 md:px-0 py-1"
+          >
+            {visibleServices.map((service) => {
+              const IconComponent = service.icon;
+              const isActive = activeServiceSlug === service.id;
 
-            return (
-              <button
-                key={service.id}
-                type="button"
-                onClick={() => handleCardClick(service.id)}
-                aria-pressed={isActive}
-                aria-label={`Select ${service.label}`}
-                className={`group relative shrink-0 w-[190px] sm:w-[210px] md:w-auto min-h-[165px] sm:min-h-[180px] md:h-[200px] lg:h-[210px] rounded-[22px] sm:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-4 sm:p-5 flex flex-col justify-between bg-neutral-950 ${
-                  isActive
-                    ? "-translate-y-1.5 scale-[1.02] z-20 shadow-[0_16px_36px_rgba(0,0,0,0.5)]"
-                    : "hover:-translate-y-2 hover:scale-[1.02] hover:z-30 opacity-90 hover:opacity-100"
-                }`}
-              >
-                {/* Inner clipped canvas for crisp photo & contrast scrims */}
-                <div className="absolute inset-0 rounded-[22px] sm:rounded-[26px] overflow-hidden pointer-events-none">
+              return (
+                <button
+                  key={service.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveServiceSlug(service.id);
+                    setOpenDropdown(null);
+                  }}
+                  className={`group relative shrink-0 w-[155px] sm:w-[190px] md:w-auto min-h-[140px] sm:min-h-[165px] md:h-[195px] lg:h-[205px] rounded-[18px] sm:rounded-[22px] md:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden ${
+                    isActive
+                      ? "ring-2 ring-white shadow-[0_12px_28px_rgba(0,0,0,0.35)] -translate-y-1 scale-[1.02]"
+                      : "ring-1 ring-white/25 hover:ring-white/70 hover:-translate-y-0.5 opacity-90 hover:opacity-100"
+                  }`}
+                >
+                  {/* Natural Photographic Background & Contrast Scrim */}
                   <img
                     src={service.imageSrc}
                     alt=""
-                    className={`absolute inset-0 w-full h-full object-cover ${service.imagePosition || "object-center"} scale-[1.05] sm:scale-[1.08] transition-transform duration-500 ease-out group-hover:scale-[1.14]`}
+                    className={`absolute inset-0 w-full h-full object-cover ${
+                      service.imagePosition || "object-center"
+                    } scale-[1.04] transition-transform duration-500 ease-out group-hover:scale-[1.1] pointer-events-none`}
                   />
-                  <div className="absolute inset-x-0 top-0 h-14 bg-gradient-to-b from-black/50 via-black/20 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 h-[55%] bg-gradient-to-t from-black/85 via-black/40 to-transparent" />
-                </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/35 to-black/10 pointer-events-none" />
 
-                {/* Outer border: Active luminous white ring or subtle neutral with hover glow */}
-                <div
-                  className={`absolute inset-0 rounded-[22px] sm:rounded-[26px] transition-all duration-300 pointer-events-none z-20 ${
-                    isActive
-                      ? "border-2 border-white ring-2 ring-white/60 shadow-[0_0_26px_rgba(255,255,255,0.65)]"
-                      : "border border-white/20 group-hover:border-white group-hover:ring-2 group-hover:ring-white group-hover:shadow-[0_0_24px_rgba(255,255,255,0.5)]"
-                  }`}
-                />
+                  {/* Top Row: Small, Consistent Outline Icon (No Boxy Container) */}
+                  <div className="relative z-10 flex items-center justify-start w-full">
+                    <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white/95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" />
+                  </div>
 
-                {/* Bottom Row: Typography */}
-                <div className="relative z-30 w-full mt-auto">
-                  <div className="text-[14px] sm:text-[15px] md:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.95)] whitespace-normal break-words">
-                    {service.label}
+                  {/* Bottom Row: Simple, Balanced Typography */}
+                  <div className="relative z-10 w-full mt-auto">
+                    <h4 className="text-[13px] sm:text-[15px] md:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.85)]">
+                      {service.label}
+                    </h4>
+                    <p className="text-white/80 text-[10px] sm:text-xs font-normal mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] truncate">
+                      {service.subtitle}
+                    </p>
                   </div>
-                  <div className="text-[11.5px] sm:text-[12px] md:text-[12.5px] font-medium text-white/95 leading-snug drop-shadow-[0_1px_3px_rgba(0,0,0,0.95)] whitespace-normal break-words mt-1.5">
-                    {service.subtitle}
-                  </div>
-                </div>
-              </button>
-            );
-          })}
+                </button>
+              );
+            })}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* =======================================================================
-          2. MAIN ADAPTIVE SEARCH BAR - SYNCED WITH HOME SCREEN:
-          - Spans the full width seamlessly with balanced, distributed fields.
-          - Luxury frosted surface matching navbar glassmorphism.
-          - Soft circular icon badges (#F4F1EA).
-          - Brand dark charcoal/bronze (#38312B) "Request a Quote ->" pill button.
+          MAIN ADAPTIVE SEARCH BAR:
+          - Clean, minimal, and spacious booking form
+          - Small outline icons (no circular badge backgrounds)
+          - Natural case labels with proper typography hierarchy
+          - Perfectly aligned 4 fields + Request a Quote button
           ======================================================================= */}
-      <div className="relative z-40 w-full bg-[#FAF8F5]/95 backdrop-blur-md text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_20px_50px_rgba(0,0,0,0.16)] border border-white/80 transition-all duration-300">
+      <div className="relative z-40 w-full bg-[#FAF8F5]/98 backdrop-blur-md text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_12px_32px_rgba(0,0,0,0.08)] border border-white/80 transition-all duration-300">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-2">
-          {/* Active Service Fields Group - evenly distributed across width */}
-          <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-[#E5E0D5]/50 min-w-0">
-            {/* CASE 1: HAJJ PACKAGES */}
-            {activeTab === "hajj-packages" && (
-              <>
-                <ConciergePillField
-                  icon={Package}
-                  label="Package Tier"
-                  value={hajjTier}
-                  isOpen={openDropdown === "hajj-tier"}
-                  onToggle={() =>
-                    setOpenDropdown(
-                      openDropdown === "hajj-tier" ? null : "hajj-tier",
-                    )
-                  }
-                  options={HAJJ_TIERS}
-                  onSelect={(val) => {
-                    setHajjTier(val);
-                    setOpenDropdown(null);
-                  }}
-                  dropdownWidth="w-72 sm:w-88"
-                />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
-                <ConciergePillField
-                  icon={CalendarDays}
-                  label="Travel Period"
-                  value={hajjSeason}
-                  isOpen={openDropdown === "hajj-season"}
-                  onToggle={() =>
-                    setOpenDropdown(
-                      openDropdown === "hajj-season" ? null : "hajj-season",
-                    )
-                  }
-                  options={HAJJ_SEASONS}
-                  onSelect={(val) => {
-                    setHajjSeason(val);
-                    setOpenDropdown(null);
-                  }}
-                />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
-                <ConciergePillField
-                  icon={Users}
-                  label="Travellers"
-                  value={hajjPilgrims}
-                  isOpen={openDropdown === "hajj-pilgrims"}
-                  onToggle={() =>
-                    setOpenDropdown(
-                      openDropdown === "hajj-pilgrims" ? null : "hajj-pilgrims",
-                    )
-                  }
-                  options={HAJJ_PILGRIMS}
-                  onSelect={(val) => {
-                    setHajjPilgrims(val);
-                    setOpenDropdown(null);
-                  }}
-                />
-              </>
-            )}
-
-            {/* CASE 2: CUSTOM HOLIDAYS */}
-            {activeTab === "custom-holidays" && (
-              <>
-                <ConciergePillField
-                  icon={Compass}
-                  label="Destination"
-                  value={holidayDest}
-                  isOpen={openDropdown === "holiday-dest"}
-                  onToggle={() =>
-                    setOpenDropdown(
-                      openDropdown === "holiday-dest" ? null : "holiday-dest",
-                    )
-                  }
-                  options={HOLIDAY_DESTINATIONS}
-                  onSelect={(val) => {
-                    setHolidayDest(val);
-                    setOpenDropdown(null);
-                  }}
-                  dropdownWidth="w-72 sm:w-80"
-                />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
-                <ConciergePillField
-                  icon={CalendarDays}
-                  label="Travel Period"
-                  value={holidayMonth}
-                  isOpen={openDropdown === "holiday-month"}
-                  onToggle={() =>
-                    setOpenDropdown(
-                      openDropdown === "holiday-month" ? null : "holiday-month",
-                    )
-                  }
-                  options={HOLIDAY_MONTHS}
-                  onSelect={(val) => {
-                    setHolidayMonth(val);
-                    setOpenDropdown(null);
-                  }}
-                />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
-                <ConciergePillField
-                  icon={Users}
-                  label="Travellers"
-                  value={holidayTravelers}
-                  isOpen={openDropdown === "holiday-travelers"}
-                  onToggle={() =>
-                    setOpenDropdown(
-                      openDropdown === "holiday-travelers"
-                        ? null
-                        : "holiday-travelers",
-                    )
-                  }
-                  options={HOLIDAY_TRAVELERS}
-                  onSelect={(val) => {
-                    setHolidayTravelers(val);
-                    setOpenDropdown(null);
-                  }}
-                />
-              </>
-            )}
-
-            {/* CASE 3: VISA ASSISTANCE */}
-            {activeTab === "visa-assistance" && (
-              <>
-                <ConciergePillField
-                  icon={PassportIcon}
-                  label="Destination Country"
-                  value={visaCountry}
-                  isOpen={openDropdown === "visa-country"}
-                  onToggle={() =>
-                    setOpenDropdown(
-                      openDropdown === "visa-country" ? null : "visa-country",
-                    )
-                  }
-                  options={VISA_COUNTRIES}
-                  onSelect={(val) => {
-                    setVisaCountry(val);
-                    setOpenDropdown(null);
-                  }}
-                  dropdownWidth="w-72 sm:w-80"
-                />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
-                <ConciergePillField
-                  icon={CalendarDays}
-                  label="Travel Timeline"
-                  value={visaDate}
-                  isOpen={openDropdown === "visa-date"}
-                  onToggle={() =>
-                    setOpenDropdown(
-                      openDropdown === "visa-date" ? null : "visa-date",
-                    )
-                  }
-                  options={VISA_DATES}
-                  onSelect={(val) => {
-                    setVisaDate(val);
-                    setOpenDropdown(null);
-                  }}
-                />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
-                <ConciergePillField
-                  icon={Users}
-                  label="Applicants"
-                  value={visaApplicants}
-                  isOpen={openDropdown === "visa-applicants"}
-                  onToggle={() =>
-                    setOpenDropdown(
-                      openDropdown === "visa-applicants"
-                        ? null
-                        : "visa-applicants",
-                    )
-                  }
-                  options={VISA_APPLICANTS}
-                  onSelect={(val) => {
-                    setVisaApplicants(val);
-                    setOpenDropdown(null);
-                  }}
-                />
-              </>
-            )}
-
-            {/* CASE 4: FLIGHT BOOKING */}
-            {activeTab === "flight-booking" && (
+          {/* Active Service Fields Group */}
+          <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-neutral-200/60 min-w-0">
+            {/* 1. FLIGHT BOOKING FIELDS (Dynamic Typing Enabled) */}
+            {activeServiceSlug === "flight-booking" && (
               <>
                 <ConciergePillField
                   icon={PlaneTakeoff}
-                  label="Flying From"
-                  value={flightFrom}
+                  label="Flying from"
+                  value={selectedOrigin}
                   isOpen={openDropdown === "flight-from"}
                   onToggle={() =>
                     setOpenDropdown(
                       openDropdown === "flight-from" ? null : "flight-from",
                     )
                   }
-                  options={FLIGHT_ORIGINS}
+                  onClose={() => setOpenDropdown(null)}
+                  options={flightOriginOptions}
                   onSelect={(val) => {
-                    setFlightFrom(val);
+                    setSelectedOrigin(val);
                     setOpenDropdown(null);
                   }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedOrigin(val)}
+                  placeholder="Where are you flying from?"
+                  align="left"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
                   icon={Plane}
-                  label="Flying To"
-                  value={flightTo}
+                  label="Flying to"
+                  value={selectedDestination}
                   isOpen={openDropdown === "flight-to"}
                   onToggle={() =>
                     setOpenDropdown(
                       openDropdown === "flight-to" ? null : "flight-to",
                     )
                   }
-                  options={FLIGHT_DESTINATIONS}
+                  onClose={() => setOpenDropdown(null)}
+                  options={flightDestinationOptions}
                   onSelect={(val) => {
-                    setFlightTo(val);
+                    setSelectedDestination(val);
                     setOpenDropdown(null);
                   }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedDestination(val)}
+                  placeholder="Where do you want to go?"
+                  align="left"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
-                  icon={CalendarDays}
-                  label="Departure Date"
-                  value={routeDate}
-                  isOpen={openDropdown === "flight-date"}
+                  icon={Layers}
+                  label={serviceTypeDefinition.primaryTypeLabel}
+                  value={selectedPrimaryType}
+                  isOpen={openDropdown === "flight-trip-type"}
                   onToggle={() =>
                     setOpenDropdown(
-                      openDropdown === "flight-date" ? null : "flight-date",
+                      openDropdown === "flight-trip-type"
+                        ? null
+                        : "flight-trip-type",
                     )
                   }
-                  options={FLIGHT_DATES}
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.primaryTypes}
                   onSelect={(val) => {
-                    setRouteDate(val);
+                    setSelectedPrimaryType(val);
                     setOpenDropdown(null);
                   }}
+                  align="right"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
                   icon={Users}
-                  label="Passengers & Class"
-                  value={routeClassOrSeats}
-                  isOpen={openDropdown === "flight-class"}
+                  label={
+                    serviceTypeDefinition.secondaryTypeLabel || "Cabin Class"
+                  }
+                  value={selectedSecondaryType}
+                  isOpen={openDropdown === "flight-cabin"}
                   onToggle={() =>
                     setOpenDropdown(
-                      openDropdown === "flight-class" ? null : "flight-class",
+                      openDropdown === "flight-cabin" ? null : "flight-cabin",
                     )
                   }
-                  options={FLIGHT_CLASSES}
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.secondaryTypes || []}
                   onSelect={(val) => {
-                    setRouteClassOrSeats(val);
+                    setSelectedSecondaryType(val);
                     setOpenDropdown(null);
                   }}
+                  align="right"
                 />
               </>
             )}
 
-            {/* CASE 5: TRAIN BOOKING */}
-            {activeTab === "train-booking" && (
+            {/* 2. CUSTOM HOLIDAYS FIELDS */}
+            {activeServiceSlug === "holiday-packages" && (
+              <>
+                <ConciergePillField
+                  icon={Compass}
+                  label="Destination"
+                  value={selectedDestination}
+                  isOpen={openDropdown === "holiday-dest"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "holiday-dest" ? null : "holiday-dest",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={destinationOptions}
+                  onSelect={(val) => {
+                    setSelectedDestination(val);
+                    setOpenDropdown(null);
+                  }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedDestination(val)}
+                  placeholder="Where do you want to go?"
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Travel period"
+                  value={selectedDatePeriod}
+                  isOpen={openDropdown === "holiday-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "holiday-date" ? null : "holiday-date",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={dateOptions}
+                  onSelect={(val) => {
+                    setSelectedDatePeriod(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="right"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <TravelersPicker
+                  label="Travelers"
+                  adults={adultsCount}
+                  childrenCount={kidsCount}
+                  isOpen={openDropdown === "holiday-travellers"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "holiday-travellers"
+                        ? null
+                        : "holiday-travellers",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  onChangeAdults={(val) => setAdultsCount(val)}
+                  onChangeChildren={(val) => setKidsCount(val)}
+                />
+              </>
+            )}
+
+            {/* 3. HOTEL & RESORTS FIELDS */}
+            {activeServiceSlug === "hotel-booking" && (
+              <>
+                <ConciergePillField
+                  icon={MapPin}
+                  label="Destination or city"
+                  value={selectedDestination}
+                  isOpen={openDropdown === "hotel-dest"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "hotel-dest" ? null : "hotel-dest",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={destinationOptions}
+                  onSelect={(val) => {
+                    setSelectedDestination(val);
+                    setOpenDropdown(null);
+                  }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedDestination(val)}
+                  placeholder="Where do you want to go?"
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={Hotel}
+                  label={serviceTypeDefinition.primaryTypeLabel}
+                  value={selectedPrimaryType}
+                  isOpen={openDropdown === "hotel-tier"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "hotel-tier" ? null : "hotel-tier",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.primaryTypes}
+                  onSelect={(val) => {
+                    setSelectedPrimaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={Layers}
+                  label={
+                    serviceTypeDefinition.secondaryTypeLabel ||
+                    "Room configuration"
+                  }
+                  value={selectedSecondaryType}
+                  isOpen={openDropdown === "hotel-room"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "hotel-room" ? null : "hotel-room",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.secondaryTypes || []}
+                  onSelect={(val) => {
+                    setSelectedSecondaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="right"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Dates"
+                  value={selectedDatePeriod}
+                  isOpen={openDropdown === "hotel-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "hotel-date" ? null : "hotel-date",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={dateOptions}
+                  onSelect={(val) => {
+                    setSelectedDatePeriod(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="right"
+                />
+              </>
+            )}
+
+            {/* 4. TRAIN BOOKING FIELDS (Domestic) */}
+            {activeServiceSlug === "train-booking" && (
               <>
                 <ConciergePillField
                   icon={Train}
-                  label="From Station"
-                  value={trainFrom}
+                  label="From station"
+                  value={selectedOrigin}
                   isOpen={openDropdown === "train-from"}
                   onToggle={() =>
                     setOpenDropdown(
                       openDropdown === "train-from" ? null : "train-from",
                     )
                   }
-                  options={TRAIN_ORIGINS}
+                  onClose={() => setOpenDropdown(null)}
+                  options={originOptions}
                   onSelect={(val) => {
-                    setTrainFrom(val);
+                    setSelectedOrigin(val);
                     setOpenDropdown(null);
                   }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedOrigin(val)}
+                  placeholder="Where are you boarding from?"
+                  align="left"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
                   icon={Train}
-                  label="To Station"
-                  value={trainTo}
+                  label="To station"
+                  value={selectedDestination}
                   isOpen={openDropdown === "train-to"}
                   onToggle={() =>
                     setOpenDropdown(
                       openDropdown === "train-to" ? null : "train-to",
                     )
                   }
-                  options={TRAIN_DESTINATIONS}
+                  onClose={() => setOpenDropdown(null)}
+                  options={destinationOptions}
                   onSelect={(val) => {
-                    setTrainTo(val);
+                    setSelectedDestination(val);
                     setOpenDropdown(null);
                   }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedDestination(val)}
+                  placeholder="Where do you want to go?"
+                  align="left"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
                   icon={CalendarDays}
                   label="Travel Date"
-                  value={routeDate}
+                  value={selectedDatePeriod}
                   isOpen={openDropdown === "train-date"}
                   onToggle={() =>
                     setOpenDropdown(
                       openDropdown === "train-date" ? null : "train-date",
                     )
                   }
-                  options={TRAIN_DATES}
+                  onClose={() => setOpenDropdown(null)}
+                  options={dateOptions}
                   onSelect={(val) => {
-                    setRouteDate(val);
+                    setSelectedDatePeriod(val);
                     setOpenDropdown(null);
                   }}
+                  align="left"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
                   icon={Users}
-                  label="Travel Class"
-                  value={routeClassOrSeats}
+                  label={
+                    serviceTypeDefinition.secondaryTypeLabel || "Travel Class"
+                  }
+                  value={selectedSecondaryType}
                   isOpen={openDropdown === "train-class"}
                   onToggle={() =>
                     setOpenDropdown(
                       openDropdown === "train-class" ? null : "train-class",
                     )
                   }
-                  options={TRAIN_CLASSES}
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.secondaryTypes || []}
                   onSelect={(val) => {
-                    setRouteClassOrSeats(val);
+                    setSelectedSecondaryType(val);
                     setOpenDropdown(null);
                   }}
+                  align="right"
                 />
               </>
             )}
 
-            {/* CASE 6: BUS BOOKING */}
-            {activeTab === "bus-booking" && (
+            {/* 5. BUS BOOKING FIELDS (Domestic) */}
+            {activeServiceSlug === "bus-booking" && (
               <>
                 <ConciergePillField
                   icon={Bus}
-                  label="From City"
-                  value={busFrom}
+                  label="From city"
+                  value={selectedOrigin}
                   isOpen={openDropdown === "bus-from"}
                   onToggle={() =>
                     setOpenDropdown(
                       openDropdown === "bus-from" ? null : "bus-from",
                     )
                   }
-                  options={BUS_ORIGINS}
+                  onClose={() => setOpenDropdown(null)}
+                  options={originOptions}
                   onSelect={(val) => {
-                    setBusFrom(val);
+                    setSelectedOrigin(val);
                     setOpenDropdown(null);
                   }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedOrigin(val)}
+                  placeholder="Where are you departing from?"
+                  align="left"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
                   icon={Bus}
-                  label="To City"
-                  value={busTo}
+                  label="To city"
+                  value={selectedDestination}
                   isOpen={openDropdown === "bus-to"}
                   onToggle={() =>
                     setOpenDropdown(openDropdown === "bus-to" ? null : "bus-to")
                   }
-                  options={BUS_DESTINATIONS}
+                  onClose={() => setOpenDropdown(null)}
+                  options={destinationOptions}
                   onSelect={(val) => {
-                    setBusTo(val);
+                    setSelectedDestination(val);
                     setOpenDropdown(null);
                   }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedDestination(val)}
+                  placeholder="Where do you want to go?"
+                  align="left"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
-                  icon={CalendarDays}
-                  label="Travel Date"
-                  value={routeDate}
-                  isOpen={openDropdown === "bus-date"}
+                  icon={Layers}
+                  label={serviceTypeDefinition.primaryTypeLabel}
+                  value={selectedPrimaryType}
+                  isOpen={openDropdown === "bus-cat"}
                   onToggle={() =>
                     setOpenDropdown(
-                      openDropdown === "bus-date" ? null : "bus-date",
+                      openDropdown === "bus-cat" ? null : "bus-cat",
                     )
                   }
-                  options={BUS_DATES}
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.primaryTypes}
                   onSelect={(val) => {
-                    setRouteDate(val);
+                    setSelectedPrimaryType(val);
                     setOpenDropdown(null);
                   }}
+                  align="right"
                 />
-                <div className="h-9 w-px bg-[#E5E0D5] mx-2 sm:mx-3 shrink-0 hidden sm:block" />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
                   icon={Users}
-                  label="Seat Preference"
-                  value={routeClassOrSeats}
-                  isOpen={openDropdown === "bus-seats"}
+                  label={
+                    serviceTypeDefinition.secondaryTypeLabel ||
+                    "Seat preference"
+                  }
+                  value={selectedSecondaryType}
+                  isOpen={openDropdown === "bus-berth"}
                   onToggle={() =>
                     setOpenDropdown(
-                      openDropdown === "bus-seats" ? null : "bus-seats",
+                      openDropdown === "bus-berth" ? null : "bus-berth",
                     )
                   }
-                  options={BUS_SEATS}
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.secondaryTypes || []}
                   onSelect={(val) => {
-                    setRouteClassOrSeats(val);
+                    setSelectedSecondaryType(val);
                     setOpenDropdown(null);
                   }}
+                  align="right"
+                />
+              </>
+            )}
+
+            {/* 6. VISA ASSISTANCE FIELDS (International alternate) */}
+            {activeServiceSlug === "visa-assistance" && (
+              <>
+                <ConciergePillField
+                  icon={PassportIcon}
+                  label="Destination country"
+                  value={selectedDestination}
+                  isOpen={openDropdown === "visa-dest"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "visa-dest" ? null : "visa-dest",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={destinationOptions}
+                  onSelect={(val) => {
+                    setSelectedDestination(val);
+                    setOpenDropdown(null);
+                  }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedDestination(val)}
+                  placeholder="Where do you want to go?"
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={Layers}
+                  label={serviceTypeDefinition.primaryTypeLabel}
+                  value={selectedPrimaryType}
+                  isOpen={openDropdown === "visa-cat"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "visa-cat" ? null : "visa-cat",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.primaryTypes}
+                  onSelect={(val) => {
+                    setSelectedPrimaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Timeline"
+                  value={selectedDatePeriod}
+                  isOpen={openDropdown === "visa-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "visa-date" ? null : "visa-date",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={dateOptions}
+                  onSelect={(val) => {
+                    setSelectedDatePeriod(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="right"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={Users}
+                  label={serviceTypeDefinition.secondaryTypeLabel || "Entry"}
+                  value={selectedSecondaryType}
+                  isOpen={openDropdown === "visa-entry"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "visa-entry" ? null : "visa-entry",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.secondaryTypes || []}
+                  onSelect={(val) => {
+                    setSelectedSecondaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="right"
+                />
+              </>
+            )}
+
+            {/* 7. UMRAH & HAJJ FIELDS (International alternate) */}
+            {activeServiceSlug === "umrah-hajj" && (
+              <>
+                <ConciergePillField
+                  icon={MosqueIcon}
+                  label={serviceTypeDefinition.primaryTypeLabel}
+                  value={selectedPrimaryType}
+                  isOpen={openDropdown === "pilgrim-cat"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "pilgrim-cat" ? null : "pilgrim-cat",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.primaryTypes}
+                  onSelect={(val) => {
+                    setSelectedPrimaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={Layers}
+                  label={
+                    serviceTypeDefinition.secondaryTypeLabel || "Room sharing"
+                  }
+                  value={selectedSecondaryType}
+                  isOpen={openDropdown === "pilgrim-room"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "pilgrim-room" ? null : "pilgrim-room",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.secondaryTypes || []}
+                  onSelect={(val) => {
+                    setSelectedSecondaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Season"
+                  value={selectedDatePeriod}
+                  isOpen={openDropdown === "pilgrim-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "pilgrim-date" ? null : "pilgrim-date",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={dateOptions}
+                  onSelect={(val) => {
+                    setSelectedDatePeriod(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="right"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <TravelersPicker
+                  label="Pilgrims"
+                  adults={adultsCount}
+                  childrenCount={kidsCount}
+                  isOpen={openDropdown === "pilgrim-count"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "pilgrim-count" ? null : "pilgrim-count",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  onChangeAdults={(val) => setAdultsCount(val)}
+                  onChangeChildren={(val) => setKidsCount(val)}
                 />
               </>
             )}
           </div>
 
-          {/* Luxury Brand Action Button ("Request a Quote ->") */}
+          {/* Prominent, clean Request a Quote Button (Navbar Royal Blue, exact rounded-md corner radius as navbar Plan My Trip) */}
           <button
             type="button"
+            disabled={
+              !loaded || error || unavailable || !selectedBackendService
+            }
             onClick={handleRequestQuote}
-            className="w-full sm:w-auto h-[48px] sm:h-[52px] px-8 sm:px-9 rounded-full bg-[#38312B] hover:bg-[#27211C] active:bg-[#1E1915] text-white font-medium text-[14.5px] sm:text-[15px] flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_16px_rgba(56,49,43,0.35)] hover:shadow-[0_6px_22px_rgba(56,49,43,0.5)] cursor-pointer whitespace-nowrap shrink-0 sm:ml-4 select-none"
+            className="w-full sm:w-auto h-[44px] sm:h-[48px] lg:h-[50px] px-5 sm:px-7 lg:px-8 rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-medium text-[13px] sm:text-[14px] lg:text-[14.5px] flex items-center justify-center gap-2 transition-all shadow-[0_4px_14px_rgba(0,47,137,0.25)] hover:shadow-[0_6px_20px_rgba(0,47,137,0.35)] cursor-pointer whitespace-nowrap shrink-0 sm:ml-3 select-none"
           >
             {isSubmitted ? (
               <>
-                <CheckCircle2 className="w-4 h-4 text-emerald-300 shrink-0" />
+                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
                 <span>Quote Requested</span>
               </>
             ) : (
               <>
                 <span>Request a Quote</span>
-                <ArrowRight className="w-4 h-4 text-white shrink-0" />
+                <ArrowRight
+                  className="w-4 h-4 text-white shrink-0"
+                  strokeWidth={2}
+                />
               </>
             )}
           </button>

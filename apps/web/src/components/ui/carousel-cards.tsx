@@ -1,9 +1,12 @@
 "use client";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { loadPackages, resolveService } from "../../lib/service-catalog";
+import { useServicesCatalog } from "../../lib/use-services-catalog";
+import type { PackageSummary } from "@flyora/types";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
 
 export interface PackageCardItem {
   id: string;
@@ -250,16 +253,16 @@ export const PackageCard = ({
 
   return (
     <div
-      className="group relative flex h-[395px] w-full flex-col overflow-hidden rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl transform-gpu hover:-translate-y-1"
+      className="group relative flex h-[350px] sm:h-[395px] w-full flex-col overflow-hidden rounded-2xl shadow-md transition-all duration-300 hover:shadow-xl transform-gpu hover:-translate-y-1"
       style={{ backgroundColor: cardBg }}
     >
       {/* Top Image Section - Seamless fade into card background without sharp border */}
-      <div className="relative h-[275px] w-full overflow-hidden">
+      <div className="relative h-[235px] sm:h-[275px] w-full overflow-hidden">
         <Image
           alt={packageItem.title}
           className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           fill
-          sizes="(max-width: 640px) 270px, (max-width: 1024px) 290px, 320px"
+          sizes="(max-width: 640px) 240px, (max-width: 1024px) 290px, 320px"
           src={packageItem.image}
           unoptimized={packageItem.unoptimized}
         />
@@ -274,7 +277,7 @@ export const PackageCard = ({
 
         {/* Title placed at the bottom-left inside the image over the soft color spread */}
         <div className="absolute bottom-2.5 left-4 right-4 z-10">
-          <h3 className="font-bold text-lg sm:text-[19px] text-white tracking-tight leading-snug drop-shadow-sm line-clamp-1">
+          <h3 className="font-bold text-base sm:text-[19px] text-white tracking-tight leading-snug drop-shadow-sm line-clamp-1">
             {packageItem.title}
           </h3>
         </div>
@@ -287,7 +290,7 @@ export const PackageCard = ({
       >
         {/* Row 1: Duration Chip + Location Text */}
         <div className="flex items-center gap-2">
-          <span className="px-2.5 py-0.5 rounded-[5px] bg-black/45 text-white text-[11px] sm:text-xs font-semibold tracking-wide shrink-0 backdrop-blur-xs">
+          <span className="px-2.5 py-0.5 rounded-md bg-black/45 text-white text-[11px] sm:text-xs font-semibold tracking-wide shrink-0 backdrop-blur-xs">
             {durationText}
           </span>
           <span className="text-white/95 text-xs sm:text-[13px] font-medium truncate">
@@ -310,7 +313,7 @@ export const PackageCard = ({
           </div>
 
           {/* View Details Action Button */}
-          <span className="inline-flex items-center justify-center px-3.5 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#1C1815] text-xs sm:text-[13px] font-semibold shadow-xs transition-colors whitespace-nowrap">
+          <span className="inline-flex items-center justify-center px-3 sm:px-3.5 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#1C1815] text-[11px] sm:text-[13px] font-semibold shadow-xs transition-colors whitespace-nowrap">
             View Details
           </span>
         </div>
@@ -330,6 +333,27 @@ export const PackageCarouselSection = ({
   onEnquire,
 }: PackageGridSectionProps) => {
   const scrollContainer = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollContainer.current;
+    if (!el) return;
+    setCanScrollLeft(el.scrollLeft > 5);
+    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 5);
+  }, []);
+
+  useEffect(() => {
+    checkScroll();
+    const el = scrollContainer.current;
+    if (!el) return;
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    window.addEventListener("resize", checkScroll);
+    return () => {
+      el.removeEventListener("scroll", checkScroll);
+      window.removeEventListener("resize", checkScroll);
+    };
+  }, [checkScroll, items]);
 
   const handleScrollLeft = () => {
     if (scrollContainer.current) {
@@ -347,15 +371,15 @@ export const PackageCarouselSection = ({
   };
 
   return (
-    <div className="w-full py-4 sm:py-6">
-      <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+    <div className="w-full py-3 sm:py-6">
+      <div className="w-full px-4 sm:px-10 lg:px-[105px]">
         {/* Section Header */}
         <div className="mb-4 sm:mb-6 flex items-end justify-between gap-4">
           <div>
             <span className="text-[10px] sm:text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-1">
               {eyebrow}
             </span>
-            <h2 className="font-serif text-2xl sm:text-3xl lg:text-4xl font-normal text-[#1E1A17] tracking-tight">
+            <h2 className="font-serif text-xl sm:text-3xl lg:text-4xl font-normal text-[#1E1A17] tracking-tight">
               {title}
             </h2>
           </div>
@@ -364,30 +388,44 @@ export const PackageCarouselSection = ({
           <div className="flex items-center gap-2">
             <button
               type="button"
-              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-[2px] grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-2xs"
+              disabled={!canScrollLeft}
+              className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
+                canScrollLeft
+                  ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                  : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
+              }`}
               onClick={handleScrollLeft}
               aria-label={`Scroll left in ${title}`}
             >
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-              />
+              {canScrollLeft && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
               <span className="relative z-10 flex items-center justify-center">
-                <ChevronLeft className="h-4 w-4 stroke-[2.4]" />
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
               </span>
             </button>
             <button
               type="button"
-              className="group relative overflow-hidden w-9 h-9 sm:w-10 sm:h-10 p-0 m-0 border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white rounded-[2px] grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-2xs"
+              disabled={!canScrollRight}
+              className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 active:scale-95 shadow-2xs ${
+                canScrollRight
+                  ? "border-neutral-300/90 hover:border-transparent bg-white text-neutral-500 hover:text-white cursor-pointer"
+                  : "border-neutral-200 bg-white/70 text-neutral-300 cursor-not-allowed opacity-40"
+              }`}
               onClick={handleScrollRight}
               aria-label={`Scroll right in ${title}`}
             >
-              <span
-                aria-hidden="true"
-                className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-              />
+              {canScrollRight && (
+                <span
+                  aria-hidden="true"
+                  className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                />
+              )}
               <span className="relative z-10 flex items-center justify-center">
-                <ChevronRight className="h-4 w-4 stroke-[2.4]" />
+                <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
               </span>
             </button>
             <Link
@@ -410,7 +448,7 @@ export const PackageCarouselSection = ({
         >
           {items.map((item) => (
             <div
-              className="w-[270px] sm:w-[290px] md:w-[305px] flex-none snap-start"
+              className="w-[240px] sm:w-[280px] md:w-[305px] flex-none snap-start"
               key={item.id}
             >
               <Link
@@ -444,31 +482,103 @@ export const PackageCarouselSection = ({
 // =============================================================================
 export default function CarouselCards({
   className = "",
+  onEnquire,
 }: {
   className?: string;
+  onEnquire?: (pkg: PackageSummary) => void;
 }) {
+  const {
+    services,
+    loaded,
+    error: servicesError,
+    retry: retryServices,
+  } = useServicesCatalog();
+  const [packages, setPackages] = useState<PackageSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    const controller = new AbortController();
+    loadPackages(
+      AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
+    )
+      .then((items) => {
+        if (!controller.signal.aborted) setPackages(items);
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) setError(true);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setLoading(false);
+      });
+    return () => controller.abort();
+  }, [attempt]);
+  const holiday = resolveService(services, "holiday-packages");
+  const current = packages.filter(
+    (pkg) => pkg.isPublished && pkg.serviceId === holiday?.id,
+  );
+  const mapItem = (pkg: PackageSummary): PackageCardItem => ({
+    id: pkg.id,
+    title: pkg.title,
+    image: pkg.coverImageUrl,
+    unoptimized: true,
+    location: pkg.destination,
+    duration: `${pkg.durationDays}D & ${pkg.durationNights}N`,
+    price: pkg.startingPrice,
+    href: `/tours/${pkg.slug}`,
+  });
+  const enquire = onEnquire
+    ? (id: string) => {
+        const pkg = current.find((pkg) => pkg.id === id);
+        if (pkg) onEnquire(pkg);
+      }
+    : undefined;
   return (
     <section
       id="holiday-packages"
-      className={`w-full bg-white text-[#1E1A17] py-12 sm:py-16 lg:py-20 border-t border-black/[0.06] scroll-mt-20 sm:scroll-mt-24 ${className}`}
+      className={`w-full bg-white text-[#1E1A17] py-12 sm:py-16 lg:py-20 scroll-mt-24 ${className}`}
     >
-      <div className="w-full space-y-6 sm:space-y-8">
-        <PackageCarouselSection
-          items={trendingPackages}
-          title="Trending Packages"
-          eyebrow="TRENDING NOW"
-          viewAllHref="/tours"
-        />
-        <PackageCarouselSection
-          items={popularPackages}
-          title="Popular Packages"
-          eyebrow="MOST BOOKED"
-          viewAllHref="/tours"
-        />
-      </div>
+      {error || servicesError ? (
+        <p role="alert" className="px-6">
+          Packages could not load.{" "}
+          <button
+            type="button"
+            onClick={() => {
+              setError(false);
+              setLoading(true);
+              setAttempt((n) => n + 1);
+            }}
+            className="underline"
+          >
+            Try again
+          </button>
+        </p>
+      ) : loading || !loaded ? (
+        <p role="status" className="px-6">
+          Loading packages…
+        </p>
+      ) : !current.length ? (
+        <p className="px-6">New holiday packages are coming soon.</p>
+      ) : (
+        <div className="w-full space-y-8">
+          <PackageCarouselSection
+            items={current.map(mapItem)}
+            title="Holiday packages"
+            eyebrow="PLAN YOUR NEXT TRIP"
+            viewAllHref="/tours"
+            onEnquire={enquire}
+          />
+          {current.some((pkg) => pkg.isFeatured) && (
+            <PackageCarouselSection
+              items={current.filter((pkg) => pkg.isFeatured).map(mapItem)}
+              title="Featured packages"
+              viewAllHref="/tours"
+              onEnquire={enquire}
+            />
+          )}
+        </div>
+      )}
     </section>
   );
 }
-
-// Named export compatibility
 export { CarouselCards };

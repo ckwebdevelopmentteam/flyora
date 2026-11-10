@@ -634,7 +634,7 @@
     gap: 24px;
   }
   .introduction h1 {
-    font-size: clamp(48px, 8.7vw, 66px);
+    font-size: clamp(32px, 8.7vw, 66px);
   }
   .form {
     padding: 0 8px;

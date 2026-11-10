@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { DM_Sans } from "next/font/google";
 import "./globals.css";
+import { FloatingWhatsApp } from "../components/FloatingWhatsApp";
 
 const dmSans = DM_Sans({
   variable: "--font-dm-sans",
@@ -21,9 +22,9 @@ const dmSans = DM_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Flyora | Find the Perfect Travel Advisor For You",
+  title: "Flyora Tours & Travels | Curated Holidays, Flights & Visa Services",
   description:
-    "Match with a hand-picked travel advisor based on your travel needs and preferences. Unlock VIP hotel upgrades, daily breakfast, and custom itineraries.",
+    "Custom tour packages, confirmed flights, visa assistance, and luxury stays across India and the world. Built around you since 2014.",
 };
 
 export default function RootLayout({
@@ -45,7 +46,10 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        <FloatingWhatsApp />
+      </body>
     </html>
   );
 }

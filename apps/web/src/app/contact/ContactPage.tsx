@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import { ArrowUpRight, Mail, Phone } from "lucide-react";
 import { Navbar } from "../../components/layout/Navbar";
@@ -30,6 +30,14 @@ export function ContactPage() {
   const formSection = useRef<HTMLDivElement>(null);
   const form = useRef<ContactFormHandle>(null);
   const [advisorOpen, setAdvisorOpen] = useState(false);
+
+  useEffect(() => {
+    const handleGlobal = () => openForm();
+    window.addEventListener("flyora:open-enquiry", handleGlobal);
+    return () =>
+      window.removeEventListener("flyora:open-enquiry", handleGlobal);
+  }, []);
+
   function openForm(name?: string) {
     formSection.current?.scrollIntoView({
       behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches

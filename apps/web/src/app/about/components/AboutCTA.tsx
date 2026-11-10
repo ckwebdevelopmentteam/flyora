@@ -16,21 +16,21 @@ export const AboutCTA: React.FC<AboutCTAProps> = ({ data, onOpenEnquiry }) => {
   );
 
   return (
-    <section className="py-20 sm:py-28 lg:py-36 bg-[#FDFCFB] relative">
+    <section className="py-12 sm:py-28 lg:py-36 bg-[#FDFCFB] relative">
       <div className="container-standard">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-12 sm:mb-16">
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-16">
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#FAF7F2] border border-black/[0.06] text-[#6B6156] text-[10.5px] font-sans font-medium uppercase tracking-[0.2em] mb-4">
             <span className="text-[9px] text-[#002f89]">♥</span>
             <span>{data.eyebrow}</span>
             <span className="text-[9px] text-[#002f89]">♥</span>
           </div>
 
-          <h2 className="font-serif text-[34px] sm:text-[44px] font-normal tracking-tight text-[#1C1815]">
+          <h2 className="font-serif text-2xl sm:text-[34px] md:text-[44px] font-normal tracking-tight text-[#1C1815]">
             {data.heading}
           </h2>
 
-          <p className="mt-3 text-[15px] sm:text-[16px] text-[#5C534A] font-light leading-relaxed">
+          <p className="mt-3 text-xs sm:text-[15px] md:text-[16px] text-[#5C534A] font-light leading-relaxed">
             {data.description}
           </p>
 

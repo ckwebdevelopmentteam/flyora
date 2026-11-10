@@ -21,6 +21,90 @@ export interface ShowcaseDestination {
 export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
   // International Destinations
   {
+    id: "dest-swiss",
+    category: "International",
+    location: "Zermatt & Lucerne, Switzerland",
+    title: "Glacier summits & scenic alpine rail.",
+    description:
+      "Ascend through dramatic snow-capped alpine passes aboard world-renowned scenic railways, relaxing in five-star mountain chalets with panoramic Matterhorn views.",
+    src: "/destinations/switzerland_hd.jpg",
+    duration: "7D & 6N",
+    price: "₹1,45,000",
+    originalPrice: "₹1,62,000",
+    rating: 4.98,
+    reviewCount: 194,
+  },
+  {
+    id: "dest-bali",
+    category: "International",
+    location: "Ubud & Seminyak, Bali",
+    title: "Tropical haven & emerald rice terraces.",
+    description:
+      "Awaken to mist-kissed rainforest villas in Ubud, private infinity pools overlooking sacred ravines, and sunset dinners upon Seminyak shores.",
+    src: "/destinations/bali_hd.jpg",
+    duration: "6D & 5N",
+    price: "₹48,000",
+    originalPrice: "₹56,000",
+    rating: 4.97,
+    reviewCount: 184,
+  },
+  {
+    id: "dest-dubai",
+    category: "International",
+    location: "Downtown & Dunes, Dubai",
+    title: "Futuristic skyline & private desert dunes.",
+    description:
+      "Marvel at shimmering architecture, cruise private luxury yachts past Palm Jumeirah, and unwind in secluded royal desert pavilions under Arabian stars.",
+    src: "/destinations/dubai_hd.jpg",
+    duration: "5D & 4N",
+    price: "₹55,000",
+    originalPrice: "₹65,000",
+    rating: 4.96,
+    reviewCount: 215,
+  },
+  {
+    id: "dest-maldives",
+    category: "International",
+    location: "Private Island Atolls, Maldives",
+    title: "Overwater villas & turquoise lagoons.",
+    description:
+      "Escape to private stilted bungalows above crystal-clear coral atolls, indulge in submerged fine dining, and glide across bioluminescent ocean waters.",
+    src: "/destinations/maldives_hd.jpg",
+    duration: "5D & 4N",
+    price: "₹85,000",
+    originalPrice: "₹98,000",
+    rating: 4.99,
+    reviewCount: 260,
+  },
+  {
+    id: "dest-kyoto",
+    category: "International",
+    location: "Kyoto & Arashiyama, Japan",
+    title: "Lanterns in bamboo sanctuaries.",
+    description:
+      "Step into timeless tranquility among centuries-old wooden shrines, peaceful zen rock gardens, and private evening tea ceremonies steeped in ancient harmony.",
+    src: "/destinations/kyoto_hd.jpg",
+    duration: "7D & 6N",
+    price: "₹1,20,000",
+    originalPrice: "₹1,35,000",
+    rating: 4.99,
+    reviewCount: 165,
+  },
+  {
+    id: "dest-rome",
+    category: "International",
+    location: "Rome & Amalfi, Italy",
+    title: "Pastel cliffs & historic elegance.",
+    description:
+      "Stroll timeless cobblestones past historic Roman marvels before retreating to sun-drenched Mediterranean balconies and private coastal yacht charters.",
+    src: "/destinations/rome_hd.jpg",
+    duration: "6D & 5N",
+    price: "₹1,10,000",
+    originalPrice: "₹1,25,000",
+    rating: 4.96,
+    reviewCount: 152,
+  },
+  {
     id: "dest-cappadocia",
     category: "International",
     location: "Cappadocia, Türkiye",
@@ -33,48 +117,6 @@ export const SHOWCASE_DESTINATIONS: ShowcaseDestination[] = [
     originalPrice: "₹72,000",
     rating: 4.98,
     reviewCount: 142,
-  },
-  {
-    id: "dest-amalfi",
-    category: "International",
-    location: "Positano, Amalfi Coast",
-    title: "Pastel cliffs over azure waters.",
-    description:
-      "Wander fragrant lemon groves and cliffside Mediterranean balconies overlooking sun-drenched coastal waters, private yachts, and dramatic seaside vistas.",
-    src: "https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=800&auto=format&fit=crop",
-    duration: "6D & 5N",
-    price: "₹88,900",
-    originalPrice: "₹98,500",
-    rating: 4.96,
-    reviewCount: 118,
-  },
-  {
-    id: "dest-kyoto",
-    category: "International",
-    location: "Kyoto & Arashiyama, Japan",
-    title: "Lanterns in bamboo sanctuaries.",
-    description:
-      "Step into timeless tranquility among centuries-old wooden shrines, peaceful zen rock gardens, and private evening tea ceremonies steeped in ancient harmony.",
-    src: "https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=800&auto=format&fit=crop",
-    duration: "7D & 6N",
-    price: "₹94,500",
-    originalPrice: "₹1,05,000",
-    rating: 4.99,
-    reviewCount: 165,
-  },
-  {
-    id: "dest-swiss",
-    category: "International",
-    location: "Zermatt & Lucerne, Switzerland",
-    title: "Glacier summits & scenic rail.",
-    description:
-      "Ascend through dramatic snow-capped alpine passes aboard world-renowned scenic railways, relaxing in five-star mountain chalets with panoramic Matterhorn views.",
-    src: "https://images.unsplash.com/photo-1530122037265-a5f1f91d3b99?q=80&w=800&auto=format&fit=crop",
-    duration: "7D & 6N",
-    price: "₹1,18,000",
-    originalPrice: "₹1,32,000",
-    rating: 4.97,
-    reviewCount: 194,
   },
 
   // Domestic Destinations
@@ -191,7 +233,7 @@ export function DestinationsShowcase({
   return (
     <section
       id="destination-packages"
-      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[720px] lg:min-h-[760px] ${className}`}
+      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[600px] sm:min-h-[680px] lg:min-h-[820px] xl:min-h-[880px] ${className}`}
     >
       {/* Background Images Layer: Base + Smooth Center Expansion with ZERO Blink */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-black">
@@ -234,17 +276,34 @@ export function DestinationsShowcase({
       </div>
 
       {/* Main Showcase Content with 105px horizontal padding: ALWAYS on top at z-20 */}
-      <div className="relative z-20 w-full px-6 sm:px-10 lg:px-[105px] flex flex-col justify-start py-12 lg:py-14">
-        {/* Top-Right Category Switcher: 4 lines total (each button has 2 vertical lines: border-l & border-r) */}
-        <div className="w-full flex justify-end items-center mb-5 lg:mb-4 shrink-0">
-          <div className="inline-flex items-center gap-3 sm:gap-4 text-sm sm:text-base tracking-wide">
+      <div className="relative z-20 w-full px-4 sm:px-10 lg:px-[105px] flex flex-col justify-start py-8 sm:py-12 lg:py-16">
+        {/* Centered Section Header: Honeymoon & Romantic Getaways */}
+        <div className="w-full flex flex-col items-center text-center mb-6 lg:mb-8">
+          <div className="inline-flex items-center px-3.5 py-1 rounded-md bg-white/10 backdrop-blur-md border border-white/20 mb-3 sm:mb-3.5 shadow-xs">
+            <span className="text-[11px] sm:text-xs font-sans font-semibold uppercase tracking-[0.22em] text-white/95">
+              HONEYMOON & ROMANTIC GETAWAYS
+            </span>
+          </div>
+          <h2 className="font-sans font-bold text-2xl sm:text-4xl lg:text-[44px] xl:text-[48px] text-white tracking-tight leading-[1.14] mb-3.5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+            Curated Romantic Escapes Designed for Two
+          </h2>
+          <p className="text-xs sm:text-base text-white/85 max-w-2xl font-light leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.65)]">
+            Handcrafted international and domestic journeys crafted for couples
+            and newlyweds — private retreats, sunset horizons, and intimate
+            memories to last a lifetime.
+          </p>
+        </div>
+
+        {/* Category Switcher: Placed on the right side with 'Destinations' plural */}
+        <div className="w-full flex justify-end items-center mb-6 lg:mb-7 shrink-0">
+          <div className="flex flex-wrap justify-end items-center gap-2 sm:gap-4 text-xs sm:text-sm md:text-base tracking-wide">
             <button
               type="button"
               onClick={() => handleCategoryChange("International")}
-              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-3.5 sm:px-6 py-2 sm:py-2.5 border-l border-r text-xs sm:text-sm md:text-base ${
                 activeCategory === "International"
-                  ? "bg-white text-black font-semibold shadow-sm border-white"
-                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
+                  ? "bg-white text-neutral-950 font-bold shadow-md border-white"
+                  : "border-white/70 hover:border-transparent text-white font-medium bg-black/35 backdrop-blur-md"
               }`}
             >
               {activeCategory !== "International" && (
@@ -253,17 +312,18 @@ export function DestinationsShowcase({
                   className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
               )}
-              <span className="relative z-10 tracking-wide">
-                International Destination
+              <span className="relative z-10 tracking-wide whitespace-nowrap">
+                International
+                <span className="hidden sm:inline">&nbsp;Destinations</span>
               </span>
             </button>
             <button
               type="button"
               onClick={() => handleCategoryChange("Domestic")}
-              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-6 py-2.5 border-l border-r text-sm sm:text-base ${
+              className={`group relative overflow-hidden cursor-pointer transition-all duration-300 px-3.5 sm:px-6 py-2 sm:py-2.5 border-l border-r text-xs sm:text-sm md:text-base ${
                 activeCategory === "Domestic"
-                  ? "bg-white text-black font-semibold shadow-sm border-white"
-                  : "border-white/60 hover:border-transparent text-white/90 hover:text-white font-normal bg-black/10"
+                  ? "bg-white text-neutral-950 font-bold shadow-md border-white"
+                  : "border-white/70 hover:border-transparent text-white font-medium bg-black/35 backdrop-blur-md"
               }`}
             >
               {activeCategory !== "Domestic" && (
@@ -272,8 +332,9 @@ export function DestinationsShowcase({
                   className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
                 />
               )}
-              <span className="relative z-10 tracking-wide">
-                Domestic Destination
+              <span className="relative z-10 tracking-wide whitespace-nowrap">
+                Domestic
+                <span className="hidden sm:inline">&nbsp;Destinations</span>
               </span>
             </button>
           </div>
@@ -310,12 +371,12 @@ export function DestinationsShowcase({
                   </div>
 
                   {/* Main Heading Title */}
-                  <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-4.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
+                  <h2 className="font-serif text-xl sm:text-3xl lg:text-[44px] xl:text-[48px] font-normal text-white tracking-tight leading-[1.12] mb-3 sm:mb-4.5 drop-shadow-[0_2px_8px_rgba(0,0,0,0.85)]">
                     {current.title}
                   </h2>
 
                   {/* Description Text */}
-                  <p className="text-sm sm:text-base text-white leading-relaxed mb-8 max-w-lg font-light drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
+                  <p className="text-xs sm:text-base text-white leading-relaxed mb-4 sm:mb-8 max-w-lg font-light drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
                     {current.description}
                   </p>
                 </motion.div>
@@ -331,7 +392,7 @@ export function DestinationsShowcase({
                     ? onOpenEnquiry(`${current.location}: ${current.title}`)
                     : undefined
                 }
-                className="group relative overflow-hidden inline-flex items-center px-6 py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] shadow-sm"
+                className="group relative overflow-hidden inline-flex items-center px-4 sm:px-6 py-2 sm:py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-xs sm:text-base transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] shadow-sm"
               >
                 <span
                   aria-hidden="true"
@@ -360,7 +421,7 @@ export function DestinationsShowcase({
               footerRight={
                 <a
                   href="/tours"
-                  className="group relative overflow-hidden inline-flex items-center px-6 py-2.5 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base tracking-wide transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] select-none whitespace-nowrap shadow-sm"
+                  className="group relative overflow-hidden inline-flex items-center justify-center h-10 sm:h-11 px-5 sm:px-6 border-l border-r border-white/70 hover:border-transparent text-white font-normal text-sm sm:text-base tracking-wide transition-all duration-300 cursor-pointer bg-black/15 backdrop-blur-[2px] select-none whitespace-nowrap shadow-sm"
                 >
                   <span
                     aria-hidden="true"

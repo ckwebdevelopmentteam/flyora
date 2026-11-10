@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 export interface StraightCardItem {
   id: string;
@@ -85,14 +86,14 @@ export function StraightCardsCarousel({
   // Calculate card sizing based on container width
   const isMobile = containerWidth < 640;
   const leadWidth = isMobile
-    ? Math.min(300, Math.max(260, containerWidth - 40))
+    ? Math.min(260, Math.max(210, containerWidth - 48))
     : Math.min(360, Math.max(300, containerWidth * 0.44));
   const leadHeight = isMobile
     ? Math.round(leadWidth * 1.35)
     : Math.round(leadWidth * 1.41); // ~480px-510px
   const inactiveScale = 0.81;
   const trailingWidth = Math.round(leadWidth * inactiveScale);
-  const gap = isMobile ? 12 : 16;
+  const gap = isMobile ? 10 : 16;
 
   // Layout function for position of card relative to current pos
   const getLayout = useCallback(
@@ -193,9 +194,12 @@ export function StraightCardsCarousel({
 
   const step = useCallback(
     (by: number) => {
-      setTarget(Math.round(state.current.target) + by);
+      const next = Math.round(state.current.target) + by;
+      if (next >= 0 && next < n) {
+        setTarget(next);
+      }
     },
-    [setTarget],
+    [setTarget, n],
   );
 
   const goTo = useCallback(
@@ -347,7 +351,7 @@ export function StraightCardsCarousel({
                   goTo(i);
                 }
               }}
-              className="absolute bottom-0 left-0 overflow-hidden rounded-[8px] border border-white/25 shadow-2xl cursor-pointer group"
+              className="absolute bottom-0 left-0 overflow-hidden rounded-2xl border border-white/25 shadow-2xl cursor-pointer group"
               style={{
                 width: `${leadWidth}px`,
                 height: `${leadHeight}px`,
@@ -363,27 +367,47 @@ export function StraightCardsCarousel({
                 className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
               />
 
-              {/* Gentle non-hovered gradient at the bottom solely for location text legibility */}
-              <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-[8px] transition-opacity duration-300 group-hover:opacity-0" />
+              {/* Gentle non-hovered gradient at the bottom solely for location text legibility on trailing cards */}
+              <div
+                className={`absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300 ${
+                  isLead ? "opacity-0" : "group-hover:opacity-0"
+                }`}
+              />
 
-              {/* Smooth full-card dark gradient that fades in on hover to highlight details */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-[8px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out" />
+              {/* Smooth full-card dark gradient that is sticky on lead card and fades in on hover for trailing cards */}
+              <div
+                className={`absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-2xl transition-opacity duration-300 ease-out ${
+                  isLead ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                }`}
+              />
 
               {/* Location & Interactive Details Overlay */}
               <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 z-10 flex flex-col justify-end pointer-events-none">
-                {/* Default State: Location Caption (slides smoothly up and fades out on hover) */}
-                <div className="transition-all duration-300 ease-out group-hover:opacity-0 group-hover:-translate-y-3">
+                {/* Default State: Location Caption (hidden on lead card since details are sticky, slides up and fades on hover for trailing cards) */}
+                <div
+                  className={`transition-all duration-300 ease-out ${
+                    isLead
+                      ? "opacity-0 -translate-y-3 pointer-events-none"
+                      : "group-hover:opacity-0 group-hover:-translate-y-3"
+                  }`}
+                >
                   <p className="text-white font-medium text-base sm:text-lg tracking-wide drop-shadow-[0_1px_4px_rgba(0,0,0,0.85)]">
                     {item.location}
                   </p>
                 </div>
 
-                {/* Hover State: Details Panel (slides smoothly up from below on hover, slides down on unhover) */}
-                <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5 flex flex-col gap-2.5 opacity-0 translate-y-6 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none group-hover:pointer-events-auto">
+                {/* Details Panel: Sticky on first/lead card, and hover-revealed on other cards */}
+                <div
+                  className={`absolute inset-x-0 bottom-0 p-4 sm:p-5 flex flex-col gap-2.5 transition-all duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    isLead
+                      ? "opacity-100 translate-y-0 pointer-events-auto"
+                      : "opacity-0 translate-y-6 group-hover:opacity-100 group-hover:translate-y-0 pointer-events-none group-hover:pointer-events-auto"
+                  }`}
+                >
                   {/* Top Row: Duration Badge */}
                   {item.duration && (
                     <div className="flex items-center gap-2">
-                      <span className="px-2.5 py-0.5 rounded-[5px] bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold tracking-wide border border-white/25">
+                      <span className="px-2.5 py-0.5 rounded-md bg-white/20 backdrop-blur-md text-white text-[11px] font-semibold tracking-wide border border-white/25">
                         {item.duration}
                       </span>
                     </div>
@@ -417,7 +441,13 @@ export function StraightCardsCarousel({
                       </div>
                     </div>
 
-                    <span className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap">
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectLead?.(item, i);
+                      }}
+                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap"
+                    >
                       View Details
                     </span>
                   </div>
@@ -433,60 +463,58 @@ export function StraightCardsCarousel({
         data-carousel-controls=""
         className="mt-5 sm:mt-6 flex items-center justify-between gap-4 w-full z-20"
       >
-        {/* Sharp Arrow Buttons */}
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => step(-1)}
-            aria-label="Previous destination"
-            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-[2px] text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
-          >
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-            />
-            <span className="relative z-10 flex items-center justify-center">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white"
-              >
-                <path d="M15 18l-6-6 6-6" />
-              </svg>
-            </span>
-          </button>
-          <button
-            type="button"
-            onClick={() => step(1)}
-            aria-label="Next destination"
-            className="group relative overflow-hidden w-[52px] h-[48px] lg:w-[54px] lg:h-[50px] p-0 m-0 border border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md rounded-[2px] text-white grid place-items-center cursor-pointer transition-all duration-300 active:scale-95 shadow-md"
-          >
-            <span
-              aria-hidden="true"
-              className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
-            />
-            <span className="relative z-10 flex items-center justify-center">
-              <svg
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="text-white"
-              >
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </span>
-          </button>
+        {/* Arrow Buttons matching Popular Packages section arrow mark and hover effect */}
+        <div className="flex items-center gap-2 sm:gap-2.5">
+          {(() => {
+            const canGoLeft = active > 0;
+            const canGoRight = active < n - 1;
+            return (
+              <>
+                <button
+                  type="button"
+                  onClick={() => canGoLeft && step(-1)}
+                  disabled={!canGoLeft}
+                  aria-label="Previous destination"
+                  className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 ${
+                    canGoLeft
+                      ? "border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md text-white cursor-pointer active:scale-95 shadow-md"
+                      : "border-white/20 bg-black/20 text-white/30 cursor-not-allowed opacity-35 pointer-events-none shadow-none"
+                  }`}
+                >
+                  {canGoLeft && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center justify-center">
+                    <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+                  </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => canGoRight && step(1)}
+                  disabled={!canGoRight}
+                  aria-label="Next destination"
+                  className={`group relative overflow-hidden w-11 h-10 sm:w-12 sm:h-11 p-0 m-0 border rounded-md grid place-items-center transition-all duration-300 ${
+                    canGoRight
+                      ? "border-white/40 hover:border-transparent bg-black/40 backdrop-blur-md text-white cursor-pointer active:scale-95 shadow-md"
+                      : "border-white/20 bg-black/20 text-white/30 cursor-not-allowed opacity-35 pointer-events-none shadow-none"
+                  }`}
+                >
+                  {canGoRight && (
+                    <span
+                      aria-hidden="true"
+                      className="absolute inset-0 bg-[#002f89] -translate-x-[101%] group-hover:translate-x-0 transition-transform duration-400 ease-[cubic-bezier(0.25,1,0.5,1)] pointer-events-none"
+                    />
+                  )}
+                  <span className="relative z-10 flex items-center justify-center">
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2]" />
+                  </span>
+                </button>
+              </>
+            );
+          })()}
         </div>
 
         {/* View all destinations button */}

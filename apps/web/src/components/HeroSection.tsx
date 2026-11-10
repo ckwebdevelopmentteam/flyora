@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { Volume2, VolumeX } from "lucide-react";
 import { HeroSearchCard } from "./HeroSearchCard";
+import type { EnquiryPrefill } from "./EnquiryModal";
 
 export interface HeroSectionProps {
   eyebrow?: string;
@@ -17,13 +17,14 @@ export interface HeroSectionProps {
   onSecondaryCtaClick?: () => void;
   secondaryCtaHref?: string;
   onExploreClick?: () => void;
-  onOpenEnquiry?: (serviceOrDest?: string) => void;
+  onOpenEnquiry?: (serviceOrDest?: string, prefill?: EnquiryPrefill) => void;
+  defaultTripMode?: "domestic" | "international";
 }
 
 export const HeroSection: React.FC<HeroSectionProps> = ({
-  eyebrow = "Flyora Tours & Travels, Est. 2006",
+  eyebrow = "Flyora Tours & Travels, Est. 2014",
   title = "It’s not where you go, but how you feel.",
-  description = "Custom journeys across India and the world, built around you since 2006.",
+  description = "Custom journeys across India and the world, built around you since 2014.",
   videoSrc = "/hero/hero-one.mp4",
   posterSrc,
   primaryCtaLabel = "Start Planning",
@@ -33,13 +34,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onSecondaryCtaClick,
   secondaryCtaHref = "#destinations",
   onOpenEnquiry,
+  defaultTripMode,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
-  const [isMuted, setIsMuted] = useState(true);
   const [progress, setProgress] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(900);
-  const userInteractedRef = useRef(false);
 
   useEffect(() => {
     let ticking = false;
@@ -118,31 +118,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       }),
     );
 
-    const onVolumeChange = () => {
-      setIsMuted(video.muted);
-    };
-    video.addEventListener("volumechange", onVolumeChange);
-
     return () => {
       video.removeEventListener("canplay", tryPlay);
-      video.removeEventListener("volumechange", onVolumeChange);
       events.forEach((ev) =>
         window.removeEventListener(ev, onUserInteraction, { capture: true }),
       );
     };
   }, [videoSrc]);
-
-  const toggleSound = () => {
-    const video = videoRef.current;
-    if (!video) return;
-    userInteractedRef.current = true;
-    const nextMuted = !video.muted;
-    video.muted = nextMuted;
-    if (!nextMuted) {
-      video.play().catch(() => {});
-    }
-    setIsMuted(nextMuted);
-  };
 
   const handlePrimaryClick = (e: React.MouseEvent) => {
     if (onPrimaryCtaClick) {
@@ -214,55 +196,31 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
           className="relative z-30 w-full max-w-[1360px] mx-auto px-4 sm:px-5 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none will-change-transform"
         >
           {/* Eyebrow Tagline */}
-          <span className="animate-hero-eyebrow font-heading text-xs sm:text-sm lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">
-            Flyora Tours & Travels • Est. 2006
+          <span className="animate-hero-eyebrow font-heading text-[11px] sm:text-xs lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">
+            Flyora Tours & Travels • Est. 2014
           </span>
 
           {/* Main Editorial Heading */}
-          <h1 className="animate-hero-heading font-heading max-md:text-[26px] max-md:leading-[1.15] sm:text-[34px] sm:leading-[1.1] md:max-xl:text-[40px] md:max-xl:leading-[1.1] xl:text-[46px] xl:leading-[1.1] text-white max-w-4xl font-normal tracking-[-0.01em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
+          <h1 className="animate-hero-heading font-heading text-[22px] leading-[1.18] sm:text-[34px] sm:leading-[1.1] md:max-xl:text-[40px] md:max-xl:leading-[1.1] xl:text-[46px] xl:leading-[1.1] text-white max-w-4xl font-normal tracking-[-0.01em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
             It’s not where you go,
             <br className="hidden sm:inline" /> but{" "}
             <span className="font-serif italic font-normal">how you feel.</span>
           </h1>
 
           {/* Subheading / Description */}
-          <p className="animate-hero-description text-xs sm:text-sm leading-relaxed max-w-2xl text-white/90 font-light px-2 sm:px-4 drop-shadow-sm">
+          <p className="animate-hero-description text-[11px] sm:text-sm leading-relaxed max-w-2xl text-white/90 font-light px-2 sm:px-4 drop-shadow-sm">
             {description}
           </p>
 
           {/* Luxury Search & Visa CTA Widget matching reference design */}
           <div className="animate-hero-cta w-full mt-2 sm:mt-2.5">
             <HeroSearchCard
+              defaultTripMode={defaultTripMode}
               onOpenEnquiry={onOpenEnquiry || onPrimaryCtaClick}
               onExploreJourneys={onSecondaryCtaClick}
             />
           </div>
         </div>
-
-        {/* Audio Mute / Unmute Button */}
-        <button
-          type="button"
-          onClick={toggleSound}
-          aria-label={isMuted ? "Unmute video" : "Mute video"}
-          aria-pressed={!isMuted}
-          className={`absolute bottom-6 left-6 sm:bottom-8 sm:left-8 z-30 flex items-center justify-center text-white transition-all duration-300 hover:opacity-80 hover:scale-105 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70 max-md:bottom-6 max-md:left-4 cursor-pointer p-2 rounded-full ${
-            progress > 0.05 ? "opacity-0 pointer-events-none" : "opacity-100"
-          }`}
-        >
-          {isMuted ? (
-            <VolumeX
-              className="h-7 w-7 drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)]"
-              strokeWidth={1.25}
-              aria-hidden="true"
-            />
-          ) : (
-            <Volume2
-              className="h-7 w-7 text-sky drop-shadow-[0_2px_4px_rgba(0,0,0,0.6)] animate-pulse"
-              strokeWidth={1.25}
-              aria-hidden="true"
-            />
-          )}
-        </button>
       </section>
     </div>
   );

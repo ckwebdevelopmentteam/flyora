@@ -44,12 +44,14 @@ export const TourFilterSidebar: React.FC<TourFilterSidebarProps> = ({
 
   const budgetOptions = [
     { label: "All Budgets", value: "all" },
-    { label: "Under ₹60,000", value: "under60k" },
-    { label: "₹60,000 - ₹1,00,000", value: "60k-100k" },
+    { label: "Under ₹30,000", value: "under30k" },
+    { label: "₹30,000 – ₹50,000", value: "30k-50k" },
+    { label: "₹50,000 – ₹1,00,000", value: "50k-100k" },
     { label: "Above ₹1,00,000", value: "above100k" },
   ];
 
   const hasActiveFilters =
+    filters.categoryTab !== "all" ||
     filters.searchQuery !== "" ||
     filters.selectedDestinations.length > 0 ||
     filters.durationCategory !== "all" ||

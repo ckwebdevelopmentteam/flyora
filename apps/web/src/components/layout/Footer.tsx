@@ -81,10 +81,10 @@ export const Footer: React.FC<FooterProps> = ({
 
   return (
     <footer
-      className={`relative z-10 w-full bg-[#FDF8F4] text-[#4A423B] border-t border-[#EBE3D8] pt-12 sm:pt-16 lg:pt-20 pb-4 sm:pb-6 overflow-hidden ${className}`}
+      className={`relative z-10 w-full bg-[#FDF8F4] text-[#4A423B] border-t border-[#EBE3D8] pt-10 sm:pt-16 lg:pt-20 pb-4 sm:pb-6 overflow-hidden ${className}`}
     >
-      {/* Container aligned with Destinations section padding: px-6 sm:px-10 lg:px-[105px] */}
-      <div className="w-full px-6 sm:px-10 lg:px-[105px]">
+      {/* Container aligned with Destinations section padding: px-4 sm:px-10 lg:px-[105px] */}
+      <div className="w-full px-4 sm:px-10 lg:px-[105px]">
         {/* ===================================================================
             TOP SECTION: Brand Bio & Newsletter
             =================================================================== */}
@@ -97,7 +97,7 @@ export const Footer: React.FC<FooterProps> = ({
                 alt="Flyora Tours & Travels LLP"
                 width={190}
                 height={58}
-                className="h-10 sm:h-11 md:h-12 w-auto object-contain transition-opacity group-hover:opacity-90"
+                className="h-9 sm:h-11 md:h-12 w-auto object-contain transition-opacity group-hover:opacity-90"
                 priority={false}
               />
             </Link>
@@ -121,7 +121,7 @@ export const Footer: React.FC<FooterProps> = ({
 
               <form onSubmit={handleSubscribe} className="space-y-2 w-full">
                 <div className="flex flex-col sm:flex-row items-stretch sm:items-center w-full shadow-2xs">
-                  <div className="relative flex-1 flex items-center bg-white rounded-md sm:rounded-r-none border border-black/15 focus-within:border-[#002f89] focus-within:ring-1 focus-within:ring-[#002f89] transition">
+                  <div className="relative flex-1 flex items-center min-h-[44px] sm:min-h-0 bg-white rounded-md sm:rounded-r-none border border-black/15 focus-within:border-[#002f89] focus-within:ring-1 focus-within:ring-[#002f89] transition">
                     <Mail className="w-4.5 h-4.5 text-neutral-400 ml-3.5 shrink-0" />
                     <input
                       type="email"
@@ -129,13 +129,13 @@ export const Footer: React.FC<FooterProps> = ({
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="Enter your email address"
-                      className="w-full py-2.5 px-3 text-xs sm:text-sm text-[#1C1815] placeholder:text-neutral-400 bg-transparent focus:outline-none"
+                      className="w-full py-3 sm:py-2.5 px-3 text-xs sm:text-sm text-[#1C1815] placeholder:text-neutral-400 bg-transparent focus:outline-none"
                       aria-label="Email address for newsletter"
                     />
                   </div>
                   <button
                     type="submit"
-                    className="mt-2 sm:mt-0 px-6 sm:px-7 py-2.5 bg-[#002f89] hover:bg-[#00246b] text-white text-xs sm:text-sm font-semibold rounded-md sm:rounded-l-none transition-colors cursor-pointer shrink-0 shadow-xs"
+                    className="mt-2 sm:mt-0 px-5 sm:px-7 py-2.5 sm:py-2.5 min-h-[44px] sm:min-h-0 bg-[#002f89] hover:bg-[#00246b] text-white text-xs sm:text-sm font-semibold rounded-md sm:rounded-l-none transition-colors cursor-pointer shrink-0 shadow-xs w-full sm:w-auto"
                   >
                     Subscribe
                   </button>
@@ -378,20 +378,22 @@ export const Footer: React.FC<FooterProps> = ({
       {/* ===================================================================
           BOTTOM SECTION: World Landmarks Illustration taking same padding
           =================================================================== */}
-      <div className="w-full px-6 sm:px-10 lg:px-[105px] mt-8 sm:mt-12 overflow-hidden flex justify-center">
+      <div className="w-full px-4 sm:px-10 lg:px-[105px] mt-8 sm:mt-12 overflow-hidden flex justify-center">
         <div className="w-full overflow-hidden flex justify-center">
           <Image
             src="/footer-landmarks.png"
             alt="World travel landmarks illustration"
-            width={1024}
-            height={138}
+            width={4096}
+            height={552}
+            sizes="100vw"
+            quality={95}
             className="w-full h-auto object-cover object-bottom select-none pointer-events-none"
             priority={false}
           />
         </div>
       </div>
 
-      <div className="text-center pt-3 pb-2 sm:pb-3 px-6 sm:px-10 lg:px-[105px] text-xs text-[#7A7167]">
+      <div className="text-center pt-3 pb-2 sm:pb-3 px-4 sm:px-10 lg:px-[105px] text-xs text-[#7A7167]">
         <p>© 2026 Flyora Tours &amp; Travels LLP. All Rights Reserved.</p>
       </div>
     </footer>

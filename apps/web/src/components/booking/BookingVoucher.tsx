@@ -6,7 +6,7 @@ import {
   FileCheck,
   Car,
   Ticket,
-  Package,
+  Luggage,
   ShieldCheck,
   X,
   UserRound,
@@ -24,7 +24,7 @@ const categories = [
   { type: "VISA", title: "Visa assistance", icon: FileCheck },
   { type: "TRANSFER", title: "Transfers", icon: Car },
   { type: "ACTIVITY", title: "Excursions & experiences", icon: Ticket },
-  { type: "OTHER", title: "Additional services", icon: Package },
+  { type: "OTHER", title: "Additional services", icon: Luggage },
 ] as const;
 const statusLabels = {
   CONFIRMED: "Confirmed",
