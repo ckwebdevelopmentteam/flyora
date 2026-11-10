@@ -358,8 +358,10 @@ export const Footer: React.FC<FooterProps> = ({ className = "" }) => {
           <Image
             src="/footer-landmarks.png"
             alt="World travel landmarks illustration"
-            width={1024}
-            height={138}
+            width={4096}
+            height={552}
+            sizes="100vw"
+            quality={95}
             className="w-full h-auto object-cover object-bottom select-none pointer-events-none"
             priority={false}
           />

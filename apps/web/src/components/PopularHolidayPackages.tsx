@@ -91,7 +91,7 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
   return (
     <section
       id="packages"
-      className="w-full bg-[#FAF7F2] text-[#1E1A17] py-10 sm:py-16 lg:py-24 border-t border-black/[0.06] scroll-mt-20 sm:scroll-mt-24"
+      className="w-full bg-[#FAF7F2] text-[#1E1A17] py-10 sm:py-16 lg:py-24 scroll-mt-20 sm:scroll-mt-24"
     >
       <div className="w-full px-4 sm:px-10 lg:px-[105px] flex flex-wrap gap-y-8 sm:gap-y-12 gap-x-10 lg:gap-x-14 xl:gap-x-16 items-start">
         {/* =================================================================
