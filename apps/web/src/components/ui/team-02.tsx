@@ -166,9 +166,11 @@ export const defaultTeamData: TeamMember[] = [
 ];
 
 export interface TeamProps {
+  id?: string;
   badge?: string;
   title?: string;
   description?: string;
+  customHeader?: React.ReactNode;
   members?: TeamMember[];
   className?: string;
   containerClassName?: string;
@@ -177,9 +179,11 @@ export interface TeamProps {
 }
 
 const Team: React.FC<TeamProps> = ({
+  id,
   badge = "Team",
   title = "Meet our team",
   description = "Our team is committed to redefining digital experiences through innovative web solutions while fostering a diverse and collaborative environment.",
+  customHeader,
   members = defaultTeamData,
   className = "",
   containerClassName = "lg:py-20 sm:py-16 py-8",
@@ -187,7 +191,7 @@ const Team: React.FC<TeamProps> = ({
   isDark = false,
 }) => {
   return (
-    <section className={className}>
+    <section id={id} className={className}>
       <div className={containerClassName}>
         <div className="mx-auto max-w-7xl px-4 lg:px-8 xl:px-16">
           <div className="flex flex-col items-center justify-center gap-10 sm:gap-14 lg:gap-16">
@@ -199,38 +203,48 @@ const Team: React.FC<TeamProps> = ({
                 duration: 0.8,
                 ease: [0.21, 0.47, 0.32, 0.98],
               }}
-              className="max-w-xl mx-auto flex flex-col items-center justify-center text-center gap-4"
+              className={
+                customHeader
+                  ? "w-full max-w-3xl mx-auto flex flex-col items-center justify-center text-center"
+                  : "max-w-xl mx-auto flex flex-col items-center justify-center text-center gap-4"
+              }
             >
-              {badge && (
-                <Badge
-                  variant={"outline"}
-                  className={
-                    isDark
-                      ? "px-3.5 py-1 h-auto text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-md bg-white/10 text-[#5BC3A6] border border-white/15 backdrop-blur-md"
-                      : "border-none px-3 py-1 h-auto text-sm"
-                  }
-                >
-                  {badge}
-                </Badge>
+              {customHeader ? (
+                customHeader
+              ) : (
+                <>
+                  {badge && (
+                    <Badge
+                      variant={"outline"}
+                      className={
+                        isDark
+                          ? "px-3.5 py-1 h-auto text-xs uppercase tracking-[0.2em] font-sans font-semibold rounded-md bg-white/10 text-[#5BC3A6] border border-white/15 backdrop-blur-md"
+                          : "border-none px-3 py-1 h-auto text-sm"
+                      }
+                    >
+                      {badge}
+                    </Badge>
+                  )}
+                  <div className="flex flex-col items-center justify-center gap-2 sm:gap-3">
+                    <h2
+                      className={`text-2xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight ${
+                        isDark
+                          ? "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
+                          : "text-foreground"
+                      }`}
+                    >
+                      {title}
+                    </h2>
+                    <p
+                      className={`text-sm sm:text-base font-normal ${
+                        isDark ? "text-white/80" : "text-muted-foreground"
+                      }`}
+                    >
+                      {description}
+                    </p>
+                  </div>
+                </>
               )}
-              <div className="flex flex-col items-center justify-center gap-2 sm:gap-3">
-                <h2
-                  className={`text-2xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight ${
-                    isDark
-                      ? "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
-                      : "text-foreground"
-                  }`}
-                >
-                  {title}
-                </h2>
-                <p
-                  className={`text-sm sm:text-base font-normal ${
-                    isDark ? "text-white/80" : "text-muted-foreground"
-                  }`}
-                >
-                  {description}
-                </p>
-              </div>
             </motion.div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
@@ -286,8 +300,10 @@ const Team: React.FC<TeamProps> = ({
                     </div>
                     <div className="flex flex-col gap-1 text-left">
                       <h3
-                        className={`text-xl font-medium ${
-                          isDark ? "text-white" : "text-foreground"
+                        className={`text-xl font-medium transition-colors duration-200 ${
+                          isDark
+                            ? "text-white"
+                            : "text-foreground group-hover:text-[#002f89]"
                         }`}
                       >
                         {value.name}

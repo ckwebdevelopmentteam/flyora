@@ -468,7 +468,7 @@ export default function CarouselCards({
   return (
     <section
       id="holiday-packages"
-      className={`w-full bg-white text-[#1E1A17] py-12 sm:py-16 lg:py-20 border-t border-black/[0.06] scroll-mt-20 sm:scroll-mt-24 ${className}`}
+      className={`w-full bg-white text-[#1E1A17] py-12 sm:py-16 lg:py-20 scroll-mt-20 sm:scroll-mt-24 ${className}`}
     >
       <div className="w-full space-y-6 sm:space-y-8">
         <PackageCarouselSection

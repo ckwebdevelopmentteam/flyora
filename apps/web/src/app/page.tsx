@@ -653,7 +653,7 @@ export default function Home() {
             =================================================================== */}
         <section
           id="testimonials"
-          className="py-16 sm:py-24 border-t border-black/[0.06] bg-white relative z-10"
+          className="py-16 sm:py-24 bg-white relative z-10"
         >
           <InkOrbitTestimonials
             theme="light"
@@ -667,10 +667,7 @@ export default function Home() {
         {/* ===================================================================
             SECTION 9: FREQUENTLY ASKED QUESTIONS (Interactive Accordion)
             =================================================================== */}
-        <section
-          id="faqs"
-          className="py-16 sm:py-24 border-t border-black/[0.06] bg-white"
-        >
+        <section id="faqs" className="py-16 sm:py-24 bg-white">
           <div className="max-w-3xl mx-auto px-5 sm:px-8">
             <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
               <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3">
