@@ -30,72 +30,50 @@ afterEach(() => {
 });
 
 describe("About Us Page", () => {
-  it("renders the full-width hero section with About Us pill, heading, and description", () => {
+  it("renders the hero section with About Us heading and headline", () => {
     render(<AboutPage />);
 
-    expect(screen.getByText(/about us/i)).toBeDefined();
-    expect(screen.getByText(/your journey, our passion/i)).toBeDefined();
+    expect(screen.getAllByText(/about us/i).length).toBeGreaterThanOrEqual(1);
     expect(
       screen.getByRole("heading", {
         level: 1,
-        name: /the world is closer than you think/i,
+        name: /about us/i,
+      }),
+    ).toBeDefined();
+    expect(screen.getByText(/premier travel & tourism agency/i)).toBeDefined();
+  });
+
+  it("renders editorial narrative story sections", () => {
+    render(<AboutPage />);
+
+    expect(
+      screen.getByRole("heading", { name: /built for total travel freedom/i }),
+    ).toBeDefined();
+    expect(
+      screen.getByRole("heading", {
+        name: /end-to-end travel, visa & air mobility solutions/i,
       }),
     ).toBeDefined();
     expect(
-      screen.getByText(/at flyora, we believe every journey opens the door/i),
-    ).toBeDefined();
-
-    // Dual CTAs
-    const exploreLinks = screen.getAllByRole("link", {
-      name: /explore destinations/i,
-    });
-    expect(exploreLinks.length).toBeGreaterThanOrEqual(2);
-    expect(exploreLinks[0].getAttribute("href")).toBe("/tours");
-
-    expect(
-      screen.getByRole("link", { name: /discover flyora/i }),
-    ).toBeDefined();
-  });
-
-  it("renders the Who We Are story section with 3 placeholder statistics", () => {
-    render(<AboutPage />);
-
-    expect(screen.getByText(/who we are/i)).toBeDefined();
-    expect(
       screen.getByRole("heading", {
-        name: /making every journey feel extraordinary/i,
-      }),
-    ).toBeDefined();
-
-    // Check placeholder statistics
-    expect(screen.getByText("25+")).toBeDefined();
-    expect(screen.getByText(/destinations explored/i)).toBeDefined();
-    expect(screen.getAllByText("1,200+").length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/journeys planned/i)).toBeDefined();
-    expect(screen.getByText("98%")).toBeDefined();
-    expect(screen.getByText(/traveler satisfaction/i)).toBeDefined();
-  });
-
-  it("renders the centered transition statement section", () => {
-    render(<AboutPage />);
-
-    expect(screen.getByText(/a gentle place to begin/i)).toBeDefined();
-    expect(
-      screen.getByRole("heading", {
-        name: /we create space for the moments/i,
+        name: /full-spectrum agency services: visas, flights & holidays/i,
       }),
     ).toBeDefined();
   });
 
-  it("renders the curators team showcase with 4 advisor cards", () => {
+  it("renders our purpose and core mission", () => {
     render(<AboutPage />);
 
-    expect(screen.getByText(/meet our travel curators/i)).toBeDefined();
+    expect(screen.getByText("OUR PURPOSE")).toBeDefined();
     expect(
-      screen.getByRole("heading", {
-        name: /care from the team who listens well/i,
-      }),
+      screen.getByText(
+        /to make global visas, flights, and travel seamless, reliable, and remarkable/i,
+      ),
     ).toBeDefined();
+  });
+
+  it("renders curators team showcase with advisor cards", () => {
+    render(<AboutPage />);
 
     expect(screen.getByText("Elena Vance")).toBeDefined();
     expect(screen.getByText("Marcus Reed")).toBeDefined();
@@ -103,61 +81,22 @@ describe("About Us Page", () => {
     expect(screen.getByText("Julian Ross")).toBeDefined();
   });
 
-  it("renders the numbered approach accordion section", () => {
+  it("renders the approach planning section", () => {
     render(<AboutPage />);
 
     expect(screen.getByText(/how we plan our journeys/i)).toBeDefined();
-    expect(
-      screen.getByRole("heading", {
-        name: /we prioritize thoughtful pacing/i,
-      }),
-    ).toBeDefined();
-
-    expect(screen.getByText(/choice and pacing come first/i)).toBeDefined();
-    expect(
-      screen.getByText(/thoughtful journeys & handcrafted details/i),
-    ).toBeDefined();
+    expect(screen.getByText(/we prioritize thoughtful pacing/i)).toBeDefined();
   });
 
-  it("renders the client testimonials section with quote cards", () => {
+  it("opens the enquiry modal when clicking 'TALK TO OUR TRAVEL & VISA DESK'", () => {
     render(<AboutPage />);
 
-    expect(screen.getByText(/testimonials/i)).toBeDefined();
-    expect(
-      screen.getByRole("heading", {
-        name: /words from our travelers/i,
-      }),
-    ).toBeDefined();
-
-    expect(screen.getByText("Sophia Martinez")).toBeDefined();
-    expect(screen.getByText("Olivia Brown")).toBeDefined();
-    expect(screen.getByText("Emma Johnson")).toBeDefined();
-  });
-
-  it("renders the transparent planning tiers section", () => {
-    render(<AboutPage />);
-
-    expect(screen.getByText(/flexible journey options/i)).toBeDefined();
-    expect(
-      screen.getByRole("heading", {
-        name: /simple and transparent planning/i,
-      }),
-    ).toBeDefined();
-
-    expect(screen.getByText("Single Session Consultation")).toBeDefined();
-    expect(screen.getByText("Bespoke Full Itinerary")).toBeDefined();
-    expect(screen.getByText("Annual Travel Membership")).toBeDefined();
-  });
-
-  it("opens the enquiry modal when clicking 'Match With an Advisor'", () => {
-    render(<AboutPage />);
-
-    const advisorBtns = screen.getAllByRole("button", {
-      name: /match with an advisor/i,
+    const deskBtn = screen.getByRole("button", {
+      name: /talk to our travel & visa desk/i,
     });
-    expect(advisorBtns.length).toBeGreaterThanOrEqual(1);
+    expect(deskBtn).toBeDefined();
 
-    fireEvent.click(advisorBtns[0]);
+    fireEvent.click(deskBtn);
 
     // Enquiry modal should open
     expect(screen.getByRole("dialog")).toBeDefined();

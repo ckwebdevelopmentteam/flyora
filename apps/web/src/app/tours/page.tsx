@@ -459,7 +459,7 @@ function ToursCatalog({
                 </div>
                 <div className="space-y-2">
                   <h3 className="text-lg sm:text-xl font-bold text-stone-900">
-                    No tour packages match your filters
+                    No matching tour packages found
                   </h3>
                   <p className="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-md mx-auto">
                     We don’t have a standard package matching these exact
