@@ -1,3 +1,4 @@
+import { adminFeatures } from "../../config/features";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { enquiryStages } from "../../lib/enquiryFilters";
@@ -201,7 +202,11 @@ export function DashboardChart({
   role: string;
   userId: string;
 }) {
-  if (role === "CONTENT_MANAGER") return null;
+  if (
+    role === "CONTENT_MANAGER" ||
+    (role === "ACCOUNTS" && !adminFeatures.bookingWorkflow)
+  )
+    return null;
   return role === "ACCOUNTS" ? (
     <PaymentsChart userId={userId} />
   ) : (

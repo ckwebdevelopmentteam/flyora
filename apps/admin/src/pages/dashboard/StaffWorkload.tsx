@@ -1,3 +1,4 @@
+import { adminFeatures } from "../../config/features";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { apiClient } from "../../lib/apiClient";
@@ -61,9 +62,11 @@ export function StaffWorkload({ userId }: { userId: string }) {
                 <span className={person.followUpsDue ? "text-amber-700" : ""}>
                   <strong>{person.followUpsDue}</strong>Due
                 </span>
-                <span>
-                  <strong>{person.booked}</strong>Booked
-                </span>
+                {adminFeatures.bookingWorkflow && (
+                  <span>
+                    <strong>{person.booked}</strong>Booked
+                  </span>
+                )}
               </div>
             </Link>
           ))}

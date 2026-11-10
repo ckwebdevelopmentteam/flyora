@@ -1,5 +1,9 @@
 import { MemoryRouter } from "react-router-dom";
 // @vitest-environment jsdom
+// Retained workflow coverage when this UI is enabled again.
+vi.mock("../../config/features", () => ({
+  adminFeatures: { bookingWorkflow: true },
+}));
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   render,

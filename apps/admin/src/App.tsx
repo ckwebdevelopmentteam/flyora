@@ -1,3 +1,4 @@
+import { adminFeatures } from "./config/features";
 import { useEffect } from "react";
 import { initializeAuth } from "./lib/apiClient";
 import { useAuthStore } from "./stores/authStore";
@@ -95,7 +96,9 @@ export default function App() {
               </Route>
 
               {/* Bookings & Offline Payments Management */}
-              <Route path="bookings" element={<BookingsPage />} />
+              {adminFeatures.bookingWorkflow && (
+                <Route path="bookings" element={<BookingsPage />} />
+              )}
 
               {/* Package Builder (Super Admin, Operations Manager, Content Manager) */}
               <Route

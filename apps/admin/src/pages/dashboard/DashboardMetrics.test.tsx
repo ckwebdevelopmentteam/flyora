@@ -1,5 +1,9 @@
 import type { LeadItem } from "@flyora/types";
 // @vitest-environment jsdom
+// Retained workflow coverage when this UI is enabled again.
+vi.mock("../../config/features", () => ({
+  adminFeatures: { bookingWorkflow: true },
+}));
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import {
   cleanup,

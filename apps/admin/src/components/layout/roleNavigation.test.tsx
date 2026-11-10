@@ -45,11 +45,11 @@ it("keeps Content Managers focused on packages", () => {
   expect(screen.queryByRole("link", { name: "My enquiries" })).toBeNull();
   expect(screen.queryByRole("button", { name: /Availability:/ })).toBeNull();
 });
-it("keeps Accounts focused on bookings and payments", () => {
+it("hides payment navigation for Accounts too", () => {
   show("ACCOUNTS");
   expect(
-    screen.getByRole("link", { name: "Bookings & payments" }),
-  ).toBeTruthy();
+    screen.queryByRole("link", { name: "Bookings & payments" }),
+  ).toBeNull();
   expect(screen.queryByRole("link", { name: "Tour packages" })).toBeNull();
   expect(
     screen.queryByRole("link", { name: "Available enquiries" }),
@@ -75,7 +75,7 @@ it.each(["SUPER_ADMIN", "OPERATIONS_MANAGER"] as const)(
     expect(screen.getAllByRole("link", { name: "Enquiries" })).toHaveLength(1);
     expect(screen.getByRole("link", { name: "Team" })).toBeTruthy();
     expect(
-      screen.getByRole("link", { name: "Bookings & payments" }),
-    ).toBeTruthy();
+      screen.queryByRole("link", { name: "Bookings & payments" }),
+    ).toBeNull();
   },
 );

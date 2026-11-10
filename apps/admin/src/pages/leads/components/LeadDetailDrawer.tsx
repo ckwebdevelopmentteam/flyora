@@ -1,3 +1,4 @@
+import { adminFeatures } from "../../../config/features";
 import { QuotationCard } from "./QuotationCard";
 import { quotePublicUrl } from "../../quotes/quotePresentation";
 import { userMessage } from "../../../lib/userMessage";
@@ -128,7 +129,7 @@ export const LeadDetailDrawer = ({
   };
 
   useEffect(() => {
-    if (lead?.id && isOpen) {
+    if (adminFeatures.bookingWorkflow && lead?.id && isOpen) {
       void loadQuotes(lead.id);
     }
   }, [lead?.id, isOpen]);
@@ -280,14 +281,16 @@ export const LeadDetailDrawer = ({
           </div>
 
           {/* Prominent Create Quotation Action */}
-          <button
-            type="button"
-            onClick={() => setIsQuoteBuilderOpen(true)}
-            className="button-primary w-full mt-3"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            <span>Create quotation</span>
-          </button>
+          {adminFeatures.bookingWorkflow && (
+            <button
+              type="button"
+              onClick={() => setIsQuoteBuilderOpen(true)}
+              className="button-primary w-full mt-3"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Create quotation</span>
+            </button>
+          )}
         </div>
 
         {/* Tab Switcher */}
@@ -302,19 +305,21 @@ export const LeadDetailDrawer = ({
           >
             Details
           </button>
-          <button
-            onClick={() => setActiveTab("quotes")}
-            className={`py-3 text-xs font-medium border-b-2 transition mr-6 flex items-center gap-1.5 ${
-              activeTab === "quotes"
-                ? "border-black text-black font-semibold"
-                : "border-transparent text-zinc-500 hover:text-zinc-800"
-            }`}
-          >
-            <span>Quotations</span>
-            <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-[10px] font-mono text-emerald-800 font-semibold">
-              {isLoadingQuotes ? "…" : quotesError ? "—" : quotes.length}
-            </span>
-          </button>
+          {adminFeatures.bookingWorkflow && (
+            <button
+              onClick={() => setActiveTab("quotes")}
+              className={`py-3 text-xs font-medium border-b-2 transition mr-6 flex items-center gap-1.5 ${
+                activeTab === "quotes"
+                  ? "border-black text-black font-semibold"
+                  : "border-transparent text-zinc-500 hover:text-zinc-800"
+              }`}
+            >
+              <span>Quotations</span>
+              <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-[10px] font-mono text-emerald-800 font-semibold">
+                {isLoadingQuotes ? "…" : quotesError ? "—" : quotes.length}
+              </span>
+            </button>
+          )}
           <button
             onClick={() => setActiveTab("timeline")}
             className={`py-3 text-xs font-medium border-b-2 transition flex items-center gap-1.5 ${
@@ -581,7 +586,7 @@ export const LeadDetailDrawer = ({
                 </ol>
               )}
             </div>
-          ) : (
+          ) : adminFeatures.bookingWorkflow ? (
             <div className="space-y-4">
               <h3 className="text-sm font-semibold text-slate-900">
                 Saved quotations
@@ -633,12 +638,12 @@ export const LeadDetailDrawer = ({
                 </div>
               )}
             </div>
-          )}
+          ) : null}
         </div>
       </div>
 
       {/* Quotation Builder Modal */}
-      {isQuoteBuilderOpen && (
+      {adminFeatures.bookingWorkflow && isQuoteBuilderOpen && (
         <QuotationBuilderModal
           lead={lead}
           isOpen={isQuoteBuilderOpen}
@@ -659,7 +664,7 @@ export const LeadDetailDrawer = ({
       )}
 
       {/* Convert to Booking Modal */}
-      {quoteToConvert && (
+      {adminFeatures.bookingWorkflow && quoteToConvert && (
         <ConvertBookingModal
           isOpen={Boolean(quoteToConvert)}
           onClose={() => setQuoteToConvert(null)}

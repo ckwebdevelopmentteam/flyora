@@ -1,3 +1,4 @@
+import { adminFeatures } from "../../config/features";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
@@ -58,7 +59,7 @@ export const Sidebar = ({
           },
         ]
       : []),
-    ...(user?.role !== "CONTENT_MANAGER"
+    ...(adminFeatures.bookingWorkflow && user?.role !== "CONTENT_MANAGER"
       ? [{ name: "Bookings & payments", path: "/bookings", icon: CreditCard }]
       : []),
     ...(manager || user?.role === "CONTENT_MANAGER"

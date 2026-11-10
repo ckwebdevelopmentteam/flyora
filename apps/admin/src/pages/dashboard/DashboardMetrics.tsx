@@ -1,3 +1,4 @@
+import { adminFeatures } from "../../config/features";
 import { countDueFollowups } from "../../lib/followUps";
 export { countDueFollowups } from "../../lib/followUps";
 import {
@@ -375,6 +376,114 @@ function ContentMetrics({ userId }: { userId: string }) {
     </section>
   );
 }
+function EnquiryMetrics({ role, userId }: { role: string; userId: string }) {
+  const manager = role === "SUPER_ADMIN" || role === "OPERATIONS_MANAGER";
+  const enquiries = useQuery({
+    queryKey: ["dashboard", userId, "my-enquiries"],
+    queryFn: () => leadsApi.fetchMyLeads(),
+    enabled: !manager && !!userId,
+    staleTime: 30_000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: "always",
+  });
+  const pool = useQuery({
+    queryKey: ["dashboard", userId, "pool"],
+    queryFn: () => leadsApi.fetchPoolLeads(),
+    enabled: !manager && !!userId,
+    staleTime: 30_000,
+    refetchOnWindowFocus: true,
+    refetchOnMount: "always",
+  });
+  const definitions = [
+    { title: "All enquiries", status: undefined },
+    { title: "New enquiries", status: "NEW" as const },
+    { title: "Contacted", status: "CONTACTED" as const },
+  ];
+  const totals = useQueries({
+    queries: definitions.map(({ status }) => ({
+      queryKey: ["dashboard", userId, "enquiry-total", status, role],
+      queryFn: async () =>
+        validCount((await leadsApi.getAllLeads({ status, limit: 1 })).total),
+      enabled: manager && !!userId,
+      staleTime: 30_000,
+      refetchOnWindowFocus: true,
+      refetchOnMount: "always" as const,
+    })),
+  });
+  const unavailable = manager
+    ? totals.some((query) => query.isError)
+    : enquiries.isError || pool.isError;
+  const mine = enquiries.isError ? undefined : enquiries.data;
+  const staffCards = [
+    {
+      title: "My enquiries",
+      value: mine?.length,
+      icon: Inbox,
+      to: "/leads?tab=my-leads",
+      loading: enquiries.isPending,
+    },
+    {
+      title: "Available enquiries",
+      value: pool.isError ? undefined : pool.data?.length,
+      icon: Layers,
+      to: "/leads?tab=pool",
+      loading: pool.isPending,
+    },
+    {
+      title: "Follow-ups due",
+      value: mine && countDueFollowups(mine),
+      icon: Clock,
+      to: "/leads?tab=my-leads",
+      loading: enquiries.isPending,
+    },
+  ];
+  return (
+    <section
+      aria-label={manager ? "Enquiry metrics" : "Your work metrics"}
+      className="space-y-4"
+    >
+      <MetricsHeader
+        title="Enquiries"
+        description={manager ? "Across your team" : "Your assigned services"}
+      />
+      <div className="metrics-grid">
+        {manager
+          ? definitions.map((definition, index) => (
+              <MetricCard
+                key={definition.title}
+                title={definition.title}
+                value={
+                  totals[index].isError || totals[index].data === undefined
+                    ? undefined
+                    : count.format(totals[index].data!)
+                }
+                hint=""
+                icon={Inbox}
+                to={`/admin/leads${definition.status ? `?status=${definition.status}` : ""}`}
+                loading={totals[index].isPending}
+              />
+            ))
+          : staffCards.map((card) => (
+              <MetricCard
+                key={card.title}
+                {...card}
+                value={
+                  card.value === undefined
+                    ? undefined
+                    : count.format(card.value)
+                }
+                hint=""
+              />
+            ))}
+      </div>
+      {unavailable && (
+        <div className="notice notice-error" role="alert">
+          Some numbers couldn't load. Refresh the numbers to try again.
+        </div>
+      )}
+    </section>
+  );
+}
 export function DashboardMetrics({
   role,
   userId,
@@ -382,6 +491,11 @@ export function DashboardMetrics({
   role: string;
   userId: string;
 }) {
+  if (!adminFeatures.bookingWorkflow && role !== "CONTENT_MANAGER") {
+    return role === "ACCOUNTS" ? null : (
+      <EnquiryMetrics role={role} userId={userId} />
+    );
+  }
   return role === "CONTENT_MANAGER" ? (
     <ContentMetrics userId={userId} />
   ) : role === "SERVICE_COORDINATOR" ? (
