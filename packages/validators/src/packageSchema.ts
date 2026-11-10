@@ -8,6 +8,10 @@ export const itineraryDaySchema = z.object({
   stay: z.string().optional(),
 });
 
+export const destinationTypeSchema = z.enum(["DOMESTIC", "INTERNATIONAL"], {
+  errorMap: () => ({ message: "Choose Domestic or International" }),
+});
+
 export const createPackageSchema = z.object({
   serviceId: z.string().uuid("Valid service ID is required"),
   title: z.string().min(3, "Package title must be at least 3 characters"),
@@ -22,6 +26,7 @@ export const createPackageSchema = z.object({
   durationDays: z.number().int().min(1, "Duration days must be at least 1"),
   durationNights: z.number().int().min(0, "Duration nights cannot be negative"),
   destination: z.string().min(2, "Destination is required"),
+  destinationType: destinationTypeSchema,
   startingPrice: z.number().positive("Starting price must be positive"),
   coverImageUrl: z.string().url("Cover image must be a valid URL"),
   galleryImageUrls: z.array(z.string().url()).default([]),
@@ -47,6 +52,7 @@ export type UpdatePackageInput = z.infer<typeof updatePackageSchema>;
 export const packageFilterSchema = z.object({
   serviceId: z.string().optional(),
   destination: z.string().optional(),
+  destinationType: destinationTypeSchema.optional(),
   minPrice: z.coerce.number().optional(),
   maxPrice: z.coerce.number().optional(),
   search: z.string().optional(),

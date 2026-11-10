@@ -42,6 +42,8 @@ export class PackagesService {
       where.serviceId = filter.serviceId;
     }
 
+    if (filter.destinationType) where.destinationType = filter.destinationType;
+
     if (filter.destination) {
       where.destination = {
         contains: filter.destination,
@@ -91,6 +93,8 @@ export class PackagesService {
       durationDays: p.durationDays,
       durationNights: p.durationNights,
       destination: p.destination,
+      destinationType: p.destinationType,
+      overview: p.overview,
       startingPrice: Number(p.startingPrice),
       coverImageUrl: p.coverImageUrl,
       inclusions: p.inclusions,
@@ -140,6 +144,7 @@ export class PackagesService {
       durationDays: pkg.durationDays,
       durationNights: pkg.durationNights,
       destination: pkg.destination,
+      destinationType: pkg.destinationType,
       startingPrice: Number(pkg.startingPrice),
       coverImageUrl: pkg.coverImageUrl,
       galleryImageUrls: pkg.galleryImageUrls,
@@ -179,6 +184,7 @@ export class PackagesService {
         durationDays: input.durationDays,
         durationNights: input.durationNights,
         destination: input.destination,
+        destinationType: input.destinationType,
         startingPrice: input.startingPrice,
         coverImageUrl: input.coverImageUrl,
         galleryImageUrls: input.galleryImageUrls || [],
@@ -210,6 +216,7 @@ export class PackagesService {
       durationDays: pkg.durationDays,
       durationNights: pkg.durationNights,
       destination: pkg.destination,
+      destinationType: pkg.destinationType,
       startingPrice: Number(pkg.startingPrice),
       coverImageUrl: pkg.coverImageUrl,
       galleryImageUrls: pkg.galleryImageUrls,
@@ -263,6 +270,9 @@ export class PackagesService {
           durationNights: input.durationNights,
         }),
         ...(input.destination && { destination: input.destination }),
+        ...(input.destinationType !== undefined && {
+          destinationType: input.destinationType,
+        }),
         ...(input.startingPrice !== undefined && {
           startingPrice: input.startingPrice,
         }),
@@ -302,6 +312,7 @@ export class PackagesService {
       durationDays: pkg.durationDays,
       durationNights: pkg.durationNights,
       destination: pkg.destination,
+      destinationType: pkg.destinationType,
       startingPrice: Number(pkg.startingPrice),
       coverImageUrl: pkg.coverImageUrl,
       galleryImageUrls: pkg.galleryImageUrls,

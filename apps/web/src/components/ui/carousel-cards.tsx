@@ -544,6 +544,7 @@ export default function CarouselCards({
           <button
             type="button"
             onClick={() => {
+              void retryServices();
               setError(false);
               setLoading(true);
               setAttempt((n) => n + 1);

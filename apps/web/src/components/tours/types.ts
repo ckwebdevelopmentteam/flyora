@@ -39,6 +39,7 @@ export const DURATION_LABELS: Record<string, string> = {
 };
 
 export function isDomesticPackage(pkg: PackageSummary): boolean {
+  if (pkg.destinationType) return pkg.destinationType === "DOMESTIC";
   const text = `${pkg.destination} ${pkg.title}`.toLowerCase();
   const domesticKeywords = [
     "india",

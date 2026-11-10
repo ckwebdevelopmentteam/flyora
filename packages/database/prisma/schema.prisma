@@ -72,6 +72,11 @@ model UserService {
   @@unique([userId, serviceId])
 }
 
+enum DestinationType {
+  DOMESTIC
+  INTERNATIONAL
+}
+
 model Package {
   id               String    @id @default(uuid())
   serviceId        String
@@ -80,6 +85,7 @@ model Package {
   durationDays     Int
   durationNights   Int
   destination      String
+  destinationType  DestinationType?
   startingPrice    Decimal   @db.Decimal(10, 2)
   coverImageUrl    String
   galleryImageUrls String[]
@@ -99,6 +105,8 @@ model Package {
 
   service          Service   @relation(fields: [serviceId], references: [id])
   leads            Lead[]
+
+  @@index([destinationType, isPublished, createdAt])
 }
 
 enum LeadStatus {

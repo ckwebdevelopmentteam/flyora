@@ -41,6 +41,11 @@ export function targetFor(i: number, target: number, n: number): number {
 export function computeOffset(i: number, pos: number, n: number): number {
   if (n <= 1) return 0;
   let d = (i - pos) % n;
+  if (n === 2) {
+    while (d <= -1) d += n;
+    while (d > 1) d -= n;
+    return d;
+  }
   while (d < -1) d += n;
   while (d >= n - 1) d -= n;
   return d;
@@ -61,7 +66,7 @@ export function StraightCardsCarousel({
 }: StraightCardsCarouselProps) {
   const n = items.length;
   const stageRef = useRef<HTMLDivElement>(null);
-  const slideRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const slideRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
   const [active, setActive] = useState(activeIndex);
   const [containerWidth, setContainerWidth] = useState(700);
@@ -338,7 +343,9 @@ export function StraightCardsCarousel({
         {items.map((item, i) => {
           const isLead = i === active;
           return (
-            <div
+            <button
+              type="button"
+              aria-label={`${isLead ? "Enquire about" : "View"} ${item.title}`}
               key={item.id}
               ref={(el) => {
                 slideRefs.current[i] = el;
@@ -433,27 +440,18 @@ export function StraightCardsCarousel({
                       )}
                       <div className="flex items-baseline gap-1 mt-0.5">
                         <span className="text-white font-bold text-base sm:text-lg tracking-tight leading-tight">
-                          {item.price || "₹48,500"}
-                        </span>
-                        <span className="text-white/70 text-[10.5px]">
-                          / person
+                          {item.price}
                         </span>
                       </div>
                     </div>
 
-                    <span
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSelectLead?.(item, i);
-                      }}
-                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap"
-                    >
-                      View Details
+                    <span className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap">
+                      Enquire
                     </span>
                   </div>
                 </div>
               </div>
-            </div>
+            </button>
           );
         })}
       </div>

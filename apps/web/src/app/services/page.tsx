@@ -1930,7 +1930,7 @@ export default function ServicesPage() {
   });
 
   const handleSelectService = (idx: number) => {
-    if (idx === activeServiceIndex) return;
+    if (idx === activeServiceIndex && !unavailable) return;
     setSlideDirection(idx > activeServiceIndex ? "next" : "prev");
     setPrevIndex(activeServiceIndex);
     setSelectedSlug(HERO_SERVICES[idx].slug);
@@ -2066,7 +2066,17 @@ export default function ServicesPage() {
     setModalPackage(undefined);
     setModalPrefill(
       service
-        ? { ...prefill, serviceId: service.id, serviceName: service.name }
+        ? {
+            ...prefill,
+            serviceId: service.id,
+            serviceName: service.name,
+            notes:
+              prefill?.notes ||
+              (value && /[:(]/.test(value) ? value : undefined),
+            summaryLabel:
+              prefill?.summaryLabel ||
+              (value && /[:(]/.test(value) ? value : undefined),
+          }
         : prefill,
     );
     setModalServiceId(service?.id);
@@ -2253,6 +2263,13 @@ export default function ServicesPage() {
                 {/* HERO ADAPTIVE SEARCH BAR (Unified with Homepage HeroSearchCard, standard rounded-md buttons) */}
                 <div ref={conciergeBarRef} className="w-full mt-1 sm:mt-2">
                   <HeroSearchCard
+                    key={activeService.slug}
+                    defaultTripMode={
+                      activeService.slug === "visa-assistance" ||
+                      activeService.slug === "umrah-hajj"
+                        ? "international"
+                        : "domestic"
+                    }
                     activeServiceSlug={activeService.slug}
                     onServiceChange={(slug) => {
                       const mappedIdx = HERO_SERVICES.findIndex(

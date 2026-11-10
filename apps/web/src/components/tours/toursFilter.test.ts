@@ -84,3 +84,20 @@ describe("Tours filtering & helpers", () => {
     expect(INITIAL_FILTERS.sortBy).toBe("recommended");
   });
 });
+
+it("uses the saved destination type before guessing from the package title", () => {
+  expect(
+    isDomesticPackage({
+      destinationType: "INTERNATIONAL",
+      title: "Flights from India",
+      destination: "Paris",
+    } as PackageSummary),
+  ).toBe(false);
+  expect(
+    isDomesticPackage({
+      destinationType: "DOMESTIC",
+      title: "Coastal escape",
+      destination: "Varkala",
+    } as PackageSummary),
+  ).toBe(true);
+});

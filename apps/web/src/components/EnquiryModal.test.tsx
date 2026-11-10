@@ -95,6 +95,31 @@ describe("public capture", () => {
     });
     expect(screen.queryByRole("link", { name: /WhatsApp/ })).toBeNull();
   });
+  it("keeps the search origin and destination in the enquiry sent to the team", async () => {
+    render(
+      <EnquiryModal
+        isOpen
+        onClose={vi.fn()}
+        prefill={{
+          serviceId: service.id,
+          origin: "Kochi (COK)",
+          destination: "Bali",
+        }}
+      />,
+    );
+    await fill();
+    vi.mocked(fetch).mockResolvedValueOnce(
+      response({ data: { success: true, leadId: "route-ref" } }, 201),
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Submit Travel Enquiry" }),
+    );
+    await screen.findByText("route-ref");
+    const payload = JSON.parse(String(vi.mocked(fetch).mock.calls[1][1]?.body));
+    expect(payload.serviceId).toBe(service.id);
+    expect(payload.notes).toContain("Departure from: Kochi (COK)");
+    expect(payload.notes).toContain("Destination: Bali");
+  });
   it("rejects malformed success payloads instead of inventing a reference", async () => {
     render(<EnquiryModal isOpen onClose={vi.fn()} />);
     await fill();

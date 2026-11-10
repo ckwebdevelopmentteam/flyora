@@ -447,6 +447,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     const selectedSrv = services.find((s) => s.id === result.data.serviceId);
     const category = getServiceCategory(selectedSrv?.name, selectedSrv?.slug);
     const detailLines: string[] = [];
+    if (prefill?.origin) detailLines.push(`Departure from: ${prefill.origin}`);
 
     if (category === "flight") {
       if (customDestination)

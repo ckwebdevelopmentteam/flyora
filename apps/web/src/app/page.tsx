@@ -2,7 +2,10 @@
 
 import React, { useState, useRef, useEffect, useMemo } from "react";
 import Image from "next/image";
+
 import Link from "next/link";
+import { useServicesCatalog } from "../lib/use-services-catalog";
+import { resolveService } from "../lib/service-catalog";
 import Lenis from "lenis";
 import "lenis/dist/lenis.css";
 import {
@@ -19,6 +22,7 @@ import { HeroSection } from "../components/HeroSection";
 import { EnquiryModal, type EnquiryPrefill } from "../components/EnquiryModal";
 import { BecomeAdvisorModal } from "../components/BecomeAdvisorModal";
 import CarouselCards from "@/components/ui/carousel-cards";
+import type { PackageSummary } from "@flyora/types";
 import { DestinationsShowcase } from "../components/DestinationsShowcase";
 import { EssenceOfFlyora } from "../components/EssenceOfFlyora";
 import { MeetOurTeamSection } from "../components/MeetOurTeamSection";
@@ -319,9 +323,33 @@ export default function Home() {
     }
   };
 
+  const [selectedPackage, setSelectedPackage] = useState<PackageSummary>();
+  const packagePrefill = useMemo(
+    () =>
+      selectedPackage
+        ? {
+            serviceId: selectedPackage.serviceId,
+            serviceName: selectedPackage.serviceName,
+            destination: selectedPackage.destination,
+          }
+        : undefined,
+    [selectedPackage],
+  );
+
+  const { services } = useServicesCatalog();
   const openEnquiry = (destination?: string, prefill?: EnquiryPrefill) => {
-    setSelectedDestination(destination);
-    setEnquiryPrefill(prefill);
+    setSelectedPackage(undefined);
+
+    const service = resolveService(
+      services,
+      prefill?.serviceId || prefill?.serviceName || destination,
+    );
+    setSelectedDestination(service ? undefined : destination);
+    setEnquiryPrefill(
+      service
+        ? { ...prefill, serviceId: service.id, serviceName: service.name }
+        : prefill,
+    );
     setIsModalOpen(true);
   };
 
@@ -635,7 +663,11 @@ export default function Home() {
             SECTION: DESTINATIONS SHOWCASE (International & Domestic Tour Packages)
             =================================================================== */}
         <DestinationsShowcase
-          onOpenEnquiry={(destination) => openEnquiry(destination)}
+          onOpenEnquiry={(pkg) => {
+            setSelectedPackage(pkg);
+            setSelectedDestination(undefined);
+            setIsModalOpen(true);
+          }}
         />
 
         {/* ===================================================================
@@ -755,12 +787,11 @@ export default function Home() {
             --------------------------------------------------------------------- */}
       <EnquiryModal
         isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setEnquiryPrefill(undefined);
-        }}
-        packageTitle={selectedDestination}
-        prefill={enquiryPrefill}
+        onClose={() => setIsModalOpen(false)}
+        defaultServiceId={selectedPackage?.serviceId}
+        defaultPackageId={selectedPackage?.id}
+        prefill={packagePrefill || enquiryPrefill}
+        packageTitle={selectedPackage?.title || selectedDestination}
       />
       <BecomeAdvisorModal
         isOpen={isAdvisorModalOpen}

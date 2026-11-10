@@ -1,3 +1,5 @@
+export type DestinationType = "DOMESTIC" | "INTERNATIONAL";
+
 export interface ItineraryDay {
   day: number;
   title: string;
@@ -15,6 +17,8 @@ export interface PackageSummary {
   durationDays: number;
   durationNights: number;
   destination: string;
+  destinationType?: DestinationType | null;
+  overview?: string;
   startingPrice: number;
   coverImageUrl: string;
   inclusions?: string[];

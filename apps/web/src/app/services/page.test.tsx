@@ -1,4 +1,6 @@
 import React from "react";
+vi.mock("@/components/ui/timeline", () => ({ default: () => null }));
+vi.mock("@/components/ui/bento-gallery", () => ({ default: () => null }));
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import ServicesPage from "./page";
@@ -53,7 +55,7 @@ const pkg = {
   startingPrice: 48000,
   coverImageUrl: "https://assets.example.com/bali.jpg",
   isPublished: true,
-  isFeatured: true,
+  isFeatured: false,
 };
 const json = (data: unknown, status = 200) =>
   new Response(JSON.stringify({ data }), { status });
@@ -65,6 +67,14 @@ beforeEach(() => {
     retry: async () => {},
   });
   window.history.replaceState(null, "", "/services");
+  vi.stubGlobal(
+    "IntersectionObserver",
+    class {
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    },
+  );
   vi.stubGlobal(
     "requestAnimationFrame",
     vi.fn(() => 1),
@@ -121,7 +131,10 @@ it("keeps holiday packages visible when the enquiry service changes", async () =
   render(<ServicesPage />);
   await screen.findByRole("link", { name: /View itinerary/ });
   expect(
-    screen.getByRole("heading", { name: "Visa Assistance", level: 1 }),
+    screen.getByRole("heading", {
+      name: "Hassle-Free Global Visa Approvals",
+      level: 1,
+    }),
   ).toBeDefined();
   fireEvent.click(
     screen.getByRole("button", { name: "Select Holiday Packages" }),
@@ -155,13 +168,7 @@ it("does not show sample packages on backend failure and can retry", async () =>
   const { rerender } = render(<ServicesPage />);
   await screen.findByRole("alert");
   expect(screen.queryByRole("button", { name: "Enquire Now" })).toBeNull();
-  expect(
-    (
-      screen.getByRole("button", {
-        name: "Request a Quote",
-      }) as HTMLButtonElement
-    ).disabled,
-  ).toBe(true);
+  expect(screen.queryByRole("button", { name: "Request a Quote" })).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Try again" }));
   rerender(<ServicesPage />);
   await screen.findByRole("link", { name: /View itinerary/ });

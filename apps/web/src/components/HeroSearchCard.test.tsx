@@ -119,7 +119,7 @@ describe("HeroSearchCard Dynamic Cascading System", () => {
     expect(screen.getByText("Cabin Class")).toBeTruthy();
 
     // Switch to Hotel & Resorts
-    const hotelBtn = screen.getByRole("button", { name: /Hotel & Resorts/i });
+    const hotelBtn = screen.getByRole("button", { name: /Hotel Booking/i });
     fireEvent.click(hotelBtn);
 
     // Hotel displays accommodation tier and room config
@@ -148,7 +148,8 @@ describe("HeroSearchCard Dynamic Cascading System", () => {
     expect(handleEnquiry).toHaveBeenCalled();
     const [summary, prefill] = handleEnquiry.mock.calls[0];
 
-    expect(summary).toContain("Flight Booking");
+    expect(summary).toBe("srv-flight");
+    expect(prefill.serviceId).toBe("srv-flight");
     expect(prefill).toMatchObject({
       serviceName: "Flight Booking",
       destination: expect.any(String),
@@ -169,7 +170,7 @@ describe("HeroSearchCard Dynamic Cascading System", () => {
   it("removes Experience Style from Custom Holidays, presenting only 3 clean fields", async () => {
     render(<HeroSearchCard />);
     const holidayBtn = await screen.findByRole("button", {
-      name: /Custom Holidays/i,
+      name: /Holiday Packages/i,
     });
     fireEvent.click(holidayBtn);
 
@@ -225,7 +226,7 @@ describe("HeroSearchCard Dynamic Cascading System", () => {
   it("only asks how many members and children (below 11 years) in Travelers picker", async () => {
     render(<HeroSearchCard />);
     const holidayBtn = await screen.findByRole("button", {
-      name: /Custom Holidays/i,
+      name: /Holiday Packages/i,
     });
     fireEvent.click(holidayBtn);
 

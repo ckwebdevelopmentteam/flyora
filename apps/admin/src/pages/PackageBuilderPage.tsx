@@ -132,6 +132,7 @@ export const PackageBuilderPage = () => {
         durationDays: existingPackage.durationDays,
         durationNights: existingPackage.durationNights,
         destination: existingPackage.destination,
+        destinationType: existingPackage.destinationType ?? undefined,
         startingPrice: Number(existingPackage.startingPrice),
         coverImageUrl: existingPackage.coverImageUrl,
         galleryImageUrls: existingPackage.galleryImageUrls || [],
@@ -221,6 +222,7 @@ export const PackageBuilderPage = () => {
       "title",
       "slug",
       "destination",
+      "destinationType",
       "serviceId",
       "durationDays",
       "durationNights",
@@ -246,6 +248,7 @@ export const PackageBuilderPage = () => {
     errors.title ||
     errors.slug ||
     errors.destination ||
+    errors.destinationType ||
     errors.serviceId ||
     errors.durationDays ||
     errors.durationNights ||
@@ -472,26 +475,62 @@ export const PackageBuilderPage = () => {
                 )}
               </div>
 
-              {/* Destination */}
-              <div>
-                <label
-                  className="block text-xs font-medium text-zinc-900 mb-1"
-                  htmlFor="package-destination"
-                >
-                  Destination / Country <span className="text-red-500">*</span>
-                </label>
-                <input
-                  id="package-destination"
-                  type="text"
-                  placeholder="e.g. Dubai, United Arab Emirates"
-                  {...register("destination")}
-                  className="w-full text-xs px-3.5 py-2 rounded-md border border-zinc-200 bg-[#FAFAF9] text-zinc-900 focus:bg-white focus:border-black outline-none transition"
-                />
-                {errors.destination && (
-                  <p className="text-[11px] text-red-600 mt-1 font-mono">
-                    {errors.destination.message}
-                  </p>
-                )}
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Destination */}
+                <div>
+                  <label
+                    className="block text-xs font-medium text-zinc-900 mb-1"
+                    htmlFor="package-destination"
+                  >
+                    Destination / Country{" "}
+                    <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    id="package-destination"
+                    type="text"
+                    placeholder="e.g. Dubai, United Arab Emirates"
+                    {...register("destination")}
+                    className="w-full text-xs px-3.5 py-2 rounded-md border border-zinc-200 bg-[#FAFAF9] text-zinc-900 focus:bg-white focus:border-black outline-none transition"
+                  />
+                  {errors.destination && (
+                    <p className="text-[11px] text-red-600 mt-1 font-mono">
+                      {errors.destination.message}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="package-destinationType"
+                    className="block text-xs font-medium text-zinc-900 mb-1"
+                  >
+                    Destination type <span className="text-red-500">*</span>
+                  </label>
+                  <select
+                    id="package-destinationType"
+                    {...register("destinationType")}
+                    aria-invalid={!!errors.destinationType}
+                    aria-describedby={
+                      errors.destinationType
+                        ? "destination-type-error"
+                        : undefined
+                    }
+                    className="w-full min-h-11 text-xs px-3.5 py-2 rounded-md border border-zinc-200 bg-[#FAFAF9] text-zinc-900 focus:bg-white focus:border-black outline-none transition"
+                  >
+                    <option value="">Choose a destination type</option>
+                    <option value="DOMESTIC">Domestic (India)</option>
+                    <option value="INTERNATIONAL">International</option>
+                  </select>
+                  {errors.destinationType && (
+                    <p
+                      id="destination-type-error"
+                      role="alert"
+                      className="text-[11px] text-red-600 mt-1"
+                    >
+                      {errors.destinationType.message}
+                    </p>
+                  )}
+                </div>
               </div>
 
               {/* Service Category */}

@@ -3,11 +3,13 @@ import type {
   PackageDetails,
   PaginatedPackages,
   ItineraryDay,
+  DestinationType,
 } from "@flyora/types";
 
 export interface PackageFilterParams {
   serviceId?: string;
   destination?: string;
+  destinationType?: DestinationType;
   minPrice?: number;
   maxPrice?: number;
   search?: string;
@@ -24,6 +26,7 @@ export interface CreatePackagePayload {
   durationDays: number;
   durationNights: number;
   destination: string;
+  destinationType: DestinationType;
   startingPrice: number;
   coverImageUrl: string;
   galleryImageUrls?: string[];
@@ -58,6 +61,8 @@ export const packagesApi = {
 
     if (params.serviceId) query.set("serviceId", params.serviceId);
     if (params.destination) query.set("destination", params.destination);
+    if (params.destinationType)
+      query.set("destinationType", params.destinationType);
     if (params.minPrice !== undefined)
       query.set("minPrice", String(params.minPrice));
     if (params.maxPrice !== undefined)
