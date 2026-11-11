@@ -141,7 +141,7 @@ export default function Home() {
       const m = params.get("mode");
       if (m === "domestic" || m === "international") return m;
     }
-    return "domestic";
+    return "international";
   });
   const [enquiryPrefill, setEnquiryPrefill] = useState<
     EnquiryPrefill | undefined
@@ -221,6 +221,17 @@ export default function Home() {
     };
 
     const handleWheel = (e: WheelEvent) => {
+      // Do not intercept if a modal/dialog is open or scroll is occurring inside a dialog or scrollable element
+      const target = e.target as HTMLElement | null;
+      if (
+        document.querySelector("dialog[open]") ||
+        target?.closest?.(
+          "dialog, [role='dialog'], [data-lenis-prevent], [data-scrollable]",
+        )
+      ) {
+        return;
+      }
+
       const scrollY = window.scrollY || window.pageYOffset;
       const vh = window.innerHeight;
 
@@ -241,6 +252,17 @@ export default function Home() {
     };
 
     const handleTouchMove = (e: TouchEvent) => {
+      // Do not intercept if a modal/dialog is open or touch is occurring inside a dialog or scrollable element
+      const target = e.target as HTMLElement | null;
+      if (
+        document.querySelector("dialog[open]") ||
+        target?.closest?.(
+          "dialog, [role='dialog'], [data-lenis-prevent], [data-scrollable]",
+        )
+      ) {
+        return;
+      }
+
       const scrollY = window.scrollY || window.pageYOffset;
       const vh = window.innerHeight;
       const currentY = e.touches[0].clientY;
@@ -256,6 +278,21 @@ export default function Home() {
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Never intercept when user is typing in form controls or when any modal/dialog is open
+      const target = e.target as HTMLElement | null;
+      if (
+        document.querySelector("dialog[open]") ||
+        target?.tagName === "INPUT" ||
+        target?.tagName === "TEXTAREA" ||
+        target?.tagName === "SELECT" ||
+        target?.isContentEditable ||
+        target?.closest?.(
+          "input, textarea, select, dialog, [role='dialog'], [data-lenis-prevent]",
+        )
+      ) {
+        return;
+      }
+
       const scrollY = window.scrollY || window.pageYOffset;
       const vh = window.innerHeight;
 

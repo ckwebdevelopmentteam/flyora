@@ -26,6 +26,7 @@ import {
   Hotel,
   Layers,
   Globe2,
+  ShieldCheck,
   X,
 } from "lucide-react";
 import {
@@ -114,6 +115,8 @@ export type DynamicServiceSlug =
   | "umrah-hajj"
   | "train-booking"
   | "bus-booking"
+  | "passport-assistance"
+  | "travel-insurance"
   | (string & {});
 
 interface ServiceMetadata {
@@ -157,7 +160,7 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "hotel-booking",
     label: "Hotel & Resorts",
     subtitle: "Luxury stays & villas",
-    imageSrc: "/destinations/card-maldives.jpg",
+    imageSrc: "/services/hotel-booking.jpg",
     imagePosition: "object-center",
     icon: Hotel,
     isDomesticApplicable: true,
@@ -205,6 +208,28 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     imagePosition: "object-[82%_45%]",
     icon: MosqueIcon,
     isDomesticApplicable: false,
+    isInternationalApplicable: true,
+  },
+  {
+    id: "passport-assistance",
+    backendSlug: "passport-assistance",
+    label: "Passport Assistance",
+    subtitle: "Fast-Track Services",
+    imageSrc: "/services/passport-service.jpg",
+    imagePosition: "object-center",
+    icon: PassportIcon,
+    isDomesticApplicable: false,
+    isInternationalApplicable: true,
+  },
+  {
+    id: "travel-insurance",
+    backendSlug: "travel-insurance",
+    label: "Travel Insurance",
+    subtitle: "Medical & Luggage",
+    imageSrc: "/services/travel-insurance.jpg",
+    imagePosition: "object-center",
+    icon: ShieldCheck,
+    isDomesticApplicable: true,
     isInternationalApplicable: true,
   },
 ];
@@ -905,7 +930,10 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           id: service.slug,
           backendSlug: service.slug,
           label: service.name,
-          imageSrc: template?.imageSrc || serviceImage(service.slug),
+          imageSrc:
+            service.imageUrl ||
+            template?.imageSrc ||
+            serviceImage(service.slug),
         };
       }),
     [backendServices, tripMode, selectedDestination],
@@ -1876,6 +1904,279 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                   onToggle={() =>
                     setOpenDropdown(
                       openDropdown === "pilgrim-count" ? null : "pilgrim-count",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  onChangeAdults={(val) => setAdultsCount(val)}
+                  onChangeChildren={(val) => setKidsCount(val)}
+                />
+              </>
+            )}
+
+            {/* 8. PASSPORT ASSISTANCE FIELDS */}
+            {(activeServiceSlug === "passport-assistance" ||
+              activeServiceSlug === "escort-parking") && (
+              <>
+                <ConciergePillField
+                  icon={PassportIcon}
+                  label={
+                    serviceTypeDefinition.primaryTypeLabel || "Service Scheme"
+                  }
+                  value={selectedPrimaryType}
+                  isOpen={openDropdown === "passport-cat"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "passport-cat" ? null : "passport-cat",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.primaryTypes}
+                  onSelect={(val) => {
+                    setSelectedPrimaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={Layers}
+                  label={
+                    serviceTypeDefinition.secondaryTypeLabel ||
+                    "Application Urgency"
+                  }
+                  value={selectedSecondaryType}
+                  isOpen={openDropdown === "passport-urgency"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "passport-urgency"
+                        ? null
+                        : "passport-urgency",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.secondaryTypes || []}
+                  onSelect={(val) => {
+                    setSelectedSecondaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Target Date"
+                  value={selectedDatePeriod}
+                  isOpen={openDropdown === "passport-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "passport-date" ? null : "passport-date",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={dateOptions}
+                  onSelect={(val) => {
+                    setSelectedDatePeriod(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="right"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <TravelersPicker
+                  label="Applicants"
+                  adults={adultsCount}
+                  childrenCount={kidsCount}
+                  isOpen={openDropdown === "passport-count"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "passport-count"
+                        ? null
+                        : "passport-count",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  onChangeAdults={(val) => setAdultsCount(val)}
+                  onChangeChildren={(val) => setKidsCount(val)}
+                />
+              </>
+            )}
+
+            {/* 9. TRAVEL INSURANCE FIELDS */}
+            {activeServiceSlug === "travel-insurance" && (
+              <>
+                <ConciergePillField
+                  icon={ShieldCheck}
+                  label={
+                    serviceTypeDefinition.primaryTypeLabel ||
+                    "Destination Coverage"
+                  }
+                  value={selectedPrimaryType}
+                  isOpen={openDropdown === "insurance-region"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "insurance-region"
+                        ? null
+                        : "insurance-region",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.primaryTypes}
+                  onSelect={(val) => {
+                    setSelectedPrimaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={Layers}
+                  label={
+                    serviceTypeDefinition.secondaryTypeLabel ||
+                    "Policy Plan Tier"
+                  }
+                  value={selectedSecondaryType}
+                  isOpen={openDropdown === "insurance-plan"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "insurance-plan"
+                        ? null
+                        : "insurance-plan",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.secondaryTypes || []}
+                  onSelect={(val) => {
+                    setSelectedSecondaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Trip Duration"
+                  value={selectedDatePeriod}
+                  isOpen={openDropdown === "insurance-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "insurance-date"
+                        ? null
+                        : "insurance-date",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={dateOptions}
+                  onSelect={(val) => {
+                    setSelectedDatePeriod(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="right"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <TravelersPicker
+                  label="Travelers"
+                  adults={adultsCount}
+                  childrenCount={kidsCount}
+                  isOpen={openDropdown === "insurance-count"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "insurance-count"
+                        ? null
+                        : "insurance-count",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  onChangeAdults={(val) => setAdultsCount(val)}
+                  onChangeChildren={(val) => setKidsCount(val)}
+                />
+              </>
+            )}
+
+            {/* 10. UNIVERSAL FALLBACK FOR OTHER DYNAMIC SERVICES */}
+            {![
+              "flight-booking",
+              "holiday-packages",
+              "hotel-booking",
+              "train-booking",
+              "bus-booking",
+              "visa-assistance",
+              "umrah-hajj",
+              "passport-assistance",
+              "escort-parking",
+              "travel-insurance",
+            ].includes(activeServiceSlug) && (
+              <>
+                <ConciergePillField
+                  icon={MapPin}
+                  label="Destination or City"
+                  value={selectedDestination}
+                  isOpen={openDropdown === "fallback-dest"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "fallback-dest" ? null : "fallback-dest",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={destinationOptions}
+                  onSelect={(val) => {
+                    setSelectedDestination(val);
+                    setOpenDropdown(null);
+                  }}
+                  isEditable={true}
+                  onChangeText={(val) => setSelectedDestination(val)}
+                  placeholder="Where do you want to go?"
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={Layers}
+                  label={serviceTypeDefinition.primaryTypeLabel}
+                  value={selectedPrimaryType}
+                  isOpen={openDropdown === "fallback-primary"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "fallback-primary"
+                        ? null
+                        : "fallback-primary",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={serviceTypeDefinition.primaryTypes}
+                  onSelect={(val) => {
+                    setSelectedPrimaryType(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="left"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <ConciergePillField
+                  icon={CalendarDays}
+                  label="Target Date"
+                  value={selectedDatePeriod}
+                  isOpen={openDropdown === "fallback-date"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "fallback-date" ? null : "fallback-date",
+                    )
+                  }
+                  onClose={() => setOpenDropdown(null)}
+                  options={dateOptions}
+                  onSelect={(val) => {
+                    setSelectedDatePeriod(val);
+                    setOpenDropdown(null);
+                  }}
+                  align="right"
+                />
+                <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
+                <TravelersPicker
+                  label="Travelers"
+                  adults={adultsCount}
+                  childrenCount={kidsCount}
+                  isOpen={openDropdown === "fallback-count"}
+                  onToggle={() =>
+                    setOpenDropdown(
+                      openDropdown === "fallback-count"
+                        ? null
+                        : "fallback-count",
                     )
                   }
                   onClose={() => setOpenDropdown(null)}

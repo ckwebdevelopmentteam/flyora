@@ -7,10 +7,14 @@ const images: Record<string, string> = {
   "flight-booking": "flight-booking",
   "train-booking": "train-booking",
   "bus-booking": "bus-booking",
+  "bus-train-booking": "train-booking",
   "umrah-hajj": "umrah-packages",
   "umrah-packages": "umrah-packages",
   "hajj-packages": "hajj-packages",
-  "hotel-booking": "custom-holidays",
+  "hotel-booking": "hotel-booking",
+  "passport-assistance": "passport-service",
+  "escort-parking": "passport-service",
+  "travel-insurance": "travel-insurance",
 };
 const defaults = ["custom-holidays", "train-booking", "bus-booking"];
 export function serviceImage(slug: string) {

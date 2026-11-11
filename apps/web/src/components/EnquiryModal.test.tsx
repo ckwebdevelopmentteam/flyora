@@ -193,6 +193,44 @@ describe("public capture", () => {
     expect(document.body.style.overflow).toBe("");
     expect(document.documentElement.style.overflow).toBe("");
   });
+  it("expands child age selectors when children are added and includes them in payload and notes", async () => {
+    render(<EnquiryModal isOpen onClose={vi.fn()} />);
+    await fill();
+
+    // Initially no child age selectors
+    expect(screen.queryByLabelText("Age of Child 1")).toBeNull();
+
+    // Set children to 2
+    const kidsInput = screen.getByRole("spinbutton", { name: "Children" });
+    await userEvent.clear(kidsInput);
+    await userEvent.type(kidsInput, "2");
+    fireEvent.blur(kidsInput);
+
+    // Now Child 1 and Child 2 age dropdowns appear
+    const child1Select = await screen.findByLabelText("Age of Child 1");
+    const child2Select = await screen.findByLabelText("Age of Child 2");
+    expect(child1Select).toBeTruthy();
+    expect(child2Select).toBeTruthy();
+
+    // Select ages: Child 1 = 3, Child 2 = 7
+    await userEvent.selectOptions(child1Select, "3");
+    await userEvent.selectOptions(child2Select, "7");
+
+    vi.mocked(fetch).mockResolvedValueOnce(
+      response({ data: { success: true, leadId: "kids-ref" } }, 201),
+    );
+    await userEvent.click(
+      screen.getByRole("button", { name: "Submit Travel Enquiry" }),
+    );
+    await screen.findByText("kids-ref");
+
+    const payload = JSON.parse(String(vi.mocked(fetch).mock.calls[1][1]?.body));
+    expect(payload.numberOfKids).toBe(2);
+    expect(payload.childrenAges).toEqual([3, 7]);
+    expect(payload.notes).toContain(
+      "Children Ages (2): Child 1: 3 yrs, Child 2: 7 yrs",
+    );
+  });
   it("offers callback without a fake WhatsApp link when no number is configured", async () => {
     const open = vi.fn();
     render(<FloatingWhatsApp onOpenEnquiry={open} />);

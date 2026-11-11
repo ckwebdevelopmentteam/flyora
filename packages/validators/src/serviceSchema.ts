@@ -12,6 +12,12 @@ export const createServiceSchema = z
       .trim()
       .max(500, "Use 500 characters or fewer")
       .default(""),
+    imageUrl: z
+      .union([z.string().trim().url(), z.literal(""), z.null()])
+      .optional()
+      .transform((val) => (val ? val : null)),
+    isDomestic: z.boolean().default(true),
+    isInternational: z.boolean().default(true),
     minMarginPercent: z.number().finite().min(0).max(99).optional(),
     isActive: z.boolean().default(true),
   })

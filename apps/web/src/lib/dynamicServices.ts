@@ -446,12 +446,15 @@ export interface BackendServiceRecord {
   name: string;
   slug: string;
   description?: string | null;
+  imageUrl?: string | null;
+  isDomestic?: boolean;
+  isInternational?: boolean;
   isActive?: boolean;
 }
 
 /**
  * Filters backend services according to the trip context (Domestic vs International).
- * STRICTLY respects the services returned by the backend API.
+ * Automatically respects the sector scope (isDomestic & isInternational) saved in the database by admin.
  */
 export function filterServicesByTripMode<T extends BackendServiceRecord>(
   backendServices: T[],
@@ -470,33 +473,41 @@ export function filterServicesByTripMode<T extends BackendServiceRecord>(
     destLower.includes("hajj");
 
   return backendServices.filter((srv) => {
+    // 1. Explicit database configuration from admin
+    if (srv.isDomestic !== undefined || srv.isInternational !== undefined) {
+      if (tripMode === "domestic") {
+        if (srv.isDomestic === false) return false;
+      } else {
+        if (srv.isInternational === false) return false;
+      }
+    } else {
+      // Heuristic fallback for untagged / mock services
+      const slug = (srv.slug || "").toLowerCase();
+      const name = (srv.name || "").toLowerCase();
+      const combined = `${slug} ${name}`;
+
+      if (tripMode === "domestic") {
+        if (combined.includes("visa")) return false;
+        if (combined.includes("umrah") || combined.includes("hajj"))
+          return false;
+      } else {
+        if (combined.includes("bus")) return false;
+        if (combined.includes("train") || combined.includes("rail"))
+          return false;
+      }
+    }
+
+    // 2. Umrah & Hajj destination refinement (if user has picked a specific non-Saudi destination)
     const slug = (srv.slug || "").toLowerCase();
     const name = (srv.name || "").toLowerCase();
     const combined = `${slug} ${name}`;
-
-    if (tripMode === "domestic") {
-      // Domestic trips do not require Visa Assistance
-      if (combined.includes("visa")) return false;
-      // Umrah & Hajj is located in Saudi Arabia, not domestic India
-      if (combined.includes("umrah") || combined.includes("hajj")) return false;
-
-      // Domestic supports: Flights, Trains, Buses, Hotels, Holiday Packages
-      return true;
-    } else {
-      // International trips
-      // Buses and Trains are domestic ground transport, unsupported cross-border from India
-      if (combined.includes("bus")) return false;
-      if (combined.includes("train") || combined.includes("rail")) return false;
-
-      // Umrah & Hajj is only relevant if travelling to Saudi Arabia / pilgrimage destination
-      // or if no specific destination is yet selected
-      if (combined.includes("umrah") || combined.includes("hajj")) {
-        return !destinationCountryOrName || isPilgrimageDestination;
+    if (combined.includes("umrah") || combined.includes("hajj")) {
+      if (destinationCountryOrName && !isPilgrimageDestination) {
+        return false;
       }
-
-      // International supports: Flights, Hotels, Visa Assistance, Holiday Packages
-      return true;
     }
+
+    return true;
   });
 }
 
@@ -876,6 +887,121 @@ export const DYNAMIC_SERVICE_TYPES: Record<string, ServiceTypeDefinition> = {
       },
     ],
   },
+
+  // 8. PASSPORT ASSISTANCE
+  "passport-assistance": {
+    primaryTypeLabel: "Service Scheme",
+    primaryTypes: [
+      {
+        id: "fresh-passport",
+        label: "Fresh Passport (36 / 60 Pages)",
+        description: "New passport application with PSK appointment booking",
+      },
+      {
+        id: "renewal-reissue",
+        label: "Passport Renewal / Re-issue",
+        description: "Validity expired, pages exhausted, or details change",
+      },
+      {
+        id: "tatkal-express",
+        label: "Tatkal Express Fast-Track",
+        description: "Urgent emergency issuance within 1–3 working days",
+        badge: "Urgent",
+      },
+      {
+        id: "minor-passport",
+        label: "Minor Child Passport (Under 18)",
+        description: "Parental consent, school certificates & verification",
+      },
+      {
+        id: "damaged-lost",
+        label: "Damaged / Lost Passport Re-issue",
+        description: "Police complaint assistance & duplicate passport filing",
+      },
+    ],
+    secondaryTypeLabel: "Application Urgency",
+    secondaryTypes: [
+      {
+        id: "normal-scheme",
+        label: "Normal Scheme (Standard)",
+        description: "Standard dispatch within 10–15 working days",
+      },
+      {
+        id: "tatkal-scheme",
+        label: "Tatkal Scheme (Express)",
+        description: "Priority verification & dispatch in 1–3 days",
+      },
+      {
+        id: "pcc-clearance",
+        label: "Police Clearance Certificate (PCC)",
+        description: "For long-term employment, residency & immigration",
+      },
+    ],
+  },
+
+  // 9. TRAVEL INSURANCE
+  "travel-insurance": {
+    primaryTypeLabel: "Destination Coverage",
+    primaryTypes: [
+      {
+        id: "worldwide-all",
+        label: "Worldwide (Incl. USA & Canada)",
+        description: "Comprehensive global cover with high medical limits",
+        badge: "Global",
+      },
+      {
+        id: "worldwide-ex-usa",
+        label: "Worldwide (Excl. USA & Canada)",
+        description: "Global travel cover excluding North America",
+      },
+      {
+        id: "schengen-visa",
+        label: "Schengen Visa Compliant (€30,000+)",
+        description: "100% accepted by European embassies for visa stamping",
+        badge: "Schengen",
+      },
+      {
+        id: "asia-middle-east",
+        label: "Asia, Middle East & SAARC",
+        description:
+          "Affordable regional vacation and business travel protection",
+      },
+      {
+        id: "domestic-india",
+        label: "Domestic Travel Insurance",
+        description: "Inter-state air, rail & road journey coverage",
+      },
+    ],
+    secondaryTypeLabel: "Policy Plan Tier",
+    secondaryTypes: [
+      {
+        id: "individual-silver",
+        label: "Silver Plan ($50,000 Cover)",
+        description: "Essential medical, baggage delay & trip cancellation",
+      },
+      {
+        id: "individual-gold",
+        label: "Gold Plan ($100,000 Cover)",
+        description: "Higher medical allowance & emergency dental cover",
+      },
+      {
+        id: "platinum-vip",
+        label: "Platinum Plan ($250,000–$500,000)",
+        description: "Maximum hospitalization & adventure sport coverage",
+        badge: "VIP",
+      },
+      {
+        id: "family-floater",
+        label: "Family Floater Plan",
+        description: "Single combined policy for couple and up to 2 children",
+      },
+      {
+        id: "senior-citizen",
+        label: "Senior Citizen Plan (Up to 85 Yrs)",
+        description: "Specialized cashless overseas medical emergency cover",
+      },
+    ],
+  },
 };
 
 // Fallback helper to resolve service type definitions flexibly
@@ -893,8 +1019,11 @@ export function getServiceTypeDefinition(
     clean.includes("resort")
   )
     return DYNAMIC_SERVICE_TYPES["hotel-booking"];
-  if (clean.includes("visa") || clean.includes("passport"))
-    return DYNAMIC_SERVICE_TYPES["visa-assistance"];
+  if (clean.includes("passport"))
+    return DYNAMIC_SERVICE_TYPES["passport-assistance"];
+  if (clean.includes("insurance"))
+    return DYNAMIC_SERVICE_TYPES["travel-insurance"];
+  if (clean.includes("visa")) return DYNAMIC_SERVICE_TYPES["visa-assistance"];
   if (clean.includes("train") || clean.includes("rail"))
     return DYNAMIC_SERVICE_TYPES["train-booking"];
   if (clean.includes("bus") || clean.includes("coach"))

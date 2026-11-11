@@ -37,6 +37,9 @@ export const createPackageSchema = z.object({
   inclusions: z.array(z.string()).default([]),
   exclusions: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
+  featuredOrder: z.number().int().default(0).optional(),
+  isPopular: z.boolean().default(false).optional(),
+  popularOrder: z.number().int().default(0).optional(),
   isPublished: z.boolean().default(true),
   metaTitle: z.string().optional(),
   metaDescription: z.string().optional(),
@@ -57,8 +60,12 @@ export const packageFilterSchema = z.object({
   maxPrice: z.coerce.number().optional(),
   search: z.string().optional(),
   page: z.coerce.number().int().min(1).default(1),
-  limit: z.coerce.number().int().min(1).max(50).default(12),
+  limit: z.coerce.number().int().min(1).max(100).default(12),
   featuredOnly: z.preprocess(
+    (value) => (value === "true" ? true : value === "false" ? false : value),
+    z.boolean().optional(),
+  ),
+  popularOnly: z.preprocess(
     (value) => (value === "true" ? true : value === "false" ? false : value),
     z.boolean().optional(),
   ),
@@ -69,3 +76,30 @@ export const packageFilterSchema = z.object({
 });
 
 export type PackageFilterInput = z.infer<typeof packageFilterSchema>;
+
+export const updateShowcaseConfigSchema = z.object({
+  popularTitle: z.string().min(2).max(100).optional(),
+  popularEyebrow: z.string().max(100).optional(),
+  popularActive: z.boolean().optional(),
+  featuredTitle: z.string().min(2).max(100).optional(),
+  featuredEyebrow: z.string().max(100).optional(),
+  featuredActive: z.boolean().optional(),
+});
+export type UpdateShowcaseConfigInput = z.infer<
+  typeof updateShowcaseConfigSchema
+>;
+
+export const reorderShowcaseSchema = z.object({
+  section: z.enum(["popular", "featured"]),
+  itemIds: z.array(z.string().uuid()),
+});
+export type ReorderShowcaseInput = z.infer<typeof reorderShowcaseSchema>;
+
+export const togglePackageShowcaseSchema = z.object({
+  packageId: z.string().uuid(),
+  section: z.enum(["popular", "featured"]),
+  active: z.boolean(),
+});
+export type TogglePackageShowcaseInput = z.infer<
+  typeof togglePackageShowcaseSchema
+>;

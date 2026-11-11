@@ -1,8 +1,12 @@
 "use client";
 
-import { loadPackages, resolveService } from "../../lib/service-catalog";
+import {
+  loadPackages,
+  loadShowcase,
+  resolveService,
+} from "../../lib/service-catalog";
 import { useServicesCatalog } from "../../lib/use-services-catalog";
-import type { PackageSummary } from "@flyora/types";
+import type { PackageSummary, ShowcaseData } from "@flyora/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -47,7 +51,7 @@ export const trendingPackages: PackageCardItem[] = [
     duration: "4D & 3N",
     price: 28500,
     originalPrice: 31667,
-    bgColor: "#4a4c1f",
+    bgColor: "#232f3e",
     rating: 4.98,
     reviewCount: 142,
     badge: "Trending",
@@ -62,7 +66,7 @@ export const trendingPackages: PackageCardItem[] = [
     duration: "5D & 4N",
     price: 28414,
     originalPrice: 31571,
-    bgColor: "#617fae",
+    bgColor: "#2a394a",
     rating: 4.97,
     reviewCount: 198,
     badge: "Trending",
@@ -77,7 +81,7 @@ export const trendingPackages: PackageCardItem[] = [
     duration: "6D & 5N",
     price: 35357,
     originalPrice: 39286,
-    bgColor: "#68747f",
+    bgColor: "#2e3b48",
     rating: 4.99,
     reviewCount: 165,
     badge: "Hot Pick",
@@ -92,7 +96,7 @@ export const trendingPackages: PackageCardItem[] = [
     duration: "3D & 2N",
     price: 12214,
     originalPrice: 13571,
-    bgColor: "#36342a",
+    bgColor: "#20282e",
     rating: 4.93,
     reviewCount: 210,
     badge: "Trending",
@@ -107,7 +111,7 @@ export const trendingPackages: PackageCardItem[] = [
     duration: "6D & 5N",
     price: 32143,
     originalPrice: 35714,
-    bgColor: "#313719",
+    bgColor: "#1c2a20",
     rating: 4.96,
     reviewCount: 174,
     badge: "Wildlife",
@@ -122,7 +126,7 @@ export const trendingPackages: PackageCardItem[] = [
     duration: "6D & 5N",
     price: 26500,
     originalPrice: 30500,
-    bgColor: "#3d4b52",
+    bgColor: "#22313b",
     rating: 4.96,
     reviewCount: 215,
     badge: "Trending",
@@ -143,7 +147,7 @@ export const popularPackages: PackageCardItem[] = [
     duration: "8D & 7N",
     price: 65999,
     originalPrice: 74000,
-    bgColor: "#384e27",
+    bgColor: "#1a2c38",
     rating: 4.98,
     reviewCount: 184,
     badge: "Popular",
@@ -158,7 +162,7 @@ export const popularPackages: PackageCardItem[] = [
     duration: "6D & 5N",
     price: 44311,
     originalPrice: 49235,
-    bgColor: "#2e4a36",
+    bgColor: "#1d3238",
     rating: 4.97,
     reviewCount: 165,
     badge: "Popular",
@@ -224,16 +228,150 @@ export const popularPackages: PackageCardItem[] = [
   },
 ];
 
-// Helper to convert hex to rgba for smooth themed color gradient fade
-function hexToRgba(hex: string, alpha: number): string {
-  const cleanHex = hex.replace("#", "");
+// Helper to convert hex or rgb/rgba to rgba for smooth themed color gradient fade
+function toRgba(color: string, alpha: number): string {
+  if (!color) return `rgba(24, 29, 36, ${alpha})`;
+  const rgbMatch = color.match(/rgba?\s*\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if (rgbMatch) {
+    return `rgba(${rgbMatch[1]}, ${rgbMatch[2]}, ${rgbMatch[3]}, ${alpha})`;
+  }
+  const cleanHex = color.replace("#", "").trim();
   if (cleanHex.length === 6) {
     const r = parseInt(cleanHex.substring(0, 2), 16);
     const g = parseInt(cleanHex.substring(2, 4), 16);
     const b = parseInt(cleanHex.substring(4, 6), 16);
     return `rgba(${r}, ${g}, ${b}, ${alpha})`;
   }
-  return hex;
+  if (cleanHex.length === 3) {
+    const r = parseInt(cleanHex[0] + cleanHex[0], 16);
+    const g = parseInt(cleanHex[1] + cleanHex[1], 16);
+    const b = parseInt(cleanHex[2] + cleanHex[2], 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+  return color;
+}
+
+// Smart luxury contextual default matching the package destination
+function getSmartFallbackBg(item: {
+  location?: string;
+  title?: string;
+}): string {
+  const text = `${item.location || ""} ${item.title || ""}`.toLowerCase();
+  if (
+    /beach|island|ocean|sea|coast|bali|maldives|phuket|goa|water|marine/.test(
+      text,
+    )
+  ) {
+    return "#142634"; // Oceanic deep slate
+  }
+  if (
+    /snow|mountain|alps|kashmir|gulmarg|srinagar|ladakh|switzerland|himalaya|manali|hill/.test(
+      text,
+    )
+  ) {
+    return "#1d2530"; // Alpine slate blue
+  }
+  if (/desert|dubai|abu dhabi|safari|egypt|dune|gold/.test(text)) {
+    return "#261e19"; // Desert twilight espresso
+  }
+  if (
+    /forest|jungle|rainforest|kaziranga|wildlife|nature|kerala|munnar|wayanad/.test(
+      text,
+    )
+  ) {
+    return "#17261d"; // Deep pine emerald
+  }
+  if (
+    /city|singapore|malaysia|kuala lumpur|bangkok|vietnam|tokyo|urban/.test(
+      text,
+    )
+  ) {
+    return "#1b222c"; // Modern urban graphite
+  }
+  return "#181d24"; // Sleek dark charcoal slate
+}
+
+// Dynamically extract the dominant boundary color from the bottom of an image
+function extractImageBottomColor(src: string): Promise<string | null> {
+  return new Promise((resolve) => {
+    if (!src || typeof window === "undefined") {
+      resolve(null);
+      return;
+    }
+    const img = new window.Image();
+    img.crossOrigin = "anonymous";
+    img.decoding = "async";
+
+    img.onload = () => {
+      try {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d", { willReadFrequently: true });
+        if (!ctx) {
+          resolve(null);
+          return;
+        }
+
+        const naturalW = img.naturalWidth || img.width;
+        const naturalH = img.naturalHeight || img.height;
+        if (!naturalW || !naturalH) {
+          resolve(null);
+          return;
+        }
+
+        // Sample the bottom 25% where the image seamlessly merges with card background
+        const sampleH = Math.max(1, Math.floor(naturalH * 0.25));
+        const startY = naturalH - sampleH;
+
+        canvas.width = 16;
+        canvas.height = 16;
+        ctx.drawImage(img, 0, startY, naturalW, sampleH, 0, 0, 16, 16);
+
+        const imgData = ctx.getImageData(0, 0, 16, 16).data;
+        let r = 0,
+          g = 0,
+          b = 0,
+          count = 0;
+
+        for (let i = 0; i < imgData.length; i += 4) {
+          const a = imgData[i + 3];
+          if (a > 128) {
+            r += imgData[i];
+            g += imgData[i + 1];
+            b += imgData[i + 2];
+            count++;
+          }
+        }
+
+        if (count === 0) {
+          resolve(null);
+          return;
+        }
+
+        const avgR = r / count;
+        const avgG = g / count;
+        const avgB = b / count;
+
+        // Darken tone to guarantee excellent WCAG contrast (> 4.5:1) for white text and chips
+        const lum = (0.299 * avgR + 0.587 * avgG + 0.114 * avgB) / 255;
+        const factor =
+          lum > 0.22 ? Math.min(0.72, 0.2 / Math.max(lum, 0.05)) : 0.88;
+
+        const finalR = Math.max(14, Math.min(220, Math.round(avgR * factor)));
+        const finalG = Math.max(14, Math.min(220, Math.round(avgG * factor)));
+        const finalB = Math.max(18, Math.min(220, Math.round(avgB * factor)));
+
+        resolve(`rgb(${finalR}, ${finalG}, ${finalB})`);
+      } catch {
+        resolve(null);
+      }
+    };
+
+    img.onerror = () => {
+      resolve(null);
+    };
+
+    img.src = src;
+  });
 }
 
 // =============================================================================
@@ -249,7 +387,28 @@ export const PackageCard = ({
   const originalPrice = packageItem.originalPrice ?? packageItem.price;
   const formattedPrice = `₹${packageItem.price.toLocaleString("en-IN")}/-`;
   const formattedOriginalPrice = `₹${originalPrice.toLocaleString("en-IN")}/-`;
-  const cardBg = packageItem.bgColor || "#4a4c1f";
+
+  const [extractedBg, setExtractedBg] = useState<string | null>(null);
+
+  useEffect(() => {
+    let canceled = false;
+    if (packageItem.image) {
+      extractImageBottomColor(packageItem.image).then((color) => {
+        if (!canceled && color) {
+          setExtractedBg(color);
+        }
+      });
+    }
+    return () => {
+      canceled = true;
+    };
+  }, [packageItem.image]);
+
+  const cardBg =
+    extractedBg ||
+    (packageItem.bgColor && packageItem.bgColor !== "#4a4c1f"
+      ? packageItem.bgColor
+      : getSmartFallbackBg(packageItem));
 
   return (
     <div
@@ -271,7 +430,7 @@ export const PackageCard = ({
           className="absolute inset-x-0 bottom-0 pointer-events-none"
           style={{
             height: "105px",
-            background: `linear-gradient(to top, ${hexToRgba(cardBg, 1)} 0%, ${hexToRgba(cardBg, 0.92)} 35%, ${hexToRgba(cardBg, 0.45)} 70%, transparent 100%)`,
+            background: `linear-gradient(to top, ${toRgba(cardBg, 1)} 0%, ${toRgba(cardBg, 0.92)} 35%, ${toRgba(cardBg, 0.45)} 70%, transparent 100%)`,
           }}
         />
 
@@ -454,21 +613,10 @@ export const PackageCarouselSection = ({
               <Link
                 className="block rounded-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#002f89] focus-visible:ring-offset-2"
                 href={item.href || "/tours"}
-                aria-label={
-                  onEnquire ? `View itinerary for ${item.title}` : undefined
-                }
+                aria-label={`View itinerary for ${item.title}`}
               >
                 <PackageCard packageItem={item} />
               </Link>
-              {onEnquire && (
-                <button
-                  type="button"
-                  onClick={() => onEnquire(item.id)}
-                  className="mt-3 w-full rounded-lg bg-[#002f89] py-2.5 text-sm font-semibold text-white"
-                >
-                  Enquire Now
-                </button>
-              )}
             </div>
           ))}
         </div>
@@ -494,16 +642,26 @@ export default function CarouselCards({
     retry: retryServices,
   } = useServicesCatalog();
   const [packages, setPackages] = useState<PackageSummary[]>([]);
+  const [showcase, setShowcase] = useState<ShowcaseData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
   useEffect(() => {
     const controller = new AbortController();
-    loadPackages(
-      AbortSignal.any([controller.signal, AbortSignal.timeout(15000)]),
-    )
-      .then((items) => {
-        if (!controller.signal.aborted) setPackages(items);
+    const timeoutSignal = AbortSignal.timeout(15000);
+    const combined = AbortSignal.any([controller.signal, timeoutSignal]);
+
+    Promise.allSettled([loadPackages(combined), loadShowcase(combined)])
+      .then(([pkgsResult, showcaseResult]) => {
+        if (controller.signal.aborted) return;
+        if (pkgsResult.status === "fulfilled") {
+          setPackages(pkgsResult.value);
+        } else {
+          setError(true);
+        }
+        if (showcaseResult.status === "fulfilled" && showcaseResult.value) {
+          setShowcase(showcaseResult.value);
+        }
       })
       .catch(() => {
         if (!controller.signal.aborted) setError(true);
@@ -515,7 +673,7 @@ export default function CarouselCards({
   }, [attempt]);
   const holiday = resolveService(services, "holiday-packages");
   const current = packages.filter(
-    (pkg) => pkg.isPublished && pkg.serviceId === holiday?.id,
+    (pkg) => pkg.isPublished && (!holiday?.id || pkg.serviceId === holiday.id),
   );
   const mapItem = (pkg: PackageSummary): PackageCardItem => ({
     id: pkg.id,
@@ -529,10 +687,31 @@ export default function CarouselCards({
   });
   const enquire = onEnquire
     ? (id: string) => {
-        const pkg = current.find((pkg) => pkg.id === id);
+        const pkg =
+          showcase?.popular.find((p) => p.id === id) ||
+          showcase?.featured.find((p) => p.id === id) ||
+          current.find((p) => p.id === id);
         if (pkg) onEnquire(pkg);
       }
     : undefined;
+
+  const popularItems = showcase
+    ? showcase.popular.map(mapItem)
+    : current.map(mapItem);
+
+  const popularTitle =
+    showcase?.config?.popularTitle || holiday?.name || "Holiday packages";
+  const popularEyebrow =
+    showcase?.config?.popularEyebrow || "PLAN YOUR NEXT TRIP";
+
+  const featuredItems = showcase
+    ? showcase.featured.map(mapItem)
+    : current.filter((pkg) => pkg.isFeatured).map(mapItem);
+
+  const featuredTitle = showcase?.config?.featuredTitle || "Featured packages";
+  const featuredEyebrow =
+    showcase?.config?.featuredEyebrow || "FLYORA CURATED JOURNEYS";
+
   return (
     <section
       id="holiday-packages"
@@ -558,25 +737,30 @@ export default function CarouselCards({
         <p role="status" className="px-6">
           Loading packages…
         </p>
-      ) : !current.length ? (
+      ) : !popularItems.length && !featuredItems.length ? (
         <p className="px-6">New holiday packages are coming soon.</p>
       ) : (
         <div className="w-full space-y-8">
-          <PackageCarouselSection
-            items={current.map(mapItem)}
-            title="Holiday packages"
-            eyebrow="PLAN YOUR NEXT TRIP"
-            viewAllHref="/tours"
-            onEnquire={enquire}
-          />
-          {current.some((pkg) => pkg.isFeatured) && (
-            <PackageCarouselSection
-              items={current.filter((pkg) => pkg.isFeatured).map(mapItem)}
-              title="Featured packages"
-              viewAllHref="/tours"
-              onEnquire={enquire}
-            />
-          )}
+          {popularItems.length > 0 &&
+            showcase?.config?.popularActive !== false && (
+              <PackageCarouselSection
+                items={popularItems}
+                title={popularTitle}
+                eyebrow={popularEyebrow}
+                viewAllHref="/tours"
+                onEnquire={enquire}
+              />
+            )}
+          {featuredItems.length > 0 &&
+            showcase?.config?.featuredActive !== false && (
+              <PackageCarouselSection
+                items={featuredItems}
+                title={featuredTitle}
+                eyebrow={featuredEyebrow}
+                viewAllHref="/tours"
+                onEnquire={enquire}
+              />
+            )}
         </div>
       )}
     </section>

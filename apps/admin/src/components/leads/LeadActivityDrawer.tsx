@@ -18,6 +18,12 @@ interface LeadActivityDrawerProps {
   onClose: () => void;
 }
 
+function parseChildrenAges(notes?: string | null): string | null {
+  if (!notes) return null;
+  const match = notes.match(/Children Ages(?:\s*\(\d+\))?:\s*([^\n]+)/i);
+  return match ? match[1].trim() : null;
+}
+
 export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
   leadId,
   isOpen,
@@ -195,6 +201,11 @@ export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
                   <span className="font-medium text-zinc-800">
                     {lead.numberOfAdults} Adults, {lead.numberOfKids} Kids
                   </span>
+                  {parseChildrenAges(lead.customerNotes) && (
+                    <span className="text-[11px] text-zinc-500 font-normal block mt-0.5">
+                      {parseChildrenAges(lead.customerNotes)}
+                    </span>
+                  )}
                 </div>
               </div>
 

@@ -13,6 +13,7 @@ export const publicEnquirySchema = z.object({
   travelDate: z.string().optional(),
   numberOfAdults: z.number().int().min(1).default(1),
   numberOfKids: z.number().int().min(0).default(0),
+  childrenAges: z.array(z.number().int().min(0).max(17)).optional(),
   notes: z.string().max(1000).optional(),
   turnstileToken: z.string().optional(),
 });

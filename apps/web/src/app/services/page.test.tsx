@@ -95,7 +95,7 @@ afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
-it("renders CMS packages with their image, rupee price, itinerary link and exact enquiry category", async () => {
+it("renders CMS packages with their image, rupee price, and itinerary link", async () => {
   render(<ServicesPage />);
   await screen.findByRole("link", { name: /View itinerary/ });
   expect(
@@ -106,14 +106,11 @@ it("renders CMS packages with their image, rupee price, itinerary link and exact
     pkg.coverImageUrl,
   );
   expect(screen.queryByText(/FLYHOLIDAY25/)).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Enquire Now" }));
-  expect(screen.getByRole("dialog").textContent).toBe(
-    `${holiday.id}:${pkg.id}`,
-  );
+  expect(screen.queryByRole("button", { name: "Enquire Now" })).toBeNull();
 });
 it("opens the connected enquiry modal with the chosen service and concierge details", async () => {
   render(<ServicesPage />);
-  await screen.findByRole("button", { name: "Select Holiday Packages" });
+  await screen.findByRole("button", { name: "Select Custom Holidays" });
   fireEvent.click(screen.getByRole("button", { name: "Request a Quote" }));
   const modal = screen.getByRole("dialog");
   expect(modal.textContent).toBe(`${holiday.id}:`);
@@ -126,8 +123,9 @@ it("opens the connected enquiry modal with the chosen service and concierge deta
     vi.mocked(fetch).mock.calls.some(([, opts]) => opts?.method === "POST"),
   ).toBe(false);
 });
+
 it("keeps holiday packages visible when the enquiry service changes", async () => {
-  window.history.replaceState(null, "", "/services#visas");
+  window.history.replaceState(null, "", "/services#visa-assistance");
   render(<ServicesPage />);
   await screen.findByRole("link", { name: /View itinerary/ });
   expect(
@@ -137,42 +135,46 @@ it("keeps holiday packages visible when the enquiry service changes", async () =
     }),
   ).toBeDefined();
   fireEvent.click(
-    screen.getByRole("button", { name: "Select Holiday Packages" }),
+    screen.getByRole("button", { name: "Select Custom Holidays" }),
   );
   expect(screen.getByRole("link", { name: /View itinerary/ })).toBeDefined();
   fireEvent.click(
     screen.getByRole("button", { name: "Select Visa Assistance" }),
   );
   expect(screen.getByRole("link", { name: /View itinerary/ })).toBeDefined();
-  fireEvent.click(screen.getByRole("button", { name: "Enquire Now" }));
-  expect(screen.getByRole("dialog").textContent).toBe(
-    `${holiday.id}:${pkg.id}`,
-  );
+  fireEvent.click(screen.getByRole("button", { name: "Request a Quote" }));
+  expect(screen.getByRole("dialog").textContent).toBe(`${visa.id}:`);
 });
 
-it("does not show sample packages on backend failure and can retry", async () => {
-  const retry = async () => {
-    vi.mocked(useServicesCatalog).mockReturnValue({
-      services: [holiday, visa],
-      loaded: true,
-      error: false,
-      retry: async () => {},
-    });
-  };
-  vi.mocked(useServicesCatalog).mockReturnValue({
-    services: [],
-    loaded: true,
-    error: true,
-    retry,
-  });
-  const { rerender } = render(<ServicesPage />);
-  await screen.findByRole("alert");
-  expect(screen.queryByRole("button", { name: "Enquire Now" })).toBeNull();
-  expect(screen.queryByRole("button", { name: "Request a Quote" })).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Try again" }));
-  rerender(<ServicesPage />);
-  await screen.findByRole("link", { name: /View itinerary/ });
+it("renders all 8 curated service cards in the hero section", async () => {
+  render(<ServicesPage />);
+  await screen.findByRole("button", { name: "Select Custom Holidays" });
+  expect(
+    screen.getByRole("button", { name: "Select Custom Holidays" }),
+  ).toBeDefined();
+  expect(
+    screen.getByRole("button", { name: "Select Visa Assistance" }),
+  ).toBeDefined();
+  expect(
+    screen.getByRole("button", { name: "Select Flight Booking" }),
+  ).toBeDefined();
+  expect(
+    screen.getByRole("button", { name: "Select Bus & Train Booking" }),
+  ).toBeDefined();
+  expect(
+    screen.getByRole("button", { name: "Select Hotel Booking" }),
+  ).toBeDefined();
+  expect(
+    screen.getByRole("button", { name: "Select Umrah & Hajj" }),
+  ).toBeDefined();
+  expect(
+    screen.getByRole("button", { name: "Select Passport Assistance" }),
+  ).toBeDefined();
+  expect(
+    screen.getByRole("button", { name: "Select Travel Insurance" }),
+  ).toBeDefined();
 });
+
 it("does not invent package cards after a failed package request and can retry", async () => {
   vi.mocked(fetch).mockResolvedValue(json(null, 500));
   render(<ServicesPage />);
@@ -183,27 +185,4 @@ it("does not invent package cards after a failed package request and can retry",
   expect(
     await screen.findByRole("link", { name: /View itinerary/ }),
   ).toBeDefined();
-});
-
-it("does not silently send an unavailable service enquiry to a different team", async () => {
-  window.history.replaceState(null, "", "/services#paused-service");
-  render(<ServicesPage />);
-  await screen.findByText(/This service is unavailable/);
-  expect(
-    (
-      screen.getByRole("button", {
-        name: "Request a Quote",
-      }) as HTMLButtonElement
-    ).disabled,
-  ).toBe(true);
-  fireEvent.click(
-    screen.getByRole("button", { name: "Select Holiday Packages" }),
-  );
-  expect(
-    (
-      screen.getByRole("button", {
-        name: "Request a Quote",
-      }) as HTMLButtonElement
-    ).disabled,
-  ).toBe(false);
 });

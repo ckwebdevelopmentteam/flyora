@@ -47,6 +47,9 @@ model Service {
   name             String        @unique // e.g. "Holiday Packages", "Visa Assistance", "Flight Booking", "Umrah & Hajj", "Hotel Booking"
   slug             String        @unique
   description      String?
+  imageUrl         String?
+  isDomestic       Boolean       @default(true)
+  isInternational  Boolean       @default(true)
   isActive         Boolean       @default(true)
   minMarginPercent Float         @default(10.0)
   displayOrder     Int           @default(0)
@@ -94,6 +97,9 @@ model Package {
   inclusions       String[]
   exclusions       String[]
   isFeatured       Boolean   @default(false)
+  featuredOrder    Int       @default(0)
+  isPopular        Boolean   @default(false)
+  popularOrder     Int       @default(0)
   isPublished      Boolean   @default(true)
 
   metaTitle        String?
@@ -277,3 +283,15 @@ model AuthSession {
 
   @@index([userId, revokedAt, expiresAt])
 }
+
+model ShowcaseConfig {
+  id              String   @id @default("default")
+  popularTitle    String   @default("Popular packages")
+  popularEyebrow  String   @default("PLAN YOUR NEXT TRIP")
+  popularActive   Boolean  @default(true)
+  featuredTitle   String   @default("Featured packages")
+  featuredEyebrow String   @default("FLYORA CURATED JOURNEYS")
+  featuredActive  Boolean  @default(true)
+  updatedAt       DateTime @updatedAt
+}
+

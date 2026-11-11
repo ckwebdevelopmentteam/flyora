@@ -35,6 +35,9 @@ export interface ServiceSummary {
   slug: string;
   minMarginPercent: number;
   description?: string | null;
+  imageUrl?: string | null;
+  isDomestic?: boolean;
+  isInternational?: boolean;
   isActive?: boolean;
   displayOrder?: number;
 }

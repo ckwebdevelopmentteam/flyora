@@ -34,7 +34,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onSecondaryCtaClick,
   secondaryCtaHref = "#destinations",
   onOpenEnquiry,
-  defaultTripMode,
+  defaultTripMode = "international",
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
@@ -191,9 +191,14 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
         <div
           style={{
             opacity: Math.max(0, 1 - progress * 2.8),
-            transform: `translate3d(0, -${24 + progress * 140}px, 0)`,
+            transform:
+              progress > 0
+                ? `translate3d(0, -${progress * 140}px, 0)`
+                : undefined,
           }}
-          className="relative z-30 w-full max-w-[1360px] mx-auto px-4 sm:px-5 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none will-change-transform"
+          className={`relative z-30 w-full max-w-[1360px] mx-auto px-4 sm:px-5 -mt-6 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none ${
+            progress > 0 ? "will-change-transform" : ""
+          }`}
         >
           {/* Eyebrow Tagline */}
           <span className="animate-hero-eyebrow font-heading text-[11px] sm:text-xs lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">

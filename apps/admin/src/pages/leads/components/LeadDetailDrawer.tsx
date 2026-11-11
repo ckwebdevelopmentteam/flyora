@@ -77,6 +77,12 @@ const STATUS_CONFIG: Record<
   },
 };
 
+function parseChildrenAges(notes?: string | null): string | null {
+  if (!notes) return null;
+  const match = notes.match(/Children Ages(?:\s*\(\d+\))?:\s*([^\n]+)/i);
+  return match ? match[1].trim() : null;
+}
+
 export const LeadDetailDrawer = ({
   lead,
   activities,
@@ -425,6 +431,11 @@ export const LeadDetailDrawer = ({
                           ? `, ${lead.numberOfKids} Kids`
                           : ""}
                       </p>
+                      {parseChildrenAges(lead.customerNotes) && (
+                        <p className="text-[11px] text-zinc-500 font-normal pl-5 mt-0.5">
+                          {parseChildrenAges(lead.customerNotes)}
+                        </p>
+                      )}
                     </div>
                   </div>
 

@@ -1,14 +1,24 @@
-import type { PackageSummary, ServiceSummary } from "@flyora/types";
+import type {
+  PackageSummary,
+  ServiceSummary,
+  ShowcaseData,
+} from "@flyora/types";
 
 const aliases: Record<string, string> = {
   "custom-holidays": "holiday-packages",
   holidays: "holiday-packages",
   visas: "visa-assistance",
   flights: "flight-booking",
-  trains: "train-booking",
+  trains: "bus-booking",
   buses: "bus-booking",
+  "bus-train-booking": "bus-booking",
+  "train-booking": "bus-booking",
   "umrah-packages": "umrah-hajj",
   "hajj-packages": "umrah-hajj",
+  "passport-assistance": "escort-parking",
+  passport: "escort-parking",
+  insurance: "travel-insurance",
+  hotels: "hotel-booking",
 };
 const slugify = (value: string) =>
   value
@@ -72,4 +82,23 @@ export async function loadPackages(
     items.push(...body.data.items);
   }
   return items;
+}
+
+export async function loadShowcase(
+  signal: AbortSignal,
+): Promise<ShowcaseData | null> {
+  try {
+    const res = await fetch(`${publicApiUrl()}/packages/showcase`, {
+      signal,
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const body = await res.json();
+    if (body.data?.config && Array.isArray(body.data?.popular)) {
+      return body.data as ShowcaseData;
+    }
+    return null;
+  } catch {
+    return null;
+  }
 }

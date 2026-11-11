@@ -2,8 +2,11 @@ import { apiClient } from "./apiClient";
 import type {
   PackageDetails,
   PaginatedPackages,
+  PackageSummary,
   ItineraryDay,
   DestinationType,
+  ShowcaseData,
+  ShowcaseConfig,
 } from "@flyora/types";
 
 export interface PackageFilterParams {
@@ -124,7 +127,7 @@ export const packagesApi = {
   async getPresignedUploadUrl(
     filename: string,
     contentType: string,
-    folder: "packages" | "destinations" | "avatars" = "packages",
+    folder: "packages" | "destinations" | "avatars" | "services" = "packages",
   ): Promise<PresignedUploadResponse> {
     return apiClient.post<PresignedUploadResponse>("/storage/upload-url", {
       filename,
@@ -177,6 +180,62 @@ export const packagesApi = {
       };
 
       xhr.send(file);
+    });
+  },
+
+  /**
+   * Fetch curated showcase packages & section config
+   */
+  async getShowcase(): Promise<ShowcaseData> {
+    return apiClient.get<ShowcaseData>("/packages/showcase");
+  },
+
+  /**
+   * Update showcase section titles / active states
+   */
+  async updateShowcaseConfig(
+    payload: Partial<ShowcaseConfig>,
+  ): Promise<ShowcaseConfig> {
+    return apiClient.put<ShowcaseConfig>("/packages/showcase/config", payload);
+  },
+
+  /**
+   * Reorder packages in popular or featured section
+   */
+  async reorderShowcase(
+    section: "popular" | "featured",
+    itemIds: string[],
+  ): Promise<{ message: string }> {
+    return apiClient.put<{ message: string }>("/packages/showcase/reorder", {
+      section,
+      itemIds,
+    });
+  },
+
+  /**
+   * Add or remove a package from popular or featured section
+   */
+  async togglePackageShowcase(
+    packageId: string,
+    section: "popular" | "featured",
+    active: boolean,
+  ): Promise<{ message: string }> {
+    return apiClient.put<{ message: string }>("/packages/showcase/toggle", {
+      packageId,
+      section,
+      active,
+    });
+  },
+
+  /**
+   * Hide / publish package
+   */
+  async togglePackagePublish(
+    id: string,
+    isPublished: boolean,
+  ): Promise<PackageSummary> {
+    return apiClient.patch<PackageSummary>(`/packages/${id}/publish`, {
+      isPublished,
     });
   },
 };

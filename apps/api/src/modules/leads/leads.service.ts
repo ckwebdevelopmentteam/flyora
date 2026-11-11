@@ -117,6 +117,23 @@ export class LeadsService {
     });
 
     // 4. Create new unassigned lead in the pool
+    let customerNotes = data.notes?.trim() || null;
+    if (
+      data.childrenAges &&
+      data.childrenAges.length > 0 &&
+      (!customerNotes || !customerNotes.includes("Children Ages"))
+    ) {
+      const agesSummary = data.childrenAges
+        .map(
+          (age, i) =>
+            `Child ${i + 1}: ${age === 0 ? "Under 1 yr (Infant)" : `${age} yrs`}`,
+        )
+        .join(", ");
+      customerNotes = customerNotes
+        ? `${customerNotes}\nChildren Ages: ${agesSummary}`
+        : `Children Ages: ${agesSummary}`;
+    }
+
     const lead = await this.fastify.prisma.lead.create({
       data: {
         customerId: customer.id,
@@ -125,7 +142,7 @@ export class LeadsService {
         assignedToId: null, // Unassigned in Service Pool
         status: "NEW",
         source: "WEBSITE_FORM",
-        customerNotes: data.notes?.trim() || null,
+        customerNotes,
         travelDate: data.travelDate ? new Date(data.travelDate) : null,
         numberOfAdults: data.numberOfAdults ?? 1,
         numberOfKids: data.numberOfKids ?? 0,

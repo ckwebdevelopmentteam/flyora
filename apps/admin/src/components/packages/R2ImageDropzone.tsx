@@ -14,7 +14,7 @@ export function validatePackageImages(files: File[]) {
 }
 async function upload(
   file: File,
-  folder: "packages" | "destinations",
+  folder: "packages" | "destinations" | "services",
   progress?: (percent: number) => void,
 ) {
   const result = await packagesApi.getPresignedUploadUrl(
@@ -34,7 +34,7 @@ type BusyProps = {
 interface CoverProps extends BusyProps {
   value?: string;
   onChange: (url: string) => void;
-  folder?: "packages" | "destinations";
+  folder?: "packages" | "destinations" | "services";
   label?: string;
   helperText?: string;
 }
@@ -155,7 +155,7 @@ export function R2ImageDropzone({
 interface GalleryProps extends BusyProps {
   urls: string[];
   onChange: (urls: string[]) => void;
-  folder?: "packages" | "destinations";
+  folder?: "packages" | "destinations" | "services";
   onChooseCover?: (url: string) => void;
   coverUrl?: string;
 }

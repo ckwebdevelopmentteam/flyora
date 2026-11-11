@@ -184,6 +184,14 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     const previousFocus = document.activeElement as HTMLElement | null;
     element?.showModal();
 
+    // Prevent wheel, touch, and key events from bubbling outside the modal to page-level scroll hijackers
+    const stopPropagation = (e: Event) => {
+      e.stopPropagation();
+    };
+    element?.addEventListener("wheel", stopPropagation, { passive: true });
+    element?.addEventListener("touchmove", stopPropagation, { passive: true });
+    element?.addEventListener("keydown", stopPropagation);
+
     // 1. Lock background scrolling on html and body
     const originalBodyOverflow = document.body.style.overflow;
     const originalHtmlOverflow = document.documentElement.style.overflow;
@@ -200,6 +208,9 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     document.documentElement.style.overflow = "hidden";
 
     return () => {
+      element?.removeEventListener("wheel", stopPropagation);
+      element?.removeEventListener("touchmove", stopPropagation);
+      element?.removeEventListener("keydown", stopPropagation);
       element?.close();
       submission.current?.abort();
       previousFocus?.focus();
@@ -211,6 +222,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
 
   // Forward scroll wheel on header to the scrollable content container
   const handleHeaderWheel = (e: React.WheelEvent) => {
+    e.stopPropagation();
     if (contentRef.current) {
       contentRef.current.scrollTop += e.deltaY;
     }
@@ -258,6 +270,29 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
   const [kidsInput, setKidsInput] = useState(
     String(formData.numberOfKids ?? 0),
   );
+  const [childrenAges, setChildrenAges] = useState<number[]>(() =>
+    Array(formData.numberOfKids ?? 0).fill(5),
+  );
+
+  const syncChildrenAges = (count: number) => {
+    setChildrenAges((prev) => {
+      if (count <= 0) return [];
+      if (count === prev.length) return prev;
+      if (count > prev.length) {
+        const added = Array(count - prev.length).fill(5);
+        return [...prev, ...added];
+      }
+      return prev.slice(0, count);
+    });
+  };
+
+  const handleChildAgeChange = (index: number, age: number) => {
+    setChildrenAges((prev) => {
+      const copy = [...prev];
+      copy[index] = age;
+      return copy;
+    });
+  };
 
   const handleAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
@@ -286,7 +321,9 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
       if (val !== "") {
         const parsed = parseInt(val, 10);
         if (!isNaN(parsed)) {
-          setFormData((prev) => ({ ...prev, numberOfKids: parsed }));
+          const clamped = Math.min(20, Math.max(0, parsed));
+          setFormData((prev) => ({ ...prev, numberOfKids: clamped }));
+          syncChildrenAges(clamped);
         }
       }
     }
@@ -297,6 +334,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     const clamped = isNaN(parsed) || parsed < 0 ? 0 : Math.min(20, parsed);
     setKidsInput(String(clamped));
     setFormData((prev) => ({ ...prev, numberOfKids: clamped }));
+    syncChildrenAges(clamped);
   };
 
   const stepAdults = (delta: number) => {
@@ -311,6 +349,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     const next = Math.min(20, Math.max(0, current + delta));
     setKidsInput(String(next));
     setFormData((prev) => ({ ...prev, numberOfKids: next }));
+    syncChildrenAges(next);
   };
 
   const [validationErrors, setValidationErrors] = useState<
@@ -489,6 +528,18 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
         detailLines.push(`Preference: ${customTierOrClass}`);
     }
 
+    if (formData.numberOfKids && formData.numberOfKids > 0) {
+      const agesSummary = Array.from({ length: formData.numberOfKids })
+        .map((_, i) => {
+          const age = childrenAges[i] ?? 5;
+          return `Child ${i + 1}: ${age === 0 ? "Under 1 yr" : `${age} yrs`}`;
+        })
+        .join(", ");
+      detailLines.push(
+        `Children Ages (${formData.numberOfKids}): ${agesSummary}`,
+      );
+    }
+
     const userNotes = (result.data.notes || "").trim();
     const serviceName = selectedSrv?.name || "Service";
     const compiledNotes =
@@ -499,8 +550,16 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
           )
         : userNotes;
 
+    const finalChildrenAges =
+      formData.numberOfKids && formData.numberOfKids > 0
+        ? Array.from({ length: formData.numberOfKids }).map(
+            (_, i) => childrenAges[i] ?? 5,
+          )
+        : undefined;
+
     const payload = {
       ...result.data,
+      childrenAges: finalChildrenAges,
       notes: compiledNotes || undefined,
     };
 
@@ -568,6 +627,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
     setSubmissionSuccess(null);
     setServerError(null);
     setValidationErrors({});
+    setChildrenAges([]);
     close();
   };
 
@@ -664,7 +724,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
         <div
           ref={contentRef}
           data-lenis-prevent="true"
-          className="px-5 sm:px-10 pb-5 sm:pb-8 overflow-y-auto flex-1 min-h-0 overscroll-contain focus:outline-none scrollbar-thin [scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-neutral-400"
+          className="px-5 sm:px-10 pb-5 sm:pb-8 overflow-y-auto flex-1 min-h-0 overscroll-contain focus:outline-none scrollbar-thin [scrollbar-width:thin] [scrollbar-color:#d4d4d8_transparent] [&::-webkit-scrollbar]:w-2 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-neutral-300 [&::-webkit-scrollbar-thumb]:rounded-full hover:[&::-webkit-scrollbar-thumb]:bg-neutral-400 touch-pan-y [WebkitOverflowScrolling:touch]"
         >
           {submissionSuccess ? (
             /* Success State */
@@ -1517,6 +1577,75 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
                     </div>
                   </div>
                 </div>
+
+                {/* 3.5 ROW 3.5: Children's Ages Selector (Smoothly displayed when children > 0) */}
+                {(formData.numberOfKids ?? 0) > 0 && (
+                  <div className="bg-[#FAF9F6] border border-neutral-200/90 rounded-[8px] p-3.5 sm:p-4 space-y-3 animate-in fade-in-50 duration-200">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 border-b border-neutral-200/60 pb-2">
+                      <div className="flex items-center gap-2">
+                        <Users className="w-4 h-4 text-[#002f89]" />
+                        <span className="text-[12px] font-bold uppercase tracking-wider text-neutral-800 font-sans">
+                          Children's Ages
+                        </span>
+                        <span className="px-1.5 py-0.5 rounded-full bg-blue-100 text-[#002f89] text-[10px] font-semibold">
+                          {formData.numberOfKids}{" "}
+                          {formData.numberOfKids === 1 ? "Child" : "Children"}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-[#002f89] font-medium">
+                        Required by airlines & hotels for room beds and child
+                        ticket rates.
+                      </p>
+                    </div>
+
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2.5 sm:gap-3">
+                      {Array.from({ length: formData.numberOfKids || 0 }).map(
+                        (_, idx) => {
+                          const currentAge = childrenAges[idx] ?? 5;
+                          const maxAge = currentCategory === "visa" ? 17 : 11;
+                          return (
+                            <div
+                              key={idx}
+                              className="bg-white rounded-[8px] border border-neutral-200 p-2.5 hover:border-neutral-300 focus-within:border-[#002f89] focus-within:ring-2 focus-within:ring-[#002f89]/15 transition-all"
+                            >
+                              <label
+                                htmlFor={`enquiry-child-age-${idx}`}
+                                className="block text-[11px] font-semibold text-neutral-700 mb-1"
+                              >
+                                Child {idx + 1} Age
+                              </label>
+                              <select
+                                id={`enquiry-child-age-${idx}`}
+                                aria-label={`Age of Child ${idx + 1}`}
+                                value={currentAge}
+                                onChange={(e) =>
+                                  handleChildAgeChange(
+                                    idx,
+                                    Number(e.target.value),
+                                  )
+                                }
+                                className="w-full text-xs font-medium text-neutral-900 bg-transparent outline-none cursor-pointer"
+                              >
+                                <option value={0}>Under 1 yr (Infant)</option>
+                                {Array.from({ length: maxAge }).map(
+                                  (_, aIdx) => {
+                                    const age = aIdx + 1;
+                                    return (
+                                      <option key={age} value={age}>
+                                        {age}{" "}
+                                        {age === 1 ? "year old" : "years old"}
+                                      </option>
+                                    );
+                                  },
+                                )}
+                              </select>
+                            </div>
+                          );
+                        },
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* 4. ROW 4: Special Requests (Optional) */}
                 <div>

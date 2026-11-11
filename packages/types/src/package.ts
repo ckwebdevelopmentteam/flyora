@@ -23,8 +23,28 @@ export interface PackageSummary {
   coverImageUrl: string;
   inclusions?: string[];
   isFeatured: boolean;
+  featuredOrder?: number;
+  isPopular?: boolean;
+  popularOrder?: number;
   isPublished: boolean;
   createdAt: string;
+}
+
+export interface ShowcaseConfig {
+  id: string;
+  popularTitle: string;
+  popularEyebrow: string;
+  popularActive: boolean;
+  featuredTitle: string;
+  featuredEyebrow: string;
+  featuredActive: boolean;
+  updatedAt?: string;
+}
+
+export interface ShowcaseData {
+  config: ShowcaseConfig;
+  popular: PackageSummary[];
+  featured: PackageSummary[];
 }
 
 export interface PackageDetails extends PackageSummary {

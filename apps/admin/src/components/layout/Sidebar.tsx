@@ -206,6 +206,36 @@ export const Sidebar = ({
                       ))}
                     </div>
                   )}
+                {name === "Tour packages" &&
+                  pathname.startsWith("/packages") && (
+                    <div
+                      className={`enquiry-subnav ${collapsed ? "lg:sr-only" : ""}`}
+                    >
+                      {[
+                        { name: "All Packages", path: "/packages" },
+                        {
+                          name: "Website Showcase",
+                          path: "/packages/showcase",
+                        },
+                        { name: "+ Add Package", path: "/packages/new" },
+                      ].map((sub) => {
+                        const isSubActive =
+                          sub.path === "/packages"
+                            ? pathname === "/packages"
+                            : pathname.startsWith(sub.path);
+                        return (
+                          <Link
+                            key={sub.path}
+                            to={sub.path}
+                            onClick={() => onClose()}
+                            aria-current={isSubActive ? "page" : undefined}
+                          >
+                            {sub.name}
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  )}
               </div>
             );
           })}

@@ -9,6 +9,7 @@ import {
 } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { HeroSearchCard } from "./HeroSearchCard";
+import { refreshServices } from "../lib/use-services-catalog";
 
 describe("HeroSearchCard Dynamic Cascading System", () => {
   beforeEach(() => {
@@ -269,5 +270,92 @@ describe("HeroSearchCard Dynamic Cascading System", () => {
     // Must NOT have Train Category or train name fields
     expect(screen.queryByText("Train Category")).toBeNull();
     expect(screen.queryByText(/Vande Bharat/i)).toBeNull();
+  });
+
+  it("respects database isDomestic and isInternational flags for full admin automation", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(
+        async () =>
+          new Response(
+            JSON.stringify({
+              data: [
+                {
+                  id: "srv-custom-intl",
+                  name: "Global Concierge",
+                  slug: "global-concierge",
+                  isDomestic: false,
+                  isInternational: true,
+                },
+                {
+                  id: "srv-custom-dom",
+                  name: "Local Taxi Hire",
+                  slug: "local-taxi-hire",
+                  isDomestic: true,
+                  isInternational: false,
+                },
+              ],
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+      ),
+    );
+    await refreshServices(true);
+
+    render(<HeroSearchCard defaultTripMode="international" />);
+    // International should show Global Concierge but not Local Taxi Hire
+    expect(
+      await screen.findByRole("button", { name: /Global Concierge/i }),
+    ).toBeTruthy();
+    expect(
+      screen.queryByRole("button", { name: /Local Taxi Hire/i }),
+    ).toBeNull();
+
+    // Switch to Domestic Travel
+    const domBtn = screen.getByRole("button", { name: /Domestic Travel/i });
+    fireEvent.click(domBtn);
+
+    // Domestic should show Local Taxi Hire but not Global Concierge
+    expect(
+      await screen.findByRole("button", { name: /Local Taxi Hire/i }),
+    ).toBeTruthy();
+    expect(
+      screen.queryByRole("button", { name: /Global Concierge/i }),
+    ).toBeNull();
+  });
+
+  it("renders custom imageUrl uploaded to R2", async () => {
+    const customR2Url =
+      "https://pub-8b8ad67372cf4531976f5b3d487fd25b.r2.dev/services/test-custom.jpg";
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockImplementation(
+        async () =>
+          new Response(
+            JSON.stringify({
+              data: [
+                {
+                  id: "srv-1",
+                  name: "Custom Helicopter",
+                  slug: "custom-helicopter",
+                  imageUrl: customR2Url,
+                  isDomestic: true,
+                  isInternational: true,
+                },
+              ],
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          ),
+      ),
+    );
+    await refreshServices(true);
+
+    render(<HeroSearchCard />);
+    const cardBtn = await screen.findByRole("button", {
+      name: /Custom Helicopter/i,
+    });
+    expect(cardBtn).toBeTruthy();
+    const img = cardBtn.querySelector("img");
+    expect(img?.getAttribute("src")).toBe(customR2Url);
   });
 });

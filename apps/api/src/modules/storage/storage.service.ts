@@ -8,7 +8,12 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { randomUUID } from "crypto";
 
 export type StorageFolder =
-  "packages" | "destinations" | "receipts" | "documents" | "avatars";
+  | "packages"
+  | "destinations"
+  | "receipts"
+  | "documents"
+  | "avatars"
+  | "services";
 
 export class StorageService {
   private s3Client: S3Client | null = null;

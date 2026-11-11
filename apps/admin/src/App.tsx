@@ -16,6 +16,7 @@ import { RoleGuard } from "./routes/RoleGuard";
 
 import { PackagesListPage } from "./pages/PackagesListPage";
 import { PackageBuilderPage } from "./pages/PackageBuilderPage";
+import { ShowcaseManagerPage } from "./pages/ShowcaseManagerPage";
 import { CoordinatorLeadsPage } from "./pages/leads/CoordinatorLeadsPage";
 import { MasterLeadsPage } from "./pages/admin/MasterLeadsPage";
 import { BookingsPage } from "./pages/bookings/BookingsPage";
@@ -86,6 +87,10 @@ export default function App() {
                 }
               >
                 <Route path="packages" element={<PackagesListPage />} />
+                <Route
+                  path="packages/showcase"
+                  element={<ShowcaseManagerPage />}
+                />
               </Route>
 
               {/* Coordinator Leads Workspace & Service Pool */}

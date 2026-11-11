@@ -20,7 +20,7 @@ import {
   Search,
   MapPin,
   Clock,
-  Sparkles,
+  Globe,
   Edit2,
   Trash2,
   Eye,
@@ -29,6 +29,7 @@ import {
   CheckCircle2,
   XCircle,
   RotateCcw,
+  Layers,
 } from "lucide-react";
 
 const columnHelper = createColumnHelper<PackageSummary>();
@@ -142,8 +143,7 @@ export const PackagesListPage = () => {
                     {pkg.title}
                   </span>
                   {pkg.isFeatured && (
-                    <span className="inline-flex items-center gap-0.5 text-[9px] px-1 py-0.5 rounded bg-amber-50 text-amber-700 border border-amber-200 font-mono">
-                      <Sparkles className="w-2.5 h-2.5 fill-amber-500" />
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-700 border border-zinc-200 font-mono">
                       Featured
                     </span>
                   )}
@@ -303,6 +303,24 @@ export const PackagesListPage = () => {
             <span>New Tour Package</span>
           </Link>
         )}
+      </div>
+
+      {/* Navigation Tabs */}
+      <div className="flex items-center gap-2 border-b border-zinc-200">
+        <Link
+          to="/packages"
+          className="pb-3 px-1 text-xs font-semibold border-b-2 border-black text-black transition flex items-center gap-1.5"
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>All Packages</span>
+        </Link>
+        <Link
+          to="/packages/showcase"
+          className="pb-3 px-1 text-xs font-medium border-b-2 border-transparent text-zinc-500 hover:text-zinc-900 transition flex items-center gap-1.5"
+        >
+          <Globe className="w-3.5 h-3.5 text-zinc-400" />
+          <span>Website Showcase (Popular & Featured)</span>
+        </Link>
       </div>
 
       {/* Success Notification */}
