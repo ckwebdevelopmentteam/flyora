@@ -16,12 +16,22 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
   const curators = ABOUT_DATA.curators.items;
 
   return (
-    <>
+    <div className="relative w-full overflow-hidden bg-white">
       <span id="meet-our-team" className="sr-only" aria-hidden="true" />
       <span id="meet-our-team-section" className="sr-only" aria-hidden="true" />
+
+      {/* Decorative background curve with dotted flight trail and paper plane rising to the left */}
+      <div
+        className="absolute bottom-0 inset-x-0 h-36 sm:h-44 lg:h-52 pointer-events-none opacity-100 bg-cover bg-bottom bg-no-repeat z-0"
+        style={{
+          backgroundImage: `url('/destinations/team-curve-bg.svg?v=1')`,
+        }}
+        aria-hidden="true"
+      />
+
       <Team
         id="our-team"
-        className="relative w-full overflow-hidden bg-white"
+        className="relative z-10 w-full overflow-hidden bg-transparent"
         containerClassName="py-14 sm:py-18 lg:py-24"
         isDark={false}
         customHeader={
@@ -70,6 +80,6 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
           onOpenEnquiry?.(`Consultation with ${member.name}`)
         }
       />
-    </>
+    </div>
   );
 }

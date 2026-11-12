@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 240" preserveAspectRatio="none" fill="none" class="w-full h-full">
+  <defs>
+    <!-- Soft, flowing abstract blue gradient shape rising subtly to the left corner -->
+    <linearGradient id="teamRiseGrad1" x1="100%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0" />
+      <stop offset="35%" stop-color="#EBF4FD" stop-opacity="0.25" />
+      <stop offset="70%" stop-color="#D1E6FB" stop-opacity="0.55" />
+      <stop offset="100%" stop-color="#B5D7F8" stop-opacity="0.8" />
+    </linearGradient>
+
+    <linearGradient id="teamRiseGrad2" x1="75%" y1="100%" x2="0%" y2="15%">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0" />
+      <stop offset="45%" stop-color="#E3F0FC" stop-opacity="0.2" />
+      <stop offset="80%" stop-color="#C5E0FA" stop-opacity="0.5" />
+      <stop offset="100%" stop-color="#A6CEF6" stop-opacity="0.75" />
+    </linearGradient>
+
+    <!-- Flight path line gradient: soft blue fading towards the right start -->
+    <linearGradient id="teamFlightPathGrad" x1="100%" y1="0%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#93C5FD" stop-opacity="0.15" />
+      <stop offset="35%" stop-color="#60A5FA" stop-opacity="0.45" />
+      <stop offset="70%" stop-color="#3B82F6" stop-opacity="0.7" />
+      <stop offset="100%" stop-color="#2563EB" stop-opacity="0.85" />
+    </linearGradient>
+  </defs>
+
+  <!-- Base soft sky shape rising subtly on the left -->
+  <path
+    d="M 1320,240 C 940,240 590,215 320,165 C 180,135 75,105 0,78 L 0,240 Z"
+    fill="url(#teamRiseGrad1)"
+  />
+
+  <!-- Secondary subtle highlight shape for depth on the left -->
+  <path
+    d="M 990,240 C 660,240 400,195 220,145 C 110,115 40,90 0,68 L 0,240 Z"
+    fill="url(#teamRiseGrad2)"
+  />
+
+  <!-- Dotted curved flight-path line following the shape -->
+  <path
+    d="M 1400,198 C 1080,218 720,205 490,158 C 380,135 240,102 20,72"
+    fill="none"
+    stroke="url(#teamFlightPathGrad)"
+    stroke-width="1.5"
+    stroke-linecap="round"
+    stroke-dasharray="3 6"
+  />
+
+  <!-- Origami Paper Plane silhouette flying along the curve toward the left -->
+  <!-- Positioned at (395, 137.5), angle -168deg pointing up and left -->
+  <g transform="translate(395, 137.5) rotate(-168) scale(1.15)">
+    <!-- Upper wing (shaded navy) -->
+    <path d="M 14,0 L -8,-9 L -3,0 Z" fill="#0A2540" />
+    <!-- Lower wing (Flyora blue) -->
+    <path d="M 14,0 L -3,0 L -8,9 Z" fill="#002f89" />
+    <!-- Center underside fold for 3D depth -->
+    <path d="M 14,0 L -3,0 L -6,2 Z" fill="#001C54" />
+    <!-- Crisp center fold highlight -->
+    <path d="M 14,0 L -3,0" stroke="rgba(255,255,255,0.45)" stroke-width="0.5" />
+  </g>
+</svg>
