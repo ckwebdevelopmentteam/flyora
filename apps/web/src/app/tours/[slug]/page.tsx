@@ -182,7 +182,7 @@ function TourDetails({ currentSlug }: { currentSlug: string }) {
                 fill
                 sizes="(max-width: 1024px) 100vw, 66vw"
                 src={
-                  selectedImage || photos[0] || "/services/custom-holidays.jpg"
+                  selectedImage || photos[0] || "/services/custom-holidays.webp"
                 }
                 alt={pkg.title || "Tour Cover"}
                 className="w-full h-full object-cover object-center"

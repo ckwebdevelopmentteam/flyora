@@ -358,7 +358,7 @@ export function StraightCardsCarousel({
                   goTo(i);
                 }
               }}
-              className="absolute bottom-0 left-0 overflow-hidden rounded-2xl border border-white/25 shadow-2xl cursor-pointer group"
+              className="absolute bottom-0 left-0 overflow-hidden rounded-[14px] border border-white/25 shadow-2xl cursor-pointer group"
               style={{
                 width: `${leadWidth}px`,
                 height: `${leadHeight}px`,
@@ -376,14 +376,14 @@ export function StraightCardsCarousel({
 
               {/* Gentle non-hovered gradient at the bottom solely for location text legibility on trailing cards */}
               <div
-                className={`absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-2xl transition-opacity duration-300 ${
+                className={`absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/30 to-transparent pointer-events-none rounded-[14px] transition-opacity duration-300 ${
                   isLead ? "opacity-0" : "group-hover:opacity-0"
                 }`}
               />
 
               {/* Smooth full-card dark gradient that is sticky on lead card and fades in on hover for trailing cards */}
               <div
-                className={`absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-2xl transition-opacity duration-300 ease-out ${
+                className={`absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/15 pointer-events-none rounded-[14px] transition-opacity duration-300 ease-out ${
                   isLead ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                 }`}
               />

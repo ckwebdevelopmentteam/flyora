@@ -162,6 +162,7 @@ export const PackageBuilderPage = () => {
   const watchedOverview = watch("overview");
   const watchedMetaTitle = watch("metaTitle") || "";
   const watchedMetaDesc = watch("metaDescription") || "";
+  const watchedDestinationType = watch("destinationType");
 
   // Helper to auto-generate slug from title
   const handleGenerateSlug = () => {
@@ -211,6 +212,7 @@ export const PackageBuilderPage = () => {
     }
     saveMutation.mutate({
       ...formData,
+      isFeatured: existingPackage?.isFeatured ?? false,
       itinerary: formData.itinerary.map((day, index) => ({
         ...day,
         day: index + 1,
@@ -521,6 +523,13 @@ export const PackageBuilderPage = () => {
                     <option value="DOMESTIC">Domestic (India)</option>
                     <option value="INTERNATIONAL">International</option>
                   </select>
+                  <p className="text-[11px] text-blue-600 font-medium mt-1.5 leading-snug">
+                    {watchedDestinationType === "DOMESTIC"
+                      ? "• This package goes to the Domestic Destination section on the homepage."
+                      : watchedDestinationType === "INTERNATIONAL"
+                        ? "• This package goes to the International Destination section on the homepage."
+                        : "• Select Domestic or International to set which destination section this package appears in on the homepage."}
+                  </p>
                   {errors.destinationType && (
                     <p
                       id="destination-type-error"
@@ -666,8 +675,8 @@ export const PackageBuilderPage = () => {
                 </div>
               </div>
 
-              {/* Featured & Published Switches */}
-              <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-zinc-100">
+              {/* Published Switch */}
+              <div className="md:col-span-2 pt-2 border-t border-zinc-100">
                 <label className="flex items-center gap-3 p-3 rounded-lg border border-zinc-200 bg-[#FAFAF9] cursor-pointer hover:bg-zinc-100/40 transition">
                   <input
                     type="checkbox"
@@ -680,22 +689,6 @@ export const PackageBuilderPage = () => {
                     </span>
                     <span className="block text-[11px] text-zinc-500 font-mono">
                       Visible to travelers on the public website catalog
-                    </span>
-                  </div>
-                </label>
-
-                <label className="flex items-center gap-3 p-3 rounded-lg border border-zinc-200 bg-[#FAFAF9] cursor-pointer hover:bg-zinc-100/40 transition">
-                  <input
-                    type="checkbox"
-                    {...register("isFeatured")}
-                    className="w-4 h-4 rounded border-zinc-300 text-black focus:ring-black accent-black"
-                  />
-                  <div>
-                    <span className="block text-xs font-medium text-zinc-900">
-                      Feature on Homepage
-                    </span>
-                    <span className="block text-[11px] text-zinc-500 font-mono">
-                      Show in spotlight carousel and top deals section
                     </span>
                   </div>
                 </label>

@@ -156,11 +156,11 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
           {POPULAR_PACKAGES.map((pkg) => (
             <article
               key={pkg.number}
-              className="group flex flex-col sm:flex-row gap-4 sm:gap-7 bg-white border border-stone-200/90 rounded-[8px] p-3.5 sm:p-5 shadow-xs hover:border-stone-300 hover:shadow-md transition-all duration-300"
+              className="group flex flex-col sm:flex-row gap-4 sm:gap-7 bg-white border border-stone-200/90 rounded-[14px] p-3.5 sm:p-5 shadow-xs hover:border-stone-300 hover:shadow-md transition-all duration-300"
             >
               {/* Card Image Area */}
               <div
-                className="sm:w-[260px] md:w-[280px] lg:w-[300px] shrink-0 h-[160px] sm:h-auto min-h-[160px] sm:min-h-[220px] relative rounded-[8px] overflow-hidden select-none"
+                className="sm:w-[260px] md:w-[280px] lg:w-[300px] shrink-0 h-[160px] sm:h-auto min-h-[160px] sm:min-h-[220px] relative rounded-[14px] overflow-hidden select-none"
                 style={{
                   background: pkg.tintGradient,
                 }}
@@ -173,10 +173,10 @@ export const PopularHolidayPackages: React.FC<PopularHolidayPackagesProps> = ({
                       alt={pkg.name}
                       fill
                       sizes="(max-width: 640px) 100vw, 300px"
-                      className="object-cover rounded-[8px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
+                      className="object-cover rounded-[14px] transition-transform duration-700 ease-out group-hover:scale-105 pointer-events-none"
                       priority={pkg.number === "01"}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/25 pointer-events-none rounded-[8px]" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/10 to-black/25 pointer-events-none rounded-[14px]" />
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center gap-2 px-4 h-full text-[#7A7167]">

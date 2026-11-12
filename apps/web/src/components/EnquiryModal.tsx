@@ -691,7 +691,7 @@ const EnquiryForm: React.FC<EnquiryModalProps> = ({
               aria-hidden="true"
             >
               <img
-                src="/services/hajj-packages.jpg"
+                src="/services/hajj-packages.webp"
                 alt=""
                 className="w-9 h-9 sm:w-12 sm:h-12 rounded-full object-cover border-2 border-white shadow-sm ring-1 ring-black/5"
               />

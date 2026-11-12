@@ -61,6 +61,62 @@ export const NAV_ITEMS: NavItem[] = [
   { label: "Tour Packages", href: "/tours" },
 ];
 
+const getNavbarServiceOrder = (slug: string, name: string): number => {
+  const s = (slug || "").toLowerCase();
+  const n = (name || "").toLowerCase();
+
+  // 1. Custom Holiday (Holiday Packages)
+  if (
+    s === "holiday-packages" ||
+    s === "custom-holidays" ||
+    n.includes("holiday")
+  )
+    return 1;
+  // 2. Visa Assistance
+  if (s === "visa-assistance" || s.includes("visa") || n.includes("visa"))
+    return 2;
+  // 3. Passport Assistance
+  if (
+    s === "escort-parking" ||
+    s.includes("passport") ||
+    n.includes("passport")
+  )
+    return 3;
+  // 4. Flight Booking
+  if (s === "flight-booking" || s.includes("flight") || n.includes("flight"))
+    return 4;
+  // 5. Hotel Booking
+  if (s === "hotel-booking" || s.includes("hotel") || n.includes("hotel"))
+    return 5;
+  // 6. Umrah & Hajj
+  if (
+    s === "umrah-hajj" ||
+    s.includes("umrah") ||
+    s.includes("hajj") ||
+    n.includes("umrah") ||
+    n.includes("hajj")
+  )
+    return 6;
+  // 7. Travel insurance
+  if (
+    s === "travel-insurance" ||
+    s.includes("insurance") ||
+    n.includes("insurance")
+  )
+    return 7;
+  // 8. Bus & Train Booking
+  if (
+    s === "bus-booking" ||
+    s.includes("bus") ||
+    s.includes("train") ||
+    n.includes("bus") ||
+    n.includes("train")
+  )
+    return 8;
+
+  return 99;
+};
+
 export const Navbar: React.FC<NavbarProps> = ({
   onFindAdvisor,
   onBecomeAdvisor,
@@ -76,7 +132,14 @@ export const Navbar: React.FC<NavbarProps> = ({
     error: servicesError,
     retry: retryServices,
   } = useServicesCatalog();
-  const serviceItems: ServiceItem[] = services.map((service) => ({
+
+  const sortedServices = [...services].sort((a, b) => {
+    const scoreA = getNavbarServiceOrder(a.slug, a.name);
+    const scoreB = getNavbarServiceOrder(b.slug, b.name);
+    return scoreA - scoreB;
+  });
+
+  const serviceItems: ServiceItem[] = sortedServices.map((service) => ({
     label: service.name,
     description: serviceDescription(service),
     serviceId: service.id,
@@ -214,7 +277,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       key={service.serviceId}
       href={service.href}
       onClick={(event) => selectService(event, service)}
-      className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-[8px] overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer block"
+      className="group relative h-48 sm:h-52 lg:h-56 w-full rounded-[14px] overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#002f89] focus:ring-offset-2 transition-all duration-300 transform-gpu hover:-translate-y-1 hover:shadow-xl cursor-pointer block"
     >
       {/* Background Image */}
       <Image
@@ -233,7 +296,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/45 to-black/20 group-hover:from-black/95 group-hover:via-black/35 transition-colors duration-300" />
 
       {/* Border accent */}
-      <div className="absolute inset-0 rounded-xl border border-white/15 group-hover:border-white/35 transition-colors pointer-events-none" />
+      <div className="absolute inset-0 rounded-[14px] border border-white/15 group-hover:border-white/35 transition-colors pointer-events-none" />
 
       {/* Card Content Overlay */}
       <div className="relative h-full p-4 sm:p-5 flex flex-col justify-between z-10">
@@ -275,7 +338,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     >
       {/* Floating Glassmorphic Navbar Card */}
       <div
-        className={`pointer-events-auto relative bg-white/95 backdrop-blur-md rounded-2xl border border-black/[0.07] transition-all duration-300 ${
+        className={`pointer-events-auto relative bg-white/95 backdrop-blur-md rounded-[14px] border border-black/[0.07] transition-all duration-300 ${
           isScrolled
             ? "shadow-[0_12px_36px_rgb(0,0,0,0.12)] bg-white"
             : "shadow-[0_8px_30px_rgb(0,0,0,0.06)]"

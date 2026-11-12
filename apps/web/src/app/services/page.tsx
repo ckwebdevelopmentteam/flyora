@@ -142,9 +142,9 @@ const SERVICE_TEMPLATES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Private luxury itineraries, 5-star villas, and hand-curated experiences worldwide.",
     imageSrc: "/services/custom-holidays.webp",
-    cardImageSrc: "/services/holidaysservice.png",
+    cardImageSrc: "/services/custom-holidays.webp",
     imagePosition: "object-[72%_50%]",
-    cardImagePosition: "object-[40%_50%]",
+    cardImagePosition: "object-[72%_50%]",
     icon: VacationPlaneIcon,
     scrollCue: "Explore Handpicked Holiday Tours & Curated Pickups",
   },
@@ -158,9 +158,9 @@ const SERVICE_TEMPLATES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Express appointment booking, document audit, and 99.2% approval success for 100+ countries.",
     imageSrc: "/services/visa-assistance.webp",
-    cardImageSrc: "/services/visaservice.png",
+    cardImageSrc: "/services/visa-assistance.webp",
     imagePosition: "object-[30%_55%]",
-    cardImagePosition: "object-[48%_52%]",
+    cardImagePosition: "object-[30%_55%]",
     icon: PassportIcon,
     scrollCue: "Explore 10 Popular Visa Countries & Document Dossier",
   },
@@ -174,7 +174,7 @@ const SERVICE_TEMPLATES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Access unpublished corporate partner fares, flexible routing, and 24/7 flight rebooking.",
     imageSrc: "/services/flight-booking.webp",
-    cardImageSrc: "/services/flightservice.png",
+    cardImageSrc: "/services/flight-booking.webp",
     imagePosition: "object-[65%_45%]",
     cardImagePosition: "object-[65%_45%]",
     icon: Plane,
@@ -190,7 +190,7 @@ const SERVICE_TEMPLATES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Direct wholesale allocations, VIP room upgrades, complimentary breakfast, and flexible cancellation at 5,000+ premium properties worldwide.",
     imageSrc: "/services/hotel-booking.webp",
-    cardImageSrc: "/services/hotelservice.png",
+    cardImageSrc: "/services/hotel-booking.webp",
     imagePosition: "object-[50%_50%]",
     cardImagePosition: "object-[50%_50%]",
     icon: Building2,
@@ -206,9 +206,9 @@ const SERVICE_TEMPLATES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Guaranteed train PNR confirmations, Tatkal priority allocation, and multi-axle AC sleeper buses across 1,000+ national routes.",
     imageSrc: "/services/train-booking.webp",
-    cardImageSrc: "/services/busservice.png",
+    cardImageSrc: "/services/train-booking.webp",
     imagePosition: "object-[70%_55%]",
-    cardImagePosition: "object-[50%_50%]",
+    cardImagePosition: "object-[70%_55%]",
     icon: Train,
     scrollCue:
       "Explore Confirmed Rail Berths, Volvo Schedules & Ground Transit",
@@ -223,9 +223,9 @@ const SERVICE_TEMPLATES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Pilgrimage packages, visa, flights, and direct hotel arrangements steps from the Holy Haram courtyard in Makkah and Madinah.",
     imageSrc: "/services/umrah-packages.webp",
-    cardImageSrc: "/services/ummrahservice.png",
+    cardImageSrc: "/services/umrah-packages.webp",
     imagePosition: "object-[82%_45%]",
-    cardImagePosition: "object-[50%_45%]",
+    cardImagePosition: "object-[82%_45%]",
     icon: MosqueIcon,
     scrollCue: "Explore Sacred Umrah & Hajj Tiers, Hotels & Ziyarat",
   },
@@ -239,7 +239,7 @@ const SERVICE_TEMPLATES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Complete assistance for fresh passport applications, renewals, minor passports, and Tatkal express appointments with zero paperwork rejections.",
     imageSrc: "/services/passport-service.webp",
-    cardImageSrc: "/services/passportservice.png",
+    cardImageSrc: "/services/passport-service.webp",
     imagePosition: "object-[50%_50%]",
     cardImagePosition: "object-[50%_50%]",
     icon: PassportIcon,
@@ -255,7 +255,7 @@ const SERVICE_TEMPLATES: ServiceHeroConfig[] = [
     heroSubheadline:
       "Instant embassy-approved travel insurance covers for medical emergencies, flight cancellations, baggage loss, and passport protection up to $500,000.",
     imageSrc: "/services/travel-insurance.webp",
-    cardImageSrc: "/services/insuranceservice.png",
+    cardImageSrc: "/services/travel-insurance.webp",
     imagePosition: "object-[50%_50%]",
     cardImagePosition: "object-[50%_50%]",
     icon: ShieldCheck,
@@ -1337,7 +1337,7 @@ const parseTravelerCounts = (
 
 const UMRAH_GALLERY_PHOTOS = [
   {
-    src: "/services/umrah-packages.jpg",
+    src: "/services/umrah-packages.webp",
     alt: "Holy Kaaba & Grand Mosque Courtyard",
     label: "Makkah Al-Mukarramah",
   },
@@ -1360,7 +1360,7 @@ const UMRAH_GALLERY_PHOTOS = [
 
 const HAJJ_GALLERY_PHOTOS = [
   {
-    src: "/services/hajj-packages.jpg",
+    src: "/services/hajj-packages.webp",
     alt: "Mount Arafat & Jabal al-Rahmah",
     label: "Plain of Arafat",
   },
@@ -1398,85 +1398,85 @@ interface PilgrimageTierInfo {
 
 const UMRAH_TIER_DATA: Record<PilgrimageTierKey, PilgrimageTierInfo> = {
   executive: {
-    name: "Executive 5-Star",
-    price: "₹1,35,000",
-    priceUsd: "$1,620",
-    perPerson: "per pilgrim (double sharing)",
-    makkahHotel: "Fairmont Clock Tower / Swissôtel (50m)",
-    madinahHotel: "Dar Al Taqwa / Oberoi (Steps to Rawdah)",
-    distance: "50m to Haram Courtyard",
-    transit: "Haramain Bullet Train (VIP Business)",
-    guide: "English & Urdu Guided Scholar",
-    duration: "15 Days / 14 Nights",
+    name: "Deluxe Walking Distance",
+    price: "Custom Quote",
+    priceUsd: "Best Rates",
+    perPerson: "Tailored to travel month & room tier",
+    makkahHotel: "5-Star Courtyard Hotel (Short Walking Distance)",
+    madinahHotel: "5-Star Central Hotel (Direct Rawdah Steps)",
+    distance: "Direct walk to Holy Haram courtyard",
+    transit: "Haramain High-Speed Bullet Train",
+    guide: "Bilingual Scholar Guidance Included",
+    duration: "10 to 15 Days Flexible",
   },
   deluxe: {
-    name: "Deluxe 4-Star",
-    price: "₹95,000",
-    priceUsd: "$1,150",
-    perPerson: "per pilgrim (quad sharing)",
-    makkahHotel: "Swissôtel Al Maqam (150m)",
-    madinahHotel: "Anwar Al Madinah Mövenpick (100m)",
-    distance: "150m to Haram Courtyard",
-    transit: "AC Luxury Coach",
-    guide: "Group Scholar Guide",
-    duration: "15 Days / 14 Nights",
+    name: "Economy Group Batch",
+    price: "Custom Quote",
+    priceUsd: "Best Rates",
+    perPerson: "Fixed departures with shuttle access",
+    makkahHotel: "3–4 Star Hotel with 24/7 Dedicated Haram Shuttle",
+    madinahHotel: "Comfortable Central Hotel (Walking Access)",
+    distance: "24/7 Complimentary AC Haram Shuttle",
+    transit: "Air-Conditioned Luxury Coach Fleet",
+    guide: "Group Leader & Muallim Support",
+    duration: "14 to 15 Days Fixed Departures",
   },
   vip: {
-    name: "Custom VIP Family",
-    price: "₹2,10,000",
-    priceUsd: "$2,520",
-    perPerson: "per pilgrim (Kaaba view suite)",
-    makkahHotel: "Raffles Makkah Palace (Kaaba View)",
-    madinahHotel: "The Oberoi Madinah (Royal Floor)",
-    distance: "Direct Private Elevator Access",
-    transit: "Private GMC Yukon / Mercedes",
-    guide: "Private Dedicated Scholar",
-    duration: "15 Days / 14 Nights",
+    name: "VIP Haram View Suite",
+    price: "Custom Quote",
+    priceUsd: "Best Rates",
+    perPerson: "Private family & executive departures",
+    makkahHotel: "Clock Tower / Direct Kaaba View Suite",
+    madinahHotel: "5-Star Luxury Front-Row Presidential Suite",
+    distance: "Direct Private Elevator Access to Haram",
+    transit: "Private GMC Yukon / VIP Chauffeur",
+    guide: "Private Dedicated Scholar & Concierge",
+    duration: "Customized Itinerary Length",
   },
 };
 
 const HAJJ_TIER_DATA: Record<PilgrimageTierKey, PilgrimageTierInfo> = {
   executive: {
-    name: "Royal Non-Shifting",
-    price: "₹5,85,000",
-    priceUsd: "$7,100",
-    perPerson: "per pilgrim (Mina Zone A)",
-    makkahHotel: "Swissôtel / Fairmont Clock Tower",
-    madinahHotel: "Oberoi Madinah / Dar Al Taqwa",
-    distance: "Zone A VIP European Mina Tents",
+    name: "Deluxe Non-Shifting",
+    price: "Official Quota",
+    priceUsd: "Ministry Rates",
+    perPerson: "Ministry-Approved Category A Allocation",
+    makkahHotel: "Continuous 5-Star Hotel Stay (No Shifting)",
+    madinahHotel: "Central Markaziyah Accommodations",
+    distance: "Zone A Air-Conditioned Mina Camps",
     transit: "Mashair Sacred Train & VIP GMC",
-    guide: "Senior Scholar Guided",
-    duration: "21 Days / 20 Nights",
+    guide: "Accompanied by Senior Islamic Scholars",
+    duration: "18 to 22 Days",
   },
   deluxe: {
-    name: "Executive Shifting",
-    price: "₹4,60,000",
-    priceUsd: "$5,550",
-    perPerson: "per pilgrim (Mina Zone B)",
-    makkahHotel: "Azizia Deluxe Building + Clock Tower",
-    madinahHotel: "Pullman Zamzam Madinah",
+    name: "Standard Shifting Batch",
+    price: "Official Quota",
+    priceUsd: "Ministry Rates",
+    perPerson: "Accredited Private Operator Partner",
+    makkahHotel: "Azizia Building + Central Makkah Stay",
+    madinahHotel: "Comfortable Markaziyah Hotel",
     distance: "Zone B Air-Conditioned Mina Tents",
-    transit: "Dedicated AC Luxury Coach",
-    guide: "Bilingual Scholar Guides",
-    duration: "24 Days / 23 Nights",
+    transit: "Dedicated AC Luxury Coach Fleet",
+    guide: "Bilingual Scholar Guides & Group Muallim",
+    duration: "24 to 28 Days",
   },
   vip: {
-    name: "Platinum VIP Private",
-    price: "₹8,50,000",
-    priceUsd: "$10,250",
-    perPerson: "per pilgrim (Kaaba view suite)",
-    makkahHotel: "Raffles Palace Kaaba View Suite",
-    madinahHotel: "The Oberoi Presidential Suite",
-    distance: "VIP Private Air-Cooled Camp A+",
-    transit: "Chauffeured Private GMC Yukon",
-    guide: "Dedicated Personal Scholar",
-    duration: "18 Days / 17 Nights",
+    name: "VIP Private European Camp",
+    price: "Official Quota",
+    priceUsd: "Ministry Rates",
+    perPerson: "Premium European Camp Allocation",
+    makkahHotel: "Clock Tower / Front-Row Kaaba View Suite",
+    madinahHotel: "5-Star Front-Row Luxury Hotel",
+    distance: "Zone A+ Closest Mina Camps to Jamarat",
+    transit: "VIP Private Mashair & Executive Chauffeur",
+    guide: "Dedicated Personal Scholar & Concierge",
+    duration: "14 to 18 Days",
   },
 };
 
 const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
   {
-    title: "Day 01",
+    title: "Step 01",
     content: (
       <div className="space-y-4">
         <div>
@@ -1512,7 +1512,7 @@ const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 02",
+    title: "Step 02",
     content: (
       <div className="space-y-4">
         <div>
@@ -1529,7 +1529,7 @@ const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
           supplications, and Sa&apos;i at Safa &amp; Marwa with elderly-friendly
           pacing.
         </p>
-        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[14px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
           <Image
             src="/services/makkah-clocktower.jpg"
             alt="Holy Haram Courtyard & Kaaba"
@@ -1556,7 +1556,7 @@ const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 05",
+    title: "Step 03",
     content: (
       <div className="space-y-4">
         <div>
@@ -1590,7 +1590,7 @@ const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 08",
+    title: "Step 04",
     content: (
       <div className="space-y-4">
         <div>
@@ -1606,7 +1606,7 @@ const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
           300 km/h, arriving directly at your luxury hotel overlooking the
           Prophet&apos;s Mosque courtyard.
         </p>
-        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[14px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
           <Image
             src="/services/vip-transit.jpg"
             alt="Haramain VIP Bullet Train"
@@ -1633,7 +1633,7 @@ const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 10",
+    title: "Step 05",
     content: (
       <div className="space-y-4">
         <div>
@@ -1649,7 +1649,7 @@ const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
           Garden). Guided visits to Masjid Quba, Mount Uhud martyrs cemetery,
           and Masjid al-Qiblatayn.
         </p>
-        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[14px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
           <Image
             src="/services/madinah-mosque.jpg"
             alt="Prophet's Mosque in Madinah"
@@ -1676,7 +1676,7 @@ const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 14",
+    title: "Step 06",
     content: (
       <div className="space-y-4">
         <div>
@@ -1713,7 +1713,7 @@ const UMRAH_TIMELINE_DATA: TimelineEntry[] = [
 
 const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
   {
-    title: "Day 01-07",
+    title: "Stage 01",
     content: (
       <div className="space-y-4">
         <div>
@@ -1743,7 +1743,7 @@ const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 08",
+    title: "Stage 02",
     content: (
       <div className="space-y-4">
         <div>
@@ -1759,7 +1759,7 @@ const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
           Mina camps. Perform Dhuhr, Asr, Maghrib, Isha, and Fajr prayers in
           devotion.
         </p>
-        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[14px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
           <Image
             src="/packages/hajj.jpg"
             alt="Mina Camps & Mashair"
@@ -1786,7 +1786,7 @@ const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 09",
+    title: "Stage 03",
     content: (
       <div className="space-y-4">
         <div>
@@ -1816,7 +1816,7 @@ const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 10",
+    title: "Stage 04",
     content: (
       <div className="space-y-4">
         <div>
@@ -1846,7 +1846,7 @@ const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 11-13",
+    title: "Stage 05",
     content: (
       <div className="space-y-4">
         <div>
@@ -1875,7 +1875,7 @@ const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
     ),
   },
   {
-    title: "Day 14-21",
+    title: "Stage 06",
     content: (
       <div className="space-y-4">
         <div>
@@ -1890,7 +1890,7 @@ const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
           High-speed rail journey to Madinah for prayers at the Prophet&apos;s
           Mosque, Rawdah Sharif visits, and heartfelt departure with 5L Zamzam.
         </p>
-        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
+        <div className="relative w-full max-w-xl h-48 sm:h-56 rounded-[14px] overflow-hidden border border-black/[0.08] shadow-xs mt-3">
           <Image
             src="/services/madinah-mosque.jpg"
             alt="Prophet's Mosque in Madinah"
@@ -1915,6 +1915,44 @@ const HAJJ_TIMELINE_DATA: TimelineEntry[] = [
         </div>
       </div>
     ),
+  },
+];
+
+const PILGRIMAGE_PARTNER_GUARANTEES = [
+  {
+    title: "Ministry-Accredited Operators Only",
+    desc: "We exclusively connect pilgrims to officially licensed Saudi Ministry of Hajj & Umrah authorized tour partners for authentic visas and verified lodging.",
+  },
+  {
+    title: "Official Nusuk & Rawdah Slot Assistance",
+    desc: "Complete pre-trip guidance on Saudi Tourist/Umrah visas, medical coverage, and appointment scheduling for praying inside the sacred Rawdah Sharif.",
+  },
+  {
+    title: "Transparent Group & Private Batches",
+    desc: "Clear departure schedules with flexible sharing tiers (Double, Triple, Quad) or private family suites, backed by transparent pricing.",
+  },
+  {
+    title: "Dedicated Pre-Departure & Local Support",
+    desc: "Pre-travel preparation briefing, experienced scholarly guidance on the manasik, luggage coordination, and 24/7 dedicated support desk.",
+  },
+];
+
+const HAJJ_PARTNER_GUARANTEES = [
+  {
+    title: "Official Nusuk Hajj Advisory",
+    desc: "Step-by-step guidance navigating the official Nusuk Hajj platform, profile approvals, documentation checks, and quota timeline adherence.",
+  },
+  {
+    title: "Ministry-Licensed Category Allocations",
+    desc: "Direct coordination with accredited Category A & B private organizers providing confirmed air-conditioned Mina camps and Mashair transit.",
+  },
+  {
+    title: "Scholarly Pre-Hajj Orientation",
+    desc: "In-depth seminars and educational materials covering each day of the Manasik so every pilgrim embarks with full confidence and tranquility.",
+  },
+  {
+    title: "Dedicated Ground Muallim Assistance",
+    desc: "Experienced group leaders and multilingual scholars accompanying groups across Mina, Arafat, Muzdalifah, and the Jamarat.",
   },
 ];
 
@@ -2329,14 +2367,14 @@ export default function ServicesPage() {
                       onClick={() => handleSelectService(idx)}
                       aria-pressed={isActive}
                       aria-label={`Select ${s.name}`}
-                      className={`group relative shrink-0 w-[136px] sm:w-[148px] lg:w-auto h-[155px] sm:h-[168px] lg:h-[178px] rounded-md transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-end bg-neutral-950 ${
+                      className={`group relative shrink-0 w-[136px] sm:w-[148px] lg:w-auto h-[155px] sm:h-[168px] lg:h-[178px] rounded-[14px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-end bg-neutral-950 ${
                         isActive
                           ? "-translate-y-1.5 scale-[1.02] z-20 shadow-[0_16px_36px_rgba(0,0,0,0.5),0_0_28px_rgba(255,255,255,0.75)] ring-2 ring-white"
                           : "hover:-translate-y-1.5 hover:scale-[1.01] hover:z-30 opacity-90 hover:opacity-100 ring-1 ring-white/20"
                       }`}
                     >
                       {/* Inner clipped canvas with service image (object-cover zoomed) */}
-                      <div className="absolute inset-0 rounded-md overflow-hidden pointer-events-none">
+                      <div className="absolute inset-0 rounded-[14px] overflow-hidden pointer-events-none">
                         <img
                           src={s.cardImageSrc}
                           alt=""
@@ -2347,7 +2385,7 @@ export default function ServicesPage() {
 
                       {/* White glowing shadow highlight with thin subtle border */}
                       <div
-                        className={`absolute inset-0 rounded-md transition-all duration-300 pointer-events-none z-20 ${
+                        className={`absolute inset-0 rounded-[14px] transition-all duration-300 pointer-events-none z-20 ${
                           isActive
                             ? "border border-white/20 shadow-[0_0_28px_rgba(255,255,255,0.75)]"
                             : "border border-white/15 group-hover:border-white/30 group-hover:shadow-[0_0_18px_rgba(255,255,255,0.35)]"
@@ -2679,7 +2717,7 @@ export default function ServicesPage() {
                       {/* Background image overlay */}
                       <div className="absolute inset-0 z-0">
                         <Image
-                          src="/services/visa-assistance.jpg"
+                          src="/services/visa-assistance.webp"
                           alt="Passport vault"
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
@@ -2853,7 +2891,7 @@ export default function ServicesPage() {
                       {/* Background Image with Frosted Glass Effect */}
                       <div className="absolute inset-0 z-0">
                         <Image
-                          src="/services/flight-booking.jpg"
+                          src="/services/flight-booking.webp"
                           alt="Flight Itinerary & Hotel Proofs"
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
@@ -2973,7 +3011,7 @@ export default function ServicesPage() {
                     <Card className="relative h-full overflow-hidden flex flex-col justify-between border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-[#1C1815] text-white">
                       <div className="absolute inset-0 z-0">
                         <Image
-                          src="/services/flight-booking.jpg"
+                          src="/services/flight-booking.webp"
                           alt="Flight Booking Vault"
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
@@ -3046,7 +3084,7 @@ export default function ServicesPage() {
                     <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
                       <div className="absolute inset-0 z-0">
                         <Image
-                          src="/services/flight-booking.jpg"
+                          src="/services/flight-booking.webp"
                           alt="Baggage Allowances & Cabin Proof"
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
@@ -3144,7 +3182,7 @@ export default function ServicesPage() {
                     <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
                       <div className="absolute inset-0 z-0">
                         <Image
-                          src="/services/flight-booking.jpg"
+                          src="/services/flight-booking.webp"
                           alt="Corporate & Best-Fare Lock"
                           fill
                           sizes="(max-width: 768px) 100vw, 33vw"
@@ -3286,7 +3324,7 @@ export default function ServicesPage() {
                       <Card className="relative h-full overflow-hidden flex flex-col justify-between border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-[#1C1815] text-white">
                         <div className="absolute inset-0 z-0">
                           <Image
-                            src="/services/train-booking.jpg"
+                            src="/services/train-booking.webp"
                             alt="Train Booking Vault"
                             fill
                             sizes="(max-width: 768px) 100vw, 33vw"
@@ -3422,7 +3460,7 @@ export default function ServicesPage() {
                       <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
                         <div className="absolute inset-0 z-0">
                           <Image
-                            src="/services/train-booking.jpg"
+                            src="/services/train-booking.webp"
                             alt="Live Train GPS & Delay Alerts"
                             fill
                             sizes="(max-width: 768px) 100vw, 33vw"
@@ -3552,7 +3590,7 @@ export default function ServicesPage() {
                       <Card className="relative h-full overflow-hidden flex flex-col justify-between border-black/[0.08] shadow-xs hover:shadow-md transition-shadow bg-[#1C1815] text-white">
                         <div className="absolute inset-0 z-0">
                           <Image
-                            src="/services/bus-booking.jpg"
+                            src="/services/bus-booking.webp"
                             alt="Bus Booking Vault"
                             fill
                             sizes="(max-width: 768px) 100vw, 33vw"
@@ -3627,7 +3665,7 @@ export default function ServicesPage() {
                       <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
                         <div className="absolute inset-0 z-0">
                           <Image
-                            src="/services/bus-booking.jpg"
+                            src="/services/bus-booking.webp"
                             alt="Verified Operators & GPS Tracking"
                             fill
                             sizes="(max-width: 768px) 100vw, 33vw"
@@ -3724,7 +3762,7 @@ export default function ServicesPage() {
                       <Card className="group relative h-full overflow-hidden border border-white/80 bg-transparent shadow-[0_4px_20px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_30px_rgba(0,0,0,0.12)] transition-all duration-300 flex flex-col justify-between p-6 rounded-[8px]">
                         <div className="absolute inset-0 z-0">
                           <Image
-                            src="/services/bus-booking.jpg"
+                            src="/services/bus-booking.webp"
                             alt="Easy Rescheduling & Instant Seat Lock"
                             fill
                             sizes="(max-width: 768px) 100vw, 33vw"
@@ -3891,7 +3929,7 @@ export default function ServicesPage() {
                       {/* Left Column: Interactive 4-Photo Gallery */}
                       <div className="lg:col-span-7 flex flex-col h-full">
                         {/* Main Active Photo */}
-                        <div className="relative w-full h-[360px] sm:h-[430px] lg:h-auto lg:flex-1 min-h-[360px] sm:min-h-[430px] rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs group bg-stone-900">
+                        <div className="relative w-full h-[360px] sm:h-[430px] lg:h-auto lg:flex-1 min-h-[360px] sm:min-h-[430px] rounded-[14px] overflow-hidden border border-black/[0.08] shadow-xs group bg-stone-900">
                           <Image
                             src={UMRAH_GALLERY_PHOTOS[umrahActivePhoto].src}
                             alt={UMRAH_GALLERY_PHOTOS[umrahActivePhoto].alt}
@@ -3902,7 +3940,7 @@ export default function ServicesPage() {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
                           {/* Photo Badge */}
-                          <div className="absolute top-4 left-4 z-10 px-3.5 py-1.5 rounded-[8px] bg-black/60 backdrop-blur-md border border-white/20 text-white text-xs font-medium flex items-center gap-2">
+                          <div className="absolute top-4 left-4 z-10 px-3.5 py-1.5 rounded-[14px] bg-black/60 backdrop-blur-md border border-white/20 text-white text-xs font-medium flex items-center gap-2">
                             <MapPin className="w-3.5 h-3.5 text-amber-300" />
                             <span>
                               {UMRAH_GALLERY_PHOTOS[umrahActivePhoto].label}
@@ -3924,7 +3962,7 @@ export default function ServicesPage() {
                                 key={photo.label}
                                 type="button"
                                 onClick={() => setUmrahActivePhoto(idx)}
-                                className={`group relative h-[80px] sm:h-[95px] rounded-[8px] overflow-hidden border-2 transition-all cursor-pointer text-left ${
+                                className={`group relative h-[80px] sm:h-[95px] rounded-[14px] overflow-hidden border-2 transition-all cursor-pointer text-left ${
                                   isActive
                                     ? "border-[#002f89] ring-2 ring-[#002f89]/25 shadow-xs"
                                     : "border-black/[0.1] opacity-75 hover:opacity-100 hover:border-black/30"
@@ -3948,16 +3986,16 @@ export default function ServicesPage() {
                       </div>
 
                       {/* Right Column: Pricing, Specs & Package Tier Selector */}
-                      <div className="lg:col-span-5 flex flex-col justify-between bg-white rounded-[8px] border border-black/[0.08] p-6 sm:p-7 shadow-xs">
+                      <div className="lg:col-span-5 flex flex-col justify-between bg-white rounded-[14px] border border-black/[0.08] p-6 sm:p-7 shadow-xs">
                         <div>
                           {/* Price & Rating Bar */}
                           <div className="flex items-start justify-between gap-4 pb-5 border-b border-black/[0.06]">
                             <div>
                               <span className="text-xs text-stone-500 uppercase tracking-wider font-mono block">
-                                Starting from
+                                Pricing &amp; Departures
                               </span>
                               <div className="flex items-baseline gap-1.5 mt-1">
-                                <span className="text-3xl sm:text-4xl font-serif font-bold text-[#002f89]">
+                                <span className="text-2xl sm:text-3xl font-serif font-bold text-[#002f89]">
                                   {UMRAH_TIER_DATA[umrahTierSelect].price}
                                 </span>
                                 <span className="text-xs text-stone-500 font-sans">
@@ -3969,7 +4007,7 @@ export default function ServicesPage() {
                               <span className="text-xs text-stone-500 uppercase tracking-wider font-mono block">
                                 Pilgrim Rating
                               </span>
-                              <div className="inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-[8px] bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-bold">
+                              <div className="inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-[14px] bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-bold">
                                 <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
                                 <span>4.9</span>
                                 <span className="text-amber-700/80 font-normal">
@@ -3981,7 +4019,7 @@ export default function ServicesPage() {
 
                           {/* 4 Quick Spec Badges (2x2 Grid) */}
                           <div className="grid grid-cols-2 gap-3 py-5 border-b border-black/[0.06]">
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.04]">
                               <Clock className="w-4 h-4 text-[#002f89] shrink-0" />
                               <div>
                                 <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
@@ -3992,7 +4030,7 @@ export default function ServicesPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.04]">
                               <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
                               <div>
                                 <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
@@ -4003,7 +4041,7 @@ export default function ServicesPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.04]">
                               <Train className="w-4 h-4 text-amber-700 shrink-0" />
                               <div>
                                 <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
@@ -4014,7 +4052,7 @@ export default function ServicesPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.04]">
                               <UserCheck className="w-4 h-4 text-purple-700 shrink-0" />
                               <div>
                                 <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
@@ -4030,9 +4068,9 @@ export default function ServicesPage() {
                           {/* Package Tier Selection Tabs */}
                           <div className="pt-5">
                             <span className="text-xs font-mono font-bold uppercase tracking-wider text-stone-500 block mb-2.5">
-                              Select Package Tier
+                              Select Comfort Tier
                             </span>
-                            <div className="grid grid-cols-3 gap-2 p-1 rounded-[8px] bg-[#FAF8F5] border border-black/[0.06]">
+                            <div className="grid grid-cols-3 gap-2 p-1 rounded-[14px] bg-[#FAF8F5] border border-black/[0.06]">
                               {(
                                 [
                                   "executive",
@@ -4046,7 +4084,7 @@ export default function ServicesPage() {
                                     key={key}
                                     type="button"
                                     onClick={() => setUmrahTierSelect(key)}
-                                    className={`py-2 px-1 text-xs font-semibold rounded-[6px] transition-all cursor-pointer text-center ${
+                                    className={`py-2 px-1 text-xs font-semibold rounded-[10px] transition-all cursor-pointer text-center ${
                                       isSelected
                                         ? "bg-[#002f89] text-white shadow-xs"
                                         : "text-stone-600 hover:text-stone-900 hover:bg-white/80"
@@ -4059,10 +4097,10 @@ export default function ServicesPage() {
                             </div>
 
                             {/* Selected Hotels Information */}
-                            <div className="mt-4 p-3.5 rounded-[8px] bg-amber-50/60 border border-amber-200/50 space-y-1.5 text-xs text-amber-950">
+                            <div className="mt-4 p-3.5 rounded-[14px] bg-amber-50/60 border border-amber-200/50 space-y-1.5 text-xs text-amber-950">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-amber-900">
-                                  Makkah Hotel:
+                                  Makkah Stay:
                                 </span>
                                 <span className="font-bold">
                                   {UMRAH_TIER_DATA[umrahTierSelect].makkahHotel}
@@ -4070,7 +4108,7 @@ export default function ServicesPage() {
                               </div>
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-amber-900">
-                                  Madinah Hotel:
+                                  Madinah Stay:
                                 </span>
                                 <span className="font-bold">
                                   {
@@ -4092,19 +4130,19 @@ export default function ServicesPage() {
                                 `Umrah Packages (${UMRAH_TIER_DATA[umrahTierSelect].name})`,
                               )
                             }
-                            className="w-full py-3.5 px-6 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-[0_4px_18px_rgba(0,47,137,0.35)] cursor-pointer active:scale-[0.99]"
+                            className="w-full py-3.5 px-6 rounded-[14px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-[0_4px_18px_rgba(0,47,137,0.35)] cursor-pointer active:scale-[0.99]"
                           >
-                            <span>Book This Pilgrimage</span>
+                            <span>Request Available Batches &amp; Quote</span>
                             <ArrowRight className="w-4 h-4" />
                           </button>
                           <a
-                            href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20inquire%20about%20the%20Executive%20Umrah%20package."
+                            href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20inquire%20about%20Umrah%20packages%20and%20upcoming%20batches."
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-2.5 px-4 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-[0.99]"
+                            className="w-full py-2.5 px-4 rounded-[14px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-[0.99]"
                           >
                             <MessageCircle className="w-3.5 h-3.5" />
-                            <span>Instant Consultation with Scholar Desk</span>
+                            <span>Consult Pilgrim Desk on WhatsApp</span>
                           </a>
                         </div>
                       </div>
@@ -4139,23 +4177,23 @@ export default function ServicesPage() {
                         </div>
 
                         {/* B. Your Sacred Journey: Vertical Timeline Itinerary (Aceternity Timeline) */}
-                        <div className="bg-white rounded-[8px] border border-black/[0.08] shadow-xs overflow-visible">
+                        <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-xs overflow-visible">
                           <Timeline
                             title={
                               <div>
                                 <span className="text-xs font-sans font-bold uppercase tracking-[0.16em] text-[#002f89] block mb-2">
-                                  Step-by-Step Itinerary
+                                  Spiritual Milestones
                                 </span>
                                 <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815]">
-                                  Your Sacred Journey
+                                  Sacred Umrah Journey
                                 </h3>
                               </div>
                             }
                             description={
                               <p className="text-xs sm:text-sm text-stone-600 mt-1 max-w-2xl font-sans leading-relaxed">
-                                A serene, sunnah-guided day-by-day roadmap
-                                designed for maximum devotion, walking-distance
-                                comfort, and zero travel fatigue.
+                                A serene, sunnah-guided roadmap from arrival and
+                                Kaaba Tawaf to the tranquil Haramain bullet
+                                train and Madinah Al-Munawwarah.
                               </p>
                             }
                             data={UMRAH_TIMELINE_DATA}
@@ -4163,85 +4201,63 @@ export default function ServicesPage() {
                           />
                         </div>
 
-                        {/* C. What's Included & What's Not Included Side-by-Side */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* What's Included */}
-                          <div className="bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-xs flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center gap-2 mb-4">
-                                <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">
-                                  ✓
-                                </span>
-                                <h4 className="text-lg font-serif font-bold text-[#1C1815]">
-                                  What's Included
-                                </h4>
-                              </div>
-                              <ul className="space-y-3 text-xs sm:text-sm text-stone-700">
-                                {PILGRIMAGE_INCLUSIONS.map((item) => (
-                                  <li
-                                    key={item}
-                                    className="flex items-start gap-2.5"
-                                  >
-                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs font-semibold text-emerald-700">
-                              ✓ Guaranteed MoFA Approved Coverage
-                            </div>
+                        {/* C. Partner Network & Concierge Guarantees */}
+                        <div className="bg-white rounded-[14px] p-6 sm:p-8 border border-black/[0.08] shadow-xs">
+                          <div className="mb-6">
+                            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-1">
+                              Concierge Standards &amp; Safety
+                            </span>
+                            <h4 className="text-xl sm:text-2xl font-serif font-bold text-[#1C1815]">
+                              Our Partner Network Guarantees
+                            </h4>
+                            <p className="text-xs sm:text-sm text-stone-600 mt-1">
+                              We vet and coordinate with officially licensed
+                              Saudi Ministry operators to ensure your sacred
+                              pilgrimage is conducted with complete integrity
+                              and comfort.
+                            </p>
                           </div>
-
-                          {/* Not Included */}
-                          <div className="bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-xs flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center gap-2 mb-4">
-                                <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center text-xs font-bold">
-                                  ✕
-                                </span>
-                                <h4 className="text-lg font-serif font-bold text-[#1C1815]">
-                                  Not Included
-                                </h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                            {PILGRIMAGE_PARTNER_GUARANTEES.map((item) => (
+                              <div
+                                key={item.title}
+                                className="p-4 sm:p-5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.06] flex flex-col justify-between space-y-2 hover:border-[#002f89]/30 transition-colors"
+                              >
+                                <div className="space-y-1.5">
+                                  <div className="flex items-center gap-2">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                    <h5 className="text-sm font-semibold text-stone-900 font-sans">
+                                      {item.title}
+                                    </h5>
+                                  </div>
+                                  <p className="text-xs text-stone-600 leading-relaxed font-sans pl-6">
+                                    {item.desc}
+                                  </p>
+                                </div>
                               </div>
-                              <ul className="space-y-3 text-xs sm:text-sm text-stone-600">
-                                {PILGRIMAGE_EXCLUSIONS.map((item) => (
-                                  <li
-                                    key={item}
-                                    className="flex items-start gap-2.5"
-                                  >
-                                    <XCircle className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
-                                    <span>{item}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs text-stone-500 font-sans">
-                              Available as customized package add-ons on
-                              request.
-                            </div>
+                            ))}
                           </div>
                         </div>
                       </div>
 
                       {/* Right Column (4 cols): Sticky Sidebar Action Card */}
                       <div className="lg:col-span-4">
-                        <div className="sticky top-28 self-start bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-sm space-y-6">
+                        <div className="sticky top-28 self-start bg-white rounded-[14px] p-6 sm:p-7 border border-black/[0.08] shadow-sm space-y-6">
                           <div>
-                            <span className="inline-block px-2.5 py-1 rounded-[6px] bg-emerald-50 text-emerald-800 text-xs font-semibold uppercase tracking-wider mb-2">
-                              Instant Allocation
+                            <span className="inline-block px-2.5 py-1 rounded-[8px] bg-emerald-50 text-emerald-800 text-xs font-semibold uppercase tracking-wider mb-2">
+                              Verified Partner Batch
                             </span>
                             <h4 className="text-xl font-serif font-bold text-[#1C1815]">
-                              {UMRAH_TIER_DATA[umrahTierSelect].name} Package
+                              {UMRAH_TIER_DATA[umrahTierSelect].name}
                             </h4>
                             <div className="mt-3">
                               <span className="text-xs text-stone-500 font-mono block">
-                                Package Starting Price
+                                Pricing &amp; Departures
                               </span>
-                              <span className="text-3xl font-serif font-bold text-[#002f89]">
+                              <span className="text-2xl font-serif font-bold text-[#002f89]">
                                 {UMRAH_TIER_DATA[umrahTierSelect].price}
                               </span>
-                              <span className="text-xs text-stone-500 ml-1.5 font-sans">
+                              <span className="text-xs text-stone-500 ml-1.5 font-sans block mt-0.5">
                                 {UMRAH_TIER_DATA[umrahTierSelect].perPerson}
                               </span>
                             </div>
@@ -4262,11 +4278,13 @@ export default function ServicesPage() {
                             </div>
                             <div className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                              <span>Guaranteed Rawdah Nusuk Permit</span>
+                              <span>
+                                Guaranteed Rawdah Nusuk Permit Assistance
+                              </span>
                             </div>
                             <div className="flex items-center gap-2">
                               <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                              <span>Daily Luxury Buffet Breakfast</span>
+                              <span>Bilingual Scholar Guidance Included</span>
                             </div>
                           </div>
 
@@ -4278,19 +4296,19 @@ export default function ServicesPage() {
                                   `Umrah Packages (${UMRAH_TIER_DATA[umrahTierSelect].name})`,
                                 )
                               }
-                              className="w-full py-3.5 px-5 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
+                              className="w-full py-3.5 px-5 rounded-[14px] bg-[#002f89] hover:bg-[#00246b] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
                             >
-                              <span>Request Full Itinerary PDF</span>
+                              <span>Request Batch Dates &amp; Quote</span>
                               <ArrowRight className="w-4 h-4" />
                             </button>
                             <a
-                              href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20book%20an%20Umrah%20package."
+                              href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20inquire%20about%20Umrah%20packages%20and%20upcoming%20batches."
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-full py-2.5 px-4 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
+                              className="w-full py-2.5 px-4 rounded-[14px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
                             >
                               <MessageCircle className="w-3.5 h-3.5" />
-                              <span>WhatsApp Desk</span>
+                              <span>Consult Pilgrim Desk on WhatsApp</span>
                             </a>
                           </div>
 
@@ -4329,7 +4347,7 @@ export default function ServicesPage() {
                       {/* Left Column: Interactive 4-Photo Gallery */}
                       <div className="lg:col-span-7 flex flex-col h-full">
                         {/* Main Active Photo */}
-                        <div className="relative w-full h-[360px] sm:h-[430px] lg:h-auto lg:flex-1 min-h-[360px] sm:min-h-[430px] rounded-[8px] overflow-hidden border border-black/[0.08] shadow-xs group bg-stone-900">
+                        <div className="relative w-full h-[360px] sm:h-[430px] lg:h-auto lg:flex-1 min-h-[360px] sm:min-h-[430px] rounded-[14px] overflow-hidden border border-black/[0.08] shadow-xs group bg-stone-900">
                           <Image
                             src={HAJJ_GALLERY_PHOTOS[hajjActivePhoto].src}
                             alt={HAJJ_GALLERY_PHOTOS[hajjActivePhoto].alt}
@@ -4340,7 +4358,7 @@ export default function ServicesPage() {
                           />
                           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
                           {/* Photo Badge */}
-                          <div className="absolute top-4 left-4 z-10 px-3.5 py-1.5 rounded-[8px] bg-black/60 backdrop-blur-md border border-white/20 text-white text-xs font-medium flex items-center gap-2">
+                          <div className="absolute top-4 left-4 z-10 px-3.5 py-1.5 rounded-[14px] bg-black/60 backdrop-blur-md border border-white/20 text-white text-xs font-medium flex items-center gap-2">
                             <MapPin className="w-3.5 h-3.5 text-amber-300" />
                             <span>
                               {HAJJ_GALLERY_PHOTOS[hajjActivePhoto].label}
@@ -4362,7 +4380,7 @@ export default function ServicesPage() {
                                 key={photo.label}
                                 type="button"
                                 onClick={() => setHajjActivePhoto(idx)}
-                                className={`group relative h-[80px] sm:h-[95px] rounded-[8px] overflow-hidden border-2 transition-all cursor-pointer text-left ${
+                                className={`group relative h-[80px] sm:h-[95px] rounded-[14px] overflow-hidden border-2 transition-all cursor-pointer text-left ${
                                   isActive
                                     ? "border-[#002f89] ring-2 ring-[#002f89]/25 shadow-xs"
                                     : "border-black/[0.1] opacity-75 hover:opacity-100 hover:border-black/30"
@@ -4386,16 +4404,16 @@ export default function ServicesPage() {
                       </div>
 
                       {/* Right Column: Pricing, Specs & Package Tier Selector */}
-                      <div className="lg:col-span-5 flex flex-col justify-between bg-white rounded-[8px] border border-black/[0.08] p-6 sm:p-7 shadow-xs">
+                      <div className="lg:col-span-5 flex flex-col justify-between bg-white rounded-[14px] border border-black/[0.08] p-6 sm:p-7 shadow-xs">
                         <div>
                           {/* Price & Rating Bar */}
                           <div className="flex items-start justify-between gap-4 pb-5 border-b border-black/[0.06]">
                             <div>
                               <span className="text-xs text-stone-500 uppercase tracking-wider font-mono block">
-                                Starting from
+                                Allocation &amp; Departures
                               </span>
                               <div className="flex items-baseline gap-1.5 mt-1">
-                                <span className="text-3xl sm:text-4xl font-serif font-bold text-[#002f89]">
+                                <span className="text-2xl sm:text-3xl font-serif font-bold text-[#002f89]">
                                   {HAJJ_TIER_DATA[hajjTierSelect].price}
                                 </span>
                                 <span className="text-xs text-stone-500 font-sans">
@@ -4405,18 +4423,18 @@ export default function ServicesPage() {
                             </div>
                             <div className="text-right shrink-0">
                               <span className="text-xs text-stone-500 uppercase tracking-wider font-mono block">
-                                Hajj Approval Rate
+                                Portal Advisory
                               </span>
-                              <div className="inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-[8px] bg-emerald-50 text-emerald-900 border border-emerald-200/60 text-xs font-bold">
+                              <div className="inline-flex items-center gap-1 mt-1 px-2.5 py-1 rounded-[14px] bg-emerald-50 text-emerald-900 border border-emerald-200/60 text-xs font-bold">
                                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                                <span>100% Guaranteed</span>
+                                <span>Ministry Vetted</span>
                               </div>
                             </div>
                           </div>
 
                           {/* 4 Quick Spec Badges (2x2 Grid) */}
                           <div className="grid grid-cols-2 gap-3 py-5 border-b border-black/[0.06]">
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.04]">
                               <Clock className="w-4 h-4 text-[#002f89] shrink-0" />
                               <div>
                                 <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
@@ -4427,7 +4445,7 @@ export default function ServicesPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.04]">
                               <MapPin className="w-4 h-4 text-emerald-700 shrink-0" />
                               <div>
                                 <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
@@ -4438,7 +4456,7 @@ export default function ServicesPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.04]">
                               <Train className="w-4 h-4 text-amber-700 shrink-0" />
                               <div>
                                 <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
@@ -4449,7 +4467,7 @@ export default function ServicesPage() {
                                 </span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-2.5 p-2.5 rounded-[8px] bg-[#FAF8F5] border border-black/[0.04]">
+                            <div className="flex items-center gap-2.5 p-2.5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.04]">
                               <UserCheck className="w-4 h-4 text-purple-700 shrink-0" />
                               <div>
                                 <span className="text-[10px] uppercase font-mono text-stone-400 block leading-none">
@@ -4465,9 +4483,9 @@ export default function ServicesPage() {
                           {/* Package Tier Selection Tabs */}
                           <div className="pt-5">
                             <span className="text-xs font-mono font-bold uppercase tracking-wider text-stone-500 block mb-2.5">
-                              Select Hajj Tier
+                              Select Hajj Category
                             </span>
-                            <div className="grid grid-cols-3 gap-2 p-1 rounded-[8px] bg-[#FAF8F5] border border-black/[0.06]">
+                            <div className="grid grid-cols-3 gap-2 p-1 rounded-[14px] bg-[#FAF8F5] border border-black/[0.06]">
                               {(
                                 [
                                   "executive",
@@ -4481,7 +4499,7 @@ export default function ServicesPage() {
                                     key={key}
                                     type="button"
                                     onClick={() => setHajjTierSelect(key)}
-                                    className={`py-2 px-1 text-xs font-semibold rounded-[6px] transition-all cursor-pointer text-center ${
+                                    className={`py-2 px-1 text-xs font-semibold rounded-[10px] transition-all cursor-pointer text-center ${
                                       isSelected
                                         ? "bg-[#002f89] text-white shadow-xs"
                                         : "text-stone-600 hover:text-stone-900 hover:bg-white/80"
@@ -4494,10 +4512,10 @@ export default function ServicesPage() {
                             </div>
 
                             {/* Selected Hotels Information */}
-                            <div className="mt-4 p-3.5 rounded-[8px] bg-amber-50/60 border border-amber-200/50 space-y-1.5 text-xs text-amber-950">
+                            <div className="mt-4 p-3.5 rounded-[14px] bg-amber-50/60 border border-amber-200/50 space-y-1.5 text-xs text-amber-950">
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-amber-900">
-                                  Makkah Hotel:
+                                  Makkah Stay:
                                 </span>
                                 <span className="font-bold">
                                   {HAJJ_TIER_DATA[hajjTierSelect].makkahHotel}
@@ -4505,7 +4523,7 @@ export default function ServicesPage() {
                               </div>
                               <div className="flex items-center justify-between">
                                 <span className="font-medium text-amber-900">
-                                  Madinah Hotel:
+                                  Madinah Stay:
                                 </span>
                                 <span className="font-bold">
                                   {HAJJ_TIER_DATA[hajjTierSelect].madinahHotel}
@@ -4524,19 +4542,19 @@ export default function ServicesPage() {
                                 `Hajj Packages (${HAJJ_TIER_DATA[hajjTierSelect].name})`,
                               )
                             }
-                            className="w-full py-3.5 px-6 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-[0_4px_18px_rgba(0,47,137,0.35)] cursor-pointer active:scale-[0.99]"
+                            className="w-full py-3.5 px-6 rounded-[14px] bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white font-semibold text-sm flex items-center justify-center gap-2 transition-all shadow-[0_4px_18px_rgba(0,47,137,0.35)] cursor-pointer active:scale-[0.99]"
                           >
-                            <span>Request Hajj Allocation</span>
+                            <span>Request Hajj Guidance &amp; Allocation</span>
                             <ArrowRight className="w-4 h-4" />
                           </button>
                           <a
-                            href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20inquire%20about%20the%20Hajj%20package."
+                            href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20to%20inquire%20about%20the%20Hajj%20advisory%20desk."
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full py-2.5 px-4 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-[0.99]"
+                            className="w-full py-2.5 px-4 rounded-[14px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-[0.99]"
                           >
                             <MessageCircle className="w-3.5 h-3.5" />
-                            <span>Instant Consultation with Hajj Desk</span>
+                            <span>Consult Hajj Advisory Desk on WhatsApp</span>
                           </a>
                         </div>
                       </div>
@@ -4547,30 +4565,31 @@ export default function ServicesPage() {
                       {/* Left Column (8 cols): Overview, Timeline, Inclusions, Reviews */}
                       <div className="lg:col-span-8 space-y-12">
                         {/* A. Spiritual Experience Overview */}
-                        <div className="bg-white rounded-[8px] p-7 sm:p-8 border border-black/[0.08] shadow-xs">
+                        <div className="bg-white rounded-[14px] p-7 sm:p-8 border border-black/[0.08] shadow-xs">
                           <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-2">
                             Hajj Rituals Overview
                           </span>
                           <h3 className="text-2xl sm:text-3xl font-serif font-bold text-[#1C1815] mb-3">
-                            Fulfilling the Sacred Pillar with Royal Hospitality
+                            Fulfilling the Sacred Pillar with Dedicated Guidance
                           </h3>
                           <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans">
-                            Hajj requires stamina, preparation, and profound
-                            devotion. Flyora ensures your journey through Mina,
-                            Arafat, and Muzdalifah is supported by top-tier
-                            European air-conditioned camps, hygienic catering,
-                            continuous medical support, and scholar leadership.
+                            Hajj is the spiritual pinnacle of a Muslim&apos;s
+                            lifetime. Flyora acts as your trusted pilgrimage
+                            advisory and liaison desk, connecting you with
+                            verified, Saudi Ministry-accredited Hajj operators
+                            for official Nusuk quota allocations, high-standard
+                            camps, and scholar guidance.
                           </p>
                           <p className="text-sm sm:text-base text-stone-600 leading-relaxed font-sans mt-3">
-                            Our Non-Shifting packages keep your 5-star hotel
-                            rooms in Makkah active throughout the 5 days of
-                            Hajj, allowing you to return and freshen up at any
-                            time during your stay.
+                            We assist in comparing licensed packages, reviewing
+                            camp proximity in Mina, arranging pre-departure
+                            spiritual orientations, and navigating the digital
+                            Nusuk portal with total transparency.
                           </p>
                         </div>
 
                         {/* B. Your Sacred Journey: Vertical Timeline Itinerary (Aceternity Timeline) */}
-                        <div className="bg-white rounded-[8px] border border-black/[0.08] shadow-xs overflow-visible">
+                        <div className="bg-white rounded-[14px] border border-black/[0.08] shadow-xs overflow-visible">
                           <Timeline
                             title={
                               <div>
@@ -4594,115 +4613,49 @@ export default function ServicesPage() {
                           />
                         </div>
 
-                        {/* C. What's Included & What's Not Included Side-by-Side */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          {/* What's Included */}
-                          <div className="bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-xs flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center gap-2 mb-4">
-                                <span className="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs font-bold">
-                                  ✓
-                                </span>
-                                <h4 className="text-lg font-serif font-bold text-[#1C1815]">
-                                  What's Included
-                                </h4>
-                              </div>
-                              <ul className="space-y-3 text-xs sm:text-sm text-stone-700">
-                                <li className="flex items-start gap-2.5">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                                  <span>
-                                    Zone A Deluxe European Air-Conditioned Mina
-                                    Camps
-                                  </span>
-                                </li>
-                                <li className="flex items-start gap-2.5">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                                  <span>
-                                    5-Star Makkah &amp; Madinah Luxury Hotels
-                                  </span>
-                                </li>
-                                <li className="flex items-start gap-2.5">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                                  <span>
-                                    Mashair Sacred Metro Train &amp; Private VIP
-                                    Coaches
-                                  </span>
-                                </li>
-                                <li className="flex items-start gap-2.5">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                                  <span>
-                                    Full 3-Course Buffet Catering &amp;
-                                    Refreshments
-                                  </span>
-                                </li>
-                                <li className="flex items-start gap-2.5">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                                  <span>
-                                    Official Nusuk Hajj Visa &amp; Comprehensive
-                                    Insurance
-                                  </span>
-                                </li>
-                                <li className="flex items-start gap-2.5">
-                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                                  <span>
-                                    Senior Islamic Scholar Guidance Throughout
-                                    Rites
-                                  </span>
-                                </li>
-                              </ul>
-                            </div>
-                            <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs font-semibold text-emerald-700">
-                              ✓ Authorized Ministry of Hajj &amp; Umrah
-                              Allocation
-                            </div>
+                        {/* C. Partner Network & Concierge Guarantees */}
+                        <div className="bg-white rounded-[14px] p-6 sm:p-8 border border-black/[0.08] shadow-xs">
+                          <div className="mb-6">
+                            <span className="text-xs font-mono font-bold uppercase tracking-wider text-[#002f89] block mb-1">
+                              Accredited Partner Network
+                            </span>
+                            <h4 className="text-xl sm:text-2xl font-serif font-bold text-[#1C1815]">
+                              Our Hajj Advisory &amp; Liaison Guarantees
+                            </h4>
+                            <p className="text-xs sm:text-sm text-stone-600 mt-1">
+                              We vet and connect pilgrims exclusively to
+                              licensed Saudi Ministry of Hajj &amp; Umrah
+                              operators with transparent allocations.
+                            </p>
                           </div>
-
-                          {/* Not Included */}
-                          <div className="bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-xs flex flex-col justify-between">
-                            <div>
-                              <div className="flex items-center gap-2 mb-4">
-                                <span className="w-6 h-6 rounded-full bg-stone-100 text-stone-600 flex items-center justify-center text-xs font-bold">
-                                  ✕
-                                </span>
-                                <h4 className="text-lg font-serif font-bold text-[#1C1815]">
-                                  Not Included
-                                </h4>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                            {HAJJ_PARTNER_GUARANTEES.map((item) => (
+                              <div
+                                key={item.title}
+                                className="p-4 sm:p-5 rounded-[14px] bg-[#FAF8F5] border border-black/[0.06] flex flex-col justify-between space-y-2 hover:border-[#002f89]/30 transition-colors"
+                              >
+                                <div className="space-y-1.5">
+                                  <div className="flex items-center gap-2">
+                                    <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                    <h5 className="text-sm font-semibold text-stone-900 font-sans">
+                                      {item.title}
+                                    </h5>
+                                  </div>
+                                  <p className="text-xs text-stone-600 leading-relaxed font-sans pl-6">
+                                    {item.desc}
+                                  </p>
+                                </div>
                               </div>
-                              <ul className="space-y-3 text-xs sm:text-sm text-stone-600">
-                                <li className="flex items-start gap-2.5">
-                                  <XCircle className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
-                                  <span>
-                                    Individual Qurbani / Hady (available as
-                                    add-on)
-                                  </span>
-                                </li>
-                                <li className="flex items-start gap-2.5">
-                                  <XCircle className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
-                                  <span>
-                                    Personal laundry and room service extras
-                                  </span>
-                                </li>
-                                <li className="flex items-start gap-2.5">
-                                  <XCircle className="w-4 h-4 text-stone-400 shrink-0 mt-0.5" />
-                                  <span>
-                                    Excess baggage charges on
-                                    domestic/international flights
-                                  </span>
-                                </li>
-                              </ul>
-                            </div>
-                            <div className="mt-6 pt-4 border-t border-black/[0.06] text-xs text-stone-500 font-sans">
-                              Clear itemized quotation with zero hidden charges.
-                            </div>
+                            ))}
                           </div>
                         </div>
                       </div>
 
                       {/* Right Column (4 cols): Sticky Sidebar Action Card */}
                       <div className="lg:col-span-4">
-                        <div className="sticky top-28 self-start bg-white rounded-[8px] p-6 sm:p-7 border border-black/[0.08] shadow-sm space-y-6">
+                        <div className="sticky top-28 self-start bg-white rounded-[14px] p-6 sm:p-7 border border-black/[0.08] shadow-sm space-y-6">
                           <div>
-                            <span className="inline-block px-2.5 py-1 rounded-[6px] bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-semibold uppercase tracking-wider mb-2">
+                            <span className="inline-block px-2.5 py-1 rounded-[8px] bg-amber-50 text-amber-900 border border-amber-200/60 text-xs font-semibold uppercase tracking-wider mb-2">
                               Hajj 1448H Allocation
                             </span>
                             <h4 className="text-xl font-serif font-bold text-[#1C1815]">
@@ -4710,12 +4663,12 @@ export default function ServicesPage() {
                             </h4>
                             <div className="mt-3">
                               <span className="text-xs text-stone-500 font-mono block">
-                                Package Starting Price
+                                Allocation &amp; Departures
                               </span>
-                              <span className="text-3xl font-serif font-bold text-[#002f89]">
+                              <span className="text-2xl font-serif font-bold text-[#002f89]">
                                 {HAJJ_TIER_DATA[hajjTierSelect].price}
                               </span>
-                              <span className="text-xs text-stone-500 ml-1.5 font-sans">
+                              <span className="text-xs text-stone-500 ml-1.5 font-sans block mt-0.5">
                                 {HAJJ_TIER_DATA[hajjTierSelect].perPerson}
                               </span>
                             </div>
@@ -4752,19 +4705,21 @@ export default function ServicesPage() {
                                   `Hajj Packages (${HAJJ_TIER_DATA[hajjTierSelect].name})`,
                                 )
                               }
-                              className="w-full py-3.5 px-5 rounded-[8px] bg-[#002f89] hover:bg-[#00246b] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
+                              className="w-full py-3.5 px-5 rounded-[14px] bg-[#002f89] hover:bg-[#00246b] text-white font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
                             >
-                              <span>Request Hajj Allocation</span>
+                              <span>
+                                Request Hajj Guidance &amp; Allocation
+                              </span>
                               <ArrowRight className="w-4 h-4" />
                             </button>
                             <a
-                              href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20information%20on%20Hajj%20packages."
+                              href="https://wa.me/919876543210?text=Hello%20Flyora,%20I%20would%20like%20information%20on%20Hajj%20packages%20and%20Nusuk%20guidance."
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="w-full py-2.5 px-4 rounded-[8px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
+                              className="w-full py-2.5 px-4 rounded-[14px] bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs cursor-pointer active:scale-95"
                             >
                               <MessageCircle className="w-3.5 h-3.5" />
-                              <span>WhatsApp Desk</span>
+                              <span>Consult Hajj Advisory Desk</span>
                             </a>
                           </div>
 
@@ -5737,7 +5692,7 @@ export default function ServicesPage() {
             }}
           >
             <Image
-              src="/services/custom-holidays.jpg"
+              src="/services/custom-holidays.webp"
               alt="Luxury Overwater Bungalow Retreat"
               fill
               sizes="100vw"

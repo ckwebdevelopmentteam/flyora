@@ -3,6 +3,7 @@
 import { useServicesCatalog } from "../lib/use-services-catalog";
 import { resolveService } from "../lib/service-catalog";
 import { serviceImage } from "../lib/service-visuals";
+import type { ServiceSummary } from "@flyora/types";
 import React, {
   useState,
   useRef,
@@ -15,6 +16,8 @@ import {
   Users,
   Check,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ArrowRight,
   Plane,
   Train,
@@ -138,7 +141,7 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "flight-booking",
     label: "Flight Booking",
     subtitle: "Best fares & routes",
-    imageSrc: "/services/flight-booking.jpg",
+    imageSrc: "/services/flight-booking.webp",
     imagePosition: "object-[65%_45%]",
     icon: Plane,
     isDomesticApplicable: true,
@@ -149,7 +152,7 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "holiday-packages",
     label: "Custom Holidays",
     subtitle: "Tailored journeys",
-    imageSrc: "/services/custom-holidays.jpg",
+    imageSrc: "/services/custom-holidays.webp",
     imagePosition: "object-[72%_50%]",
     icon: VacationPlaneIcon,
     isDomesticApplicable: true,
@@ -160,7 +163,7 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "hotel-booking",
     label: "Hotel & Resorts",
     subtitle: "Luxury stays & villas",
-    imageSrc: "/services/hotel-booking.jpg",
+    imageSrc: "/services/hotel-booking.webp",
     imagePosition: "object-center",
     icon: Hotel,
     isDomesticApplicable: true,
@@ -171,7 +174,7 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "train-booking",
     label: "Train Booking",
     subtitle: "Express & scenic rail",
-    imageSrc: "/services/train-booking.jpg",
+    imageSrc: "/services/train-booking.webp",
     imagePosition: "object-[70%_55%]",
     icon: Train,
     isDomesticApplicable: true,
@@ -182,7 +185,7 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "bus-booking",
     label: "Bus Booking",
     subtitle: "Volvo sleeper comfort",
-    imageSrc: "/services/bus-booking.jpg",
+    imageSrc: "/services/bus-booking.webp",
     imagePosition: "object-[24%_65%]",
     icon: Bus,
     isDomesticApplicable: true,
@@ -193,7 +196,7 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "visa-assistance",
     label: "Visa Assistance",
     subtitle: "Hassle-free approvals",
-    imageSrc: "/services/visa-assistance.jpg",
+    imageSrc: "/services/visa-assistance.webp",
     imagePosition: "object-[30%_55%]",
     icon: PassportIcon,
     isDomesticApplicable: false,
@@ -204,7 +207,7 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "umrah-hajj",
     label: "Umrah & Hajj",
     subtitle: "Spiritual journeys",
-    imageSrc: "/services/umrah-packages.jpg",
+    imageSrc: "/services/umrah-packages.webp",
     imagePosition: "object-[82%_45%]",
     icon: MosqueIcon,
     isDomesticApplicable: false,
@@ -215,7 +218,7 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "passport-assistance",
     label: "Passport Assistance",
     subtitle: "Fast-Track Services",
-    imageSrc: "/services/passport-service.jpg",
+    imageSrc: "/services/passport-service.webp",
     imagePosition: "object-center",
     icon: PassportIcon,
     isDomesticApplicable: false,
@@ -226,11 +229,102 @@ const ALL_SERVICES_CATALOG: ServiceMetadata[] = [
     backendSlug: "travel-insurance",
     label: "Travel Insurance",
     subtitle: "Medical & Luggage",
-    imageSrc: "/services/travel-insurance.jpg",
+    imageSrc: "/services/travel-insurance.webp",
     imagePosition: "object-center",
     icon: ShieldCheck,
     isDomesticApplicable: true,
     isInternationalApplicable: true,
+  },
+];
+
+const DEFAULT_HERO_SERVICES: ServiceSummary[] = [
+  {
+    id: "f321ad14-df06-47b3-904b-8b239bf95b58",
+    name: "Flight Booking",
+    slug: "flight-booking",
+    isDomestic: true,
+    isInternational: true,
+    isActive: true,
+    displayOrder: 1,
+    minMarginPercent: 5,
+    description: "Best fares & routes",
+  },
+  {
+    id: "880a9c17-1bdd-42cf-bb3d-62242b9446ff",
+    name: "Holiday Packages",
+    slug: "holiday-packages",
+    isDomestic: true,
+    isInternational: true,
+    isActive: true,
+    displayOrder: 2,
+    minMarginPercent: 12,
+    description: "Tailored journeys",
+  },
+  {
+    id: "7da65aaf-df81-4943-b260-e84f62f5eaba",
+    name: "Hotel Booking",
+    slug: "hotel-booking",
+    isDomestic: true,
+    isInternational: true,
+    isActive: true,
+    displayOrder: 3,
+    minMarginPercent: 10,
+    description: "Luxury stays & villas",
+  },
+  {
+    id: "969ee59d-1b58-4f37-866e-46c2b3e88542",
+    name: "Umrah & Hajj",
+    slug: "umrah-hajj",
+    isDomestic: false,
+    isInternational: true,
+    isActive: true,
+    displayOrder: 4,
+    minMarginPercent: 15,
+    description: "Spiritual journeys",
+  },
+  {
+    id: "97acd01b-ae30-4501-897e-8d953f65d20d",
+    name: "Visa Assistance",
+    slug: "visa-assistance",
+    isDomestic: false,
+    isInternational: true,
+    isActive: true,
+    displayOrder: 5,
+    minMarginPercent: 20,
+    description: "Hassle-free approvals",
+  },
+  {
+    id: "9a58c680-4664-4255-a4a3-02edad8df08e",
+    name: "Passport Assistance",
+    slug: "escort-parking",
+    isDomestic: false,
+    isInternational: true,
+    isActive: true,
+    displayOrder: 6,
+    minMarginPercent: 10,
+    description: "Fast-Track Services",
+  },
+  {
+    id: "0855e153-59d5-4464-a91c-e7b9f955e0a2",
+    name: "Travel insurance",
+    slug: "travel-insurance",
+    isDomestic: true,
+    isInternational: true,
+    isActive: true,
+    displayOrder: 7,
+    minMarginPercent: 10,
+    description: "Medical & Luggage",
+  },
+  {
+    id: "02601693-e1d3-4d25-8e44-75b6c5e58b4b",
+    name: "Bus & Train Booking",
+    slug: "bus-booking",
+    isDomestic: true,
+    isInternational: false,
+    isActive: true,
+    displayOrder: 0,
+    minMarginPercent: 10,
+    description: "Comfort travel & fast rail",
   },
 ];
 
@@ -853,7 +947,7 @@ const TravelersPicker: React.FC<TravelersPickerProps> = ({
 export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   onOpenEnquiry,
   onExploreJourneys,
-  defaultTripMode = "domestic",
+  defaultTripMode = "international",
   className = "",
   activeServiceSlug: propActiveServiceSlug,
   onServiceChange,
@@ -913,11 +1007,18 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
   const isSubmitted = false;
   const containerRef = useRef<HTMLDivElement>(null);
   const cardsScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollCardsLeft, setCanScrollCardsLeft] = useState(false);
+  const [canScrollCardsRight, setCanScrollCardsRight] = useState(false);
+
+  const effectiveServices =
+    backendServices && backendServices.length > 0
+      ? backendServices
+      : DEFAULT_HERO_SERVICES;
 
   const visibleServices = useMemo(
     () =>
       filterServicesByTripMode(
-        backendServices,
+        effectiveServices,
         tripMode,
         selectedDestination,
       ).map((service) => {
@@ -930,16 +1031,66 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           id: service.slug,
           backendSlug: service.slug,
           label: service.name,
+          subtitle:
+            service.description ||
+            template?.subtitle ||
+            "Tailored travel services",
           imageSrc:
             service.imageUrl ||
             template?.imageSrc ||
             serviceImage(service.slug),
         };
       }),
-    [backendServices, tripMode, selectedDestination],
+    [effectiveServices, tripMode, selectedDestination],
   );
+
+  const hasMoreThanSeven = visibleServices.length > 7;
+
+  useEffect(() => {
+    if (hasMoreThanSeven) {
+      setCanScrollCardsRight(true);
+    }
+  }, [hasMoreThanSeven]);
+
+  const updateCardsScrollState = useCallback(() => {
+    const el = cardsScrollRef.current;
+    if (!el) return;
+    const { scrollLeft, scrollWidth, clientWidth } = el;
+    if (scrollWidth > clientWidth) {
+      setCanScrollCardsLeft(scrollLeft > 6);
+      setCanScrollCardsRight(scrollLeft + clientWidth < scrollWidth - 6);
+    } else {
+      setCanScrollCardsLeft(scrollLeft > 6);
+      setCanScrollCardsRight(hasMoreThanSeven);
+    }
+  }, [hasMoreThanSeven]);
+
+  useEffect(() => {
+    const el = cardsScrollRef.current;
+    if (!el) return;
+    updateCardsScrollState();
+    el.addEventListener("scroll", updateCardsScrollState, { passive: true });
+    window.addEventListener("resize", updateCardsScrollState, {
+      passive: true,
+    });
+    return () => {
+      el.removeEventListener("scroll", updateCardsScrollState);
+      window.removeEventListener("resize", updateCardsScrollState);
+    };
+  }, [updateCardsScrollState, visibleServices]);
+
+  const scrollCards = (direction: "left" | "right") => {
+    const el = cardsScrollRef.current;
+    if (!el) return;
+    const distance = Math.max(180, Math.round(el.clientWidth * 0.7));
+    el.scrollBy({
+      left: direction === "left" ? -distance : distance,
+      behavior: "smooth",
+    });
+  };
+
   const selectedBackendService = resolveService(
-    backendServices,
+    effectiveServices,
     activeServiceSlug,
   );
   // Cascading update: if active service is no longer valid in current tripMode, fallback (uncontrolled only)
@@ -1217,42 +1368,44 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           TOP BAR: MINIMAL TRIP CONTEXT TOGGLE (Clean, Subtle, No Excessive AI Badges)
           ======================================================================= */}
       {!hideTripModeToggle && (
-        <div className="flex items-center justify-between gap-3 mb-3 px-1 sm:px-2">
-          <div className="inline-flex items-center p-1 rounded-full bg-black/45 backdrop-blur-md border border-white/20 shadow-md">
-            <button
-              type="button"
-              aria-label="Domestic Travel"
-              onClick={() => handleTripModeChange("domestic")}
-              className={`flex items-center gap-1 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
-                tripMode === "domestic"
-                  ? "bg-white text-neutral-950 shadow-xs font-bold"
-                  : "text-white/90 hover:text-white font-medium hover:bg-white/10"
-              }`}
-            >
-              <span>Domestic</span>
-              <span className="hidden sm:inline">&nbsp;Travel</span>
-            </button>
-
+        <div className="flex items-center justify-between gap-3 mb-3 px-1 md:px-0 antialiased">
+          <div className="inline-flex items-center p-1 rounded-[14px] bg-black/80 backdrop-blur-sm border border-white/25 shadow-md">
             <button
               type="button"
               aria-label="International Travel"
               onClick={() => handleTripModeChange("international")}
-              className={`flex items-center gap-1.5 sm:gap-1.5 px-3.5 sm:px-4 md:px-5 py-1.5 rounded-full text-xs sm:text-xs md:text-[13px] font-sans transition-all duration-200 cursor-pointer ${
+              className={`flex items-center gap-2 px-4 sm:px-4.5 md:px-5 py-1.5 rounded-[10px] text-xs sm:text-[13px] md:text-sm font-sans transition-all duration-200 cursor-pointer ${
                 tripMode === "international"
-                  ? "bg-white text-neutral-950 shadow-xs font-bold"
-                  : "text-white/90 hover:text-white font-medium hover:bg-white/10"
+                  ? "bg-white text-neutral-900 shadow-sm font-semibold"
+                  : "text-white hover:text-white font-medium hover:bg-white/10"
               }`}
             >
               <Globe2
-                className={`w-3.5 h-3.5 shrink-0 ${
-                  tripMode === "international"
-                    ? "text-[#002f89]"
-                    : "text-white/90"
+                className={`w-4 h-4 shrink-0 ${
+                  tripMode === "international" ? "text-[#002f89]" : "text-white"
                 }`}
-                strokeWidth={2}
+                strokeWidth={2.2}
               />
-              <span>International</span>
-              <span className="hidden sm:inline">&nbsp;Travel</span>
+              <span className="tracking-normal">International</span>
+              <span className="hidden sm:inline tracking-normal">
+                &nbsp;Travel
+              </span>
+            </button>
+
+            <button
+              type="button"
+              aria-label="Domestic Travel"
+              onClick={() => handleTripModeChange("domestic")}
+              className={`flex items-center gap-1.5 px-4 sm:px-4.5 md:px-5 py-1.5 rounded-[10px] text-xs sm:text-[13px] md:text-sm font-sans transition-all duration-200 cursor-pointer ${
+                tripMode === "domestic"
+                  ? "bg-white text-neutral-900 shadow-sm font-semibold"
+                  : "text-white hover:text-white font-medium hover:bg-white/10"
+              }`}
+            >
+              <span className="tracking-normal">Domestic</span>
+              <span className="hidden sm:inline tracking-normal">
+                &nbsp;Travel
+              </span>
             </button>
           </div>
         </div>
@@ -1260,17 +1413,36 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
 
       {/* =======================================================================
           TOP SERVICE CARDS:
-          - RESTORED PREVIOUS DIMENSIONS: min-h-[165px] md:h-[195px] lg:h-[205px]
-          - 5 equal columns spanning full width
-          - Natural photography with subtle gradient scrim
-          - Small outline icon at top-left, clean title and subtitle at bottom
-          - No excessive badges, pills, or artificial glow effects
+          - Automatically scales to fit up to 7 services in ONE SINGLE ROW on desktop:
+            md:grid md:grid-flow-col md:auto-cols-fr
+          - If more than 7 services are present, scrolls horizontally with
+            left & right navigation arrow buttons
+          - Height and card typography scale gracefully depending on count
           ======================================================================= */}
       {!hideTopCards && (
-        <div className="relative mb-3.5">
+        <div className="relative mb-3.5 group/cardstrack">
+          {/* Floating Left Navigation Button */}
+          {hasMoreThanSeven && canScrollCardsLeft && (
+            <button
+              type="button"
+              onClick={() => scrollCards("left")}
+              aria-label="Scroll services left"
+              className="absolute -left-2.5 sm:-left-3.5 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/80 hover:bg-black text-white backdrop-blur-md border border-white/30 shadow-[0_4px_16px_rgba(0,0,0,0.4)] flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+            >
+              <ChevronLeft
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                strokeWidth={2.5}
+              />
+            </button>
+          )}
+
           <div
             ref={cardsScrollRef}
-            className="flex md:grid md:grid-cols-5 items-stretch gap-2.5 sm:gap-3.5 lg:gap-4 overflow-x-auto md:overflow-visible no-scrollbar scroll-smooth px-1 md:px-0 py-1"
+            className={`flex items-stretch gap-2 sm:gap-2.5 lg:gap-3 overflow-x-auto no-scrollbar scroll-smooth px-1 md:px-0 py-1 ${
+              hasMoreThanSeven
+                ? ""
+                : "md:grid md:grid-flow-col md:auto-cols-fr md:overflow-visible"
+            }`}
           >
             {visibleServices.map((service) => {
               const IconComponent = service.icon;
@@ -1284,7 +1456,11 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                     setActiveServiceSlug(service.id);
                     setOpenDropdown(null);
                   }}
-                  className={`group relative shrink-0 w-[155px] sm:w-[190px] md:w-auto min-h-[140px] sm:min-h-[165px] md:h-[195px] lg:h-[205px] rounded-[18px] sm:rounded-[22px] md:rounded-[26px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3 sm:p-4 md:p-5 flex flex-col justify-between overflow-hidden ${
+                  className={`group relative shrink-0 ${
+                    hasMoreThanSeven
+                      ? "w-[145px] sm:w-[170px] md:w-[180px] lg:w-[190px]"
+                      : "w-[145px] sm:w-[170px] md:w-auto md:min-w-0"
+                  } min-h-[140px] sm:min-h-[155px] md:h-[180px] lg:h-[190px] rounded-[14px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3 sm:p-3.5 md:p-4 flex flex-col justify-between overflow-hidden ${
                     isActive
                       ? "ring-2 ring-white shadow-[0_12px_28px_rgba(0,0,0,0.35)] -translate-y-1 scale-[1.02]"
                       : "ring-1 ring-white/25 hover:ring-white/70 hover:-translate-y-0.5 opacity-90 hover:opacity-100"
@@ -1302,12 +1478,12 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
 
                   {/* Top Row: Small, Consistent Outline Icon (No Boxy Container) */}
                   <div className="relative z-10 flex items-center justify-start w-full">
-                    <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white/95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" />
+                    <IconComponent className="w-4 h-4 sm:w-5 sm:h-5 md:w-5 md:h-5 text-white/95 drop-shadow-[0_1px_3px_rgba(0,0,0,0.6)]" />
                   </div>
 
                   {/* Bottom Row: Simple, Balanced Typography */}
                   <div className="relative z-10 w-full mt-auto">
-                    <h4 className="text-[13px] sm:text-[15px] md:text-[16px] font-bold text-white leading-tight drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.85)]">
+                    <h4 className="text-[12.5px] sm:text-[13.5px] md:text-[14px] lg:text-[15px] font-bold text-white leading-snug drop-shadow-[0_1.5px_4px_rgba(0,0,0,0.85)] line-clamp-2">
                       {service.label}
                     </h4>
                     <p className="text-white/80 text-[10px] sm:text-xs font-normal mt-0.5 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)] truncate">
@@ -1318,6 +1494,21 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               );
             })}
           </div>
+
+          {/* Floating Right Navigation Button */}
+          {hasMoreThanSeven && canScrollCardsRight && (
+            <button
+              type="button"
+              onClick={() => scrollCards("right")}
+              aria-label="Scroll services right"
+              className="absolute -right-2.5 sm:-right-3.5 top-1/2 -translate-y-1/2 z-30 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-black/80 hover:bg-black text-white backdrop-blur-md border border-white/30 shadow-[0_4px_16px_rgba(0,0,0,0.4)] flex items-center justify-center transition-all duration-200 cursor-pointer active:scale-95"
+            >
+              <ChevronRight
+                className="w-4 h-4 sm:w-5 sm:h-5"
+                strokeWidth={2.5}
+              />
+            </button>
+          )}
         </div>
       )}
 
@@ -1328,7 +1519,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - Natural case labels with proper typography hierarchy
           - Perfectly aligned 4 fields + Request a Quote button
           ======================================================================= */}
-      <div className="relative z-40 w-full bg-[#FAF8F5]/98 backdrop-blur-md text-[#1E1A17] rounded-[24px] sm:rounded-[28px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_12px_32px_rgba(0,0,0,0.08)] border border-white/80 transition-all duration-300">
+      <div className="relative z-40 w-full bg-[#FAF8F5]/98 backdrop-blur-md text-[#1E1A17] rounded-[14px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_12px_32px_rgba(0,0,0,0.08)] border border-white/80 transition-all duration-300">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-2">
           {/* Active Service Fields Group */}
           <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-neutral-200/60 min-w-0">

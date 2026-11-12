@@ -142,9 +142,14 @@ export const PackagesListPage = () => {
                   <span className="font-medium text-xs text-zinc-900 truncate">
                     {pkg.title}
                   </span>
+                  {pkg.isPopular && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                      Trending
+                    </span>
+                  )}
                   {pkg.isFeatured && (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-zinc-100 text-zinc-700 border border-zinc-200 font-mono">
-                      Featured
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-medium">
+                      Popular
                     </span>
                   )}
                 </div>

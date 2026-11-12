@@ -255,7 +255,7 @@ describe("HeroSearchCard Dynamic Cascading System", () => {
   });
 
   it("replaces train name / Train Category with Travel Date in Train Booking", async () => {
-    render(<HeroSearchCard />);
+    render(<HeroSearchCard defaultTripMode="domestic" />);
     const trainBtn = await screen.findByRole("button", {
       name: /Train Booking/i,
     });
@@ -357,5 +357,39 @@ describe("HeroSearchCard Dynamic Cascading System", () => {
     expect(cardBtn).toBeTruthy();
     const img = cardBtn.querySelector("img");
     expect(img?.getAttribute("src")).toBe(customR2Url);
+  });
+
+  it("displays scroll navigation buttons when more than 7 services are present", async () => {
+    const eightServices = Array.from({ length: 8 }, (_, i) => ({
+      id: `srv-${i + 1}`,
+      name: `Service Number ${i + 1}`,
+      slug: `service-${i + 1}`,
+      isDomestic: true,
+      isInternational: true,
+    }));
+
+    vi.stubGlobal(
+      "fetch",
+      vi
+        .fn()
+        .mockImplementation(
+          async () =>
+            new Response(JSON.stringify({ data: eightServices }), {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            }),
+        ),
+    );
+    await refreshServices(true);
+
+    render(<HeroSearchCard />);
+    expect(
+      await screen.findByRole("button", { name: /Service Number 8/i }),
+    ).toBeTruthy();
+
+    // With 8 services (> 7), right scroll button should be present
+    expect(
+      screen.getByRole("button", { name: /Scroll services right/i }),
+    ).toBeTruthy();
   });
 });

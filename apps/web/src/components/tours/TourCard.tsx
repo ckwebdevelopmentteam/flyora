@@ -24,7 +24,7 @@ export const TourCard: React.FC<TourCardProps> = ({ pkg, onCustomize }) => {
   const whatsappUrl = `https://wa.me/919876543210?text=${whatsappText}`;
 
   return (
-    <div className="group bg-white border border-stone-200/90 hover:border-[#002f89]/40 hover:shadow-xl hover:shadow-stone-200/50 rounded-[8px] overflow-hidden transition-all duration-300 flex flex-col h-full">
+    <div className="group bg-white border border-stone-200/90 hover:border-[#002f89]/40 hover:shadow-xl hover:shadow-stone-200/50 rounded-[14px] overflow-hidden transition-all duration-300 flex flex-col h-full">
       {/* Photo Container */}
       <div className="relative aspect-16/10 w-full overflow-hidden bg-stone-100">
         <img

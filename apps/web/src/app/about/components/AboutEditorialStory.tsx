@@ -257,7 +257,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
                 {/* Overlapping Travel Documents Inset (Matching exact reference: borderless, inset from right edge, hanging over bottom edge) */}
                 <div className="absolute -bottom-10 sm:-bottom-14 lg:-bottom-16 right-8 sm:right-12 lg:right-16 xl:-bottom-[97px] xl:right-[55px] w-[42%] max-w-[260px] xl:w-[264px] xl:max-w-none aspect-[4/5] xl:aspect-[264/250] bg-[#082032] overflow-hidden z-10 shadow-[0_20px_45px_-10px_rgba(0,0,0,0.3)]">
                   <Image
-                    src="/services/visa-assistance.jpg"
+                    src="/services/visa-assistance.webp"
                     alt="Official passports, verified international visas, flight boarding passes, and bespoke hotel confirmations"
                     fill
                     sizes="(max-width: 640px) 180px, 260px"
