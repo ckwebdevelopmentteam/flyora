@@ -31,6 +31,7 @@ import {
   Globe2,
   ShieldCheck,
   X,
+  Search,
 } from "lucide-react";
 import {
   type TripMode,
@@ -347,26 +348,30 @@ export function parseOptionLabel(
   sub?: string,
   badge?: string,
 ): ParsedOption {
+  const parenMatch = label.match(/^(.*?)\s*\(([^)]+)\)$/);
+  const rawSub = sub || "";
+  // Clean out redundant parenthetical code in sub if it repeats the code
+  const cleanSub = rawSub.replace(/\s*\([^)]*\)$/, "").trim();
+
   if (badge) {
+    const title = parenMatch ? parenMatch[1].trim() : label;
     return {
-      title: label,
+      title,
       codeOrBadge: badge,
       isBadge: true,
-      sub,
+      sub: cleanSub || undefined,
     };
   }
 
   // Check for "City (CODE)" or "Name (Details)" pattern: e.g. "Mumbai (BOM)", "Goa (Beaches & Heritage)"
-  const parenMatch = label.match(/^(.*?)\s*\(([^)]+)\)$/);
   if (parenMatch) {
-    const rawSub = sub || "";
-    // Clean out redundant parenthetical code in sub if it repeats the code
-    const cleanSub = rawSub.replace(/\s*\([^)]*\)$/, "").trim();
+    const inside = parenMatch[2].trim();
+    const isCode = inside.length <= 5 && /^[A-Z0-9]+$/i.test(inside);
     return {
-      title: parenMatch[1].trim(),
-      codeOrBadge: parenMatch[2].trim(),
-      isBadge: false,
-      sub: cleanSub || undefined,
+      title: isCode ? parenMatch[1].trim() : label,
+      codeOrBadge: isCode ? inside : undefined,
+      isBadge: isCode,
+      sub: isCode ? cleanSub || undefined : sub,
     };
   }
 
@@ -419,7 +424,8 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
     if (!isOpen) return;
 
     const handlePointerDown = (e: MouseEvent | TouchEvent) => {
-      if (fieldRef.current && !fieldRef.current.contains(e.target as Node)) {
+      const target = e.target as Node;
+      if (fieldRef.current && !fieldRef.current.contains(target)) {
         onClose?.();
       }
     };
@@ -589,83 +595,154 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
         </button>
       </div>
 
-      {/* Popover Dropdown Menu: Clean Full-Width Options Grid (Shows on Top) */}
+      {/* Popover Dropdown Menu: Clean Full-Width Options Grid / Mobile Bottom Sheet */}
       {isOpen && (
-        <div
-          role="listbox"
-          aria-label={label}
-          className="absolute left-0 right-0 bottom-[calc(100%+8px)] z-50 w-full bg-white border border-neutral-200/90 rounded-2xl p-3 sm:p-4 shadow-[0_16px_40px_rgba(0,0,0,0.14)] animate-dropdown-in"
-        >
-          {/* Header Row */}
-          <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-neutral-100 px-1 select-none">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-xs font-sans font-semibold text-neutral-800 uppercase tracking-wider shrink-0">
-                {label}
-              </span>
-              <span className="text-[11.5px] font-sans text-neutral-400 truncate">
-                {isEditable && value.trim()
-                  ? `• Matching "${value.trim()}"`
-                  : "• Select a place or type as you wish"}
-              </span>
-            </div>
-            {onClose && (
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label="Close"
-                title="Close"
-                className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-700 font-medium px-2 py-0.5 rounded-md hover:bg-neutral-100 transition-colors cursor-pointer shrink-0"
-              >
-                <span>Close</span>
-                <X
-                  className="w-3.5 h-3.5 text-neutral-500 hover:text-neutral-800"
-                  strokeWidth={2.2}
-                />
-              </button>
-            )}
-          </div>
+        <>
+          {/* Mobile backdrop to dismiss cleanly and prevent navbar overlap confusion */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[90] sm:hidden"
+            onClick={onClose}
+            aria-hidden="true"
+          />
 
-          {/* Options Grid: Multi-column, Increased Height, NO sliding sideways, Dynamically Filtered */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2.5 sm:gap-3 max-h-[420px] overflow-y-auto overflow-x-hidden p-0.5">
-            {displayedOptions.map((option) => {
-              const isSelected =
-                value &&
-                (value.toLowerCase() === option.label.toLowerCase() ||
-                  value.toLowerCase().startsWith(option.label.toLowerCase()) ||
-                  option.label.toLowerCase().startsWith(value.toLowerCase()));
+          <div
+            role="listbox"
+            aria-label={label}
+            className="fixed inset-x-0 bottom-0 z-[100] max-h-[82vh] rounded-t-[22px] bg-white p-4 pb-7 shadow-[0_-12px_40px_rgba(0,0,0,0.32)] flex flex-col sm:absolute sm:inset-auto sm:left-0 sm:right-0 sm:bottom-[calc(100%+8px)] sm:z-50 sm:w-full sm:max-h-[440px] sm:rounded-2xl sm:p-4 sm:border sm:border-neutral-200/90 sm:shadow-[0_16px_40px_rgba(0,0,0,0.14)] animate-dropdown-in"
+          >
+            {/* Mobile Drag Handle */}
+            <div className="w-10 h-1 bg-neutral-300 rounded-full mx-auto mb-2.5 sm:hidden shrink-0" />
 
-              const parsed = parseOptionLabel(
-                option.label,
-                option.sub,
-                option.badge,
-              );
-
-              return (
+            {/* Header Row */}
+            <div className="flex items-center justify-between pb-2.5 mb-2 sm:mb-3 border-b border-neutral-100 px-1 select-none shrink-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xs font-sans font-bold sm:font-semibold text-neutral-900 sm:text-neutral-800 uppercase tracking-wider shrink-0">
+                  {label}
+                </span>
+                <span className="text-[11.5px] font-sans text-neutral-400 truncate">
+                  {isEditable && value.trim()
+                    ? `• Matching "${value.trim()}"`
+                    : "• Select a place or type as you wish"}
+                </span>
+              </div>
+              {onClose && (
                 <button
-                  key={option.id || option.label}
                   type="button"
-                  onClick={() => {
-                    onSelect(option.label, option);
-                    onClose?.();
-                  }}
-                  className={`group/opt relative min-h-[76px] sm:min-h-[82px] p-3.5 sm:p-4 rounded-xl border text-left transition-all duration-150 cursor-pointer select-none flex flex-col justify-center ${
-                    isSelected
-                      ? "bg-[#002f89]/5 border-[#002f89] ring-1 ring-[#002f89]/30 text-neutral-900"
-                      : "bg-neutral-50/50 border-neutral-200/80 hover:bg-neutral-100/70 hover:border-neutral-300 text-neutral-700"
-                  }`}
+                  onClick={onClose}
+                  aria-label="Close"
+                  title="Close"
+                  className="flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-800 font-medium px-2 py-1 rounded-full sm:rounded-md bg-neutral-100 sm:bg-transparent hover:bg-neutral-200 sm:hover:bg-neutral-100 transition-colors cursor-pointer shrink-0"
                 >
-                  <div className="flex items-center justify-between gap-1.5 w-full leading-tight">
-                    <span className="text-[14px] sm:text-[14.5px] font-sans font-semibold text-neutral-900 truncate">
-                      {parsed.title}
-                    </span>
+                  <span className="hidden sm:inline">Close</span>
+                  <X
+                    className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-neutral-600 sm:text-neutral-500"
+                    strokeWidth={2.2}
+                  />
+                </button>
+              )}
+            </div>
 
-                    <div className="flex items-center gap-1 shrink-0">
+            {/* Mobile In-Sheet Search (Quick typeahead when sheet is open on phone) */}
+            {isEditable && (
+              <div className="sm:hidden mb-2.5 relative flex items-center bg-neutral-100/90 rounded-xl px-3 py-2 border border-neutral-200/60 shrink-0">
+                <Search className="w-4 h-4 text-neutral-400 mr-2 shrink-0" />
+                <input
+                  type="text"
+                  aria-label={`Search ${label}`}
+                  value={value}
+                  onChange={(e) => onChangeText?.(e.target.value)}
+                  placeholder={
+                    placeholder || `Search ${label.toLowerCase()}...`
+                  }
+                  className="w-full bg-transparent border-none outline-none text-[13.5px] text-neutral-900 placeholder:text-neutral-400 font-medium p-0 focus:ring-0"
+                />
+                {value && (
+                  <button
+                    type="button"
+                    onClick={() => onChangeText?.("")}
+                    className="p-1 text-neutral-400 hover:text-neutral-600 cursor-pointer"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            )}
+
+            {/* Options List / Grid: 1-column readable layout on mobile, multi-column on desktop */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-2 sm:gap-2.5 max-h-[52vh] sm:max-h-[360px] overflow-y-auto overflow-x-hidden p-0.5 overscroll-contain">
+              {displayedOptions.map((option) => {
+                const isSelected =
+                  value &&
+                  (value.toLowerCase() === option.label.toLowerCase() ||
+                    value
+                      .toLowerCase()
+                      .startsWith(option.label.toLowerCase()) ||
+                    option.label.toLowerCase().startsWith(value.toLowerCase()));
+
+                const parsed = parseOptionLabel(
+                  option.label,
+                  option.sub,
+                  option.badge,
+                );
+
+                return (
+                  <button
+                    key={option.id || option.label}
+                    type="button"
+                    onClick={() => {
+                      onSelect(option.label, option);
+                      onClose?.();
+                    }}
+                    className={`group/opt relative min-h-[58px] sm:min-h-[82px] px-3.5 py-2.5 sm:p-4 rounded-xl border text-left transition-all duration-150 cursor-pointer select-none flex sm:flex-col justify-between sm:justify-center items-center sm:items-stretch gap-2.5 sm:gap-0 ${
+                      isSelected
+                        ? "bg-[#002f89]/5 border-[#002f89] ring-1 ring-[#002f89]/30 text-neutral-900"
+                        : "bg-neutral-50/60 border-neutral-200/80 hover:bg-neutral-100/70 hover:border-neutral-300 text-neutral-700"
+                    }`}
+                  >
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-1.5 sm:justify-between w-full leading-tight">
+                        <span className="text-[14px] sm:text-[14.5px] font-sans font-semibold text-neutral-900 truncate">
+                          {parsed.title}
+                        </span>
+
+                        {/* Desktop badge & checkmark */}
+                        <div className="hidden sm:flex items-center gap-1 shrink-0">
+                          {parsed.codeOrBadge && (
+                            <span
+                              className={`text-[11px] font-sans leading-none px-2 py-0.5 rounded-md ${
+                                parsed.isBadge
+                                  ? "bg-neutral-200/80 text-neutral-700 font-medium"
+                                  : "bg-neutral-200/50 text-neutral-600 font-normal"
+                              }`}
+                            >
+                              {parsed.codeOrBadge}
+                            </span>
+                          )}
+                          {isSelected && (
+                            <Check
+                              className="w-4 h-4 text-[#002f89] shrink-0"
+                              strokeWidth={2.5}
+                              aria-hidden="true"
+                            />
+                          )}
+                        </div>
+                      </div>
+
+                      {parsed.sub && (
+                        <span className="text-[11.5px] sm:text-[12px] font-sans text-neutral-500 font-normal leading-tight mt-0.5 sm:mt-1.5 block truncate">
+                          {parsed.sub}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Mobile Right-side Badge & Selected Check */}
+                    <div className="flex sm:hidden items-center gap-2 shrink-0">
                       {parsed.codeOrBadge && (
                         <span
-                          className={`text-[11px] font-sans leading-none px-2 py-0.5 rounded-md ${
-                            parsed.isBadge
-                              ? "bg-neutral-200/80 text-neutral-700 font-medium"
-                              : "bg-neutral-200/50 text-neutral-600 font-normal"
+                          className={`text-xs font-sans font-semibold px-2 py-1 rounded-md ${
+                            isSelected
+                              ? "bg-[#002f89] text-white"
+                              : "bg-neutral-200/70 text-neutral-700"
                           }`}
                         >
                           {parsed.codeOrBadge}
@@ -679,18 +756,12 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
                         />
                       )}
                     </div>
-                  </div>
-
-                  {parsed.sub && (
-                    <span className="text-[11.5px] sm:text-[12px] font-sans text-neutral-500 font-normal leading-tight mt-1.5 truncate">
-                      {parsed.sub}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
@@ -730,10 +801,8 @@ const TravelersPicker: React.FC<TravelersPickerProps> = ({
     if (!isOpen) return;
 
     const handlePointerDown = (e: MouseEvent | TouchEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(e.target as Node)
-      ) {
+      const target = e.target as Node;
+      if (containerRef.current && !containerRef.current.contains(target)) {
         onClose();
       }
     };
@@ -808,133 +877,145 @@ const TravelersPicker: React.FC<TravelersPickerProps> = ({
         </button>
       </div>
 
-      {/* Popover Panel: Only ask how much members and children (below 11 years) (Shows on Top) */}
+      {/* Popover / Mobile Bottom Sheet for Travelers & Members */}
       {isOpen && (
-        <div
-          role="dialog"
-          aria-label={label}
-          className="absolute left-0 right-0 bottom-[calc(100%+8px)] z-50 w-full bg-white border border-neutral-200/90 rounded-2xl p-4 sm:p-5 shadow-[0_16px_40px_rgba(0,0,0,0.14)] animate-dropdown-in"
-        >
-          {/* Header Row */}
-          <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-neutral-100 px-1 select-none">
-            <div className="flex items-center gap-2 min-w-0">
-              <span className="text-xs font-sans font-semibold text-neutral-800 uppercase tracking-wider shrink-0">
-                {label}
-              </span>
-              <span className="text-[11.5px] font-sans text-neutral-400 truncate">
-                • Specify number of members & children (below 11 years)
-              </span>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="Close"
-              title="Close"
-              className="flex items-center gap-1 text-xs text-neutral-400 hover:text-neutral-700 font-medium px-2 py-0.5 rounded-md hover:bg-neutral-100 transition-colors cursor-pointer shrink-0"
-            >
-              <span>Close</span>
-              <X
-                className="w-3.5 h-3.5 text-neutral-500 hover:text-neutral-800"
-                strokeWidth={2.2}
-              />
-            </button>
-          </div>
+        <>
+          {/* Mobile backdrop */}
+          <div
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[90] sm:hidden"
+            onClick={onClose}
+            aria-hidden="true"
+          />
 
-          {/* 2 Focused Counter Cards: Members & Children */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-xl mx-auto py-1">
-            {/* 1. Members Counter */}
-            <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 transition-colors select-none">
-              <div className="pr-3">
-                <div className="text-[14px] sm:text-[14.5px] font-sans font-semibold text-neutral-900 leading-tight">
-                  Members
-                </div>
-                <div className="text-[11.5px] font-sans text-neutral-500 mt-0.5">
-                  Adults & teens (12+ years)
-                </div>
-              </div>
-              <div className="flex items-center gap-2.5 shrink-0">
-                <button
-                  type="button"
-                  disabled={adults <= 1}
-                  onClick={() => onChangeAdults(Math.max(1, adults - 1))}
-                  aria-label="Decrease members"
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
-                >
-                  −
-                </button>
-                <span className="w-7 sm:w-8 text-center text-[15px] sm:text-[16px] font-sans font-bold text-neutral-900 select-none">
-                  {adults}
+          <div
+            role="dialog"
+            aria-label={label}
+            className="fixed inset-x-0 bottom-0 z-[100] max-h-[85vh] rounded-t-[22px] bg-white p-4 pb-7 shadow-[0_-12px_40px_rgba(0,0,0,0.32)] flex flex-col sm:absolute sm:inset-auto sm:left-0 sm:right-0 sm:bottom-[calc(100%+8px)] sm:z-50 sm:w-full sm:rounded-2xl sm:p-5 sm:border sm:border-neutral-200/90 sm:shadow-[0_16px_40px_rgba(0,0,0,0.14)] animate-dropdown-in"
+          >
+            {/* Mobile Drag Handle */}
+            <div className="w-10 h-1 bg-neutral-300 rounded-full mx-auto mb-2.5 sm:hidden shrink-0" />
+
+            {/* Header Row */}
+            <div className="flex items-center justify-between pb-2.5 mb-3 border-b border-neutral-100 px-1 select-none shrink-0">
+              <div className="flex items-center gap-2 min-w-0">
+                <span className="text-xs font-sans font-bold sm:font-semibold text-neutral-900 sm:text-neutral-800 uppercase tracking-wider shrink-0">
+                  {label}
                 </span>
-                <button
-                  type="button"
-                  disabled={adults >= 30}
-                  onClick={() => onChangeAdults(Math.min(30, adults + 1))}
-                  aria-label="Increase members"
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            {/* 2. Children Counter (Below 11 years) */}
-            <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 transition-colors select-none">
-              <div className="pr-3">
-                <div className="text-[14px] sm:text-[14.5px] font-sans font-semibold text-neutral-900 leading-tight">
-                  Children
-                </div>
-                <div className="text-[11.5px] font-sans text-[#002f89] font-medium mt-0.5">
-                  Below 11 years
-                </div>
-              </div>
-              <div className="flex items-center gap-2.5 shrink-0">
-                <button
-                  type="button"
-                  disabled={childrenCount <= 0}
-                  onClick={() =>
-                    onChangeChildren(Math.max(0, childrenCount - 1))
-                  }
-                  aria-label="Decrease children"
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
-                >
-                  −
-                </button>
-                <span className="w-7 sm:w-8 text-center text-[15px] sm:text-[16px] font-sans font-bold text-neutral-900 select-none">
-                  {childrenCount}
+                <span className="text-[11.5px] font-sans text-neutral-400 truncate">
+                  • Specify number of members & children (below 11 years)
                 </span>
-                <button
-                  type="button"
-                  disabled={childrenCount >= 15}
-                  onClick={() =>
-                    onChangeChildren(Math.min(15, childrenCount + 1))
-                  }
-                  aria-label="Increase children"
-                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
-                >
-                  +
-                </button>
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close"
+                title="Close"
+                className="flex items-center gap-1 text-xs text-neutral-500 hover:text-neutral-800 font-medium px-2 py-1 rounded-full sm:rounded-md bg-neutral-100 sm:bg-transparent hover:bg-neutral-200 sm:hover:bg-neutral-100 transition-colors cursor-pointer shrink-0"
+              >
+                <span className="hidden sm:inline">Close</span>
+                <X
+                  className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-neutral-600 sm:text-neutral-500"
+                  strokeWidth={2.2}
+                />
+              </button>
+            </div>
+
+            {/* 2 Focused Counter Cards: Members & Children */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 max-w-xl mx-auto py-1 w-full">
+              {/* 1. Members Counter */}
+              <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 transition-colors select-none">
+                <div className="pr-3">
+                  <div className="text-[14px] sm:text-[14.5px] font-sans font-semibold text-neutral-900 leading-tight">
+                    Members
+                  </div>
+                  <div className="text-[11.5px] font-sans text-neutral-500 mt-0.5">
+                    Adults & teens (12+ years)
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <button
+                    type="button"
+                    disabled={adults <= 1}
+                    onClick={() => onChangeAdults(Math.max(1, adults - 1))}
+                    aria-label="Decrease members"
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
+                  >
+                    −
+                  </button>
+                  <span className="w-7 sm:w-8 text-center text-[15px] sm:text-[16px] font-sans font-bold text-neutral-900 select-none">
+                    {adults}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={adults >= 30}
+                    onClick={() => onChangeAdults(Math.min(30, adults + 1))}
+                    aria-label="Increase members"
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* 2. Children Counter (Below 11 years) */}
+              <div className="flex items-center justify-between p-3.5 sm:p-4 rounded-xl border border-neutral-200/90 bg-neutral-50/60 hover:bg-neutral-50 transition-colors select-none">
+                <div className="pr-3">
+                  <div className="text-[14px] sm:text-[14.5px] font-sans font-semibold text-neutral-900 leading-tight">
+                    Children
+                  </div>
+                  <div className="text-[11.5px] font-sans text-[#002f89] font-medium mt-0.5">
+                    Below 11 years
+                  </div>
+                </div>
+                <div className="flex items-center gap-2.5 shrink-0">
+                  <button
+                    type="button"
+                    disabled={childrenCount <= 0}
+                    onClick={() =>
+                      onChangeChildren(Math.max(0, childrenCount - 1))
+                    }
+                    aria-label="Decrease children"
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
+                  >
+                    −
+                  </button>
+                  <span className="w-7 sm:w-8 text-center text-[15px] sm:text-[16px] font-sans font-bold text-neutral-900 select-none">
+                    {childrenCount}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={childrenCount >= 15}
+                    onClick={() =>
+                      onChangeChildren(Math.min(15, childrenCount + 1))
+                    }
+                    aria-label="Increase children"
+                    className="w-8 h-8 sm:w-9 sm:h-9 rounded-full border border-neutral-300 bg-white text-neutral-700 hover:bg-neutral-100 disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center text-base sm:text-lg font-medium transition-all shadow-xs cursor-pointer select-none"
+                  >
+                    +
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Bottom Row */}
-          <div className="flex items-center justify-between pt-3 mt-3 border-t border-neutral-100 px-1">
-            <span className="text-xs font-sans text-neutral-500">
-              Total:{" "}
-              <strong className="text-neutral-900 font-semibold">
-                {adults + childrenCount}{" "}
-                {adults + childrenCount === 1 ? "Traveler" : "Travelers"}
-              </strong>
-            </span>
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-5 py-1.5 rounded-md bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold transition-colors cursor-pointer"
-            >
-              Done
-            </button>
+            {/* Bottom Row */}
+            <div className="flex items-center justify-between pt-3 mt-3 border-t border-neutral-100 px-1">
+              <span className="text-xs font-sans text-neutral-500">
+                Total:{" "}
+                <strong className="text-neutral-900 font-semibold">
+                  {adults + childrenCount}{" "}
+                  {adults + childrenCount === 1 ? "Traveler" : "Travelers"}
+                </strong>
+              </span>
+              <button
+                type="button"
+                onClick={onClose}
+                className="px-5 py-2 sm:py-1.5 rounded-xl sm:rounded-md bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs font-semibold transition-colors cursor-pointer"
+              >
+                Done
+              </button>
+            </div>
           </div>
-        </div>
+        </>
       )}
     </div>
   );
@@ -1438,7 +1519,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
 
           <div
             ref={cardsScrollRef}
-            className={`flex items-stretch gap-2 sm:gap-2.5 lg:gap-3 overflow-x-auto no-scrollbar scroll-smooth px-1 md:px-0 py-1 ${
+            className={`flex items-stretch gap-2 sm:gap-2.5 lg:gap-3 overflow-x-auto no-scrollbar scroll-smooth px-1 md:px-0 pt-3 pb-2.5 md:py-1 ${
               hasMoreThanSeven
                 ? ""
                 : "md:grid md:grid-flow-col md:auto-cols-fr md:overflow-visible"
@@ -1519,7 +1600,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - Natural case labels with proper typography hierarchy
           - Perfectly aligned 4 fields + Request a Quote button
           ======================================================================= */}
-      <div className="relative z-40 w-full bg-[#FAF8F5]/98 backdrop-blur-md text-[#1E1A17] rounded-[14px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_12px_32px_rgba(0,0,0,0.08)] border border-white/80 transition-all duration-300">
+      <div className="relative z-40 w-full bg-[#FAF8F5]/98 sm:backdrop-blur-md text-[#1E1A17] rounded-[14px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_12px_32px_rgba(0,0,0,0.08)] border border-white/80 transition-all duration-300">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-2">
           {/* Active Service Fields Group */}
           <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-neutral-200/60 min-w-0">

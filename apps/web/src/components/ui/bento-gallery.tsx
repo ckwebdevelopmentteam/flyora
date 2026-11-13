@@ -123,8 +123,11 @@ const InteractiveImageBentoGallery: React.FC<
       if (gridRef.current && containerRef.current) {
         const containerWidth = containerRef.current.offsetWidth;
         const gridWidth = gridRef.current.scrollWidth;
-        // The '- 32' provides some padding at the end
-        const newConstraint = Math.min(0, containerWidth - gridWidth - 32);
+        const endPadding = window.innerWidth < 640 ? 16 : 32;
+        const newConstraint = Math.min(
+          0,
+          containerWidth - gridWidth - endPadding,
+        );
         setDragConstraint(newConstraint);
       }
     };
@@ -164,17 +167,17 @@ const InteractiveImageBentoGallery: React.FC<
 
       <div
         ref={containerRef}
-        className="relative mt-10 sm:mt-12 w-full cursor-grab active:cursor-grabbing select-none"
+        className="relative mt-8 sm:mt-12 w-full cursor-grab active:cursor-grabbing select-none touch-pan-y"
       >
         <motion.div
-          className="w-max"
+          className="w-max touch-pan-y"
           drag="x"
           dragConstraints={{ left: dragConstraint, right: 0 }}
           dragElastic={0.05}
         >
           <motion.div
             ref={gridRef}
-            className="grid grid-rows-2 h-[420px] sm:h-[480px] lg:h-[520px] auto-cols-[minmax(16rem,1fr)] sm:auto-cols-[minmax(20rem,1fr)] lg:auto-cols-[minmax(24rem,1fr)] grid-flow-col gap-4 sm:gap-5 px-6 sm:px-10 lg:px-[105px]"
+            className="grid grid-rows-2 h-[390px] sm:h-[480px] lg:h-[520px] auto-cols-[76vw] sm:auto-cols-[minmax(20rem,1fr)] lg:auto-cols-[minmax(24rem,1fr)] grid-flow-col gap-3 sm:gap-5 px-4 sm:px-10 lg:px-[105px]"
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
@@ -185,7 +188,7 @@ const InteractiveImageBentoGallery: React.FC<
                 key={item.id}
                 variants={itemVariants}
                 className={cn(
-                  "group relative flex h-full min-h-[12rem] w-full min-w-[15rem] cursor-pointer items-end overflow-hidden rounded-[14px] border border-black/[0.08] bg-card p-4 shadow-xs transition-shadow duration-300 ease-in-out hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+                  "group relative flex h-full min-h-[10.5rem] sm:min-h-[12rem] w-[76vw] sm:w-full min-w-0 sm:min-w-[15rem] cursor-pointer items-end overflow-hidden rounded-[14px] border border-black/[0.08] bg-card p-3.5 sm:p-4 shadow-xs transition-shadow duration-300 ease-in-out hover:shadow-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
                   item.span,
                 )}
                 whileHover={{ scale: 1.02 }}
@@ -200,12 +203,14 @@ const InteractiveImageBentoGallery: React.FC<
                   alt={item.title}
                   className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                <div className="relative z-10 translate-y-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
-                  <h3 className="text-lg font-serif font-bold text-white tracking-wide">
+                {/* Gradient overlay: always visible on mobile, hover only on desktop */}
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent opacity-100 sm:opacity-0 transition-opacity duration-500 sm:group-hover:opacity-100" />
+                {/* Text overlay: always visible on mobile, slides up on hover on desktop */}
+                <div className="relative z-10 translate-y-0 opacity-100 sm:translate-y-4 sm:opacity-0 transition-all duration-500 sm:group-hover:translate-y-0 sm:group-hover:opacity-100">
+                  <h3 className="text-base sm:text-lg font-serif font-bold text-white tracking-wide drop-shadow-xs">
                     {item.title}
                   </h3>
-                  <p className="mt-1 text-xs sm:text-sm text-white/85 font-sans leading-snug">
+                  <p className="mt-0.5 sm:mt-1 text-xs sm:text-sm text-white/90 font-sans leading-snug drop-shadow-xs line-clamp-2">
                     {item.desc}
                   </p>
                 </div>

@@ -273,7 +273,7 @@ function ToursCatalog({
             </button>
           </div>
         )}
-        {/* Header with Title and Sorting */}
+        {/* Header with Title, Sorting, and Mobile Search */}
         <TourHeader
           totalResults={filteredPackages.length}
           sortBy={filters.sortBy}
@@ -285,6 +285,8 @@ function ToursCatalog({
           categoryCounts={categoryCounts}
           onOpenMobileFilter={() => setMobileFilterOpen(true)}
           isLoading={loading}
+          searchQuery={filters.searchQuery}
+          onSearchChange={(searchQuery) => handleFilterChange({ searchQuery })}
         />
 
         {/* 2-Column Catalog Grid */}

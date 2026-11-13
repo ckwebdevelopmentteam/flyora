@@ -7,11 +7,14 @@ This document details the functional specifications, database models, and API in
 ## Module 1: Authentication & Role-Based Access Control (RBAC)
 
 ### Objectives
+
 Provide secure staff access with granular service specialization so that:
+
 - **Super Admin & Operations Manager**: Can view all leads, all quotes, and assign/reassign leads across any service.
 - **Service Coordinators (Sales Executives)**: Can see the pool for their assigned service (e.g. Visa, Holidays, Umrah) plus their own assigned leads.
 
 ### Core Data Models (Prisma)
+
 ```prisma
 enum UserRole {
   SUPER_ADMIN
@@ -74,6 +77,7 @@ model UserService {
 ```
 
 ### Key API Endpoints (Fastify)
+
 - `POST /api/v1/auth/login` — Authenticate and return JWT access token + refresh token.
 - `GET /api/v1/auth/me` — Return current user details, role permissions, and active service mappings.
 - `GET /api/v1/users` — (Admin only) List all staff with their roles, availability, and assigned services.
@@ -86,9 +90,11 @@ model UserService {
 ## Module 2: Services & Tour Packages Catalog
 
 ### Objectives
+
 Enable Content Managers and Admins to publish rich tour packages and services with itineraries, inclusions, pricing, and SEO metadata.
 
 ### Core Data Models
+
 ```prisma
 model Package {
   id              String   @id @default(uuid())
@@ -107,7 +113,7 @@ model Package {
   exclusions      String[]
   isFeatured      Boolean  @default(false)
   isPublished     Boolean  @default(true)
-  
+
   // SEO fields
   metaTitle       String?
   metaDescription String?
@@ -122,6 +128,7 @@ model Package {
 ```
 
 ### Key API Endpoints
+
 - `GET /api/v1/packages` — Public list of published tour packages (filterable by service, destination, duration).
 - `GET /api/v1/packages/:slug` — Public single package details with itinerary and SEO metadata.
 - `POST /api/v1/packages` — (Admin/Content Manager) Create tour package.
@@ -133,9 +140,11 @@ model Package {
 ## Module 3: Simple "Take Lead" Pool & Service Coordinator Workflow
 
 ### The "Take Lead" (First-Come, First-Served) Model
+
 As per real operations, there is **no complicated auto-assign algorithm**. Instead:
-1. **Service Queue:** 
-   - When a customer submits an enquiry for a service (e.g. *Visa Assistance*, *Holiday Packages*, *Flights*), the lead is created as `UNASSIGNED` (`assignedToId = null`) and tagged to that `serviceId`.
+
+1. **Service Queue:**
+   - When a customer submits an enquiry for a service (e.g. _Visa Assistance_, _Holiday Packages_, _Flights_), the lead is created as `UNASSIGNED` (`assignedToId = null`) and tagged to that `serviceId`.
 2. **Alert Notification to Service Coordinators & Admin:**
    - The owner assigns 2 or more coordinators per service, each with their phone/WhatsApp number.
    - When a new lead arrives, an instant alert with customer summary is dispatched to the phone numbers of the coordinators assigned to that specific service **and** the Admin.
@@ -152,6 +161,7 @@ As per real operations, there is **no complicated auto-assign algorithm**. Inste
    - Admin has a master view of all leads across all services, can see who claimed which lead, and can manually re-assign any lead if a coordinator is busy or on leave.
 
 ### Core Data Models
+
 ```prisma
 enum LeadStatus {
   NEW
@@ -220,6 +230,7 @@ model LeadActivity {
 ```
 
 ### Key API Endpoints
+
 - `POST /api/v1/public/enquiry` — Public endpoint to submit enquiry (notifies service coordinator numbers + admin).
 - `GET /api/v1/leads/pool` — Returns unassigned leads matching the logged-in coordinator's assigned service(s).
 - `GET /api/v1/leads/my-leads` — Returns leads claimed by the logged-in coordinator.
@@ -236,8 +247,9 @@ model LeadActivity {
 ## Module 4: Coordinator Workspace & Daily Management
 
 ### Coordinator Dashboard View (Zero Complications)
+
 - **Tab 1: Service Pool (Available to Claim):**
-  - Shows incoming unassigned leads for the coordinator's service (e.g. *Visa Enquiries*).
+  - Shows incoming unassigned leads for the coordinator's service (e.g. _Visa Enquiries_).
   - Clean card/row showing: Customer Name, Destination/Service, Enquiry Date, and a prominent **"Take Lead"** button.
 - **Tab 2: My Active Leads:**
   - Shows all leads claimed by this coordinator.
@@ -253,6 +265,7 @@ model LeadActivity {
 ## Module 5: Quotation Builder & Margin Guard (Manual Rates Workflow)
 
 ### Clarification on Hotel & Flight Pricing (No Live APIs)
+
 - **Zero Live Supplier APIs:** There are **NO live ticket or hotel room price feeds** (no GDS/Amadeus/Booking.com APIs).
 - **Public Website Behavior:** Shows packages with indicative "Starting from" prices, or an "Enquire via Call / WhatsApp" button for customized trips.
 - **Backend Coordinator Workflow:**
@@ -270,6 +283,7 @@ model LeadActivity {
 ---
 
 ### Margin Guard Mechanism
+
 $$\text{Margin Amount} = \text{Selling Price} - \text{Supplier Cost}$$
 $$\text{Margin \%} = \left(\frac{\text{Margin Amount}}{\text{Selling Price}}\right) \times 100$$
 
@@ -315,6 +329,7 @@ $$\text{Margin \%} = \left(\frac{\text{Margin Amount}}{\text{Selling Price}}\rig
 ---
 
 ### Core Data Models
+
 ```prisma
 enum QuoteStatus {
   DRAFT
@@ -332,12 +347,12 @@ model Quotation {
   version      Int         @default(1)
   status       QuoteStatus @default(DRAFT)
   shareToken   String      @unique @default(uuid()) // For public shareable link
-  
+
   supplierCost Decimal     @db.Decimal(10, 2)
   sellingPrice Decimal     @db.Decimal(10, 2)
   marginAmount Decimal     @db.Decimal(10, 2)
   marginPercent Float
-  
+
   // Array of manually entered items
   // [
   //   { type: "FLIGHT", title: "IndiGo BOM-DXB Return", supplierCost: 22000, sellingPrice: 25000, details: "20kg baggage" },
@@ -360,12 +375,14 @@ model Quotation {
 ```
 
 ### Shareable Customer Quote Link (`apps/web/src/app/quote/[token]/page.tsx`)
+
 - Customer receives clean web link: `https://flyora.com/quote/abc123-token`.
 - Displays branded quote overview, day-by-day inclusions, price breakdown, and validity date.
 - Clean CTA: "Accept Quote via WhatsApp" or "Call Coordinator".
 - Eliminates messy PDF generation, screenshots, or emailing manual Word files.
 
 ### Key API Endpoints
+
 - `POST /api/v1/leads/:id/quotations` — Create new quotation with manual item lines and margin calculation.
 - `GET /api/v1/quotations/:id` — Get quotation details (internal view with costs & margins visible to staff).
 - `GET /api/v1/public/quotes/:shareToken` — Public view of the quotation by secure token (costs and margins hidden, only selling price shown to customer).
@@ -376,9 +393,11 @@ model Quotation {
 ## Module 6: Booking & Manual Payment Tracking
 
 ### Objectives
+
 Convert accepted quotes into confirmed bookings and manage offline payments (NEFT/IMPS/UPI) with receipt proof verification stored on Cloudflare R2.
 
 ### Core Data Models
+
 ```prisma
 enum BookingStatus {
   CONFIRMED
@@ -436,6 +455,7 @@ model Payment {
 ```
 
 ### Key API Endpoints
+
 - `POST /api/v1/quotations/:id/convert-to-booking` — Creates Booking record from accepted quote.
 - `POST /api/v1/bookings/:id/payments` — Records payment entry with transaction UTR and R2 receipt proof.
 - `PATCH /api/v1/payments/:id/verify` — (Admin / Accounts only) Verify payment entry.
@@ -446,9 +466,11 @@ model Payment {
 ## Module 7: Cloudflare R2 Storage Service
 
 ### Objectives
+
 Provide fast direct uploads and secure file management using Cloudflare R2's S3-compatible API.
 
 ### Operations
+
 1. **Public Uploads (Package images & banners):**
    - API generates presigned PUT URL for bucket `flyora-public`.
    - Admin frontend uploads directly to R2.
@@ -462,12 +484,14 @@ Provide fast direct uploads and secure file management using Cloudflare R2's S3-
 ## Module 8: Public Next.js Website & SEO Architecture
 
 ### Objectives
+
 Create a fast, responsive travel portal that ranks high on Google and converts visitors directly into service leads.
 
 ### Key Features
+
 1. **Dynamic Pages with Next.js ISR (Incremental Static Regeneration):**
    - `/tours/[slug]` — Tour packages with rich photo gallery, day-wise itinerary, inclusions, and booking form.
-   - `/services/[slug]` — Dedicated landing pages for *Visa Assistance, Flight Bookings, Umrah Services, Custom Holidays*.
+   - `/services/[slug]` — Dedicated landing pages for _Visa Assistance, Flight Bookings, Umrah Services, Custom Holidays_.
    - `/destinations/[slug]` — Destination guide hubs linking to corresponding tour packages.
 2. **SEO Optimization:**
    - Pre-rendered HTML for search bots.
@@ -475,5 +499,19 @@ Create a fast, responsive travel portal that ranks high on Google and converts v
    - JSON-LD Structured Data: `TouristTrip`, `Offer`, `BreadcrumbList`, and `TravelAgency`.
 3. **Smart Click-to-WhatsApp CTA:**
    - Button on every package page that opens WhatsApp with pre-filled context:
-   `"Hello Flyora, I am interested in the [Dubai Luxury 5D/4N Package] (Ref: DUB-5D). Please provide details."`
+     `"Hello Flyora, I am interested in the [Dubai Luxury 5D/4N Package] (Ref: DUB-5D). Please provide details."`
    - Automatically passes package reference so the coordinator knows the exact service requested.
+
+---
+
+## Module 9: Special Fare Tickets (Bulk Flight Deals)
+
+### Objectives
+
+Provide an in-house inventory and booking distribution engine for bulk contracted group flight tickets (PNR block departures):
+
+- **Admin**: Bulk inventory entry, live seat counter adjustment, PNR notes, and margin control.
+- **Auto-Expiry**: Zero-maintenance query filtering so flights auto-expire once departure or expiry time passes.
+- **Public**: Dedicated `/special-fares` portal and homepage Hero flight search deal integration.
+
+> Detailed architectural and implementation plan available at [`docs/SPECIAL_FARE_TICKETS_MODULE_PLAN.md`](./SPECIAL_FARE_TICKETS_MODULE_PLAN.md).

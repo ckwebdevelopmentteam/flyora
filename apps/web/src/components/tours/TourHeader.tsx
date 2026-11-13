@@ -8,6 +8,9 @@ import {
   Globe2,
   Compass,
   MapPin,
+  Search,
+  X,
+  SlidersHorizontal,
 } from "lucide-react";
 import type { TourFilterState, TourCategoryTab } from "./types";
 
@@ -20,6 +23,8 @@ interface TourHeaderProps {
   categoryCounts: { all: number; international: number; domestic: number };
   onOpenMobileFilter?: () => void;
   isLoading?: boolean;
+  searchQuery?: string;
+  onSearchChange?: (query: string) => void;
 }
 
 export const TourHeader: React.FC<TourHeaderProps> = ({
@@ -31,9 +36,11 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
   categoryCounts,
   onOpenMobileFilter,
   isLoading,
+  searchQuery = "",
+  onSearchChange,
 }) => {
   return (
-    <div className="space-y-5 pb-6 border-b border-stone-200/80">
+    <div className="space-y-4 sm:space-y-5 pb-6 border-b border-stone-200/80">
       {/* Breadcrumbs */}
       <nav className="flex items-center gap-1.5 text-xs text-stone-400 font-mono">
         <Link href="/" className="hover:text-stone-700 transition">
@@ -57,13 +64,14 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
         </div>
 
         {/* Filter Controls Row */}
-        <div className="flex items-center gap-3 self-start md:self-end">
+        <div className="flex items-center gap-2.5 sm:gap-3 self-start md:self-end">
           {/* Mobile Filter Button */}
           {onOpenMobileFilter && (
             <button
               onClick={onOpenMobileFilter}
-              className="lg:hidden px-3.5 py-2 rounded-xl border border-stone-200 bg-white text-stone-700 text-xs font-semibold shadow-xs flex items-center gap-1.5 cursor-pointer"
+              className="lg:hidden px-3.5 py-2 rounded-xl border border-stone-200 bg-white text-stone-700 text-xs font-semibold shadow-xs flex items-center gap-1.5 cursor-pointer hover:bg-stone-50 transition"
             >
+              <SlidersHorizontal className="w-3.5 h-3.5 text-[#002f89]" />
               <span>Filters</span>
             </button>
           )}
@@ -93,6 +101,31 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Mobile Search Bar (Directly accessible on mobile/tablet where left sidebar is hidden) */}
+      {onSearchChange && (
+        <div className="lg:hidden relative w-full pt-1">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => onSearchChange(e.target.value)}
+            aria-label="Search destination or package name"
+            placeholder="Search destination, tour title (e.g. Dubai, Bali, Kashmir)..."
+            className="w-full pl-10 pr-9 py-2.5 text-xs sm:text-sm rounded-[14px] border border-stone-200 bg-white text-stone-900 placeholder:text-stone-400 focus:outline-hidden focus:border-[#002f89] focus:ring-1 focus:ring-[#002f89] shadow-xs transition"
+          />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => onSearchChange("")}
+              aria-label="Clear search"
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-stone-400 hover:text-stone-700 transition cursor-pointer"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Category Segment Tabs & Result Count Status */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">

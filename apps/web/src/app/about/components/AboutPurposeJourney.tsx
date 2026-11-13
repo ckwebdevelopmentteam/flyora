@@ -10,6 +10,7 @@ import Team, {
 import type { AboutPageData } from "../aboutData";
 
 import { AboutWhatWeOffer } from "./AboutWhatWeOffer";
+import styles from "../AboutExperience.module.css";
 
 interface AboutPurposeJourneyProps {
   curators: AboutPageData["curators"];
@@ -164,10 +165,12 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
   return (
     <section
       ref={sectionRef}
-      className="relative h-[780vh] bg-[#2A2733]"
+      className={`relative h-[480vh] lg:h-[780vh] bg-[#2A2733] ${styles.stageSection}`}
       aria-label="Our Purpose and Approach"
     >
-      <div className="sticky top-0 h-[100svh] min-h-[640px] overflow-hidden bg-[#2A2733] text-white">
+      <div
+        className={`sticky top-0 h-[100svh] min-h-0 lg:min-h-[640px] overflow-hidden bg-[#2A2733] text-white ${styles.stageSticky}`}
+      >
         <div className="absolute inset-0" aria-hidden="true">
           <Image
             src="/about/ourpurposebg.png"
@@ -230,7 +233,7 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
 
         {/* Scene 1: OUR PURPOSE Heading */}
         <div
-          className="absolute inset-0 flex items-center justify-center px-6 text-center transition-[opacity,transform,filter] duration-300 ease-out"
+          className={`absolute inset-0 flex items-center justify-center px-5 sm:px-6 text-center transition-[opacity,transform,filter] duration-300 ease-out ${styles.stageScene}`}
           style={{
             opacity: purposeStage.opacity,
             filter: purposeStage.filter,
@@ -239,11 +242,11 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
           }}
           aria-hidden={purposeStage.opacity < 0.05}
         >
-          <div className="max-w-4xl">
-            <p className="font-heading text-[56px] font-bold leading-none tracking-[0.015em] text-[#5BC3A6] sm:text-[84px] lg:text-[112px]">
+          <div className="max-w-4xl px-4">
+            <p className="font-heading text-4xl sm:text-7xl lg:text-[112px] font-bold leading-none tracking-[0.015em] text-[#5BC3A6]">
               OUR PURPOSE
             </p>
-            <h2 className="mx-auto mt-4 max-w-4xl font-heading text-[28px] font-bold uppercase leading-[1.14] tracking-[0.08em] sm:text-[40px] lg:text-[54px]">
+            <h2 className="mx-auto mt-3 sm:mt-4 max-w-4xl font-heading text-xl sm:text-3xl lg:text-[54px] font-bold uppercase leading-[1.2] tracking-[0.06em]">
               To make global visas, flights, and travel seamless, reliable, and
               remarkable
             </h2>
@@ -251,17 +254,21 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
         </div>
 
         {/* Scene 2: What We Offer with Variable Text Proximity */}
-        <AboutWhatWeOffer
-          opacity={offerStage.opacity}
-          filter={offerStage.filter}
-          transform={offerStage.transform}
-          pointerEvents={offerStage.pointerEvents}
-          progress={progress}
-        />
+        <div
+          className={`absolute inset-0 transition-[opacity,transform,filter] duration-300 ease-out ${styles.stageScene}`}
+        >
+          <AboutWhatWeOffer
+            opacity={offerStage.opacity}
+            filter={offerStage.filter}
+            transform={offerStage.transform}
+            pointerEvents={offerStage.pointerEvents}
+            progress={progress}
+          />
+        </div>
 
         {/* Scene 3: MEET OUR TEAM on the Grape Background */}
         <div
-          className="absolute inset-0 z-10 flex items-center justify-center overflow-y-auto px-4 py-8 transition-[opacity,transform,filter] duration-300 ease-out sm:px-8 lg:px-12"
+          className={`absolute inset-0 z-10 flex items-center justify-center px-4 py-2 sm:px-8 lg:px-12 transition-[opacity,transform,filter] duration-300 ease-out ${styles.stageScene}`}
           style={{
             opacity: teamStage.opacity,
             filter: teamStage.filter,
@@ -295,7 +302,7 @@ export const AboutPurposeJourney: React.FC<AboutPurposeJourneyProps> = ({
                   },
                 ],
               }))}
-              containerClassName="py-2 sm:py-4 lg:py-6"
+              containerClassName="py-0 sm:py-2"
               onMemberClick={(member) =>
                 onOpenEnquiry
                   ? onOpenEnquiry(`Consultation with ${member.name}`)

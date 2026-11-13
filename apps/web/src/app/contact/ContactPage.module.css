@@ -8,22 +8,29 @@
   font-family: var(--font-poppins), sans-serif;
 }
 .container {
-  width: min(100% - 96px, 1280px);
+  width: 100%;
+  max-width: 1360px;
   margin-inline: auto;
+  padding-inline: 16px;
+}
+@media (min-width: 640px) {
+  .container {
+    padding-inline: 20px;
+  }
 }
 .introGrid {
   display: grid;
   grid-template-columns: 0.9fr 1.15fr;
   align-items: start;
   gap: clamp(32px, 4.5vw, 72px);
-  margin-block: 48px 104px;
+  margin-block: 78px 104px;
 }
 .introduction {
   position: relative;
   align-self: start;
   height: 760px;
   overflow: hidden;
-  border-radius: 4px;
+  border-radius: 14px;
   isolation: isolate;
   display: flex;
   flex-direction: column;
@@ -33,6 +40,7 @@
   color: #fff;
   background: #173c39;
   min-width: 0;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
 }
 .travelPhoto {
   object-fit: cover;
@@ -104,12 +112,12 @@
   gap: 10px;
   min-height: 46px;
   min-width: 46px;
-  padding: 10px 14px;
+  padding: 10px 16px;
   border: 1px solid #ffffff70;
-  border-radius: 2px;
-  font-size: 12px;
+  border-radius: 10px;
+  font-size: 13px;
   text-decoration: none;
-  transition: background-color 0.18s;
+  transition: background-color 0.18s, border-color 0.18s;
 }
 .socialLinks a:last-child {
   padding-inline: 12px;
@@ -188,12 +196,12 @@
   color: var(--ink);
   background: #fffefa;
   border: 1px solid #d3cbbf;
-  border-radius: 2px;
+  border-radius: 8px;
   width: 100%;
   min-width: 0;
-  padding: 12px;
-  min-height: 46px;
-  transition: border-color 0.18s;
+  padding: 12px 14px;
+  min-height: 48px;
+  transition: border-color 0.18s, box-shadow 0.18s;
   scroll-margin-top: 120px;
 }
 .field input::placeholder,
@@ -226,7 +234,8 @@
   align-items: center;
   background: #fffefa;
   border: 1px solid #d3cbbf;
-  border-radius: 2px;
+  border-radius: 8px;
+  transition: border-color 0.18s, box-shadow 0.18s;
 }
 .phoneField > span {
   font-size: 12px;
@@ -357,22 +366,20 @@
   border: 1px solid #002f89;
   background: #002f89;
   color: #fff;
-  min-height: 50px;
+  min-height: 52px;
+  border-radius: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 20px;
-  padding: 13px 18px;
-  font-size: 13px;
+  padding: 14px 22px;
+  font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.15s;
 }
 .submit:hover {
   background: #00246b;
-}
-.submit:hover {
-  background: #2e2924;
 }
 .submit:disabled {
   opacity: 0.55;
@@ -454,6 +461,8 @@
   height: 340px;
   background: #eeeae2;
   border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
 }
 .mapFrame iframe {
   position: absolute;
@@ -476,11 +485,11 @@
   --ink: #2e2924;
   --muted: #6b6259;
   margin: auto;
-  width: min(100% - 40px, 440px);
+  width: min(calc(100% - 32px), 440px);
   max-height: calc(100dvh - 40px);
   padding: 0;
   border: 1px solid #e3dacd;
-  border-radius: 5px;
+  border-radius: 14px;
   background: #fffefa;
   color: var(--ink);
   font-family: var(--font-poppins), sans-serif;
@@ -537,11 +546,13 @@
   margin-top: 24px;
   background: #002f89;
   border: 1px solid #002f89;
-  border-radius: 2px;
+  border-radius: 10px;
   color: white;
   font-family: inherit;
   font-size: 13px;
+  font-weight: 500;
   cursor: pointer;
+  transition: background-color 0.18s;
 }
 .confirmationButton:hover {
   background: #00246b;
@@ -601,54 +612,64 @@
   outline: 2px solid #8c6345;
   outline-offset: 4px;
 }
-@media (max-width: 1100px) {
-  .container {
-    width: calc(100% - 64px);
-  }
+@media (max-width: 1024px) {
   .introGrid {
-    grid-template-columns: 0.9fr 1.1fr;
+    grid-template-columns: 1fr;
+    gap: 44px;
+    margin-block: 64px 80px;
   }
   .introduction {
-    height: 740px;
-  }
-  .fieldRow {
-    gap: 14px;
+    height: auto;
+    min-height: 480px;
   }
   .serviceOptions {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+  .visit {
+    grid-template-columns: 1fr;
+    gap: 36px;
+    padding-top: 52px;
+    margin-bottom: 80px;
+  }
+  .visitDetails,
+  .mapSection {
+    grid-column: auto;
+    grid-row: auto;
+  }
 }
 @media (max-width: 760px) {
-  .container {
-    width: calc(100% - 32px);
-  }
   .introGrid {
-    grid-template-columns: 1fr;
-    margin-block: 24px 64px;
-    gap: 40px;
+    margin-block: 54px 64px;
+    gap: 36px;
   }
   .introduction {
     height: auto;
-    min-height: 500px;
-    padding: 28px;
+    min-height: 440px;
+    padding: clamp(22px, 5vw, 28px);
     gap: 24px;
   }
   .introduction h1 {
-    font-size: clamp(32px, 8.7vw, 66px);
+    font-size: clamp(32px, 8.5vw, 56px);
   }
   .form {
-    padding: 0 8px;
+    padding: 0;
   }
   .formHeading h2 {
-    font-size: 30px;
+    font-size: 28px;
   }
   .fieldRow {
     grid-template-columns: 1fr;
-    gap: 22px;
+    gap: 18px;
   }
   .field input,
-  .field textarea {
+  .field select,
+  .field textarea,
+  .phoneField input {
     font-size: 16px;
+  }
+  .serviceOptions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px 10px;
   }
   .travelFields {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -657,24 +678,40 @@
     grid-column: 1 / -1;
   }
   .visit {
-    grid-template-columns: 1fr;
     gap: 28px;
     padding-top: 40px;
     margin-bottom: 64px;
   }
-  .visitDetails,
-  .mapSection {
-    grid-column: auto;
-    grid-row: auto;
-  }
   .mapFrame {
-    height: 280px;
+    height: clamp(240px, 55vw, 300px);
   }
   .confirmationContent {
-    padding: 30px 24px;
+    padding: 30px 20px;
   }
   .confirmation h2 {
-    font-size: 35px;
+    font-size: 32px;
+  }
+}
+@media (max-width: 480px) {
+  .serviceOptions {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+  .travelFields {
+    grid-template-columns: 1fr;
+  }
+  .socialLinks {
+    flex-direction: column;
+    width: 100%;
+  }
+  .socialLinks a {
+    width: 100%;
+    justify-content: center;
+  }
+  .visitActions {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -691,7 +728,7 @@
   outline-color: #f5dec0;
 }
 
-@media (min-width: 761px) and (min-height: 900px) {
+@media (min-width: 1025px) and (min-height: 900px) {
   .introduction {
     position: sticky;
     top: 112px;

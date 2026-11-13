@@ -2084,12 +2084,36 @@ export default function ServicesPage() {
     return matchesSearch && matchesRegion;
   });
 
+  // Hero service cards horizontal scroll container ref for mobile
+  const heroCardsScrollRef = useRef<HTMLDivElement>(null);
+
   const handleSelectService = (idx: number) => {
     if (idx === activeServiceIndex) return;
     setSlideDirection(idx > activeServiceIndex ? "next" : "prev");
     setPrevIndex(activeServiceIndex);
     setActiveServiceIndex(idx);
     setSelectedSlug(HERO_SERVICES[idx].slug);
+
+    // Smoothly center the selected card into view on mobile
+    if (heroCardsScrollRef.current) {
+      const cardEl = heroCardsScrollRef.current.children[idx] as
+        HTMLElement | undefined;
+      if (cardEl) {
+        const container = heroCardsScrollRef.current;
+        const scrollLeft =
+          cardEl.offsetLeft -
+          container.clientWidth / 2 +
+          cardEl.clientWidth / 2;
+        if (typeof container.scrollTo === "function") {
+          container.scrollTo({
+            left: Math.max(0, scrollLeft),
+            behavior: "smooth",
+          });
+        } else {
+          container.scrollLeft = Math.max(0, scrollLeft);
+        }
+      }
+    }
 
     // Keep URL hash in sync with user's selection without causing page jump or reload
     if (typeof window !== "undefined") {
@@ -2264,7 +2288,7 @@ export default function ServicesPage() {
           </p>
         )}
         {/* 2. FULL-WIDTH HERO SECTION WITH DYNAMIC BACKGROUND & 8 HERO SERVICE CARDS */}
-        <section className="relative w-full min-h-[660px] sm:min-h-[700px] lg:min-h-[720px] lg:h-[75vh] lg:max-h-[780px] flex flex-col justify-between overflow-hidden -mt-20 pt-28 sm:pt-32 lg:pt-34 xl:pt-36 pb-0">
+        <section className="relative z-40 w-full min-h-[660px] sm:min-h-[700px] lg:min-h-[720px] lg:h-[75vh] lg:max-h-[780px] flex flex-col justify-between overflow-hidden -mt-20 pt-28 sm:pt-32 lg:pt-34 xl:pt-36 pb-0">
           {/* Dynamic Full-Width Background Sliding Images */}
           <div className="absolute inset-0 z-0 overflow-hidden">
             {HERO_SERVICES.map((s, idx) => {
@@ -2322,7 +2346,7 @@ export default function ServicesPage() {
           </div>
 
           {/* Hero Content Container */}
-          <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px] flex-1 flex flex-col justify-center">
+          <div className="relative z-30 w-full px-6 sm:px-10 lg:px-[105px] flex-1 flex flex-col justify-center">
             {/* Main Hero Headline - staggered entrance 1 */}
             <div
               key={`headline-wrap-${activeService.id}`}
@@ -2356,8 +2380,11 @@ export default function ServicesPage() {
             </div>
 
             {/* 7 HERO SERVICE CARDS (Matching Homepage Hero Design, rounded-md) */}
-            <div className="relative mt-6 sm:mt-7 mb-3 sm:mb-4">
-              <div className="flex lg:grid lg:grid-cols-8 items-stretch gap-2 sm:gap-2.5 lg:gap-2.5 xl:gap-3 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth px-1 lg:px-0 pt-2 pb-2">
+            <div className="relative mt-5 sm:mt-6 mb-3 sm:mb-4">
+              <div
+                ref={heroCardsScrollRef}
+                className="flex lg:grid lg:grid-cols-8 items-stretch gap-2 sm:gap-2.5 lg:gap-2.5 xl:gap-3 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth px-1.5 lg:px-0 pt-3.5 sm:pt-4 pb-2.5 lg:pt-2 lg:pb-2"
+              >
                 {HERO_SERVICES.map((s, idx) => {
                   const isActive = idx === activeServiceIndex;
                   return (
@@ -2369,8 +2396,8 @@ export default function ServicesPage() {
                       aria-label={`Select ${s.name}`}
                       className={`group relative shrink-0 w-[136px] sm:w-[148px] lg:w-auto h-[155px] sm:h-[168px] lg:h-[178px] rounded-[14px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-end bg-neutral-950 ${
                         isActive
-                          ? "-translate-y-1.5 scale-[1.02] z-20 shadow-[0_16px_36px_rgba(0,0,0,0.5),0_0_28px_rgba(255,255,255,0.75)] ring-2 ring-white"
-                          : "hover:-translate-y-1.5 hover:scale-[1.01] hover:z-30 opacity-90 hover:opacity-100 ring-1 ring-white/20"
+                          ? "-translate-y-1 sm:-translate-y-1.5 scale-[1.02] z-20 shadow-[0_14px_32px_rgba(0,0,0,0.55)] ring-2 ring-white"
+                          : "hover:-translate-y-1 sm:hover:-translate-y-1.5 hover:scale-[1.01] hover:z-30 opacity-90 hover:opacity-100 ring-1 ring-white/20"
                       }`}
                     >
                       {/* Inner clipped canvas with service image (object-cover zoomed) */}
@@ -2383,12 +2410,12 @@ export default function ServicesPage() {
                         <div className="absolute inset-x-0 bottom-0 h-[62%] bg-gradient-to-t from-black/85 via-black/45 to-transparent" />
                       </div>
 
-                      {/* White glowing shadow highlight with thin subtle border */}
+                      {/* Clean card border highlight (crisp, zero blurry white fog) */}
                       <div
                         className={`absolute inset-0 rounded-[14px] transition-all duration-300 pointer-events-none z-20 ${
                           isActive
-                            ? "border border-white/20 shadow-[0_0_28px_rgba(255,255,255,0.75)]"
-                            : "border border-white/15 group-hover:border-white/30 group-hover:shadow-[0_0_18px_rgba(255,255,255,0.35)]"
+                            ? "border border-white/25"
+                            : "border border-white/10 group-hover:border-white/25"
                         }`}
                       />
 
@@ -2404,6 +2431,23 @@ export default function ServicesPage() {
                     </button>
                   );
                 })}
+              </div>
+
+              {/* Mobile Carousel Indicator Dots (Matching Image 2) */}
+              <div className="flex lg:hidden items-center justify-center gap-1.5 mt-2">
+                {HERO_SERVICES.map((s, idx) => (
+                  <button
+                    key={`hero-dot-${s.id}`}
+                    type="button"
+                    onClick={() => handleSelectService(idx)}
+                    aria-label={`Go to ${s.name}`}
+                    className={`transition-all duration-300 rounded-full h-1.5 cursor-pointer ${
+                      idx === activeServiceIndex
+                        ? "w-5 bg-white"
+                        : "w-1.5 bg-white/40 hover:bg-white/70"
+                    }`}
+                  />
+                ))}
               </div>
             </div>
 
@@ -5525,9 +5569,9 @@ export default function ServicesPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/35 to-black/55 pointer-events-none" />
           <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-transparent to-black/25 pointer-events-none" />
 
-          {/* Decorative dashed flight curve line overlay with airplane animation */}
+          {/* Decorative dashed flight curve line overlay with airplane animation (hidden on mobile for clean, uncluttered stats) */}
           <svg
-            className="absolute inset-0 w-full h-full pointer-events-none z-[5]"
+            className="hidden md:block absolute inset-0 w-full h-full pointer-events-none z-[5]"
             preserveAspectRatio="none"
             viewBox="0 0 1360 220"
           >

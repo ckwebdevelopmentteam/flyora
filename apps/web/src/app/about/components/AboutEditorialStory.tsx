@@ -18,7 +18,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
           - Left: "ABOUT US" in mint green + Mountain Image (tall portrait, hanging down into Section 2)
           - Right: "ABOUT US" label + "AWARD-WINNING CREATORS OF REMARKABLE TRAVEL EXPERIENCES"
           ========================================================================= */}
-      <section className="relative w-full bg-[#144A72] text-white overflow-visible z-10 pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 lg:pb-20 xl:h-[741px] xl:pt-[280px] xl:pb-0">
+      <section className="relative w-full bg-[#144A72] text-white overflow-visible z-10 pt-32 sm:pt-36 lg:pt-32 pb-12 sm:pb-16 lg:pb-20 xl:h-[741px] xl:pt-[280px] xl:pb-0">
         {/* Topographical Elevation Contour Lines SVG Background */}
         <div
           className="absolute inset-0 overflow-hidden pointer-events-none select-none opacity-25"
@@ -82,15 +82,15 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
         />
 
         <div className="container-standard relative z-10 xl:max-w-[1504px] xl:px-5">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:grid-cols-[585px_minmax(0,1fr)] xl:gap-[154px] items-end xl:items-start">
-            {/* Left Column (5 Cols): ABOUT US + Mountain Image (Image 1) */}
-            <div className="lg:col-span-5 xl:col-auto">
-              <h1 className="font-heading font-bold text-4xl sm:text-6xl lg:text-[76px] xl:text-[98px] text-[#5BC3A6] leading-none tracking-tight uppercase mb-6 sm:mb-8 xl:mt-[77px] xl:mb-[40px] select-none">
+          <div className="flex flex-col lg:grid lg:grid-cols-12 gap-8 lg:gap-12 xl:grid-cols-[585px_minmax(0,1fr)] xl:gap-[154px] items-end xl:items-start">
+            {/* Left Column (5 Cols on desktop): ABOUT US + Mountain Image */}
+            <div className="contents lg:block lg:col-span-5 xl:col-auto">
+              <h1 className="order-1 font-heading font-bold text-4xl sm:text-6xl lg:text-[76px] xl:text-[98px] text-[#5BC3A6] leading-none tracking-tight uppercase mb-4 sm:mb-6 xl:mt-[77px] xl:mb-[40px] select-none">
                 ABOUT US
               </h1>
 
-              {/* Mountain Image: Tall Portrait aspect-[3/4], hanging down across Section 1 into Section 2 */}
-              <div className="relative w-full max-w-[460px] xl:max-w-[585px] aspect-[3/4] bg-[#0E3553] shadow-[0_25px_60px_-15px_rgba(20,74,114,0.35)] z-20 overflow-hidden -mb-28 sm:-mb-52 lg:-mb-64 xl:mb-0">
+              {/* Mountain Image: Tall Portrait aspect-[3/4], order-3 on mobile */}
+              <div className="order-3 lg:order-none relative w-full max-w-[460px] xl:max-w-[585px] aspect-[3/4] bg-[#0E3553] rounded-[14px] lg:rounded-none shadow-[0_25px_60px_-15px_rgba(20,74,114,0.35)] z-20 overflow-hidden mb-0 lg:-mb-64 xl:mb-0">
                 <Image
                   src="/about/mountain-ridge.jpg"
                   alt="Dramatic mountain ridge rising above the ocean coastline"
@@ -102,8 +102,8 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
               </div>
             </div>
 
-            {/* Right Column (7 Cols): Blue Banner text (Aligned inside the blue banner) */}
-            <div className="lg:col-span-7 xl:col-auto lg:pl-4 xl:pl-0 pb-4 sm:pb-6 lg:pb-8 xl:pt-[216px] xl:pb-0">
+            {/* Right Column (7 Cols on desktop, order-2 on mobile): Blue Banner text */}
+            <div className="order-2 lg:order-none lg:col-span-7 xl:col-auto lg:pl-4 xl:pl-0 pb-4 sm:pb-6 lg:pb-8 xl:pt-[216px] xl:pb-0 mb-6 lg:mb-0">
               <span className="block text-[#5BC3A6] text-xs sm:text-[13px] font-sans font-medium tracking-[0.25em] uppercase mb-3">
                 ABOUT FLYORA • TOURS &amp; TRAVELS
               </span>
@@ -127,7 +127,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
         <div className="container-standard xl:max-w-[1504px] xl:px-5">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 xl:grid-cols-[585px_minmax(0,1fr)] xl:gap-[154px] items-start">
             {/* Left Column (5 Cols): Clearance for hanging Mountain Image + IT BEGAN WITH A FEELING */}
-            <div className="lg:col-span-5 xl:col-auto pt-44 sm:pt-56 lg:pt-68 xl:pt-[530px]">
+            <div className="lg:col-span-5 xl:col-auto pt-0 lg:pt-68 xl:pt-[530px]">
               <div className="max-w-md">
                 <h2 className="font-serif font-bold text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#111111] leading-[1.12] tracking-tight mb-4">
                   Built for Total Travel Freedom
@@ -183,7 +183,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
 
               {/* Image 2 (Maldives / Overwater Paradise): Large landscape photo overlapping bottom-right of Mountain Image */}
               <div className="mt-12 sm:mt-16 lg:mt-20 relative z-20 xl:mt-[60px]">
-                <div className="relative w-full lg:-ml-12 xl:-ml-[247px] lg:w-[calc(100%+3rem)] xl:w-[957px] aspect-[16/10] xl:aspect-[957/649] bg-[#1a1a1a] overflow-hidden shadow-[0_20px_50px_-10px_rgba(0,0,0,0.18)]">
+                <div className="relative w-full lg:-ml-12 xl:-ml-[247px] lg:w-[calc(100%+3rem)] xl:w-[957px] aspect-[16/10] xl:aspect-[957/649] bg-[#1a1a1a] rounded-[14px] lg:rounded-none overflow-hidden shadow-[0_20px_50px_-10px_rgba(0,0,0,0.18)]">
                   <Image
                     src="/destinations/maldives.jpg"
                     alt="Luxury overwater villa resort with crystal turquoise lagoon and wooden boardwalk"
@@ -226,7 +226,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
                 stays.
               </p>
 
-              {/* Exact Solid Black Button from Reference */}
+              {/* Exact Solid Black Button with responsive styling */}
               <button
                 type="button"
                 onClick={() =>
@@ -234,7 +234,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
                     ? onOpenEnquiry("Travel & Visa Inquiry")
                     : undefined
                 }
-                className="inline-flex items-center justify-center px-8 py-3.5 bg-black hover:bg-zinc-800 active:bg-zinc-900 text-white text-xs font-sans font-semibold uppercase tracking-[0.2em] transition-colors rounded-none cursor-pointer shadow-xs"
+                className="inline-flex items-center justify-center w-full sm:w-auto px-8 py-3.5 bg-black hover:bg-zinc-800 active:bg-zinc-900 text-white text-xs font-sans font-semibold uppercase tracking-[0.2em] transition-colors rounded-[10px] cursor-pointer shadow-xs"
               >
                 TALK TO OUR TRAVEL &amp; VISA DESK
               </button>
@@ -244,7 +244,7 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
             <div className="lg:col-span-7 xl:col-auto">
               <div className="relative w-full max-w-[640px] xl:max-w-none xl:w-[834px] ml-auto xl:ml-0">
                 {/* Main Landscape Photo: Amalfi Coast Terrace */}
-                <div className="relative w-full aspect-[16/11] xl:aspect-[834/570] bg-[#1a1a1a] overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.12)]">
+                <div className="relative w-full aspect-[16/11] xl:aspect-[834/570] bg-[#1a1a1a] rounded-[14px] lg:rounded-none overflow-hidden shadow-[0_15px_40px_-10px_rgba(0,0,0,0.12)]">
                   <Image
                     src="/about/hero-travel.jpg"
                     alt="Traveler on a picturesque sunlit terrace overlooking the azure Amalfi coastline"
@@ -254,8 +254,8 @@ export const AboutEditorialStory: React.FC<AboutEditorialStoryProps> = ({
                   />
                 </div>
 
-                {/* Overlapping Travel Documents Inset (Matching exact reference: borderless, inset from right edge, hanging over bottom edge) */}
-                <div className="absolute -bottom-10 sm:-bottom-14 lg:-bottom-16 right-8 sm:right-12 lg:right-16 xl:-bottom-[97px] xl:right-[55px] w-[42%] max-w-[260px] xl:w-[264px] xl:max-w-none aspect-[4/5] xl:aspect-[264/250] bg-[#082032] overflow-hidden z-10 shadow-[0_20px_45px_-10px_rgba(0,0,0,0.3)]">
+                {/* Overlapping Travel Documents Inset */}
+                <div className="absolute -bottom-6 sm:-bottom-10 lg:-bottom-16 right-4 sm:right-8 lg:right-16 xl:-bottom-[97px] xl:right-[55px] w-[42%] max-w-[260px] xl:w-[264px] xl:max-w-none aspect-[4/5] xl:aspect-[264/250] bg-[#082032] rounded-[10px] lg:rounded-none overflow-hidden z-10 shadow-[0_20px_45px_-10px_rgba(0,0,0,0.3)]">
                   <Image
                     src="/services/visa-assistance.webp"
                     alt="Official passports, verified international visas, flight boarding passes, and bespoke hotel confirmations"

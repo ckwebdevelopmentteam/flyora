@@ -1,0 +1,87 @@
+/* Sticky Staged Cinematic Scroll Experience (Mobile & Desktop) */
+
+.stageSticky {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  height: 100dvh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stageScene {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.3s ease-out, transform 0.3s ease-out, filter 0.3s ease-out;
+}
+
+/* Horizontal slide carousel for mobile card collections */
+.carouselTrack {
+  display: flex;
+  gap: 0.875rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding-bottom: 0.5rem;
+  padding-top: 0.25rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-left: -1rem;
+  margin-right: -1rem;
+}
+
+.carouselTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.carouselCard {
+  flex-shrink: 0;
+  scroll-snap-align: center;
+}
+
+/* Subtle swipe instruction pill */
+.swipeIndicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+@media (min-width: 1024px) {
+  .carouselTrack {
+    display: grid;
+    overflow-x: visible;
+    scroll-snap-type: none;
+    padding-left: 0;
+    padding-right: 0;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .carouselCard {
+    flex-shrink: 1;
+  }
+
+  .swipeIndicator {
+    display: none;
+  }
+}

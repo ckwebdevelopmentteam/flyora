@@ -19,11 +19,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { cn } from "@/lib/utils";
 
 interface AboutWhatWeOfferProps {
-  opacity: number;
+  opacity?: number;
   progress?: number;
   filter?: string;
   transform?: string;
   pointerEvents?: "auto" | "none";
+  isStatic?: boolean;
 }
 
 interface FeatureItem {
@@ -134,7 +135,7 @@ const OFFER_TABS: OfferTab[] = [
 ];
 
 export const AboutWhatWeOffer: React.FC<AboutWhatWeOfferProps> = ({
-  opacity,
+  opacity = 1,
   filter,
   transform,
   pointerEvents,
@@ -150,18 +151,18 @@ export const AboutWhatWeOffer: React.FC<AboutWhatWeOfferProps> = ({
       }}
       aria-hidden={opacity < 0.05}
     >
-      <div className="relative z-10 w-full max-w-5xl max-h-[92svh] overflow-y-auto scrollbar-none py-2 sm:py-4">
+      <div className="relative z-10 w-full max-w-5xl py-2 my-auto">
         {/* Header Block */}
         <div className="flex flex-col items-center text-center">
-          <p className="text-xs sm:text-[13px] font-spartan font-bold uppercase tracking-[0.25em] text-[#5BC3A6]">
+          <p className="text-[10px] sm:text-xs font-spartan font-bold uppercase tracking-[0.25em] text-[#5BC3A6]">
             WHAT WE OFFER • COMPLETE AGENCY SOLUTIONS
           </p>
 
-          <h2 className="mt-3 font-serif text-3xl sm:text-4xl md:text-5xl lg:text-[54px] font-bold tracking-tight text-white leading-tight">
+          <h2 className="mt-1.5 sm:mt-2.5 font-serif text-2xl sm:text-4xl lg:text-[46px] font-bold tracking-tight text-white leading-tight">
             End-to-End Solutions for Visas, Flights &amp; World Tours
           </h2>
 
-          <p className="mt-2 max-w-2xl text-[14px] sm:text-[15.5px] text-white/80 font-sans font-light leading-relaxed">
+          <p className="mt-1 sm:mt-2 max-w-2xl text-xs sm:text-[14.5px] text-white/80 font-sans font-light leading-relaxed line-clamp-2 sm:line-clamp-none">
             From expedited embassy visa approvals and best-fare air ticketing to
             bespoke holiday curation and round-the-clock advisory,{" "}
             <span className="font-semibold text-white">Flyora</span> is your
@@ -170,13 +171,13 @@ export const AboutWhatWeOffer: React.FC<AboutWhatWeOfferProps> = ({
         </div>
 
         {/* Tabbed Categories */}
-        <Tabs defaultValue="journeys" className="mt-6 sm:mt-8 w-full">
+        <Tabs defaultValue="journeys" className="mt-4 sm:mt-6 w-full">
           <TabsList className="h-auto flex-wrap gap-1 rounded-xl bg-white/10 p-1 border border-white/10 backdrop-blur-md">
             {OFFER_TABS.map((tab) => (
               <TabsTrigger
                 key={tab.value}
                 value={tab.value}
-                className="rounded-lg px-4 sm:px-5 py-2 text-xs sm:text-sm font-sans font-medium uppercase tracking-wider text-white/75 data-[state=active]:bg-white data-[state=active]:text-[#1C1815] data-[state=active]:shadow-md transition-all cursor-pointer border-none outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 data-[state=active]:border-none data-[state=active]:ring-0"
+                className="rounded-lg px-3.5 sm:px-5 py-1.5 sm:py-2 text-[11px] sm:text-sm font-sans font-medium uppercase tracking-wider text-white/75 data-[state=active]:bg-white data-[state=active]:text-[#1C1815] data-[state=active]:shadow-md transition-all cursor-pointer border-none outline-none ring-0 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 data-[state=active]:border-none data-[state=active]:ring-0"
               >
                 {tab.label}
               </TabsTrigger>
@@ -187,33 +188,33 @@ export const AboutWhatWeOffer: React.FC<AboutWhatWeOfferProps> = ({
             <TabsContent
               key={tab.value}
               value={tab.value}
-              className="mt-5 sm:mt-6 w-full focus-visible:outline-none"
+              className="mt-3.5 sm:mt-5 w-full focus-visible:outline-none"
             >
-              <div className="grid gap-3.5 sm:gap-4 md:grid-cols-3">
+              <div className="flex md:grid md:grid-cols-3 gap-3 sm:gap-4 overflow-x-auto md:overflow-visible snap-x snap-mandatory scrollbar-none pb-2 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0">
                 {tab.features.map((feature) => {
                   const Icon = feature.icon;
                   return (
                     <Card
                       key={feature.title}
-                      className="group relative flex flex-col justify-between rounded-xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-white/20 p-5 sm:p-6 transition-all duration-300 backdrop-blur-sm text-white shadow-[0_12px_30px_rgba(0,0,0,0.2)]"
+                      className="w-[78vw] max-w-[290px] shrink-0 snap-center md:w-auto md:max-w-none group relative flex flex-col justify-between rounded-xl bg-white/[0.05] hover:bg-white/[0.09] border border-white/10 hover:border-white/20 p-4 sm:p-5 transition-all duration-300 backdrop-blur-sm text-white shadow-[0_12px_30px_rgba(0,0,0,0.2)] min-h-[175px] sm:min-h-0"
                     >
                       <div>
                         {/* Top: Icon + Badge */}
-                        <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center justify-between mb-2.5 sm:mb-4">
                           <div
                             className={cn(
-                              "flex size-11 items-center justify-center rounded-lg border border-white/10 transition-transform group-hover:scale-105 duration-300",
+                              "flex size-9 sm:size-11 items-center justify-center rounded-lg border border-white/10 transition-transform group-hover:scale-105 duration-300",
                             )}
                             style={{
                               backgroundColor: `${feature.accent}18`,
                               color: feature.accent,
                             }}
                           >
-                            <Icon className="size-5" />
+                            <Icon className="size-4 sm:size-5" />
                           </div>
 
                           <span
-                            className="text-[10px] sm:text-[11px] font-sans font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full border border-white/10"
+                            className="text-[9.5px] sm:text-[11px] font-sans font-semibold tracking-wider uppercase px-2 sm:px-2.5 py-0.5 rounded-full border border-white/10"
                             style={{
                               backgroundColor: `${feature.accent}14`,
                               color: feature.accent,
@@ -224,28 +225,33 @@ export const AboutWhatWeOffer: React.FC<AboutWhatWeOfferProps> = ({
                         </div>
 
                         {/* Title & Description */}
-                        <h3 className="font-heading text-base sm:text-lg font-bold uppercase tracking-wide text-white group-hover:text-[#5BC3A6] transition-colors mb-2">
+                        <h3 className="font-heading text-sm sm:text-base font-bold uppercase tracking-wide text-white group-hover:text-[#5BC3A6] transition-colors mb-1 sm:mb-1.5">
                           {feature.title}
                         </h3>
 
-                        <p className="text-[13px] sm:text-[13.5px] leading-relaxed text-white/75 font-sans font-light">
+                        <p className="text-[12px] sm:text-[13px] leading-relaxed text-white/75 font-sans font-light line-clamp-3 sm:line-clamp-none">
                           {feature.description}
                         </p>
                       </div>
 
                       {/* Card Footer */}
-                      <div className="mt-4 pt-3 border-t border-white/5 flex items-center gap-1.5 text-xs text-white/50 group-hover:text-white/80 transition-colors">
+                      <div className="mt-3 pt-2.5 border-t border-white/5 flex items-center gap-1.5 text-xs text-white/50 group-hover:text-white/80 transition-colors">
                         <CheckCircle2
-                          className="size-3.5"
+                          className="size-3 sm:size-3.5"
                           style={{ color: feature.accent }}
                         />
-                        <span className="font-sans text-[11px] uppercase tracking-wider">
+                        <span className="font-sans text-[10px] sm:text-[11px] uppercase tracking-wider">
                           Flyora Signature Service
                         </span>
                       </div>
                     </Card>
                   );
                 })}
+              </div>
+
+              {/* Mobile swipe helper pill */}
+              <div className="flex md:hidden items-center justify-center gap-1 mt-1.5 text-[10px] text-white/40 uppercase tracking-widest font-mono">
+                <span>← Swipe to explore →</span>
               </div>
             </TabsContent>
           ))}

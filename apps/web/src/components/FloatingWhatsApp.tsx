@@ -83,7 +83,7 @@ export const FloatingWhatsApp: React.FC<FloatingWhatsAppProps> = ({
   return (
     <aside
       aria-label="Floating support menu"
-      className="fixed bottom-6 right-6 z-50 font-sans"
+      className="fixed bottom-6 right-6 z-30 font-sans"
     >
       <FloatingButton
         isOpen={isOpen}

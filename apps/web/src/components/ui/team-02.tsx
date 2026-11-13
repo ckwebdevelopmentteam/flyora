@@ -227,7 +227,7 @@ const Team: React.FC<TeamProps> = ({
                   )}
                   <div className="flex flex-col items-center justify-center gap-2 sm:gap-3">
                     <h2
-                      className={`text-2xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight ${
+                      className={`text-xl sm:text-4xl md:text-5xl font-serif font-bold tracking-tight ${
                         isDark
                           ? "text-white drop-shadow-[0_2px_8px_rgba(0,0,0,0.6)]"
                           : "text-foreground"
@@ -236,7 +236,7 @@ const Team: React.FC<TeamProps> = ({
                       {title}
                     </h2>
                     <p
-                      className={`text-sm sm:text-base font-normal ${
+                      className={`text-xs sm:text-base font-normal max-w-xl mx-auto ${
                         isDark ? "text-white/80" : "text-muted-foreground"
                       }`}
                     >
@@ -247,23 +247,23 @@ const Team: React.FC<TeamProps> = ({
               )}
             </motion.div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+            <div className="flex sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-6 w-full overflow-x-auto sm:overflow-visible snap-x snap-mandatory scrollbar-none pb-2 pt-1 -mx-4 px-4 sm:mx-0 sm:px-0">
               {members?.map((value, index) => {
                 return (
                   <motion.div
                     key={index}
-                    initial={{ y: 40, opacity: 0 }}
+                    initial={{ y: 20, opacity: 0 }}
                     whileInView={{ y: 0, opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{
-                      duration: 0.8,
-                      delay: index * 0.1,
+                      duration: 0.6,
+                      delay: index * 0.08,
                       ease: [0.21, 0.47, 0.32, 0.98],
                     }}
-                    className="group flex flex-col items-start gap-4 sm:gap-6"
+                    className="w-[68vw] max-w-[240px] shrink-0 snap-center sm:w-auto sm:max-w-none group flex flex-col items-start gap-2 sm:gap-3"
                   >
                     <div
-                      className={`relative w-full h-64 sm:h-80 overflow-hidden rounded-md cursor-pointer ${
+                      className={`relative w-full h-44 sm:h-64 lg:h-72 overflow-hidden rounded-[14px] cursor-pointer ${
                         isDark
                           ? "bg-white/5 border border-white/10 shadow-lg"
                           : "bg-stone-100"
@@ -277,8 +277,8 @@ const Team: React.FC<TeamProps> = ({
                         width={270}
                         className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gray-950/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-end p-5">
-                        <div className="flex gap-2">
+                      <div className="absolute inset-0 bg-gray-950/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-end p-3.5 sm:p-5">
+                        <div className="flex gap-1.5 sm:gap-2">
                           {value.socials?.map((social, idx) => (
                             <a
                               key={idx}
@@ -290,7 +290,7 @@ const Team: React.FC<TeamProps> = ({
                                   onMemberClick(value);
                                 }
                               }}
-                              className="flex w-fit bg-white text-[#1C1815] p-3 rounded-full hover:opacity-80 transition-opacity duration-300 shadow-md"
+                              className="flex w-fit bg-white text-[#1C1815] p-2 sm:p-3 rounded-full hover:opacity-80 transition-opacity duration-300 shadow-md"
                             >
                               {social.icon}
                             </a>
@@ -298,9 +298,9 @@ const Team: React.FC<TeamProps> = ({
                         </div>
                       </div>
                     </div>
-                    <div className="flex flex-col gap-1 text-left">
+                    <div className="flex flex-col gap-0.5 sm:gap-1 text-left">
                       <h3
-                        className={`text-xl font-medium transition-colors duration-200 ${
+                        className={`text-base sm:text-xl font-medium transition-colors duration-200 ${
                           isDark
                             ? "text-white"
                             : "text-foreground group-hover:text-[#002f89]"
@@ -309,9 +309,9 @@ const Team: React.FC<TeamProps> = ({
                         {value.name}
                       </h3>
                       <p
-                        className={`text-sm font-normal ${
+                        className={`text-xs sm:text-sm font-normal ${
                           isDark
-                            ? "text-[#5BC3A6]/90 font-mono text-xs uppercase tracking-wider"
+                            ? "text-[#5BC3A6]/90 font-mono text-[11px] sm:text-xs uppercase tracking-wider"
                             : "text-muted-foreground"
                         }`}
                       >
@@ -321,6 +321,11 @@ const Team: React.FC<TeamProps> = ({
                   </motion.div>
                 );
               })}
+            </div>
+
+            {/* Mobile swipe indicator */}
+            <div className="flex sm:hidden items-center justify-center gap-1 mt-1.5 text-[10px] text-white/40 uppercase tracking-widest font-mono">
+              <span>← Swipe curators →</span>
             </div>
           </div>
         </div>

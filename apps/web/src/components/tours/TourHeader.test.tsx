@@ -59,4 +59,29 @@ describe("TourHeader component", () => {
     fireEvent.change(sortSelect, { target: { value: "duration-desc" } });
     expect(onSortChange).toHaveBeenCalledWith("duration-desc");
   });
+
+  it("renders mobile search input and fires onSearchChange", () => {
+    const onSearchChange = vi.fn();
+
+    render(
+      <TourHeader
+        totalResults={5}
+        sortBy="recommended"
+        onSortChange={vi.fn()}
+        categoryTab="all"
+        onCategoryChange={vi.fn()}
+        categoryCounts={{ all: 5, international: 4, domestic: 1 }}
+        searchQuery=""
+        onSearchChange={onSearchChange}
+      />,
+    );
+
+    const searchInput = screen.getByRole("textbox", {
+      name: /Search destination or package name/i,
+    });
+    expect(searchInput).toBeDefined();
+
+    fireEvent.change(searchInput, { target: { value: "Dubai" } });
+    expect(onSearchChange).toHaveBeenCalledWith("Dubai");
+  });
 });
