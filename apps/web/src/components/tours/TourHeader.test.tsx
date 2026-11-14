@@ -1,6 +1,12 @@
 import React from "react";
 import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, fireEvent, cleanup } from "@testing-library/react";
+import {
+  render,
+  screen,
+  fireEvent,
+  cleanup,
+  within,
+} from "@testing-library/react";
 import { TourHeader } from "./TourHeader";
 
 afterEach(() => {
@@ -83,5 +89,37 @@ describe("TourHeader component", () => {
 
     fireEvent.change(searchInput, { target: { value: "Dubai" } });
     expect(onSearchChange).toHaveBeenCalledWith("Dubai");
+  });
+
+  it("opens custom sort popover and selects an option", () => {
+    const onSortChange = vi.fn();
+
+    render(
+      <TourHeader
+        totalResults={5}
+        sortBy="recommended"
+        onSortChange={onSortChange}
+        categoryTab="all"
+        onCategoryChange={vi.fn()}
+        categoryCounts={{ all: 5, international: 4, domestic: 1 }}
+      />,
+    );
+
+    // Click on custom sort trigger button
+    const triggerBtn = screen.getByRole("button", {
+      name: /Sort by: Recommended/i,
+    });
+    expect(triggerBtn).toBeDefined();
+    fireEvent.click(triggerBtn);
+
+    // The custom listbox popover should now be visible
+    const listbox = screen.getByRole("listbox", { name: /Sort options/i });
+    expect(listbox).toBeDefined();
+
+    // Click "Price: Low to High" option inside listbox
+    const priceOption = within(listbox).getByText(/Price: Low to High/i);
+    fireEvent.click(priceOption);
+
+    expect(onSortChange).toHaveBeenCalledWith("price-asc");
   });
 });

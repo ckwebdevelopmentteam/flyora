@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import {
   ArrowUpDown,
@@ -11,8 +11,17 @@ import {
   Search,
   X,
   SlidersHorizontal,
+  Check,
 } from "lucide-react";
 import type { TourFilterState, TourCategoryTab } from "./types";
+
+const SORT_OPTIONS: { value: TourFilterState["sortBy"]; label: string }[] = [
+  { value: "recommended", label: "Recommended" },
+  { value: "price-asc", label: "Price: Low to High" },
+  { value: "price-desc", label: "Price: High to Low" },
+  { value: "duration-asc", label: "Duration: Short to Long" },
+  { value: "duration-desc", label: "Duration: Long to Short" },
+];
 
 interface TourHeaderProps {
   totalResults: number;
@@ -39,6 +48,21 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
   searchQuery = "",
   onSearchChange,
 }) => {
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = useRef<HTMLDivElement>(null);
+
+  // Close sort menu on Escape key
+  useEffect(() => {
+    if (!isSortOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsSortOpen(false);
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [isSortOpen]);
+
+  const currentSortLabel =
+    SORT_OPTIONS.find((opt) => opt.value === sortBy)?.label || "Recommended";
   return (
     <div className="space-y-4 sm:space-y-5 pb-6 border-b border-stone-200/80">
       {/* Breadcrumbs */}
@@ -81,22 +105,90 @@ export const TourHeader: React.FC<TourHeaderProps> = ({
             <span className="text-xs text-stone-400 font-mono hidden sm:inline">
               Sort by:
             </span>
-            <div className="relative">
+            <div ref={sortRef} className="relative">
+              {/* Accessible Hidden Select for automated tests & form agents */}
               <select
                 aria-label="Sort packages"
                 value={sortBy}
                 onChange={(e) =>
                   onSortChange(e.target.value as TourFilterState["sortBy"])
                 }
-                className="appearance-none pl-3 pr-8 py-2 text-xs font-medium rounded-xl border border-stone-200 bg-white text-stone-800 focus:outline-hidden focus:border-[#002f89] cursor-pointer shadow-xs"
+                className="sr-only"
+                tabIndex={-1}
               >
-                <option value="recommended">Recommended</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-                <option value="duration-asc">Duration: Short to Long</option>
-                <option value="duration-desc">Duration: Long to Short</option>
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
               </select>
-              <ArrowUpDown className="w-3.5 h-3.5 absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 pointer-events-none" />
+
+              {/* Styled Custom Trigger Button */}
+              <button
+                type="button"
+                onClick={() => setIsSortOpen((prev) => !prev)}
+                aria-expanded={isSortOpen}
+                aria-haspopup="listbox"
+                aria-label={`Sort by: ${currentSortLabel}`}
+                className={`flex items-center justify-between gap-2 px-3 sm:px-3.5 py-2 text-xs font-semibold rounded-xl border transition-all duration-150 cursor-pointer shadow-xs ${
+                  isSortOpen
+                    ? "border-[#002f89] ring-2 ring-[#002f89]/15 bg-white text-stone-900"
+                    : "border-stone-200 bg-white text-stone-700 hover:border-stone-300 hover:bg-stone-50"
+                }`}
+              >
+                <span>{currentSortLabel}</span>
+                <ArrowUpDown className="w-3.5 h-3.5 text-stone-400 shrink-0" />
+              </button>
+
+              {/* Styled Popover Dropdown Menu */}
+              {isSortOpen && (
+                <>
+                  {/* Backdrop for outside click dismissal */}
+                  <div
+                    className="fixed inset-0 z-40 bg-black/10 backdrop-blur-2xs sm:bg-transparent"
+                    onClick={() => setIsSortOpen(false)}
+                    aria-hidden="true"
+                  />
+
+                  <div
+                    role="listbox"
+                    aria-label="Sort options"
+                    className="absolute right-0 top-[calc(100%+6px)] z-50 w-52 sm:w-56 bg-white rounded-xl border border-stone-200/90 shadow-[0_12px_36px_rgba(0,0,0,0.14)] p-1.5 animate-dropdown-in"
+                  >
+                    <div className="px-2.5 py-1 text-[10.5px] font-mono uppercase tracking-wider text-stone-400 border-b border-stone-100 mb-1 select-none">
+                      Sort packages by
+                    </div>
+                    {SORT_OPTIONS.map((opt) => {
+                      const isSelected = opt.value === sortBy;
+                      return (
+                        <button
+                          key={opt.value}
+                          type="button"
+                          role="option"
+                          aria-selected={isSelected}
+                          onClick={() => {
+                            onSortChange(opt.value);
+                            setIsSortOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs transition-colors cursor-pointer text-left select-none ${
+                            isSelected
+                              ? "bg-[#002f89]/8 text-[#002f89] font-bold"
+                              : "text-stone-700 hover:bg-stone-100/70 hover:text-stone-900 font-medium"
+                          }`}
+                        >
+                          <span>{opt.label}</span>
+                          {isSelected && (
+                            <Check
+                              className="w-3.5 h-3.5 text-[#002f89] shrink-0"
+                              strokeWidth={2.5}
+                            />
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </div>
