@@ -32,7 +32,7 @@ export function MeetOurTeamSection({ onOpenEnquiry }: MeetOurTeamSectionProps) {
       <Team
         id="our-team"
         className="relative z-10 w-full overflow-hidden bg-transparent"
-        containerClassName="py-14 sm:py-18 lg:py-24"
+        containerClassName="py-8 sm:py-18 lg:py-24"
         isDark={false}
         customHeader={
           <div className="flex flex-col items-center justify-center text-center">

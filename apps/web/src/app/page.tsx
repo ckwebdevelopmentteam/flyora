@@ -452,7 +452,7 @@ export default function Home() {
         <section
           id="destinations"
           ref={destinationsRef}
-          className="relative z-10 pt-6 sm:pt-8 lg:pt-10 pb-16 sm:pb-20 lg:pb-24 overflow-hidden scroll-mt-0"
+          className="relative z-10 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-20 lg:pb-24 overflow-hidden scroll-mt-0"
         >
           {/* Top gradient matching exact cloud white, transitioning softly into Featured Destinations sky blue */}
           <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,#ffffff_0%,#F2F7FC_20%,#F8FBFE_80%,#ffffff_100%)]" />
@@ -465,7 +465,7 @@ export default function Home() {
 
           <div className="relative z-10 w-full px-6 sm:px-10 lg:px-[105px]">
             {/* Header: Left title + Search Bar + Right Arrows */}
-            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-10 mb-8 sm:mb-10">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-5 sm:gap-6 lg:gap-10 mb-5 sm:mb-10">
               <div className="max-w-xl">
                 <div className="flex items-center gap-3 mb-2.5 sm:mb-3">
                   <span className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.22em] text-[#002f89]">
@@ -486,7 +486,7 @@ export default function Home() {
               {/* Search Bar + Navigation Buttons */}
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 shrink-0">
                 {/* Country Search Bar */}
-                <div className="relative min-w-[260px] sm:min-w-[320px]">
+                <div className="relative w-full sm:w-auto min-w-0 sm:min-w-[320px]">
                   <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
                   <input
                     type="text"
@@ -506,8 +506,8 @@ export default function Home() {
                   )}
                 </div>
 
-                {/* Navigation Buttons */}
-                <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
+                {/* Navigation Buttons: Hidden on mobile view, preserved on tablet & desktop */}
+                <div className="hidden sm:flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
                   <button
                     type="button"
                     onClick={() => handleScroll("left")}
@@ -555,7 +555,7 @@ export default function Home() {
             </div>
 
             {/* Region Filter Chips */}
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-3 mb-6">
+            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 mb-5 sm:mb-6">
               {[
                 "All",
                 "Europe",
@@ -673,7 +673,7 @@ export default function Home() {
             </div>
 
             {/* View All Visa Services Button with sliding blue fill hover effect */}
-            <div className="flex justify-center items-center mt-10 sm:mt-12">
+            <div className="flex justify-center items-center mt-6 sm:mt-12">
               <Link
                 href="/services#visa-assistance"
                 className="group relative overflow-hidden inline-flex items-center gap-2.5 px-8 py-3.5 rounded-md border border-neutral-300/90 hover:border-transparent bg-white text-[#1E1A17] hover:text-white font-medium text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
@@ -722,7 +722,7 @@ export default function Home() {
             =================================================================== */}
         <section
           id="testimonials"
-          className="py-16 sm:py-24 bg-white relative z-10"
+          className="py-8 sm:py-24 bg-white relative z-10"
         >
           <InkOrbitTestimonials
             theme="light"
@@ -736,9 +736,9 @@ export default function Home() {
         {/* ===================================================================
             SECTION 9: FREQUENTLY ASKED QUESTIONS (Interactive Accordion)
             =================================================================== */}
-        <section id="faqs" className="py-16 sm:py-24 bg-white">
+        <section id="faqs" className="py-8 sm:py-24 bg-white">
           <div className="max-w-3xl mx-auto px-5 sm:px-8">
-            <div className="text-center max-w-xl mx-auto mb-12 sm:mb-16">
+            <div className="text-center max-w-xl mx-auto mb-8 sm:mb-16">
               <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-[#7A7167] block mb-3">
                 EVERYTHING YOU NEED TO KNOW
               </span>
@@ -786,7 +786,7 @@ export default function Home() {
             </div>
 
             {/* Still have a question? Contact Block */}
-            <div className="mt-14 sm:mt-18 text-center flex flex-col items-center">
+            <div className="mt-8 sm:mt-18 text-center flex flex-col items-center">
               <h3 className="font-serif text-2xl sm:text-3xl font-medium text-[#1E1A17] tracking-tight">
                 Still have a question?
               </h3>

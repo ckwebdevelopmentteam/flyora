@@ -1170,6 +1170,103 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
     });
   };
 
+  const isProgrammaticScrollRef = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const centerCardByIndex = useCallback((idx: number) => {
+    if (!cardsScrollRef.current) return;
+    const container = cardsScrollRef.current;
+    const cardEl = container.children[idx] as HTMLElement | undefined;
+    if (cardEl) {
+      const scrollLeft =
+        cardEl.offsetLeft - container.clientWidth / 2 + cardEl.clientWidth / 2;
+      if (typeof container.scrollTo === "function") {
+        container.scrollTo({
+          left: Math.max(0, scrollLeft),
+          behavior: "smooth",
+        });
+      } else {
+        container.scrollLeft = Math.max(0, scrollLeft);
+      }
+    }
+  }, []);
+
+  const handleSelectService = useCallback(
+    (slug: DynamicServiceSlug, idx?: number, fromSwipe = false) => {
+      setActiveServiceSlug(slug);
+      setOpenDropdown(null);
+
+      if (!fromSwipe) {
+        isProgrammaticScrollRef.current = true;
+        const targetIdx =
+          typeof idx === "number"
+            ? idx
+            : visibleServices.findIndex((s) => s.id === slug);
+
+        if (targetIdx !== -1) {
+          centerCardByIndex(targetIdx);
+        }
+
+        if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+        scrollTimeoutRef.current = setTimeout(() => {
+          isProgrammaticScrollRef.current = false;
+        }, 500);
+      }
+    },
+    [setActiveServiceSlug, visibleServices, centerCardByIndex],
+  );
+
+  // Sync active service on swipe / horizontal scroll in mobile view
+  useEffect(() => {
+    const el = cardsScrollRef.current;
+    if (!el) return;
+
+    let debounceTimer: NodeJS.Timeout | null = null;
+
+    const handleScrollSync = () => {
+      if (isProgrammaticScrollRef.current) return;
+      if (debounceTimer) clearTimeout(debounceTimer);
+
+      debounceTimer = setTimeout(() => {
+        if (isProgrammaticScrollRef.current) return;
+        const container = cardsScrollRef.current;
+        if (!container) return;
+
+        // Only sync if horizontal scroll is active (mobile view)
+        if (container.scrollWidth <= container.clientWidth + 10) return;
+
+        const containerCenter =
+          container.scrollLeft + container.clientWidth / 2;
+        let closestIdx = -1;
+        let minDiff = Infinity;
+
+        for (let i = 0; i < visibleServices.length; i++) {
+          const cardEl = container.children[i] as HTMLElement | undefined;
+          if (!cardEl) continue;
+          const cardCenter = cardEl.offsetLeft + cardEl.clientWidth / 2;
+          const diff = Math.abs(containerCenter - cardCenter);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestIdx = i;
+          }
+        }
+
+        if (closestIdx !== -1 && visibleServices[closestIdx]) {
+          const newSlug = visibleServices[closestIdx].id;
+          if (newSlug !== activeServiceSlug) {
+            handleSelectService(newSlug, closestIdx, true);
+          }
+        }
+      }, 100);
+    };
+
+    el.addEventListener("scroll", handleScrollSync, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", handleScrollSync);
+      if (debounceTimer) clearTimeout(debounceTimer);
+    };
+  }, [visibleServices, activeServiceSlug, handleSelectService]);
+
   const selectedBackendService = resolveService(
     effectiveServices,
     activeServiceSlug,
@@ -1519,13 +1616,13 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
 
           <div
             ref={cardsScrollRef}
-            className={`flex items-stretch gap-2 sm:gap-2.5 lg:gap-3 overflow-x-auto no-scrollbar scroll-smooth px-1 md:px-0 pt-3 pb-2.5 md:py-1 ${
+            className={`flex items-stretch gap-2 sm:gap-2.5 lg:gap-3 overflow-x-auto no-scrollbar scroll-smooth snap-x snap-mandatory md:snap-none px-1 md:px-0 pt-3 pb-2.5 md:py-1 ${
               hasMoreThanSeven
                 ? ""
                 : "md:grid md:grid-flow-col md:auto-cols-fr md:overflow-visible"
             }`}
           >
-            {visibleServices.map((service) => {
+            {visibleServices.map((service, idx) => {
               const IconComponent = service.icon;
               const isActive = activeServiceSlug === service.id;
 
@@ -1534,10 +1631,9 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                   key={service.id}
                   type="button"
                   onClick={() => {
-                    setActiveServiceSlug(service.id);
-                    setOpenDropdown(null);
+                    handleSelectService(service.id, idx);
                   }}
-                  className={`group relative shrink-0 ${
+                  className={`group relative shrink-0 snap-center md:snap-align-none ${
                     hasMoreThanSeven
                       ? "w-[145px] sm:w-[170px] md:w-[180px] lg:w-[190px]"
                       : "w-[145px] sm:w-[170px] md:w-auto md:min-w-0"
@@ -1590,6 +1686,27 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               />
             </button>
           )}
+
+          {/* Mobile Carousel Indicator Dots (Matching Services Page) */}
+          <div className="flex md:hidden items-center justify-center gap-1.5 mt-2">
+            {visibleServices.map((service, idx) => {
+              const isActive = activeServiceSlug === service.id;
+              return (
+                <button
+                  key={`hero-dot-${service.id}`}
+                  data-testid={`hero-dot-${service.id}`}
+                  type="button"
+                  onClick={() => handleSelectService(service.id, idx)}
+                  aria-label={`Slide ${idx + 1}`}
+                  className={`transition-all duration-300 rounded-full h-1.5 cursor-pointer ${
+                    isActive
+                      ? "w-5 bg-white"
+                      : "w-1.5 bg-white/40 hover:bg-white/70"
+                  }`}
+                />
+              );
+            })}
+          </div>
         </div>
       )}
 

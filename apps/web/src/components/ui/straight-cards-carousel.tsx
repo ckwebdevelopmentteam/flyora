@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export interface StraightCardItem {
   id: string;
@@ -14,6 +15,7 @@ export interface StraightCardItem {
   originalPrice?: string | number;
   rating?: number;
   reviewCount?: number;
+  slug?: string;
 }
 
 export interface StraightCardsCarouselProps {
@@ -21,6 +23,7 @@ export interface StraightCardsCarouselProps {
   activeIndex?: number;
   onIndexChange?: (index: number) => void;
   onSelectLead?: (item: StraightCardItem, index: number) => void;
+  onCardNavigate?: (item: StraightCardItem, index: number) => void;
   className?: string;
   footerRight?: React.ReactNode;
 }
@@ -61,9 +64,11 @@ export function StraightCardsCarousel({
   activeIndex = 0,
   onIndexChange,
   onSelectLead,
+  onCardNavigate,
   className = "",
   footerRight,
 }: StraightCardsCarouselProps) {
+  const router = useRouter();
   const n = items.length;
   const stageRef = useRef<HTMLDivElement>(null);
   const slideRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -345,7 +350,7 @@ export function StraightCardsCarousel({
           return (
             <button
               type="button"
-              aria-label={`${isLead ? "Enquire about" : "View"} ${item.title}`}
+              aria-label={`${isLead ? "View details for" : "View"} ${item.title}`}
               key={item.id}
               ref={(el) => {
                 slideRefs.current[i] = el;
@@ -353,7 +358,13 @@ export function StraightCardsCarousel({
               onClick={() => {
                 if (state.current.clickBlock) return;
                 if (isLead) {
-                  onSelectLead?.(item, i);
+                  if (onCardNavigate) {
+                    onCardNavigate(item, i);
+                  } else if (item.slug) {
+                    router.push(`/tours/${item.slug}`);
+                  } else {
+                    onSelectLead?.(item, i);
+                  }
                 } else {
                   goTo(i);
                 }
@@ -420,13 +431,16 @@ export function StraightCardsCarousel({
                     </div>
                   )}
 
-                  {/* Location & Short Description */}
+                  {/* Location, Title & Short Description */}
                   <div>
-                    <h4 className="text-white font-bold text-base sm:text-[17px] tracking-tight leading-snug drop-shadow-sm">
+                    <span className="text-white/80 text-[10px] sm:text-[11px] font-mono uppercase tracking-wider block mb-0.5">
                       {item.location}
+                    </span>
+                    <h4 className="text-white font-bold text-base sm:text-[17px] tracking-tight leading-snug drop-shadow-sm line-clamp-1">
+                      {item.title}
                     </h4>
-                    <p className="text-white/85 text-xs sm:text-[12.5px] line-clamp-2 mt-1 leading-relaxed">
-                      {item.description || item.title}
+                    <p className="text-white/85 text-xs sm:text-[12.5px] line-clamp-2 mt-0.5 leading-relaxed">
+                      {item.description}
                     </p>
                   </div>
 
@@ -445,7 +459,13 @@ export function StraightCardsCarousel({
                       </div>
                     </div>
 
-                    <span className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap">
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectLead?.(item, i);
+                      }}
+                      className="inline-flex items-center justify-center px-3 py-1.5 rounded-md bg-white hover:bg-neutral-100 text-[#002f89] text-xs font-semibold shadow-xs transition-transform active:scale-95 cursor-pointer whitespace-nowrap"
+                    >
                       Enquire
                     </span>
                   </div>
@@ -459,7 +479,7 @@ export function StraightCardsCarousel({
       {/* Controls Row: Sharp Arrow Buttons on Left, View all destinations on Right */}
       <div
         data-carousel-controls=""
-        className="mt-5 sm:mt-6 flex items-center justify-between gap-4 w-full z-20"
+        className="mt-4 sm:mt-6 flex items-center justify-between gap-4 w-full z-20"
       >
         {/* Arrow Buttons matching Popular Packages section arrow mark and hover effect */}
         <div className="flex items-center gap-2 sm:gap-2.5">

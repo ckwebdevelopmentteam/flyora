@@ -2086,33 +2086,43 @@ export default function ServicesPage() {
 
   // Hero service cards horizontal scroll container ref for mobile
   const heroCardsScrollRef = useRef<HTMLDivElement>(null);
+  const isProgrammaticScrollRef = useRef(false);
+  const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const handleSelectService = (idx: number) => {
+  const handleSelectService = (idx: number, fromSwipe = false) => {
     if (idx === activeServiceIndex) return;
     setSlideDirection(idx > activeServiceIndex ? "next" : "prev");
     setPrevIndex(activeServiceIndex);
     setActiveServiceIndex(idx);
     setSelectedSlug(HERO_SERVICES[idx].slug);
 
-    // Smoothly center the selected card into view on mobile
-    if (heroCardsScrollRef.current) {
-      const cardEl = heroCardsScrollRef.current.children[idx] as
-        HTMLElement | undefined;
-      if (cardEl) {
-        const container = heroCardsScrollRef.current;
-        const scrollLeft =
-          cardEl.offsetLeft -
-          container.clientWidth / 2 +
-          cardEl.clientWidth / 2;
-        if (typeof container.scrollTo === "function") {
-          container.scrollTo({
-            left: Math.max(0, scrollLeft),
-            behavior: "smooth",
-          });
-        } else {
-          container.scrollLeft = Math.max(0, scrollLeft);
+    if (!fromSwipe) {
+      isProgrammaticScrollRef.current = true;
+      // Smoothly center the selected card into view on mobile
+      if (heroCardsScrollRef.current) {
+        const cardEl = heroCardsScrollRef.current.children[idx] as
+          HTMLElement | undefined;
+        if (cardEl) {
+          const container = heroCardsScrollRef.current;
+          const scrollLeft =
+            cardEl.offsetLeft -
+            container.clientWidth / 2 +
+            cardEl.clientWidth / 2;
+          if (typeof container.scrollTo === "function") {
+            container.scrollTo({
+              left: Math.max(0, scrollLeft),
+              behavior: "smooth",
+            });
+          } else {
+            container.scrollLeft = Math.max(0, scrollLeft);
+          }
         }
       }
+
+      if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+      }, 500);
     }
 
     // Keep URL hash in sync with user's selection without causing page jump or reload
@@ -2123,6 +2133,53 @@ export default function ServicesPage() {
       }
     }
   };
+
+  // Sync active service on swipe / horizontal scroll in mobile view
+  useEffect(() => {
+    const el = heroCardsScrollRef.current;
+    if (!el) return;
+
+    let debounceTimer: NodeJS.Timeout | null = null;
+
+    const handleScrollSync = () => {
+      if (isProgrammaticScrollRef.current) return;
+      if (debounceTimer) clearTimeout(debounceTimer);
+
+      debounceTimer = setTimeout(() => {
+        if (isProgrammaticScrollRef.current) return;
+        const container = heroCardsScrollRef.current;
+        if (!container) return;
+
+        if (container.scrollWidth <= container.clientWidth + 10) return;
+
+        const containerCenter =
+          container.scrollLeft + container.clientWidth / 2;
+        let closestIdx = -1;
+        let minDiff = Infinity;
+
+        for (let i = 0; i < HERO_SERVICES.length; i++) {
+          const cardEl = container.children[i] as HTMLElement | undefined;
+          if (!cardEl) continue;
+          const cardCenter = cardEl.offsetLeft + cardEl.clientWidth / 2;
+          const diff = Math.abs(containerCenter - cardCenter);
+          if (diff < minDiff) {
+            minDiff = diff;
+            closestIdx = i;
+          }
+        }
+
+        if (closestIdx !== -1 && closestIdx !== activeServiceIndex) {
+          handleSelectService(closestIdx, true);
+        }
+      }, 100);
+    };
+
+    el.addEventListener("scroll", handleScrollSync, { passive: true });
+    return () => {
+      el.removeEventListener("scroll", handleScrollSync);
+      if (debounceTimer) clearTimeout(debounceTimer);
+    };
+  }, [activeServiceIndex]);
 
   // Concierge search bar ref
   const conciergeBarRef = useRef<HTMLDivElement>(null);
@@ -2383,7 +2440,7 @@ export default function ServicesPage() {
             <div className="relative mt-5 sm:mt-6 mb-3 sm:mb-4">
               <div
                 ref={heroCardsScrollRef}
-                className="flex lg:grid lg:grid-cols-8 items-stretch gap-2 sm:gap-2.5 lg:gap-2.5 xl:gap-3 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth px-1.5 lg:px-0 pt-3.5 sm:pt-4 pb-2.5 lg:pt-2 lg:pb-2"
+                className="flex lg:grid lg:grid-cols-8 items-stretch gap-2 sm:gap-2.5 lg:gap-2.5 xl:gap-3 overflow-x-auto lg:overflow-visible no-scrollbar scroll-smooth snap-x snap-mandatory lg:snap-none px-1.5 lg:px-0 pt-3.5 sm:pt-4 pb-2.5 lg:pt-2 lg:pb-2"
               >
                 {HERO_SERVICES.map((s, idx) => {
                   const isActive = idx === activeServiceIndex;
@@ -2394,7 +2451,7 @@ export default function ServicesPage() {
                       onClick={() => handleSelectService(idx)}
                       aria-pressed={isActive}
                       aria-label={`Select ${s.name}`}
-                      className={`group relative shrink-0 w-[136px] sm:w-[148px] lg:w-auto h-[155px] sm:h-[168px] lg:h-[178px] rounded-[14px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-end bg-neutral-950 ${
+                      className={`group relative shrink-0 snap-center lg:snap-align-none w-[136px] sm:w-[148px] lg:w-auto h-[155px] sm:h-[168px] lg:h-[178px] rounded-[14px] transition-all duration-300 ease-out cursor-pointer text-left select-none p-3.5 sm:p-4 flex flex-col justify-end bg-neutral-950 ${
                         isActive
                           ? "-translate-y-1 sm:-translate-y-1.5 scale-[1.02] z-20 shadow-[0_14px_32px_rgba(0,0,0,0.55)] ring-2 ring-white"
                           : "hover:-translate-y-1 sm:hover:-translate-y-1.5 hover:scale-[1.01] hover:z-30 opacity-90 hover:opacity-100 ring-1 ring-white/20"
@@ -2583,8 +2640,8 @@ export default function ServicesPage() {
                       )}
                     </div>
 
-                    {/* Navigation Buttons */}
-                    <div className="flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
+                    {/* Navigation Buttons: Hidden on mobile view, preserved on tablet & desktop */}
+                    <div className="hidden sm:flex items-center gap-2.5 shrink-0 self-end sm:self-auto">
                       <button
                         type="button"
                         onClick={() => handleVisaScroll("left")}

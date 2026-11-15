@@ -127,7 +127,7 @@ export function DestinationsShowcase({
   return (
     <section
       id="destination-packages"
-      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-[600px] sm:min-h-[680px] lg:min-h-[820px] xl:min-h-[880px] ${className}`}
+      className={`relative w-full overflow-hidden flex flex-col justify-start scroll-mt-24 min-h-0 sm:min-h-[680px] lg:min-h-[820px] xl:min-h-[880px] ${className}`}
     >
       {/* Background Images Layer: Base + Smooth Center Expansion with ZERO Blink */}
       <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden bg-black">
@@ -172,13 +172,13 @@ export function DestinationsShowcase({
       {/* Main Showcase Content with 105px horizontal padding: ALWAYS on top at z-20 */}
       <div className="relative z-20 w-full px-4 sm:px-10 lg:px-[105px] flex flex-col justify-start py-8 sm:py-12 lg:py-16">
         {/* Centered Section Header: Honeymoon & Romantic Getaways */}
-        <div className="w-full flex flex-col items-center text-center mb-6 lg:mb-8">
+        <div className="w-full flex flex-col items-center text-center mb-4 sm:mb-6 lg:mb-8">
           <div className="inline-flex items-center px-3.5 py-1 rounded-md bg-white/10 backdrop-blur-md border border-white/20 mb-3 sm:mb-3.5 shadow-xs">
             <span className="text-[11px] sm:text-xs font-sans font-semibold uppercase tracking-[0.22em] text-white/95">
               EXPLORE OUR DESTINATIONS
             </span>
           </div>
-          <h2 className="font-sans font-bold text-2xl sm:text-4xl lg:text-[44px] xl:text-[48px] text-white tracking-tight leading-[1.14] mb-3.5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
+          <h2 className="font-sans font-bold text-2xl sm:text-4xl lg:text-[44px] xl:text-[48px] text-white tracking-tight leading-[1.14] mb-2 sm:mb-3.5 drop-shadow-[0_2px_12px_rgba(0,0,0,0.7)]">
             Discover your next destination
           </h2>
           <p className="text-xs sm:text-base text-white/85 max-w-2xl font-light leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.65)]">
@@ -187,9 +187,9 @@ export function DestinationsShowcase({
           </p>
         </div>
 
-        {/* Top-Right Category Switcher: 4 lines total (each button has 2 vertical lines: border-l & border-r) */}
-        <div className="w-full flex justify-end items-center mb-5 lg:mb-4 shrink-0">
-          <div className="flex flex-wrap justify-end items-center gap-2 sm:gap-4 text-xs sm:text-sm md:text-base tracking-wide">
+        {/* Category Switcher: Centered on mobile, aligned right on desktop */}
+        <div className="w-full flex justify-center lg:justify-end items-center mb-5 sm:mb-6 lg:mb-4 shrink-0">
+          <div className="flex flex-wrap justify-center lg:justify-end items-center gap-2 sm:gap-4 text-xs sm:text-sm md:text-base tracking-wide">
             <button
               type="button"
               aria-pressed={activeCategory === "International"}
@@ -263,11 +263,11 @@ export function DestinationsShowcase({
             </p>
           </div>
         ) : (
-          <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-12 xl:gap-16">
+          <div className="w-full flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-12 xl:gap-16">
             {/* =================================================================
-              LEFT COLUMN: Active Destination Details (Smooth Fade & Slide)
+              LEFT COLUMN: Active Destination Details (Hidden on mobile, visible on desktop)
               ================================================================= */}
-            <div className="w-full lg:w-[420px] xl:w-[480px] shrink-0 flex flex-col justify-center text-left">
+            <div className="hidden lg:flex w-full lg:w-[420px] xl:w-[480px] shrink-0 flex-col justify-center text-left">
               <div className="relative min-h-[220px] sm:min-h-[240px] flex flex-col justify-start">
                 <AnimatePresence mode="popLayout" initial={false}>
                   <motion.div

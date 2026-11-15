@@ -715,7 +715,7 @@ export default function CarouselCards({
   return (
     <section
       id="holiday-packages"
-      className={`w-full bg-white text-[#1E1A17] py-12 sm:py-16 lg:py-20 scroll-mt-24 ${className}`}
+      className={`w-full bg-white text-[#1E1A17] py-8 sm:py-16 lg:py-20 scroll-mt-24 ${className}`}
     >
       {error || servicesError ? (
         <p role="alert" className="px-6">

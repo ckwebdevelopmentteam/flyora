@@ -370,15 +370,13 @@ describe("HeroSearchCard Dynamic Cascading System", () => {
 
     vi.stubGlobal(
       "fetch",
-      vi
-        .fn()
-        .mockImplementation(
-          async () =>
-            new Response(JSON.stringify({ data: eightServices }), {
-              status: 200,
-              headers: { "Content-Type": "application/json" },
-            }),
-        ),
+      vi.fn().mockImplementation(
+        async () =>
+          new Response(JSON.stringify({ data: eightServices }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }),
+      ),
     );
     await refreshServices(true);
 
@@ -391,5 +389,38 @@ describe("HeroSearchCard Dynamic Cascading System", () => {
     expect(
       screen.getByRole("button", { name: /Scroll services right/i }),
     ).toBeTruthy();
+  });
+
+  it("renders mobile indicator dots matching the visible services and updates active dot on click", async () => {
+    const user = userEvent.setup();
+    render(<HeroSearchCard />);
+
+    // First service is initially active, so Slide 1 dot should have the active pill class
+    const dot1 = await screen.findByTestId("hero-dot-service-1");
+    expect(dot1).toBeTruthy();
+    expect(dot1.className).toContain("w-5 bg-white");
+
+    // Second service dot should be inactive
+    const dot2 = screen.getByTestId("hero-dot-service-2");
+    expect(dot2).toBeTruthy();
+    expect(dot2.className).toContain("w-1.5 bg-white/40");
+
+    // Clicking dot 2 switches active service to service-2
+    await user.click(dot2);
+    expect(dot2.className).toContain("w-5 bg-white");
+    expect(dot1.className).toContain("w-1.5 bg-white/40");
+  });
+
+  it("clicking a service card centers and updates the active service and indicator dot", async () => {
+    const user = userEvent.setup();
+    render(<HeroSearchCard />);
+
+    const service2Card = await screen.findByRole("button", {
+      name: /Service Number 2/i,
+    });
+    await user.click(service2Card);
+
+    const dot2 = screen.getByTestId("hero-dot-service-2");
+    expect(dot2.className).toContain("w-5 bg-white");
   });
 });

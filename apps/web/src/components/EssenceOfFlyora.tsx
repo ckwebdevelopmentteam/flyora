@@ -73,7 +73,7 @@ export function EssenceOfFlyora({ onOpenEnquiry }: EssenceOfFlyoraProps) {
     <section
       id="essence-of-flyora"
       aria-label="About Flyora"
-      className="relative w-full bg-[var(--about-bg,#ffffff)] text-[var(--about-navy,#0A192F)] pt-10 sm:pt-16 lg:pt-[88px] pb-12 sm:pb-20 lg:pb-[96px] px-4 sm:px-10 lg:px-[105px] selection:bg-[var(--about-accent,#002f89)] selection:text-white"
+      className="relative w-full bg-[var(--about-bg,#ffffff)] text-[var(--about-navy,#0A192F)] pt-8 sm:pt-16 lg:pt-[88px] pb-8 sm:pb-20 lg:pb-[96px] px-4 sm:px-10 lg:px-[105px] selection:bg-[var(--about-accent,#002f89)] selection:text-white"
       style={{
         ["--about-bg" as string]: "#ffffff",
         ["--about-navy" as string]: "#0A192F",
