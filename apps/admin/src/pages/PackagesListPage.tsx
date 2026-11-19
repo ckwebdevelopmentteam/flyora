@@ -129,32 +129,29 @@ export const PackagesListPage = () => {
         cell: (info) => {
           const pkg = info.row.original;
           return (
-            <div className="flex items-center gap-3 min-w-[240px]">
-              <div className="w-12 h-10 rounded-md overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0">
+            <div className="flex items-start gap-3 w-[300px] max-w-[300px]">
+              <div className="w-12 h-10 rounded-md overflow-hidden bg-zinc-100 border border-zinc-200 shrink-0 mt-0.5">
                 <PackageImage
                   src={pkg.coverImageUrl}
                   alt={pkg.title}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="space-y-0.5 truncate">
-                <div className="flex items-center gap-1.5">
-                  <span className="font-medium text-xs text-zinc-900 truncate">
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="font-medium text-xs text-zinc-900 leading-snug break-words">
                     {pkg.title}
                   </span>
                   {pkg.isPopular && (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium">
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-medium shrink-0">
                       Trending
                     </span>
                   )}
                   {pkg.isFeatured && (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-medium">
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200 font-medium shrink-0">
                       Popular
                     </span>
                   )}
-                </div>
-                <div className="text-[10px] text-zinc-400 font-mono">
-                  /packages/{pkg.slug}
                 </div>
               </div>
             </div>
@@ -165,9 +162,11 @@ export const PackagesListPage = () => {
       columnHelper.accessor("destination", {
         header: "Destination",
         cell: (info) => (
-          <div className="flex items-center gap-1.5 text-xs text-zinc-700 whitespace-nowrap">
+          <div className="flex items-center gap-1.5 text-xs text-zinc-700 w-[160px] max-w-[160px]">
             <MapPin className="w-3 h-3 text-zinc-400 shrink-0" />
-            <span>{info.getValue()}</span>
+            <span className="truncate" title={info.getValue()}>
+              {info.getValue()}
+            </span>
           </div>
         ),
       }),
@@ -424,7 +423,16 @@ export const PackagesListPage = () => {
                   className="border-b border-zinc-200 bg-[#FAFAF9] text-zinc-500 font-mono text-[11px] uppercase tracking-wider"
                 >
                   {headerGroup.headers.map((header) => (
-                    <th key={header.id} className="py-2.5 px-4 font-normal">
+                    <th
+                      key={header.id}
+                      className={`py-2.5 px-4 font-normal ${
+                        header.id === "title"
+                          ? "w-[300px] max-w-[300px]"
+                          : header.id === "destination"
+                            ? "w-[160px] max-w-[160px]"
+                            : ""
+                      }`}
+                    >
                       {flexRender(
                         header.column.columnDef.header,
                         header.getContext(),
@@ -492,7 +500,16 @@ export const PackagesListPage = () => {
                     className="hover:bg-zinc-50/70 transition-colors"
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <td key={cell.id} className="py-3 px-4">
+                      <td
+                        key={cell.id}
+                        className={`py-3 px-4 ${
+                          cell.column.id === "title"
+                            ? "w-[300px] max-w-[300px]"
+                            : cell.column.id === "destination"
+                              ? "w-[160px] max-w-[160px]"
+                              : ""
+                        }`}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),

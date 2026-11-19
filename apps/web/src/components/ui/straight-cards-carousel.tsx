@@ -54,9 +54,9 @@ export function computeOffset(i: number, pos: number, n: number): number {
   return d;
 }
 
-// Luxurious, silky smooth slow-motion easing curve (starts soft, glides in slow motion, settles gracefully)
-function easeSlowMotion(t: number): number {
-  return t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+// Smooth, responsive ease-out curve (fast initial response, decelerating gracefully for an immediate, buttery feel)
+function easeOutCubic(t: number): number {
+  return 1 - Math.pow(1 - t, 3);
 }
 
 export function StraightCardsCarousel({
@@ -83,7 +83,7 @@ export function StraightCardsCarousel({
     fromPos: activeIndex,
     toPos: activeIndex,
     startTime: 0,
-    duration: 2000, // Exactly 2.0s (2000ms) cinematic slow-motion lag
+    duration: 400, // Snappy, smooth 400ms transition
     raf: 0,
     isDragging: false,
     dragStartX: 0,
@@ -169,7 +169,7 @@ export function StraightCardsCarousel({
 
       const elapsed = now - (s.startTime || now);
       const progress = Math.min(elapsed / s.duration, 1);
-      const eased = easeSlowMotion(progress);
+      const eased = easeOutCubic(progress);
 
       s.pos = s.fromPos + (s.toPos - s.fromPos) * eased;
       paint();
@@ -263,9 +263,10 @@ export function StraightCardsCarousel({
 
   // Cleanup RAF
   useEffect(() => {
+    const currentState = state.current;
     return () => {
-      if (state.current.raf) {
-        cancelAnimationFrame(state.current.raf);
+      if (currentState.raf) {
+        cancelAnimationFrame(currentState.raf);
       }
     };
   }, []);
