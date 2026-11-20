@@ -67,6 +67,7 @@ beforeEach(() => {
     retry: async () => {},
   });
   window.history.replaceState(null, "", "/services");
+  vi.stubGlobal("scrollTo", vi.fn());
   vi.stubGlobal(
     "IntersectionObserver",
     class {
