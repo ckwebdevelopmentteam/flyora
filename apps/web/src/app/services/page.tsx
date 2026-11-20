@@ -2089,6 +2089,29 @@ export default function ServicesPage() {
   const isProgrammaticScrollRef = useRef(false);
   const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  // Smoothly center the selected card into view in the horizontal carousel
+  const centerHeroCard = (idx: number) => {
+    if (heroCardsScrollRef.current) {
+      const cardEl = heroCardsScrollRef.current.children[idx] as
+        HTMLElement | undefined;
+      if (cardEl) {
+        const container = heroCardsScrollRef.current;
+        const scrollLeft =
+          cardEl.offsetLeft -
+          container.clientWidth / 2 +
+          cardEl.clientWidth / 2;
+        if (typeof container.scrollTo === "function") {
+          container.scrollTo({
+            left: Math.max(0, scrollLeft),
+            behavior: "smooth",
+          });
+        } else {
+          container.scrollLeft = Math.max(0, scrollLeft);
+        }
+      }
+    }
+  };
+
   const handleSelectService = (idx: number, fromSwipe = false) => {
     if (idx === activeServiceIndex) return;
     setSlideDirection(idx > activeServiceIndex ? "next" : "prev");
@@ -2098,26 +2121,7 @@ export default function ServicesPage() {
 
     if (!fromSwipe) {
       isProgrammaticScrollRef.current = true;
-      // Smoothly center the selected card into view on mobile
-      if (heroCardsScrollRef.current) {
-        const cardEl = heroCardsScrollRef.current.children[idx] as
-          HTMLElement | undefined;
-        if (cardEl) {
-          const container = heroCardsScrollRef.current;
-          const scrollLeft =
-            cardEl.offsetLeft -
-            container.clientWidth / 2 +
-            cardEl.clientWidth / 2;
-          if (typeof container.scrollTo === "function") {
-            container.scrollTo({
-              left: Math.max(0, scrollLeft),
-              behavior: "smooth",
-            });
-          } else {
-            container.scrollLeft = Math.max(0, scrollLeft);
-          }
-        }
-      }
+      centerHeroCard(idx);
 
       if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = setTimeout(() => {
@@ -2216,7 +2220,7 @@ export default function ServicesPage() {
 
   // Listen to hash changes on initial mount and external navigation (back/forward or navbar links)
   useEffect(() => {
-    const syncFromHash = (shouldScroll = false) => {
+    const syncFromHash = () => {
       if (typeof window === "undefined") return;
       const hash = window.location.hash.replace("#", "");
       if (!hash) return;
@@ -2229,23 +2233,34 @@ export default function ServicesPage() {
       );
       if (targetIdx !== -1) {
         setActiveServiceIndex(targetIdx);
+        setTimeout(() => {
+          centerHeroCard(targetIdx);
+        }, 60);
       }
-      if (shouldScroll)
-        document
-          .getElementById("service-details-hub")
-          ?.scrollIntoView({ behavior: "smooth" });
+      // Keep viewport focused on the top hero of the services page
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
     };
 
     // Run once on initial page load if hash is present
     if (typeof window !== "undefined" && window.location.hash) {
-      syncFromHash(false);
+      syncFromHash();
     }
 
     // Listen to external hash changes (e.g. from navbar anchor clicks or browser back/forward)
-    const onHashChange = () => syncFromHash(true);
+    const onHashChange = () => syncFromHash();
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
   }, [HERO_SERVICES]);
+
+  // Ensure initial page load always opens at the top hero section and centers the active card
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    const timer = setTimeout(() => {
+      centerHeroCard(activeServiceIndex);
+    }, 120);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Motion effect: Parallax scroll for the coastal counter strip image
   useEffect(() => {
