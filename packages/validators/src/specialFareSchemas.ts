@@ -1,6 +1,11 @@
 import { z } from "zod";
 
 export const specialFareFlightTypeEnum = z.enum(["NON_STOP", "CONNECTING"]);
+export const specialFareCabinClassEnum = z.enum([
+  "ECONOMY",
+  "BUSINESS",
+  "FIRST_CLASS",
+]);
 export const specialFareStatusEnum = z.enum([
   "ACTIVE",
   "SOLD_OUT",
@@ -19,6 +24,7 @@ export const createSpecialFareSchema = z.object({
     .max(5)
     .trim()
     .toUpperCase(),
+  originTerminal: z.string().trim().max(20).optional().nullable(),
   destinationCity: z.string().min(1, "Destination city is required").trim(),
   destinationCode: z
     .string()
@@ -26,14 +32,18 @@ export const createSpecialFareSchema = z.object({
     .max(5)
     .trim()
     .toUpperCase(),
+  destinationTerminal: z.string().trim().max(20).optional().nullable(),
   departureDate: z.string().min(1, "Departure date & time is required"),
   arrivalDate: z.string().optional().nullable(),
   flightType: specialFareFlightTypeEnum.default("NON_STOP"),
+  cabinClass: specialFareCabinClassEnum.default("ECONOMY"),
+  rbd: z.string().trim().max(4).toUpperCase().optional().nullable(),
   baggageInfo: z
     .string()
     .trim()
     .min(1, "Baggage info is required")
     .default("30 Kg Check-in + 7 Kg Cabin"),
+  isRefundable: z.boolean().default(false),
   totalSeats: z.coerce
     .number()
     .int()
@@ -43,6 +53,8 @@ export const createSpecialFareSchema = z.object({
   farePerSeat: z.coerce
     .number()
     .positive("Fare per seat must be greater than 0"),
+  childFare: z.coerce.number().nonnegative().optional().nullable(),
+  infantFare: z.coerce.number().nonnegative().optional().nullable(),
   supplierCost: z.coerce.number().nonnegative().optional().nullable(),
   pnrNumber: z.string().trim().optional().nullable(),
   notes: z.string().trim().optional().nullable(),
@@ -51,6 +63,13 @@ export const createSpecialFareSchema = z.object({
   status: specialFareStatusEnum.default("ACTIVE"),
   isActive: z.boolean().default(true),
   displayOrder: z.coerce.number().int().default(0),
+});
+
+export const bulkCreateSpecialFaresSchema = z.object({
+  items: z
+    .array(createSpecialFareSchema)
+    .min(1, "At least 1 allotment is required")
+    .max(100, "Maximum 100 allotments per bulk upload"),
 });
 
 export const updateSpecialFareSchema = createSpecialFareSchema.partial();
@@ -84,10 +103,15 @@ export const specialFareEnquirySchema = z.object({
     .int()
     .positive("Must be at least 1 passenger")
     .default(1),
+  childCount: z.coerce.number().int().nonnegative().default(0).optional(),
+  infantCount: z.coerce.number().int().nonnegative().default(0).optional(),
   notes: z.string().trim().optional(),
 });
 
 export type CreateSpecialFareInput = z.infer<typeof createSpecialFareSchema>;
+export type BulkCreateSpecialFaresInput = z.infer<
+  typeof bulkCreateSpecialFaresSchema
+>;
 export type UpdateSpecialFareInput = z.infer<typeof updateSpecialFareSchema>;
 export type UpdateSpecialFareSeatsInput = z.infer<
   typeof updateSpecialFareSeatsSchema

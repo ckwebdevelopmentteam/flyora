@@ -52,6 +52,8 @@ const mockDeals = [
     ).toISOString(),
     flightType: "NON_STOP" as const,
     baggageInfo: "30 Kg Check-in + 7 Kg Cabin",
+    isRefundable: true,
+    cabinClass: "ECONOMY" as const,
     availableSeats: 2,
     originalFare: 14500,
     farePerSeat: 9499,

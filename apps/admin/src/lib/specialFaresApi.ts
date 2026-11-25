@@ -1,5 +1,6 @@
 import { apiClient } from "./apiClient";
 import type {
+  BulkSpecialFareResult,
   SpecialFareAdminDetail,
   SpecialFareSearchQuery,
 } from "@flyora/types";
@@ -52,6 +53,17 @@ export const specialFaresApi = {
       "/admin/special-fares",
       payload,
     );
+  },
+
+  /**
+   * Bulk create special fare allotments (Date-Range Series or CSV/Excel sheet upload)
+   */
+  async bulkCreateSpecialFares(
+    items: CreateSpecialFareInput[],
+  ): Promise<BulkSpecialFareResult> {
+    return apiClient.post<BulkSpecialFareResult>("/admin/special-fares/bulk", {
+      items,
+    });
   },
 
   /**

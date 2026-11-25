@@ -174,6 +174,22 @@ export function SpecialFareClaimModal({
                 <Luggage className="w-3.5 h-3.5" />
                 {ticket.baggageInfo}
               </span>
+              {ticket.isRefundable && (
+                <span className="text-emerald-700 font-medium">Refundable</span>
+              )}
+              {(ticket.childFare != null || ticket.infantFare != null) && (
+                <span className="text-stone-500">
+                  {ticket.childFare != null
+                    ? `Child ₹${ticket.childFare.toLocaleString("en-IN")}`
+                    : ""}
+                  {ticket.childFare != null && ticket.infantFare != null
+                    ? " · "
+                    : ""}
+                  {ticket.infantFare != null
+                    ? `Infant ₹${ticket.infantFare.toLocaleString("en-IN")}`
+                    : ""}
+                </span>
+              )}
             </div>
           </div>
 

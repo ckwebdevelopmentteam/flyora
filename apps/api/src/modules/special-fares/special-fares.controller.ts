@@ -1,6 +1,7 @@
 import { FastifyPluginAsync } from "fastify";
 import { SpecialFaresService } from "./special-fares.service";
 import {
+  bulkCreateSpecialFaresSchema,
   createSpecialFareSchema,
   specialFareEnquirySchema,
   specialFareSearchQuerySchema,
@@ -188,6 +189,42 @@ export const adminSpecialFaresRoutes: FastifyPluginAsync = async (fastify) => {
         return reply.status(201).send({
           statusCode: 201,
           data: created,
+        });
+      } catch (err: any) {
+        return reply.status(err.statusCode || 500).send({
+          statusCode: err.statusCode || 500,
+          error: "Internal Server Error",
+          message: err.message,
+        });
+      }
+    },
+  );
+
+  // POST /api/v1/admin/special-fares/bulk (Bulk create allotments for Date Range Series or CSV Sheet)
+  fastify.post(
+    "/bulk",
+    {
+      preHandler: [requireRole(["SUPER_ADMIN", "OPERATIONS_MANAGER"])],
+    },
+    async (request, reply) => {
+      const parseResult = bulkCreateSpecialFaresSchema.safeParse(request.body);
+      if (!parseResult.success) {
+        return reply.status(400).send({
+          statusCode: 400,
+          error: "Bad Request",
+          message:
+            parseResult.error.errors[0]?.message ||
+            "Invalid bulk allotment details",
+        });
+      }
+
+      try {
+        const result = await service.bulkCreateSpecialFares(
+          parseResult.data.items,
+        );
+        return reply.status(201).send({
+          statusCode: 201,
+          data: result,
         });
       } catch (err: any) {
         return reply.status(err.statusCode || 500).send({

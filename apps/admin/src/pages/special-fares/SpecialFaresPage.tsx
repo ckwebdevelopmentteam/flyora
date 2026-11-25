@@ -4,6 +4,7 @@ import type { SpecialFareAdminDetail, SpecialFareStatus } from "@flyora/types";
 import { useAuthStore } from "../../stores/authStore";
 import { specialFaresApi } from "../../lib/specialFaresApi";
 import { SpecialFareDrawer } from "../../components/special-fares/SpecialFareDrawer";
+import { BulkUploadModal } from "../../components/special-fares/BulkUploadModal";
 import { Modal, FormError } from "../../components/ui/Modal";
 import { userMessage } from "../../lib/userMessage";
 import {
@@ -21,6 +22,7 @@ import {
   Luggage,
   AlertTriangle,
   Minus,
+  Upload,
 } from "lucide-react";
 
 const STATUS_TABS: Array<{ label: string; value: SpecialFareStatus | "ALL" }> =
@@ -44,6 +46,7 @@ export function SpecialFaresPage() {
     "ALL",
   );
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [bulkUploadOpen, setBulkUploadOpen] = useState(false);
   const [editingTicket, setEditingTicket] =
     useState<SpecialFareAdminDetail | null>(null);
   const [ticketToDelete, setTicketToDelete] =
@@ -204,17 +207,27 @@ export function SpecialFaresPage() {
         </div>
 
         {canEdit && (
-          <button
-            type="button"
-            onClick={() => {
-              setEditingTicket(null);
-              setDrawerOpen(true);
-            }}
-            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-black hover:bg-zinc-800 text-white text-xs font-medium rounded-md shadow-xs transition-colors cursor-pointer shrink-0"
-          >
-            <Plus className="w-3.5 h-3.5" />
-            <span>Add Allotment</span>
-          </button>
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            <button
+              type="button"
+              onClick={() => setBulkUploadOpen(true)}
+              className="inline-flex items-center justify-center gap-1.5 px-3.5 py-2.5 bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-800 text-xs font-medium rounded-md shadow-2xs transition-colors cursor-pointer"
+            >
+              <Upload className="w-3.5 h-3.5" />
+              <span>Upload Sheet (CSV)</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingTicket(null);
+                setDrawerOpen(true);
+              }}
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-black hover:bg-zinc-800 text-white text-xs font-medium rounded-md shadow-xs transition-colors cursor-pointer"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>Add Allotment</span>
+            </button>
+          </div>
         )}
       </div>
 
@@ -381,11 +394,33 @@ export function SpecialFaresPage() {
                             {ticket.airlineName}
                           </span>
                         </div>
-                        {ticket.pnrNumber && (
-                          <div className="text-[10px] font-mono text-indigo-600 mt-0.5">
-                            PNR: {ticket.pnrNumber}
-                          </div>
-                        )}
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                          {ticket.pnrNumber && (
+                            <span className="text-[10px] font-mono text-indigo-600">
+                              PNR: {ticket.pnrNumber}
+                            </span>
+                          )}
+                          {ticket.rbd && (
+                            <span className="text-[10px] font-mono px-1 bg-zinc-100 text-zinc-600 rounded">
+                              RBD: {ticket.rbd}
+                            </span>
+                          )}
+                          {ticket.cabinClass &&
+                            ticket.cabinClass !== "ECONOMY" && (
+                              <span className="text-[10px] font-semibold px-1.5 py-0.2 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded">
+                                {ticket.cabinClass.replace("_", " ")}
+                              </span>
+                            )}
+                          <span
+                            className={`text-[10px] font-medium px-1.5 py-0.2 rounded ${
+                              ticket.isRefundable
+                                ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                                : "bg-zinc-100 text-zinc-500"
+                            }`}
+                          >
+                            {ticket.isRefundable ? "Refundable" : "Non-Ref"}
+                          </span>
+                        </div>
                       </td>
 
                       {/* Schedule & Expiry */}
@@ -600,6 +635,13 @@ export function SpecialFaresPage() {
           setEditingTicket(null);
         }}
         initialData={editingTicket}
+        onSuccess={(msg) => showToast(msg)}
+      />
+
+      {/* Bulk CSV / Excel Sheet Upload Modal */}
+      <BulkUploadModal
+        isOpen={bulkUploadOpen}
+        onClose={() => setBulkUploadOpen(false)}
         onSuccess={(msg) => showToast(msg)}
       />
 

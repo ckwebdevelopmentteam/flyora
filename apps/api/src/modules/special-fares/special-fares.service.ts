@@ -7,17 +7,156 @@ import {
   UpdateSpecialFareSeatsInput,
 } from "@flyora/validators";
 import {
+  BulkSpecialFareResult,
+  CabinClass,
   SpecialFareAdminDetail,
   SpecialFareRoute,
   SpecialFareSummary,
 } from "@flyora/types";
+
+const PUBLIC_SELECT = {
+  id: true,
+  airlineName: true,
+  airlineCode: true,
+  flightNumber: true,
+  originCity: true,
+  originCode: true,
+  originTerminal: true,
+  destinationCity: true,
+  destinationCode: true,
+  destinationTerminal: true,
+  departureDate: true,
+  arrivalDate: true,
+  flightType: true,
+  cabinClass: true,
+  baggageInfo: true,
+  isRefundable: true,
+  availableSeats: true,
+  originalFare: true,
+  farePerSeat: true,
+  childFare: true,
+  infantFare: true,
+  expiresAt: true,
+  metadata: true,
+  // CRITICAL: supplierCost, pnrNumber, rbd, notes are OMITTED
+} as const;
+
+function toPublicSummary(t: any): SpecialFareSummary {
+  return {
+    id: t.id,
+    airlineName: t.airlineName,
+    airlineCode: t.airlineCode,
+    flightNumber: t.flightNumber,
+    originCity: t.originCity,
+    originCode: t.originCode,
+    originTerminal: t.originTerminal ?? null,
+    destinationCity: t.destinationCity,
+    destinationCode: t.destinationCode,
+    destinationTerminal: t.destinationTerminal ?? null,
+    departureDate: t.departureDate.toISOString(),
+    arrivalDate: t.arrivalDate ? t.arrivalDate.toISOString() : null,
+    flightType: t.flightType as "NON_STOP" | "CONNECTING",
+    cabinClass: (t.cabinClass || "ECONOMY") as CabinClass,
+    baggageInfo: t.baggageInfo,
+    isRefundable: Boolean(t.isRefundable),
+    availableSeats: t.availableSeats,
+    originalFare:
+      t.originalFare !== null && t.originalFare !== undefined
+        ? Number(t.originalFare)
+        : null,
+    farePerSeat: Number(t.farePerSeat),
+    childFare:
+      t.childFare !== null && t.childFare !== undefined
+        ? Number(t.childFare)
+        : null,
+    infantFare:
+      t.infantFare !== null && t.infantFare !== undefined
+        ? Number(t.infantFare)
+        : null,
+    expiresAt: t.expiresAt.toISOString(),
+    metadata: (t.metadata as Record<string, unknown>) || null,
+  };
+}
+
+function toAdminDetail(t: any): SpecialFareAdminDetail {
+  const fare = Number(t.farePerSeat);
+  const cost =
+    t.supplierCost !== null && t.supplierCost !== undefined
+      ? Number(t.supplierCost)
+      : null;
+  const marginAmount = cost !== null ? fare - cost : null;
+  const marginPercent =
+    cost !== null && fare > 0 ? (marginAmount! / fare) * 100 : null;
+
+  return {
+    ...toPublicSummary(t),
+    totalSeats: t.totalSeats,
+    rbd: t.rbd ?? null,
+    supplierCost: cost,
+    pnrNumber: t.pnrNumber,
+    notes: t.notes,
+    marginAmount:
+      marginAmount !== null ? Math.round(marginAmount * 100) / 100 : null,
+    marginPercent:
+      marginPercent !== null ? Math.round(marginPercent * 10) / 10 : null,
+    status: t.status as "ACTIVE" | "SOLD_OUT" | "EXPIRED" | "PAUSED",
+    isActive: t.isActive,
+    displayOrder: t.displayOrder,
+    createdAt: t.createdAt.toISOString(),
+    updatedAt: t.updatedAt.toISOString(),
+  };
+}
+
+function buildCreateData(input: CreateSpecialFareInput) {
+  const departureDate = new Date(input.departureDate);
+  const expiresAt = input.expiresAt
+    ? new Date(input.expiresAt)
+    : new Date(departureDate.getTime() - 6 * 60 * 60 * 1000);
+  const availableSeats =
+    input.availableSeats !== undefined
+      ? input.availableSeats
+      : input.totalSeats;
+
+  return {
+    airlineName: input.airlineName,
+    airlineCode: input.airlineCode || null,
+    flightNumber: input.flightNumber || null,
+    originCity: input.originCity,
+    originCode: input.originCode.toUpperCase(),
+    originTerminal: input.originTerminal || null,
+    destinationCity: input.destinationCity,
+    destinationCode: input.destinationCode.toUpperCase(),
+    destinationTerminal: input.destinationTerminal || null,
+    departureDate,
+    arrivalDate: input.arrivalDate ? new Date(input.arrivalDate) : null,
+    flightType: input.flightType,
+    cabinClass: input.cabinClass || "ECONOMY",
+    rbd: input.rbd ? input.rbd.toUpperCase() : null,
+    baggageInfo: input.baggageInfo,
+    isRefundable: Boolean(input.isRefundable),
+    totalSeats: input.totalSeats,
+    availableSeats,
+    originalFare: input.originalFare ?? null,
+    farePerSeat: input.farePerSeat,
+    childFare: input.childFare ?? null,
+    infantFare: input.infantFare ?? null,
+    supplierCost: input.supplierCost ?? null,
+    pnrNumber: input.pnrNumber ?? null,
+    notes: input.notes ?? null,
+    metadata: input.metadata ? (input.metadata as any) : undefined,
+    expiresAt,
+    status: input.status,
+    isActive: input.isActive,
+    displayOrder: input.displayOrder,
+  };
+}
 
 export class SpecialFaresService {
   constructor(private fastify: FastifyInstance) {}
 
   /**
    * Public: List active, non-expired special fare tickets.
-   * STRICT SECURITY: Explicitly excludes supplierCost, pnrNumber, and internal notes.
+   * STRICT SECURITY: Explicitly excludes supplierCost, pnrNumber, rbd, and internal notes.
    */
   async listPublicSpecialFares(
     filter: SpecialFareSearchQueryInput,
@@ -87,54 +226,15 @@ export class SpecialFaresService {
         where,
         skip,
         take: limit,
-        select: {
-          id: true,
-          airlineName: true,
-          airlineCode: true,
-          flightNumber: true,
-          originCity: true,
-          originCode: true,
-          destinationCity: true,
-          destinationCode: true,
-          departureDate: true,
-          arrivalDate: true,
-          flightType: true,
-          baggageInfo: true,
-          availableSeats: true,
-          originalFare: true,
-          farePerSeat: true,
-          expiresAt: true,
-          metadata: true,
-          // CRITICAL: supplierCost, pnrNumber, notes are OMITTED
-        },
+        select: PUBLIC_SELECT,
         orderBy: [{ displayOrder: "asc" }, { departureDate: "asc" }],
       }),
     ]);
 
-    const items: SpecialFareSummary[] = records.map((t) => ({
-      id: t.id,
-      airlineName: t.airlineName,
-      airlineCode: t.airlineCode,
-      flightNumber: t.flightNumber,
-      originCity: t.originCity,
-      originCode: t.originCode,
-      destinationCity: t.destinationCity,
-      destinationCode: t.destinationCode,
-      departureDate: t.departureDate.toISOString(),
-      arrivalDate: t.arrivalDate ? t.arrivalDate.toISOString() : null,
-      flightType: t.flightType as "NON_STOP" | "CONNECTING",
-      baggageInfo: t.baggageInfo,
-      availableSeats: t.availableSeats,
-      originalFare:
-        t.originalFare !== null && t.originalFare !== undefined
-          ? Number(t.originalFare)
-          : null,
-      farePerSeat: Number(t.farePerSeat),
-      expiresAt: t.expiresAt.toISOString(),
-      metadata: (t.metadata as Record<string, unknown>) || null,
-    }));
-
-    return { items, total };
+    return {
+      items: records.map(toPublicSummary),
+      total,
+    };
   }
 
   /**
@@ -193,23 +293,7 @@ export class SpecialFaresService {
     const t = await prisma.specialFareTicket.findUnique({
       where: { id },
       select: {
-        id: true,
-        airlineName: true,
-        airlineCode: true,
-        flightNumber: true,
-        originCity: true,
-        originCode: true,
-        destinationCity: true,
-        destinationCode: true,
-        departureDate: true,
-        arrivalDate: true,
-        flightType: true,
-        baggageInfo: true,
-        availableSeats: true,
-        originalFare: true,
-        farePerSeat: true,
-        expiresAt: true,
-        metadata: true,
+        ...PUBLIC_SELECT,
         isActive: true,
         status: true,
       },
@@ -228,28 +312,7 @@ export class SpecialFaresService {
       };
     }
 
-    return {
-      id: t.id,
-      airlineName: t.airlineName,
-      airlineCode: t.airlineCode,
-      flightNumber: t.flightNumber,
-      originCity: t.originCity,
-      originCode: t.originCode,
-      destinationCity: t.destinationCity,
-      destinationCode: t.destinationCode,
-      departureDate: t.departureDate.toISOString(),
-      arrivalDate: t.arrivalDate ? t.arrivalDate.toISOString() : null,
-      flightType: t.flightType as "NON_STOP" | "CONNECTING",
-      baggageInfo: t.baggageInfo,
-      availableSeats: t.availableSeats,
-      originalFare:
-        t.originalFare !== null && t.originalFare !== undefined
-          ? Number(t.originalFare)
-          : null,
-      farePerSeat: Number(t.farePerSeat),
-      expiresAt: t.expiresAt.toISOString(),
-      metadata: (t.metadata as Record<string, unknown>) || null,
-    };
+    return toPublicSummary(t);
   }
 
   /**
@@ -321,9 +384,30 @@ export class SpecialFaresService {
       });
     }
 
-    const estimatedBudget = Number(ticket.farePerSeat) * input.passengerCount;
+    const childCount = input.childCount || 0;
+    const infantCount = input.infantCount || 0;
+    const adultFare = Number(ticket.farePerSeat);
+    const childFare =
+      ticket.childFare !== null && ticket.childFare !== undefined
+        ? Number(ticket.childFare)
+        : adultFare;
+    const infantFare =
+      ticket.infantFare !== null && ticket.infantFare !== undefined
+        ? Number(ticket.infantFare)
+        : 0;
+    const estimatedBudget =
+      adultFare * input.passengerCount +
+      childFare * childCount +
+      infantFare * infantCount;
     const departureStr = ticket.departureDate.toISOString().slice(0, 10);
-    const dealHeader = `[SPECIAL FARE] ${ticket.airlineName} ${ticket.flightNumber || ""} | ${ticket.originCode} ➔ ${ticket.destinationCode} (${departureStr}) | ₹${ticket.farePerSeat} x ${input.passengerCount} = ₹${estimatedBudget} | Baggage: ${ticket.baggageInfo}`;
+    const paxBreakdown = [
+      `${input.passengerCount} Adult`,
+      childCount > 0 ? `${childCount} Child` : null,
+      infantCount > 0 ? `${infantCount} Infant` : null,
+    ]
+      .filter(Boolean)
+      .join(", ");
+    const dealHeader = `[SPECIAL FARE] ${ticket.airlineName} ${ticket.flightNumber || ""} (${ticket.cabinClass}) | ${ticket.originCode} ➔ ${ticket.destinationCode} (${departureStr}) | ${paxBreakdown} = Est. ₹${estimatedBudget} | Baggage: ${ticket.baggageInfo}`;
     const fullNotes = input.notes
       ? `${dealHeader}\nClient Notes: ${input.notes}`
       : dealHeader;
@@ -336,6 +420,7 @@ export class SpecialFaresService {
         source: "WEBSITE_FORM",
         status: "NEW",
         numberOfAdults: input.passengerCount,
+        numberOfKids: childCount + infantCount,
         travelDate: ticket.departureDate,
         estimatedBudget,
         customerNotes: fullNotes,
@@ -389,51 +474,7 @@ export class SpecialFaresService {
       }),
     ]);
 
-    const items: SpecialFareAdminDetail[] = records.map((t) => {
-      const fare = Number(t.farePerSeat);
-      const cost = t.supplierCost !== null ? Number(t.supplierCost) : null;
-      const marginAmount = cost !== null ? fare - cost : null;
-      const marginPercent =
-        cost !== null && fare > 0 ? (marginAmount! / fare) * 100 : null;
-
-      return {
-        id: t.id,
-        airlineName: t.airlineName,
-        airlineCode: t.airlineCode,
-        flightNumber: t.flightNumber,
-        originCity: t.originCity,
-        originCode: t.originCode,
-        destinationCity: t.destinationCity,
-        destinationCode: t.destinationCode,
-        departureDate: t.departureDate.toISOString(),
-        arrivalDate: t.arrivalDate ? t.arrivalDate.toISOString() : null,
-        flightType: t.flightType as "NON_STOP" | "CONNECTING",
-        baggageInfo: t.baggageInfo,
-        totalSeats: t.totalSeats,
-        availableSeats: t.availableSeats,
-        originalFare:
-          t.originalFare !== null && t.originalFare !== undefined
-            ? Number(t.originalFare)
-            : null,
-        farePerSeat: fare,
-        supplierCost: cost,
-        pnrNumber: t.pnrNumber,
-        notes: t.notes,
-        marginAmount:
-          marginAmount !== null ? Math.round(marginAmount * 100) / 100 : null,
-        marginPercent:
-          marginPercent !== null ? Math.round(marginPercent * 10) / 10 : null,
-        metadata: (t.metadata as Record<string, unknown>) || null,
-        expiresAt: t.expiresAt.toISOString(),
-        status: t.status as "ACTIVE" | "SOLD_OUT" | "EXPIRED" | "PAUSED",
-        isActive: t.isActive,
-        displayOrder: t.displayOrder,
-        createdAt: t.createdAt.toISOString(),
-        updatedAt: t.updatedAt.toISOString(),
-      };
-    });
-
-    return { items, total };
+    return { items: records.map(toAdminDetail), total };
   }
 
   /**
@@ -443,47 +484,32 @@ export class SpecialFaresService {
     input: CreateSpecialFareInput,
   ): Promise<SpecialFareAdminDetail> {
     const prisma = this.fastify.prisma;
-    const departureDate = new Date(input.departureDate);
-
-    // Default expiry: 6 hours before departure if not specified
-    const expiresAt = input.expiresAt
-      ? new Date(input.expiresAt)
-      : new Date(departureDate.getTime() - 6 * 60 * 60 * 1000);
-
-    const availableSeats =
-      input.availableSeats !== undefined
-        ? input.availableSeats
-        : input.totalSeats;
-
     const ticket = await prisma.specialFareTicket.create({
-      data: {
-        airlineName: input.airlineName,
-        airlineCode: input.airlineCode,
-        flightNumber: input.flightNumber,
-        originCity: input.originCity,
-        originCode: input.originCode.toUpperCase(),
-        destinationCity: input.destinationCity,
-        destinationCode: input.destinationCode.toUpperCase(),
-        departureDate,
-        arrivalDate: input.arrivalDate ? new Date(input.arrivalDate) : null,
-        flightType: input.flightType,
-        baggageInfo: input.baggageInfo,
-        totalSeats: input.totalSeats,
-        availableSeats,
-        originalFare: input.originalFare ?? null,
-        farePerSeat: input.farePerSeat,
-        supplierCost: input.supplierCost ?? null,
-        pnrNumber: input.pnrNumber ?? null,
-        notes: input.notes ?? null,
-        metadata: input.metadata ? (input.metadata as any) : undefined,
-        expiresAt,
-        status: input.status,
-        isActive: input.isActive,
-        displayOrder: input.displayOrder,
-      },
+      data: buildCreateData(input),
     });
 
-    return this.getAdminSpecialFareById(ticket.id);
+    return toAdminDetail(ticket);
+  }
+
+  /**
+   * Admin: Bulk create multiple allotments atomically (Date-Range Series or CSV/Sheet import)
+   */
+  async bulkCreateSpecialFares(
+    items: CreateSpecialFareInput[],
+  ): Promise<BulkSpecialFareResult> {
+    const prisma = this.fastify.prisma;
+    const created = await prisma.$transaction(
+      items.map((item) =>
+        prisma.specialFareTicket.create({
+          data: buildCreateData(item),
+        }),
+      ),
+    );
+
+    return {
+      createdCount: created.length,
+      items: created.map(toAdminDetail),
+    };
   }
 
   /**
@@ -495,47 +521,7 @@ export class SpecialFaresService {
 
     if (!t) throw { statusCode: 404, message: "Special fare ticket not found" };
 
-    const fare = Number(t.farePerSeat);
-    const cost = t.supplierCost !== null ? Number(t.supplierCost) : null;
-    const marginAmount = cost !== null ? fare - cost : null;
-    const marginPercent =
-      cost !== null && fare > 0 ? (marginAmount! / fare) * 100 : null;
-
-    return {
-      id: t.id,
-      airlineName: t.airlineName,
-      airlineCode: t.airlineCode,
-      flightNumber: t.flightNumber,
-      originCity: t.originCity,
-      originCode: t.originCode,
-      destinationCity: t.destinationCity,
-      destinationCode: t.destinationCode,
-      departureDate: t.departureDate.toISOString(),
-      arrivalDate: t.arrivalDate ? t.arrivalDate.toISOString() : null,
-      flightType: t.flightType as "NON_STOP" | "CONNECTING",
-      baggageInfo: t.baggageInfo,
-      totalSeats: t.totalSeats,
-      availableSeats: t.availableSeats,
-      originalFare:
-        t.originalFare !== null && t.originalFare !== undefined
-          ? Number(t.originalFare)
-          : null,
-      farePerSeat: fare,
-      supplierCost: cost,
-      pnrNumber: t.pnrNumber,
-      notes: t.notes,
-      marginAmount:
-        marginAmount !== null ? Math.round(marginAmount * 100) / 100 : null,
-      marginPercent:
-        marginPercent !== null ? Math.round(marginPercent * 10) / 10 : null,
-      metadata: (t.metadata as Record<string, unknown>) || null,
-      expiresAt: t.expiresAt.toISOString(),
-      status: t.status as "ACTIVE" | "SOLD_OUT" | "EXPIRED" | "PAUSED",
-      isActive: t.isActive,
-      displayOrder: t.displayOrder,
-      createdAt: t.createdAt.toISOString(),
-      updatedAt: t.updatedAt.toISOString(),
-    };
+    return toAdminDetail(t);
   }
 
   /**
@@ -561,22 +547,33 @@ export class SpecialFaresService {
     if (input.originCity !== undefined) data.originCity = input.originCity;
     if (input.originCode !== undefined)
       data.originCode = input.originCode.toUpperCase();
+    if (input.originTerminal !== undefined)
+      data.originTerminal = input.originTerminal;
     if (input.destinationCity !== undefined)
       data.destinationCity = input.destinationCity;
     if (input.destinationCode !== undefined)
       data.destinationCode = input.destinationCode.toUpperCase();
+    if (input.destinationTerminal !== undefined)
+      data.destinationTerminal = input.destinationTerminal;
     if (input.departureDate !== undefined)
       data.departureDate = new Date(input.departureDate);
     if (input.arrivalDate !== undefined)
       data.arrivalDate = input.arrivalDate ? new Date(input.arrivalDate) : null;
     if (input.flightType !== undefined) data.flightType = input.flightType;
+    if (input.cabinClass !== undefined) data.cabinClass = input.cabinClass;
+    if (input.rbd !== undefined)
+      data.rbd = input.rbd ? input.rbd.toUpperCase() : null;
     if (input.baggageInfo !== undefined) data.baggageInfo = input.baggageInfo;
+    if (input.isRefundable !== undefined)
+      data.isRefundable = input.isRefundable;
     if (input.totalSeats !== undefined) data.totalSeats = input.totalSeats;
     if (input.availableSeats !== undefined)
       data.availableSeats = input.availableSeats;
     if (input.originalFare !== undefined)
       data.originalFare = input.originalFare;
     if (input.farePerSeat !== undefined) data.farePerSeat = input.farePerSeat;
+    if (input.childFare !== undefined) data.childFare = input.childFare;
+    if (input.infantFare !== undefined) data.infantFare = input.infantFare;
     if (input.supplierCost !== undefined)
       data.supplierCost = input.supplierCost;
     if (input.pnrNumber !== undefined) data.pnrNumber = input.pnrNumber;
@@ -589,12 +586,12 @@ export class SpecialFaresService {
     if (input.displayOrder !== undefined)
       data.displayOrder = input.displayOrder;
 
-    await prisma.specialFareTicket.update({
+    const updated = await prisma.specialFareTicket.update({
       where: { id },
       data,
     });
 
-    return this.getAdminSpecialFareById(id);
+    return toAdminDetail(updated);
   }
 
   /**

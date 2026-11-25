@@ -21,6 +21,7 @@ export interface SpecialFareFilterState {
   maxPrice: number | null;
   travelWindow: TravelWindow;
   baggageTier: BaggageTier;
+  refundableOnly: boolean;
   departureWindows: DepartureWindow[];
   arrivalWindows: DepartureWindow[];
   selectedAirlines: string[];
@@ -77,6 +78,7 @@ export function SpecialFareFilters({
     filters.maxPrice !== null ||
     filters.travelWindow !== "ALL" ||
     filters.baggageTier !== "ALL" ||
+    filters.refundableOnly ||
     filters.departureWindows.length > 0 ||
     filters.arrivalWindows.length > 0 ||
     filters.selectedAirlines.length > 0;
@@ -289,6 +291,20 @@ export function SpecialFareFilters({
             20 Kg+ Check-in
           </button>
         </div>
+      </div>
+
+      {/* 4b. Fare Policy */}
+      <div className="space-y-2 pt-2 border-t border-stone-100">
+        <h3 className="text-xs font-semibold text-[#1C1815]">Fare Policy</h3>
+        <label className="flex items-center justify-between gap-2 text-xs text-stone-700 cursor-pointer">
+          <span>Refundable Only</span>
+          <input
+            type="checkbox"
+            checked={filters.refundableOnly}
+            onChange={(e) => onChange({ refundableOnly: e.target.checked })}
+            className="rounded border-stone-300 text-[#002f89] focus:ring-[#002f89] cursor-pointer"
+          />
+        </label>
       </div>
 
       {/* 5. Conditional Departure & Arrival Time (Only when specific date with multiple flights is active) */}

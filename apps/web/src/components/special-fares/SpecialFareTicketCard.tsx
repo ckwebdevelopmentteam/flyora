@@ -241,11 +241,29 @@ export function SpecialFareTicketCard({
 
       {/* Compact Footer Info Strip */}
       <div className="px-4 sm:px-5 py-2 bg-[#FAF9F6] border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-stone-600">
-        <div className="inline-flex items-center gap-1.5">
-          <Luggage className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
-          <span className="font-medium text-stone-700">
-            {ticket.baggageInfo}
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="inline-flex items-center gap-1.5">
+            <Luggage className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+            <span className="font-medium text-stone-700">
+              {ticket.baggageInfo}
+            </span>
           </span>
+
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+              ticket.isRefundable
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : "bg-stone-100 text-stone-500 border-stone-200"
+            }`}
+          >
+            {ticket.isRefundable ? "Refundable" : "Non-Refundable"}
+          </span>
+
+          {ticket.cabinClass && ticket.cabinClass !== "ECONOMY" && (
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#002f89]/10 text-[#002f89] border border-[#002f89]/20">
+              {ticket.cabinClass.replace("_", " ")}
+            </span>
+          )}
         </div>
 
         <div className="text-stone-500">
@@ -265,10 +283,11 @@ export function SpecialFareTicketCard({
         <div className="px-4 sm:px-5 py-3.5 bg-white border-t border-stone-100 text-xs text-stone-600 grid grid-cols-1 sm:grid-cols-3 gap-3 animate-in fade-in duration-150">
           <div>
             <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
-              Fare Type
+              Fare &amp; Cabin Class
             </span>
             <span className="font-medium text-stone-800">
-              Flyora Contracted Group Allotment
+              {(ticket.cabinClass || "ECONOMY").replace("_", " ")} ·{" "}
+              {ticket.isRefundable ? "Refundable" : "Non-Refundable"}
             </span>
           </div>
 
@@ -295,6 +314,34 @@ export function SpecialFareTicketCard({
               })}
             </span>
           </div>
+
+          {(ticket.originTerminal || ticket.destinationTerminal) && (
+            <div>
+              <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
+                Terminals
+              </span>
+              <span className="font-medium text-stone-800">
+                Dep: {ticket.originTerminal || "—"} · Arr:{" "}
+                {ticket.destinationTerminal || "—"}
+              </span>
+            </div>
+          )}
+
+          {(ticket.childFare != null || ticket.infantFare != null) && (
+            <div>
+              <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
+                Child / Infant Fares
+              </span>
+              <span className="font-medium text-stone-800">
+                {ticket.childFare != null
+                  ? `Child: ₹${ticket.childFare.toLocaleString("en-IN")}`
+                  : "Child: Same"}
+                {ticket.infantFare != null
+                  ? ` · Infant: ₹${ticket.infantFare.toLocaleString("en-IN")}`
+                  : ""}
+              </span>
+            </div>
+          )}
 
           {metadataEntries.map(([key, val]) => (
             <div key={key}>

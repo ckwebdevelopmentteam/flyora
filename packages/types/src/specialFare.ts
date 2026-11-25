@@ -1,10 +1,12 @@
 export type FlightType = "NON_STOP" | "CONNECTING";
 
+export type CabinClass = "ECONOMY" | "BUSINESS" | "FIRST_CLASS";
+
 export type SpecialFareStatus = "ACTIVE" | "SOLD_OUT" | "EXPIRED" | "PAUSED";
 
 /**
  * Public-facing Special Fare Ticket Summary
- * Strips all internal costs, supplier data, and PNR references.
+ * Strips all internal costs, supplier data, RBD, and PNR references.
  */
 export interface SpecialFareSummary {
   id: string;
@@ -13,25 +15,32 @@ export interface SpecialFareSummary {
   flightNumber?: string | null;
   originCity: string;
   originCode: string;
+  originTerminal?: string | null;
   destinationCity: string;
   destinationCode: string;
+  destinationTerminal?: string | null;
   departureDate: string;
   arrivalDate?: string | null;
   flightType: FlightType;
+  cabinClass?: CabinClass;
   baggageInfo: string;
+  isRefundable?: boolean;
   availableSeats: number;
   originalFare?: number | null;
   farePerSeat: number;
+  childFare?: number | null;
+  infantFare?: number | null;
   expiresAt: string;
   metadata?: Record<string, unknown> | null;
 }
 
 /**
  * Full Admin Detail for Coordinators & Operations Managers
- * Includes wholesale supplier costs, margin calculations, and group PNR references.
+ * Includes wholesale supplier costs, margin calculations, RBD, and group PNR references.
  */
 export interface SpecialFareAdminDetail extends SpecialFareSummary {
   totalSeats: number;
+  rbd?: string | null;
   supplierCost?: number | null;
   pnrNumber?: string | null;
   notes?: string | null;
@@ -42,6 +51,14 @@ export interface SpecialFareAdminDetail extends SpecialFareSummary {
   displayOrder: number;
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * Bulk create response for series & CSV sheet imports
+ */
+export interface BulkSpecialFareResult {
+  createdCount: number;
+  items: SpecialFareAdminDetail[];
 }
 
 /**
@@ -77,5 +94,7 @@ export interface SpecialFareEnquiryPayload {
   phone: string;
   email?: string;
   passengerCount: number;
+  childCount?: number;
+  infantCount?: number;
   notes?: string;
 }

@@ -12,6 +12,10 @@ import { MemoryRouter } from "react-router-dom";
 import { SpecialFaresPage } from "./SpecialFaresPage";
 import { useAuthStore } from "../../stores/authStore";
 import { specialFaresApi } from "../../lib/specialFaresApi";
+import {
+  parseSpecialFareSheet,
+  SAMPLE_SPECIAL_FARES_CSV,
+} from "../../components/special-fares/bulkSheetParser";
 
 vi.mock("../../lib/specialFaresApi", () => ({
   specialFaresApi: {
@@ -20,6 +24,7 @@ vi.mock("../../lib/specialFaresApi", () => ({
     toggleStatus: vi.fn(),
     deleteSpecialFare: vi.fn(),
     createSpecialFare: vi.fn(),
+    bulkCreateSpecialFares: vi.fn(),
     updateSpecialFare: vi.fn(),
   },
 }));
@@ -136,5 +141,40 @@ describe("SpecialFaresPage", () => {
     fireEvent.click(addBtn);
 
     expect(await screen.findByText("Add Special Fare Allotment")).toBeTruthy();
+  });
+
+  it("opens Bulk Upload Sheet modal and parses sample/Riya sheet rows cleanly", async () => {
+    vi.mocked(specialFaresApi.bulkCreateSpecialFares).mockResolvedValue({
+      createdCount: 2,
+      items: [],
+    });
+
+    renderPage();
+    await screen.findByText("Special Fare Inventory");
+
+    fireEvent.click(
+      screen.getByRole("button", { name: /Upload Sheet \(CSV\)/i }),
+    );
+    expect(
+      await screen.findByText("Bulk Upload Special Fare Sheet"),
+    ).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: /Load Sample Rows/i }));
+    const publishBtn = await screen.findByRole("button", {
+      name: /Publish 2 Allotments/i,
+    });
+    fireEvent.click(publishBtn);
+
+    await waitFor(() => {
+      expect(specialFaresApi.bulkCreateSpecialFares).toHaveBeenCalledTimes(1);
+    });
+
+    const parsed = parseSpecialFareSheet(SAMPLE_SPECIAL_FARES_CSV);
+    expect(parsed).toHaveLength(2);
+    expect(parsed[0].valid).toBe(true);
+    expect(parsed[0].data?.childFare).toBe(15000);
+    expect(parsed[0].data?.infantFare).toBe(5000);
+    expect(parsed[0].data?.isRefundable).toBe(false);
+    expect(parsed[1].data?.isRefundable).toBe(true);
   });
 });

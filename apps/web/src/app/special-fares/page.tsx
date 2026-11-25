@@ -49,6 +49,17 @@ function parseCheckedBaggageKg(baggageInfo: string): number {
   return match ? Number(match[1]) : 0;
 }
 
+const INITIAL_FILTERS: SpecialFareFilterState = {
+  flightType: "ALL",
+  maxPrice: null,
+  travelWindow: "ALL",
+  baggageTier: "ALL",
+  refundableOnly: false,
+  departureWindows: [],
+  arrivalWindows: [],
+  selectedAirlines: [],
+};
+
 export default function SpecialFaresPage() {
   return (
     <Suspense
@@ -89,15 +100,8 @@ function SpecialFaresContent() {
   const [retryTick, setRetryTick] = useState(0);
 
   // Sidebar Filters & Sort
-  const [filters, setFilters] = useState<SpecialFareFilterState>({
-    flightType: "ALL",
-    maxPrice: null,
-    travelWindow: "ALL",
-    baggageTier: "ALL",
-    departureWindows: [],
-    arrivalWindows: [],
-    selectedAirlines: [],
-  });
+  const [filters, setFilters] =
+    useState<SpecialFareFilterState>(INITIAL_FILTERS);
   const [sortBy, setSortBy] = useState<SortMode>("CHEAPEST");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
@@ -195,15 +199,7 @@ function SpecialFaresContent() {
     setToInput("");
     setDateInput("");
     setAppliedSearch({ from: "", to: "", date: "" });
-    setFilters({
-      flightType: "ALL",
-      maxPrice: null,
-      travelWindow: "ALL",
-      baggageTier: "ALL",
-      departureWindows: [],
-      arrivalWindows: [],
-      selectedAirlines: [],
-    });
+    setFilters(INITIAL_FILTERS);
   };
 
   // Merge live routes into extraAirportOptions & recent options
@@ -376,6 +372,9 @@ function SpecialFaresContent() {
         const kg = parseCheckedBaggageKg(t.baggageInfo);
         if (filters.baggageTier === "30KG_PLUS" && kg < 30) return false;
         if (filters.baggageTier === "20KG_PLUS" && kg < 20) return false;
+      }
+      if (filters.refundableOnly && !t.isRefundable) {
+        return false;
       }
       if (showTimeFilters && filters.departureWindows.length > 0) {
         const win = getDepartureWindow(t.departureDate);
@@ -589,17 +588,7 @@ function SpecialFaresContent() {
                 onChange={(next) =>
                   setFilters((prev) => ({ ...prev, ...next }))
                 }
-                onReset={() =>
-                  setFilters({
-                    flightType: "ALL",
-                    maxPrice: null,
-                    travelWindow: "ALL",
-                    baggageTier: "ALL",
-                    departureWindows: [],
-                    arrivalWindows: [],
-                    selectedAirlines: [],
-                  })
-                }
+                onReset={() => setFilters(INITIAL_FILTERS)}
                 airlines={airlines}
                 nonStopMinFare={nonStopMinFare}
                 connectingMinFare={connectingMinFare}
@@ -813,17 +802,7 @@ function SpecialFaresContent() {
             <SpecialFareFilters
               filters={filters}
               onChange={(next) => setFilters((prev) => ({ ...prev, ...next }))}
-              onReset={() =>
-                setFilters({
-                  flightType: "ALL",
-                  maxPrice: null,
-                  travelWindow: "ALL",
-                  baggageTier: "ALL",
-                  departureWindows: [],
-                  arrivalWindows: [],
-                  selectedAirlines: [],
-                })
-              }
+              onReset={() => setFilters(INITIAL_FILTERS)}
               airlines={airlines}
               nonStopMinFare={nonStopMinFare}
               connectingMinFare={connectingMinFare}
