@@ -489,8 +489,16 @@ export function SpecialFaresPage() {
 
                       {/* Pricing & Margin */}
                       <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="font-bold text-zinc-900 text-[13px]">
-                          ₹{ticket.farePerSeat.toLocaleString("en-IN")}
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-bold text-emerald-700 text-[13px]">
+                            ₹{ticket.farePerSeat.toLocaleString("en-IN")}
+                          </span>
+                          {ticket.originalFare &&
+                            ticket.originalFare > ticket.farePerSeat && (
+                              <span className="text-[11px] font-medium text-rose-600 line-through">
+                                ₹{ticket.originalFare.toLocaleString("en-IN")}
+                              </span>
+                            )}
                         </div>
                         {ticket.supplierCost !== null &&
                           ticket.supplierCost !== undefined && (

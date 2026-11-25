@@ -84,6 +84,7 @@ export function SpecialFareDrawer({
       baggageInfo: "30 Kg Check-in + 7 Kg Cabin",
       totalSeats: 10,
       availableSeats: 10,
+      originalFare: undefined,
       farePerSeat: 0,
       supplierCost: undefined,
       pnrNumber: "",
@@ -134,6 +135,7 @@ export function SpecialFareDrawer({
         baggageInfo: initialData.baggageInfo,
         totalSeats: initialData.totalSeats,
         availableSeats: initialData.availableSeats,
+        originalFare: initialData.originalFare ?? undefined,
         farePerSeat: initialData.farePerSeat,
         supplierCost: initialData.supplierCost ?? undefined,
         pnrNumber: initialData.pnrNumber || "",
@@ -169,6 +171,7 @@ export function SpecialFareDrawer({
         baggageInfo: "30 Kg Check-in + 7 Kg Cabin",
         totalSeats: 10,
         availableSeats: 10,
+        originalFare: undefined,
         farePerSeat: 0,
         supplierCost: undefined,
         pnrNumber: "",
@@ -229,6 +232,12 @@ export function SpecialFareDrawer({
         expiresAt: data.expiresAt
           ? new Date(data.expiresAt).toISOString()
           : undefined,
+        originalFare:
+          data.originalFare !== undefined &&
+          !isNaN(Number(data.originalFare)) &&
+          Number(data.originalFare) > 0
+            ? Number(data.originalFare)
+            : null,
         supplierCost:
           data.supplierCost !== undefined && !isNaN(Number(data.supplierCost))
             ? Number(data.supplierCost)
@@ -515,7 +524,7 @@ export function SpecialFareDrawer({
             <span>Seats & Commercials</span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="form-grid">
             <div className="field">
               <label htmlFor="sf-totalSeats">Total Quota *</label>
               <input
@@ -535,7 +544,9 @@ export function SpecialFareDrawer({
                 {...register("availableSeats", { valueAsNumber: true })}
               />
             </div>
+          </div>
 
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="field">
               <label htmlFor="sf-supplierCost">Supplier Cost (₹)</label>
               <input
@@ -548,13 +559,26 @@ export function SpecialFareDrawer({
             </div>
 
             <div className="field">
-              <label htmlFor="sf-farePerSeat">Customer Fare (₹) *</label>
+              <label htmlFor="sf-originalFare">Crossed / Market Fare (₹)</label>
+              <input
+                id="sf-originalFare"
+                type="number"
+                min={0}
+                placeholder="e.g. 14500 (Shown crossed in red)"
+                {...register("originalFare", { valueAsNumber: true })}
+              />
+            </div>
+
+            <div className="field">
+              <label htmlFor="sf-farePerSeat">
+                Customer Special Fare (₹) *
+              </label>
               <input
                 id="sf-farePerSeat"
                 type="number"
                 min={1}
                 {...register("farePerSeat", { valueAsNumber: true })}
-                className="font-semibold"
+                className="font-semibold text-emerald-700"
               />
               {errors.farePerSeat && (
                 <p className="text-xs text-rose-600">

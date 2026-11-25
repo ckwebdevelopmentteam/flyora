@@ -39,6 +39,7 @@ export const createSpecialFareSchema = z.object({
     .int()
     .positive("Total seats must be at least 1"),
   availableSeats: z.coerce.number().int().nonnegative().optional(),
+  originalFare: z.coerce.number().nonnegative().optional().nullable(),
   farePerSeat: z.coerce
     .number()
     .positive("Fare per seat must be greater than 0"),

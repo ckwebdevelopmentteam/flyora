@@ -354,7 +354,7 @@ function SpecialFaresContent() {
 
       <main className="flex-1 pt-24 sm:pt-28 pb-16">
         {/* Top Search Setup Strip */}
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="w-full max-w-[1360px] mx-auto px-4 sm:px-5">
           <div className="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
             <div>
               <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#002f89]">
@@ -523,9 +523,9 @@ function SpecialFaresContent() {
           </form>
 
           {/* 2-Column Workspace */}
-          <div className="mt-7 grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+          <div className="mt-7 grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] gap-6 items-start">
             {/* Left Sidebar Filters (Desktop) */}
-            <div className="hidden lg:block lg:col-span-1 sticky top-24">
+            <div className="hidden lg:block sticky top-24">
               <SpecialFareFilters
                 filters={filters}
                 onChange={(next) =>
@@ -546,7 +546,7 @@ function SpecialFaresContent() {
             </div>
 
             {/* Right Results Area */}
-            <div className="lg:col-span-3 space-y-4">
+            <div className="min-w-0 space-y-4">
               {/* Mobile Filter Trigger */}
               <div className="flex lg:hidden items-center justify-between gap-2">
                 <button

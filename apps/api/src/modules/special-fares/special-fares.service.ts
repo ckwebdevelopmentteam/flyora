@@ -101,6 +101,7 @@ export class SpecialFaresService {
           flightType: true,
           baggageInfo: true,
           availableSeats: true,
+          originalFare: true,
           farePerSeat: true,
           expiresAt: true,
           metadata: true,
@@ -124,6 +125,10 @@ export class SpecialFaresService {
       flightType: t.flightType as "NON_STOP" | "CONNECTING",
       baggageInfo: t.baggageInfo,
       availableSeats: t.availableSeats,
+      originalFare:
+        t.originalFare !== null && t.originalFare !== undefined
+          ? Number(t.originalFare)
+          : null,
       farePerSeat: Number(t.farePerSeat),
       expiresAt: t.expiresAt.toISOString(),
       metadata: (t.metadata as Record<string, unknown>) || null,
@@ -201,6 +206,7 @@ export class SpecialFaresService {
         flightType: true,
         baggageInfo: true,
         availableSeats: true,
+        originalFare: true,
         farePerSeat: true,
         expiresAt: true,
         metadata: true,
@@ -236,6 +242,10 @@ export class SpecialFaresService {
       flightType: t.flightType as "NON_STOP" | "CONNECTING",
       baggageInfo: t.baggageInfo,
       availableSeats: t.availableSeats,
+      originalFare:
+        t.originalFare !== null && t.originalFare !== undefined
+          ? Number(t.originalFare)
+          : null,
       farePerSeat: Number(t.farePerSeat),
       expiresAt: t.expiresAt.toISOString(),
       metadata: (t.metadata as Record<string, unknown>) || null,
@@ -401,6 +411,10 @@ export class SpecialFaresService {
         baggageInfo: t.baggageInfo,
         totalSeats: t.totalSeats,
         availableSeats: t.availableSeats,
+        originalFare:
+          t.originalFare !== null && t.originalFare !== undefined
+            ? Number(t.originalFare)
+            : null,
         farePerSeat: fare,
         supplierCost: cost,
         pnrNumber: t.pnrNumber,
@@ -456,6 +470,7 @@ export class SpecialFaresService {
         baggageInfo: input.baggageInfo,
         totalSeats: input.totalSeats,
         availableSeats,
+        originalFare: input.originalFare ?? null,
         farePerSeat: input.farePerSeat,
         supplierCost: input.supplierCost ?? null,
         pnrNumber: input.pnrNumber ?? null,
@@ -501,6 +516,10 @@ export class SpecialFaresService {
       baggageInfo: t.baggageInfo,
       totalSeats: t.totalSeats,
       availableSeats: t.availableSeats,
+      originalFare:
+        t.originalFare !== null && t.originalFare !== undefined
+          ? Number(t.originalFare)
+          : null,
       farePerSeat: fare,
       supplierCost: cost,
       pnrNumber: t.pnrNumber,
@@ -555,6 +574,8 @@ export class SpecialFaresService {
     if (input.totalSeats !== undefined) data.totalSeats = input.totalSeats;
     if (input.availableSeats !== undefined)
       data.availableSeats = input.availableSeats;
+    if (input.originalFare !== undefined)
+      data.originalFare = input.originalFare;
     if (input.farePerSeat !== undefined) data.farePerSeat = input.farePerSeat;
     if (input.supplierCost !== undefined)
       data.supplierCost = input.supplierCost;

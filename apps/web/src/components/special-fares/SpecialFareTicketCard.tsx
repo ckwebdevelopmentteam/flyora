@@ -200,7 +200,13 @@ export function SpecialFareTicketCard({
           {/* Price & Claim Button */}
           <div className="flex items-center gap-3.5 sm:gap-4">
             <div className="text-right">
-              <div className="text-lg sm:text-xl font-bold text-[#1C1815] leading-tight">
+              {ticket.originalFare &&
+                ticket.originalFare > ticket.farePerSeat && (
+                  <div className="text-xs font-semibold text-rose-600 line-through leading-none mb-0.5">
+                    ₹{ticket.originalFare.toLocaleString("en-IN")}
+                  </div>
+                )}
+              <div className="text-lg sm:text-xl font-bold text-emerald-700 leading-tight">
                 ₹{ticket.farePerSeat.toLocaleString("en-IN")}
               </div>
               <div className="text-[10px] font-medium text-stone-500">

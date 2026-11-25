@@ -53,6 +53,7 @@ const mockDeals = [
     flightType: "NON_STOP" as const,
     baggageInfo: "30 Kg Check-in + 7 Kg Cabin",
     availableSeats: 2,
+    originalFare: 14500,
     farePerSeat: 9499,
     expiresAt: new Date(Date.now() + 2 * 86400 * 1000).toISOString(),
     metadata: null,
@@ -114,6 +115,7 @@ describe("SpecialFaresPage", () => {
     expect(screen.getByRole("heading", { name: "IndiGo" })).toBeDefined();
     expect(screen.getByText("Only 2 Left")).toBeDefined();
     expect(screen.getByText("7 Left")).toBeDefined();
+    expect(screen.getAllByText(/₹\s?14,500/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText(/₹\s?9,499/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText("30 Kg Check-in + 7 Kg Cabin")).toBeDefined();
   });

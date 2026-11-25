@@ -20,6 +20,7 @@ export interface SpecialFareSummary {
   flightType: FlightType;
   baggageInfo: string;
   availableSeats: number;
+  originalFare?: number | null;
   farePerSeat: number;
   expiresAt: string;
   metadata?: Record<string, unknown> | null;

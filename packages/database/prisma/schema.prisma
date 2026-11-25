@@ -327,6 +327,7 @@ model SpecialFareTicket {
   // Commercials & Inventory
   totalSeats      Int               // Total batch quota purchased
   availableSeats  Int               // Remaining seats for public booking
+  originalFare    Decimal?          @db.Decimal(10, 2) // Crossed-out regular/market fare shown publicly
   farePerSeat     Decimal           @db.Decimal(10, 2) // Customer selling price
   supplierCost    Decimal?          @db.Decimal(10, 2) // Staff-only wholesale cost
   pnrNumber       String?           // Staff-only airline group PNR reference
