@@ -165,4 +165,19 @@ describe("SpecialFaresPage", () => {
     expect(await screen.findByText("Seat Request Received!")).toBeDefined();
     expect(screen.getByText("lead-sf-99")).toBeDefined();
   });
+
+  it("displays Departure Time and Arrival Time filter sections and airport combobox dropdown", async () => {
+    render(<SpecialFaresPage />);
+    await screen.findByRole("heading", { name: "Air India Express" });
+
+    expect(screen.getByText("Departure Time")).toBeDefined();
+    expect(screen.getByText("Arrival Time")).toBeDefined();
+
+    const fromInput = screen.getByLabelText("From");
+    fireEvent.focus(fromInput);
+
+    expect(await screen.findByText("Important Airports")).toBeDefined();
+    expect(screen.getAllByText("Mumbai").length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText("BOM").length).toBeGreaterThanOrEqual(1);
+  });
 });

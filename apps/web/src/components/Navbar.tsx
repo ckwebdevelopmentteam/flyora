@@ -456,7 +456,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 viewBox="0 0 180 46"
                 preserveAspectRatio="none"
                 aria-hidden="true"
-                className="absolute inset-0 w-full h-full drop-shadow-[0_2px_6px_rgba(190,24,93,0.28)]"
+                className="absolute inset-0 w-full h-full drop-shadow-[0_2px_6px_rgba(220,38,38,0.28)]"
               >
                 <defs>
                   <linearGradient
@@ -466,9 +466,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                     x2="100%"
                     y2="50%"
                   >
-                    <stop offset="0%" stopColor="#f42264" />
-                    <stop offset="55%" stopColor="#c026d3" />
-                    <stop offset="100%" stopColor="#86198f" />
+                    <stop offset="0%" stopColor="#ef4444" />
+                    <stop offset="55%" stopColor="#dc2626" />
+                    <stop offset="100%" stopColor="#991b1b" />
                   </linearGradient>
                 </defs>
                 <path
@@ -750,10 +750,10 @@ export const Navbar: React.FC<NavbarProps> = ({
                   activePath === "/special-fares" ? "page" : undefined
                 }
                 onClick={() => setMobileMenuOpen(false)}
-                className="relative w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-[#f42264] via-[#c026d3] to-[#86198f] text-white text-xs font-sans font-bold uppercase tracking-[0.14em] flex items-center justify-center gap-2 shadow-sm"
+                className="relative w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-[#ef4444] via-[#dc2626] to-[#991b1b] text-white text-xs font-sans font-bold uppercase tracking-[0.14em] flex items-center justify-center gap-2 shadow-sm"
               >
-                <Sparkles className="w-3.5 h-3.5 text-white" />
-                <span>Special Fares · Live Flight Deals</span>
+                <Plane className="w-3.5 h-3.5 text-white" />
+                <span>Special Fares · Flight Deals</span>
               </Link>
             </div>
 

@@ -9,6 +9,7 @@ export type DepartureWindow = "MORNING" | "AFTERNOON" | "EVENING" | "NIGHT";
 export interface SpecialFareFilterState {
   flightType: FlightType | "ALL";
   departureWindows: DepartureWindow[];
+  arrivalWindows: DepartureWindow[];
   selectedAirlines: string[];
 }
 
@@ -50,14 +51,17 @@ export function SpecialFareFilters({
   const hasActiveFilters =
     filters.flightType !== "ALL" ||
     filters.departureWindows.length > 0 ||
+    filters.arrivalWindows.length > 0 ||
     filters.selectedAirlines.length > 0;
 
-  const toggleTimeWindow = (win: DepartureWindow) => {
-    const exists = filters.departureWindows.includes(win);
+  const toggleTimeWindow = (
+    field: "departureWindows" | "arrivalWindows",
+    win: DepartureWindow,
+  ) => {
+    const current = filters[field];
+    const exists = current.includes(win);
     onChange({
-      departureWindows: exists
-        ? filters.departureWindows.filter((w) => w !== win)
-        : [...filters.departureWindows, win],
+      [field]: exists ? current.filter((w) => w !== win) : [...current, win],
     });
   };
 
@@ -152,9 +156,37 @@ export function SpecialFareFilters({
             const active = filters.departureWindows.includes(win.id);
             return (
               <button
-                key={win.id}
+                key={`dep-${win.id}`}
                 type="button"
-                onClick={() => toggleTimeWindow(win.id)}
+                onClick={() => toggleTimeWindow("departureWindows", win.id)}
+                className={`p-2 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                  active
+                    ? "border-[#002f89] bg-[#002f89]/5 text-[#002f89]"
+                    : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+                }`}
+              >
+                <Icon className="w-3.5 h-3.5" />
+                <span className="text-[10px] font-medium leading-tight">
+                  {win.range}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 3. Arrival Times */}
+      <div className="space-y-2.5 pt-2 border-t border-stone-100">
+        <h3 className="text-xs font-semibold text-[#1C1815]">Arrival Time</h3>
+        <div className="grid grid-cols-2 gap-2">
+          {TIME_WINDOWS.map((win) => {
+            const Icon = win.icon;
+            const active = filters.arrivalWindows.includes(win.id);
+            return (
+              <button
+                key={`arr-${win.id}`}
+                type="button"
+                onClick={() => toggleTimeWindow("arrivalWindows", win.id)}
                 className={`p-2 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
                   active
                     ? "border-[#002f89] bg-[#002f89]/5 text-[#002f89]"

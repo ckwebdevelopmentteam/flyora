@@ -30,7 +30,6 @@ import {
   CheckCircle2,
   Hotel,
   Layers,
-  Sparkles,
   Globe2,
   ShieldCheck,
   X,
@@ -2661,8 +2660,8 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
         matchedSpecialFares.length > 0 && (
           <div className="mt-2.5 bg-white/95 backdrop-blur-md border border-emerald-200 rounded-[14px] px-4 py-2.5 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs animate-in fade-in slide-in-from-top-1 duration-200">
             <div className="flex items-center gap-2 text-stone-800">
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#f42264] to-[#86198f] text-white text-[10px] font-bold uppercase tracking-wider shrink-0">
-                <Sparkles className="w-3 h-3" />
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#ef4444] via-[#dc2626] to-[#991b1b] text-white text-[10px] font-bold uppercase tracking-wider shrink-0">
+                <Plane className="w-3 h-3" />
                 Special Fare
               </span>
               <span className="font-medium leading-snug">

@@ -18,6 +18,11 @@ import {
 } from "../../components/special-fares/SpecialFareFilters";
 import { SpecialFareClaimModal } from "../../components/special-fares/SpecialFareClaimModal";
 import {
+  AirportCombobox,
+  IMPORTANT_AIRPORTS,
+  type AirportOption,
+} from "../../components/special-fares/AirportCombobox";
+import {
   ArrowLeftRight,
   Calendar,
   Plane,
@@ -27,7 +32,6 @@ import {
   X,
   Loader2,
   RotateCcw,
-  Sparkles,
 } from "lucide-react";
 
 type SortMode = "CHEAPEST" | "EARLIEST";
@@ -83,10 +87,39 @@ function SpecialFaresContent() {
   const [filters, setFilters] = useState<SpecialFareFilterState>({
     flightType: "ALL",
     departureWindows: [],
+    arrivalWindows: [],
     selectedAirlines: [],
   });
   const [sortBy, setSortBy] = useState<SortMode>("CHEAPEST");
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
+
+  // Recent airport codes saved in localStorage
+  const [savedRecentCodes, setSavedRecentCodes] = useState<string[]>([]);
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("flyora_sf_recent_airports");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) setSavedRecentCodes(parsed);
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
+  const saveRecentAirport = (code: string) => {
+    const clean = code.trim().toUpperCase();
+    if (!clean || clean.length < 3 || clean.length > 4) return;
+    setSavedRecentCodes((prev) => {
+      const next = [clean, ...prev.filter((c) => c !== clean)].slice(0, 5);
+      try {
+        localStorage.setItem("flyora_sf_recent_airports", JSON.stringify(next));
+      } catch {
+        // ignore storage errors
+      }
+      return next;
+    });
+  };
 
   // Booking Claim & Custom Flight Enquiry Modals
   const [selectedTicketForClaim, setSelectedTicketForClaim] =
@@ -133,9 +166,13 @@ function SpecialFaresContent() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const cleanFrom = fromInput.trim();
+    const cleanTo = toInput.trim();
+    if (cleanFrom) saveRecentAirport(cleanFrom);
+    if (cleanTo) saveRecentAirport(cleanTo);
     setAppliedSearch({
-      from: fromInput.trim(),
-      to: toInput.trim(),
+      from: cleanFrom,
+      to: cleanTo,
       date: dateInput,
     });
   };
@@ -153,26 +190,77 @@ function SpecialFaresContent() {
     setFilters({
       flightType: "ALL",
       departureWindows: [],
+      arrivalWindows: [],
       selectedAirlines: [],
     });
   };
 
-  // Unique Origins & Destinations from routes for datalist suggestions
-  const uniqueOrigins = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const r of routes) {
-      map.set(r.originCode, `${r.originCity} (${r.originCode})`);
-    }
-    return Array.from(map.entries());
-  }, [routes]);
+  // Merge live routes into extraAirportOptions & recent options
+  const { extraAirportOptions, recentOriginOptions, recentDestOptions } =
+    useMemo(() => {
+      const airportMap = new Map<string, AirportOption>();
+      for (const a of IMPORTANT_AIRPORTS) {
+        airportMap.set(a.code, a);
+      }
 
-  const uniqueDestinations = useMemo(() => {
-    const map = new Map<string, string>();
-    for (const r of routes) {
-      map.set(r.destinationCode, `${r.destinationCity} (${r.destinationCode})`);
-    }
-    return Array.from(map.entries());
-  }, [routes]);
+      const routeOrigins: AirportOption[] = [];
+      const routeDests: AirportOption[] = [];
+      const seenOrig = new Set<string>();
+      const seenDest = new Set<string>();
+
+      for (const r of routes) {
+        const origOpt = airportMap.get(r.originCode) || {
+          code: r.originCode,
+          city: r.originCity,
+          airportName: `${r.originCity} Airport`,
+          country: "India",
+          flag: "🇮🇳",
+        };
+        if (!airportMap.has(r.originCode))
+          airportMap.set(r.originCode, origOpt);
+        if (!seenOrig.has(origOpt.code)) {
+          routeOrigins.push(origOpt);
+          seenOrig.add(origOpt.code);
+        }
+
+        const destOpt = airportMap.get(r.destinationCode) || {
+          code: r.destinationCode,
+          city: r.destinationCity,
+          airportName: `${r.destinationCity} International Airport`,
+          country: "International",
+          flag: "✈️",
+        };
+        if (!airportMap.has(r.destinationCode))
+          airportMap.set(r.destinationCode, destOpt);
+        if (!seenDest.has(destOpt.code)) {
+          routeDests.push(destOpt);
+          seenDest.add(destOpt.code);
+        }
+      }
+
+      // Add saved recent airport codes to top if available
+      const recentOriginMap = new Map<string, AirportOption>();
+      const recentDestMap = new Map<string, AirportOption>();
+      for (const code of savedRecentCodes) {
+        const found = airportMap.get(code);
+        if (found) {
+          recentOriginMap.set(code, found);
+          recentDestMap.set(code, found);
+        }
+      }
+      for (const o of routeOrigins) {
+        if (!recentOriginMap.has(o.code)) recentOriginMap.set(o.code, o);
+      }
+      for (const d of routeDests) {
+        if (!recentDestMap.has(d.code)) recentDestMap.set(d.code, d);
+      }
+
+      return {
+        extraAirportOptions: Array.from(airportMap.values()),
+        recentOriginOptions: Array.from(recentOriginMap.values()),
+        recentDestOptions: Array.from(recentDestMap.values()),
+      };
+    }, [routes, savedRecentCodes]);
 
   // Date Price Strip derived from active tickets matching origin/destination (ignoring selected date so user can browse nearby dates)
   const datePriceStrip = useMemo(() => {
@@ -235,6 +323,11 @@ function SpecialFaresContent() {
         const win = getDepartureWindow(t.departureDate);
         if (!filters.departureWindows.includes(win)) return false;
       }
+      if (filters.arrivalWindows.length > 0) {
+        if (!t.arrivalDate) return false;
+        const win = getDepartureWindow(t.arrivalDate);
+        if (!filters.arrivalWindows.includes(win)) return false;
+      }
       if (
         filters.selectedAirlines.length > 0 &&
         !filters.selectedAirlines.includes(t.airlineName)
@@ -264,8 +357,7 @@ function SpecialFaresContent() {
         <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
             <div>
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.16em] text-[#002f89]">
-                <Sparkles className="w-3.5 h-3.5" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#002f89]">
                 Exclusive Group Allotments
               </span>
               <h1 className="text-2xl sm:text-3xl font-bold text-[#1C1815] tracking-tight mt-1">
@@ -285,24 +377,16 @@ function SpecialFaresContent() {
           >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
               {/* Origin */}
-              <div className="md:col-span-3 relative">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
-                  From
-                </label>
-                <input
-                  list="sf-origins-list"
-                  value={fromInput}
-                  onChange={(e) => setFromInput(e.target.value)}
+              <div className="md:col-span-3">
+                <AirportCombobox
+                  inputId="sf-from-input"
+                  label="From"
                   placeholder="City or IATA (e.g. CCJ)"
-                  className="w-full px-3.5 py-2.5 text-sm font-semibold text-[#1C1815] bg-[#FAF9F6] border border-stone-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002f89]/20 focus:border-[#002f89]"
+                  value={fromInput}
+                  onChange={(val) => setFromInput(val)}
+                  recentAirports={recentOriginOptions}
+                  extraAirports={extraAirportOptions}
                 />
-                <datalist id="sf-origins-list">
-                  {uniqueOrigins.map(([code, label]) => (
-                    <option key={code} value={code}>
-                      {label}
-                    </option>
-                  ))}
-                </datalist>
               </div>
 
               {/* Swap Button */}
@@ -318,24 +402,16 @@ function SpecialFaresContent() {
               </div>
 
               {/* Destination */}
-              <div className="md:col-span-3 relative">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
-                  To
-                </label>
-                <input
-                  list="sf-dests-list"
-                  value={toInput}
-                  onChange={(e) => setToInput(e.target.value)}
+              <div className="md:col-span-3">
+                <AirportCombobox
+                  inputId="sf-to-input"
+                  label="To"
                   placeholder="City or IATA (e.g. DXB)"
-                  className="w-full px-3.5 py-2.5 text-sm font-semibold text-[#1C1815] bg-[#FAF9F6] border border-stone-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002f89]/20 focus:border-[#002f89]"
+                  value={toInput}
+                  onChange={(val) => setToInput(val)}
+                  recentAirports={recentDestOptions}
+                  extraAirports={extraAirportOptions}
                 />
-                <datalist id="sf-dests-list">
-                  {uniqueDestinations.map(([code, label]) => (
-                    <option key={code} value={code}>
-                      {label}
-                    </option>
-                  ))}
-                </datalist>
               </div>
 
               {/* Departure Date */}
@@ -459,6 +535,7 @@ function SpecialFaresContent() {
                   setFilters({
                     flightType: "ALL",
                     departureWindows: [],
+                    arrivalWindows: [],
                     selectedAirlines: [],
                   })
                 }
@@ -677,6 +754,7 @@ function SpecialFaresContent() {
                 setFilters({
                   flightType: "ALL",
                   departureWindows: [],
+                  arrivalWindows: [],
                   selectedAirlines: [],
                 })
               }
