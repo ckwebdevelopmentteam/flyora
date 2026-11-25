@@ -194,9 +194,8 @@ export function SpecialFaresPage() {
       {/* Header Row */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-bold text-zinc-900 tracking-tight flex items-center gap-2">
-            <PlaneTakeoff className="w-5 h-5 text-indigo-600" />
-            <span>Special Fare Inventory</span>
+          <h1 className="text-xl font-bold text-zinc-900 tracking-tight">
+            Special Fare Inventory
           </h1>
           <p className="text-xs text-zinc-500 mt-1">
             Manage contracted group airline allotments, live seat availability,
@@ -211,9 +210,9 @@ export function SpecialFaresPage() {
               setEditingTicket(null);
               setDrawerOpen(true);
             }}
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-md shadow-xs transition-colors cursor-pointer shrink-0"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 bg-black hover:bg-zinc-800 text-white text-xs font-medium rounded-md shadow-xs transition-colors cursor-pointer shrink-0"
           >
-            <Plus className="w-4 h-4" />
+            <Plus className="w-3.5 h-3.5" />
             <span>Add Allotment</span>
           </button>
         )}
