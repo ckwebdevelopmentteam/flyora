@@ -6,30 +6,30 @@ This checklist tracks the implementation progress of the **Special Fare Tickets 
 
 ## Milestone 1: Data Contracts & Database Migration (Phase 1)
 
-- [ ] Add `FlightType`, `SpecialFareStatus` enums and `SpecialFareTicket` model to `packages/database/prisma/schema.prisma`.
-- [ ] Include flexible `metadata Json?` field to accommodate custom forthcoming admin fields.
-- [ ] Run `npm --prefix packages/database run generate` and apply Prisma migration.
-- [ ] Create shared TypeScript interfaces in `packages/types/src/specialFare.ts`.
-- [ ] Create shared Zod schemas in `packages/validators/src/specialFareSchemas.ts`.
-- [ ] Export contracts from `packages/types` and `packages/validators`.
+- [x] Add `FlightType`, `SpecialFareStatus` enums and `SpecialFareTicket` model to `packages/database/prisma/schema.prisma`.
+- [x] Include flexible `metadata Json?` field to accommodate custom forthcoming admin fields.
+- [x] Run `npm --prefix packages/database run generate` and apply Prisma migration.
+- [x] Create shared TypeScript interfaces in `packages/types/src/specialFare.ts`.
+- [x] Create shared Zod schemas in `packages/validators/src/specialFareSchemas.ts`.
+- [x] Export contracts from `packages/types` and `packages/validators`.
 
 ---
 
 ## Milestone 2: Fastify Backend REST API (Phase 2)
 
-- [ ] Create `apps/api/src/modules/special-fares/special-fares.service.ts`:
-  - [ ] Implement `getPublicSpecialFares()` with zero-maintenance auto-expiry filtering.
-  - [ ] Implement `getPublicRoutes()` for dynamic sector filter pills.
-  - [ ] Implement `getAdminSpecialFares()` with full margin and PNR data.
-  - [ ] Implement `createSpecialFare()` with default expiry helper.
-  - [ ] Implement atomic `updateAvailableSeats()` (`[ - ] / [ + ]` counter).
-  - [ ] Implement `toggleSpecialFareStatus()`.
-- [ ] Create `apps/api/src/modules/special-fares/special-fares.controller.ts`:
-  - [ ] Wire public routes under `/api/v1/public/special-fares`.
-  - [ ] Wire admin routes under `/api/v1/admin/special-fares` with JWT & RBAC guards.
-  - [ ] Wire lead creation endpoint `/api/v1/public/special-fares/:id/enquire`.
-- [ ] Register routes in `apps/api/src/server.ts`.
-- [ ] Write integration tests verifying auto-expiry, cost field exclusion from public APIs, and atomic seat count protection.
+- [x] Create `apps/api/src/modules/special-fares/special-fares.service.ts`:
+  - [x] Implement `getPublicSpecialFares()` with zero-maintenance auto-expiry filtering.
+  - [x] Implement `getPublicRoutes()` for dynamic sector filter pills.
+  - [x] Implement `getAdminSpecialFares()` with full margin and PNR data.
+  - [x] Implement `createSpecialFare()` with default expiry helper.
+  - [x] Implement atomic `updateAvailableSeats()` (`[ - ] / [ + ]` counter).
+  - [x] Implement `toggleSpecialFareStatus()`.
+- [x] Create `apps/api/src/modules/special-fares/special-fares.controller.ts`:
+  - [x] Wire public routes under `/api/v1/public/special-fares`.
+  - [x] Wire admin routes under `/api/v1/admin/special-fares` with JWT & RBAC guards.
+  - [x] Wire lead creation endpoint `/api/v1/public/special-fares/:id/enquire`.
+- [x] Register routes in `apps/api/src/server.ts`.
+- [x] Write integration tests verifying auto-expiry, cost field exclusion from public APIs, and atomic seat count protection.
 
 ---
 

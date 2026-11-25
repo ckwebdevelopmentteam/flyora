@@ -24,6 +24,10 @@ import {
   paymentsRoutes,
   publicBookingsRoutes,
 } from "./modules/bookings/bookings.controller";
+import {
+  adminSpecialFaresRoutes,
+  publicSpecialFaresRoutes,
+} from "./modules/special-fares/special-fares.controller";
 
 const fastify = Fastify({
   logger: {
@@ -82,6 +86,12 @@ fastify.register(publicQuotationRoutes, { prefix: "/api/v1/public" });
 fastify.register(bookingsRoutes, { prefix: "/api/v1/bookings" });
 fastify.register(paymentsRoutes, { prefix: "/api/v1/payments" });
 fastify.register(publicBookingsRoutes, { prefix: "/api/v1/public" });
+fastify.register(publicSpecialFaresRoutes, {
+  prefix: "/api/v1/public/special-fares",
+});
+fastify.register(adminSpecialFaresRoutes, {
+  prefix: "/api/v1/admin/special-fares",
+});
 
 // Global Error Handler
 fastify.setErrorHandler((error: any, _request, reply) => {

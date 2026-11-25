@@ -295,3 +295,58 @@ model ShowcaseConfig {
   updatedAt       DateTime @updatedAt
 }
 
+enum FlightType {
+  NON_STOP
+  CONNECTING
+}
+
+enum SpecialFareStatus {
+  ACTIVE
+  SOLD_OUT
+  EXPIRED
+  PAUSED
+}
+
+model SpecialFareTicket {
+  id              String            @id @default(uuid())
+
+  // Flight & Route Details
+  airlineName     String            // e.g. "Air India Express", "Emirates", "IndiGo", "Saudia"
+  airlineCode     String?           // e.g. "IX", "EK", "6E", "SV" (used for airline logo display)
+  flightNumber    String?           // e.g. "IX-345"
+  originCity      String            // e.g. "Kozhikode", "Mumbai", "Delhi"
+  originCode      String            // e.g. "CCJ", "BOM", "DEL"
+  destinationCity String            // e.g. "Dubai", "Jeddah", "Doha", "London"
+  destinationCode String            // e.g. "DXB", "JED", "DOH", "LHR"
+
+  departureDate   DateTime          // Scheduled departure time
+  arrivalDate     DateTime?         // Scheduled arrival time
+  flightType      FlightType        @default(NON_STOP)
+  baggageInfo     String            // e.g. "30 Kg Check-in + 7 Kg Cabin"
+
+  // Commercials & Inventory
+  totalSeats      Int               // Total batch quota purchased
+  availableSeats  Int               // Remaining seats for public booking
+  farePerSeat     Decimal           @db.Decimal(10, 2) // Customer selling price
+  supplierCost    Decimal?          @db.Decimal(10, 2) // Staff-only wholesale cost
+  pnrNumber       String?           // Staff-only airline group PNR reference
+  notes           String?           @db.Text           // Internal staff notes
+
+  // Flexible Metadata for Custom Forthcoming Admin Fields
+  metadata        Json?             // Holds custom fields (terminals, meal options, refund rules, etc.)
+
+  // Lifecycle & Auto-Expiry
+  expiresAt       DateTime          // Exact timestamp when deal stops showing publicly
+  status          SpecialFareStatus @default(ACTIVE)
+  isActive        Boolean           @default(true)      // Manual visibility switch
+  displayOrder    Int               @default(0)
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Performance Indexes for instant public search queries
+  @@index([isActive, expiresAt, availableSeats])
+  @@index([originCode, destinationCode, departureDate])
+  @@index([departureDate, status])
+}
+
