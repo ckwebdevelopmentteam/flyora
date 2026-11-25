@@ -10,6 +10,7 @@ import {
   Inbox,
   CreditCard,
   Palmtree,
+  PlaneTakeoff,
   PanelLeftClose,
   PanelLeftOpen,
   X,
@@ -64,6 +65,9 @@ export const Sidebar = ({
       : []),
     ...(manager || user?.role === "CONTENT_MANAGER"
       ? [{ name: "Tour packages", path: "/packages", icon: Palmtree }]
+      : []),
+    ...(sales
+      ? [{ name: "Special fares", path: "/special-fares", icon: PlaneTakeoff }]
       : []),
     ...(user?.role === "SUPER_ADMIN"
       ? [{ name: "Services", path: "/services", icon: Briefcase }]

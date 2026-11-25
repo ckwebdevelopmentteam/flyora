@@ -35,13 +35,13 @@ This checklist tracks the implementation progress of the **Special Fare Tickets 
 
 ## Milestone 3: Admin Inventory Desk (Phase 3)
 
-- [ ] Add "Special Fares" navigation link to `apps/admin` sidebar.
-- [ ] Create `/special-fares` route and main inventory dashboard page.
-- [ ] Build the Top Metrics bar (Active allotments, seats remaining, expiring in 24h, total margin).
-- [ ] Build the inventory table with relative departure countdown badges and margin indicators.
-- [ ] Build the 1-click interactive seat counter widget (`[ - ] X / Y [ + ]`) with optimistic updates.
-- [ ] Build the "Add Special Fare Allotment" drawer with React Hook Form + Zod validation.
-- [ ] Include the extensible container ready to accept final business fields.
+- [x] Add "Special Fares" navigation link to `apps/admin` sidebar.
+- [x] Create `/special-fares` route and main inventory dashboard page.
+- [x] Build the Top Metrics bar (Active allotments, seats remaining, expiring in 24h, total margin).
+- [x] Build the inventory table with relative departure countdown badges and margin indicators.
+- [x] Build the 1-click interactive seat counter widget (`[ - ] X / Y [ + ]`) with optimistic updates.
+- [x] Build the "Add Special Fare Allotment" drawer with React Hook Form + Zod validation.
+- [x] Include the extensible container ready to accept final business fields.
 
 ---
 

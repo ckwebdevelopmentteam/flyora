@@ -21,6 +21,7 @@ import { CoordinatorLeadsPage } from "./pages/leads/CoordinatorLeadsPage";
 import { MasterLeadsPage } from "./pages/admin/MasterLeadsPage";
 import { BookingsPage } from "./pages/bookings/BookingsPage";
 import { AccountPage } from "./pages/account/AccountPage";
+import { SpecialFaresPage } from "./pages/special-fares/SpecialFaresPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -126,6 +127,21 @@ export default function App() {
 
               <Route element={<RoleGuard allowedRoles={["SUPER_ADMIN"]} />}>
                 <Route path="services" element={<ServicesPage />} />
+              </Route>
+
+              {/* Special Fare Tickets Inventory */}
+              <Route
+                element={
+                  <RoleGuard
+                    allowedRoles={[
+                      "SUPER_ADMIN",
+                      "OPERATIONS_MANAGER",
+                      "SERVICE_COORDINATOR",
+                    ]}
+                  />
+                }
+              >
+                <Route path="special-fares" element={<SpecialFaresPage />} />
               </Route>
               {/* Team Management - Restricted to Super Admin & Operations Manager */}
               <Route
