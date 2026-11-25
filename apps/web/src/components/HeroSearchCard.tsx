@@ -3,7 +3,9 @@
 import { useServicesCatalog } from "../lib/use-services-catalog";
 import { resolveService } from "../lib/service-catalog";
 import { serviceImage } from "../lib/service-visuals";
-import type { ServiceSummary } from "@flyora/types";
+import { fetchPublicSpecialFares } from "../lib/specialFaresApi";
+import type { ServiceSummary, SpecialFareSummary } from "@flyora/types";
+import Link from "next/link";
 import React, {
   useState,
   useRef,
@@ -28,6 +30,7 @@ import {
   CheckCircle2,
   Hotel,
   Layers,
+  Sparkles,
   Globe2,
   ShieldCheck,
   X,
@@ -1303,6 +1306,56 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
       setSelectedSecondaryType(def.secondaryTypes[0].label);
     }
   }, [activeServiceSlug]);
+
+  // Special Fare Matching Engine when Flight Booking is active
+  const [matchedSpecialFares, setMatchedSpecialFares] = useState<
+    SpecialFareSummary[]
+  >([]);
+
+  const extractAirportOrCity = (val: string): string => {
+    const trimmed = val.trim();
+    if (!trimmed) return "";
+    const match = trimmed.match(/\(([A-Z]{3})\)/i);
+    if (match?.[1]) return match[1].toUpperCase();
+    return trimmed.split(",")[0]?.trim() || trimmed;
+  };
+
+  useEffect(() => {
+    if (activeServiceSlug !== "flight-booking") {
+      setMatchedSpecialFares([]);
+      return;
+    }
+
+    const fromTerm = extractAirportOrCity(selectedOrigin);
+    const toTerm = extractAirportOrCity(selectedDestination);
+    if (!fromTerm && !toTerm) {
+      setMatchedSpecialFares([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetchPublicSpecialFares(
+        {
+          from: fromTerm || undefined,
+          to: toTerm || undefined,
+          limit: 5,
+        },
+        controller.signal,
+      )
+        .then((res) => {
+          setMatchedSpecialFares(res.items || []);
+        })
+        .catch(() => {
+          setMatchedSpecialFares([]);
+        });
+    }, 250);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [activeServiceSlug, selectedOrigin, selectedDestination]);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -2602,6 +2655,43 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Live Special Fare Match Callout Banner */}
+      {activeServiceSlug === "flight-booking" &&
+        matchedSpecialFares.length > 0 && (
+          <div className="mt-2.5 bg-white/95 backdrop-blur-md border border-emerald-200 rounded-[14px] px-4 py-2.5 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs animate-in fade-in slide-in-from-top-1 duration-200">
+            <div className="flex items-center gap-2 text-stone-800">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-gradient-to-r from-[#f42264] to-[#86198f] text-white text-[10px] font-bold uppercase tracking-wider shrink-0">
+                <Sparkles className="w-3 h-3" />
+                Special Fare
+              </span>
+              <span className="font-medium leading-snug">
+                <strong>
+                  {matchedSpecialFares[0].originCode} ➔{" "}
+                  {matchedSpecialFares[0].destinationCode}
+                </strong>{" "}
+                group seats available from{" "}
+                <strong className="text-emerald-700">
+                  ₹{matchedSpecialFares[0].farePerSeat.toLocaleString("en-IN")}
+                </strong>{" "}
+                ({matchedSpecialFares[0].baggageInfo} ·{" "}
+                {matchedSpecialFares.length}{" "}
+                {matchedSpecialFares.length === 1 ? "deal" : "deals"} found)
+              </span>
+            </div>
+            <Link
+              href={`/special-fares?from=${encodeURIComponent(
+                extractAirportOrCity(selectedOrigin),
+              )}&to=${encodeURIComponent(
+                extractAirportOrCity(selectedDestination),
+              )}`}
+              className="inline-flex items-center gap-1 text-[#002f89] hover:text-[#00246b] font-bold whitespace-nowrap shrink-0 underline underline-offset-2"
+            >
+              <span>View &amp; Book Special Fare</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
     </div>
   );
 };

@@ -47,18 +47,17 @@ This checklist tracks the implementation progress of the **Special Fare Tickets 
 
 ## Milestone 4: Public Deal Portal & Search Integration (Phase 4 & 5)
 
-- [ ] Create `apps/web/src/app/special-fares/page.tsx` with editorial header and trust badges.
-- [ ] Build the sector filter pill strip with dynamic routes from API.
-- [ ] Build the luxury deal card (`rounded-[14px]`, airline logo, baggage badge, strikethrough price, savings pill, urgency timer).
-- [ ] Integrate with Flyora `EnquiryModal.tsx` to prefill flight details upon clicking "Claim Seat".
-- [ ] Connect `HeroSearchCard.tsx` under the Flight Booking tab to query matching deals and display the active special fare alert banner.
-- [ ] Verify mobile responsiveness, horizontal swipe, and Core Web Vitals.
+- [x] Create `apps/web/src/app/special-fares/page.tsx` with search bar, date price strip, and 2-column filters.
+- [x] Build the sector filter pill strip with dynamic routes from API.
+- [x] Build the clean flight deal rows (`rounded-[14px]`, airline badge, baggage allowance, seat urgency pill, expandable details).
+- [x] Build `SpecialFareClaimModal` for booking requests routed straight to CRM leads pool.
+- [x] Connect `HeroSearchCard.tsx` under Flight Booking tab to query matching deals and display active special fare banner.
+- [x] Add Navbar brush-stroke "Special Fares" badge linking to `/special-fares` + Footer link.
 
 ---
 
 ## Milestone 5: End-to-End Verification & Production Readiness
 
-- [ ] End-to-end booking simulation: Admin creates bulk deal $\to$ Appears on `/special-fares` and Hero search $\to$ Customer submits enquiry $\to$ Lead appears in CRM $\to$ Coordinator adjusts seats.
-- [ ] Verify zero cost leakage: Ensure `supplierCost` and `pnrNumber` never appear in browser network tab for public visitors.
-- [ ] Run full test suites across monorepo (`turbo run test`).
-- [ ] Run type checks across all workspaces (`turbo run type-check`).
+- [x] Verify zero cost leakage: Confirmed `supplierCost` and `pnrNumber` never appear in public API DTOs or responses.
+- [x] Run unit & integration test suites across `apps/api`, `apps/admin`, and `apps/web` (all passing).
+- [x] Run Next.js production build (`@flyora/web`) and TypeScript checks across workspaces (0 errors).

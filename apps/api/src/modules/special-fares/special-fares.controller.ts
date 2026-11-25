@@ -31,8 +31,7 @@ export const publicSpecialFaresRoutes: FastifyPluginAsync = async (fastify) => {
     const result = await service.listPublicSpecialFares(parseResult.data);
     return reply.send({
       statusCode: 200,
-      data: result.items,
-      total: result.total,
+      data: result,
     });
   });
 
@@ -132,8 +131,7 @@ export const adminSpecialFaresRoutes: FastifyPluginAsync = async (fastify) => {
       const result = await service.listAdminSpecialFares(parseResult.data);
       return reply.send({
         statusCode: 200,
-        data: result.items,
-        total: result.total,
+        data: result,
       });
     },
   );
