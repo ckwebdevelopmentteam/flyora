@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -53,6 +53,8 @@ export function SpecialFareDrawer({
   const queryClient = useQueryClient();
   const isEditing = Boolean(initialData?.id);
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Extensible metadata rows for forthcoming custom business fields
   const [customFields, setCustomFields] = useState<
@@ -93,9 +95,28 @@ export function SpecialFareDrawer({
     },
   });
 
+  const handleSmoothClose = useCallback(() => {
+    if (isClosing) return;
+    setIsClosing(true);
+    closeTimerRef.current = setTimeout(() => {
+      setIsClosing(false);
+      onClose();
+    }, 180);
+  }, [isClosing, onClose]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+    };
+  }, []);
+
   // Sync form when opening / editing
   useEffect(() => {
-    if (!isOpen) return;
+    if (!isOpen) {
+      setIsClosing(false);
+      return;
+    }
+    setIsClosing(false);
     setSubmitError(null);
 
     if (initialData) {
@@ -227,7 +248,7 @@ export function SpecialFareDrawer({
           ? "Special fare allotment updated successfully."
           : "Special fare allotment added to inventory.",
       );
-      onClose();
+      handleSmoothClose();
     },
     onError: (err: any) => {
       setSubmitError(
@@ -240,8 +261,9 @@ export function SpecialFareDrawer({
 
   return (
     <Modal
-      drawer
       wide
+      closing={isClosing}
+      panelClassName="max-w-[780px]"
       busy={mutation.isPending}
       title={
         isEditing
@@ -249,26 +271,24 @@ export function SpecialFareDrawer({
           : "Add Special Fare Allotment"
       }
       description="Enter bulk contracted flight ticket details. Internal supplier costs and PNRs remain strictly hidden from the public website."
-      onClose={onClose}
+      onClose={handleSmoothClose}
       footer={
         <div className="flex items-center justify-end gap-3 w-full">
           <button
             type="button"
-            disabled={mutation.isPending}
-            onClick={onClose}
-            className="px-4 py-2 text-xs font-medium text-zinc-700 bg-white border border-zinc-200 rounded-md hover:bg-zinc-50 transition-colors cursor-pointer"
+            disabled={mutation.isPending || isClosing}
+            onClick={handleSmoothClose}
+            className="button-secondary cursor-pointer"
           >
             Cancel
           </button>
           <button
             type="submit"
             form="special-fare-form"
-            disabled={mutation.isPending}
-            className="px-5 py-2 text-xs font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700 transition-colors inline-flex items-center gap-2 cursor-pointer disabled:opacity-60"
+            disabled={mutation.isPending || isClosing}
+            className="button-primary cursor-pointer disabled:opacity-60"
           >
-            {mutation.isPending && (
-              <Loader2 className="w-3.5 h-3.5 animate-spin" />
-            )}
+            {mutation.isPending && <Loader2 className="w-4 h-4 animate-spin" />}
             {isEditing ? "Save Changes" : "Publish Allotment"}
           </button>
         </div>
@@ -277,141 +297,136 @@ export function SpecialFareDrawer({
       <form
         id="special-fare-form"
         onSubmit={handleSubmit((data) => mutation.mutate(data))}
-        className="space-y-6 pb-4"
+        className="space-y-7"
+        noValidate
       >
-        {submitError && <FormError>{submitError}</FormError>}
+        <FormError>{submitError}</FormError>
 
         {/* Section 1: Route & Airline */}
-        <section className="space-y-3.5">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2">
-            <Plane className="w-3.5 h-3.5 text-indigo-600" />
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2.5">
+            <Plane className="w-4 h-4 text-indigo-600" />
             <span>Sector & Flight Info</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Origin City *
-              </label>
+          <div className="form-grid">
+            <div className="field">
+              <label htmlFor="sf-originCity">Origin City *</label>
               <input
+                id="sf-originCity"
                 {...register("originCity")}
                 placeholder="e.g. Kozhikode"
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
               {errors.originCity && (
-                <p className="text-[11px] text-rose-600 mt-1">
+                <p className="text-xs text-rose-600">
                   {errors.originCity.message}
                 </p>
               )}
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
+            <div className="field">
+              <label htmlFor="sf-originCode">
                 Origin Airport Code (IATA) *
               </label>
               <input
+                id="sf-originCode"
                 {...register("originCode")}
                 placeholder="e.g. CCJ"
                 maxLength={5}
-                className="w-full px-3 py-2 text-xs uppercase font-mono border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                className="uppercase font-mono"
               />
               {errors.originCode && (
-                <p className="text-[11px] text-rose-600 mt-1">
+                <p className="text-xs text-rose-600">
                   {errors.originCode.message}
                 </p>
               )}
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Destination City *
-              </label>
+            <div className="field">
+              <label htmlFor="sf-destinationCity">Destination City *</label>
               <input
+                id="sf-destinationCity"
                 {...register("destinationCity")}
                 placeholder="e.g. Dubai"
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
               {errors.destinationCity && (
-                <p className="text-[11px] text-rose-600 mt-1">
+                <p className="text-xs text-rose-600">
                   {errors.destinationCity.message}
                 </p>
               )}
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
+            <div className="field">
+              <label htmlFor="sf-destinationCode">
                 Destination Airport Code (IATA) *
               </label>
               <input
+                id="sf-destinationCode"
                 {...register("destinationCode")}
                 placeholder="e.g. DXB"
                 maxLength={5}
-                className="w-full px-3 py-2 text-xs uppercase font-mono border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                className="uppercase font-mono"
               />
               {errors.destinationCode && (
-                <p className="text-[11px] text-rose-600 mt-1">
+                <p className="text-xs text-rose-600">
                   {errors.destinationCode.message}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            <div className="sm:col-span-1">
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Airline Name *
-              </label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="field">
+              <label htmlFor="sf-airlineName">Airline Name *</label>
               <input
+                id="sf-airlineName"
                 {...register("airlineName")}
                 placeholder="e.g. Air India Express"
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
               {errors.airlineName && (
-                <p className="text-[11px] text-rose-600 mt-1">
+                <p className="text-xs text-rose-600">
                   {errors.airlineName.message}
                 </p>
               )}
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Airline Code
-              </label>
+            <div className="field">
+              <label htmlFor="sf-airlineCode">Airline Code</label>
               <input
+                id="sf-airlineCode"
                 {...register("airlineCode")}
                 placeholder="e.g. IX"
-                className="w-full px-3 py-2 text-xs uppercase font-mono border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                className="uppercase font-mono"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Flight Number
-              </label>
+            <div className="field">
+              <label htmlFor="sf-flightNumber">Flight Number</label>
               <input
+                id="sf-flightNumber"
                 {...register("flightNumber")}
                 placeholder="e.g. IX-345"
-                className="w-full px-3 py-2 text-xs uppercase font-mono border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                className="uppercase font-mono"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-4 pt-1">
-            <label className="inline-flex items-center gap-2 text-xs text-zinc-700 cursor-pointer">
+          <div className="flex items-center gap-6 pt-1">
+            <label className="inline-flex items-center gap-2 text-xs font-medium text-zinc-700 cursor-pointer">
               <input
                 type="radio"
                 value="NON_STOP"
                 {...register("flightType")}
-                className="text-indigo-600"
+                className="accent-indigo-600"
               />
               <span>Non-Stop Flight</span>
             </label>
-            <label className="inline-flex items-center gap-2 text-xs text-zinc-700 cursor-pointer">
+            <label className="inline-flex items-center gap-2 text-xs font-medium text-zinc-700 cursor-pointer">
               <input
                 type="radio"
                 value="CONNECTING"
                 {...register("flightType")}
-                className="text-indigo-600"
+                className="accent-indigo-600"
               />
               <span>Connecting Flight</span>
             </label>
@@ -419,70 +434,62 @@ export function SpecialFareDrawer({
         </section>
 
         {/* Section 2: Schedule & Auto-Expiry */}
-        <section className="space-y-3.5">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2">
-            <Calendar className="w-3.5 h-3.5 text-indigo-600" />
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2.5">
+            <Calendar className="w-4 h-4 text-indigo-600" />
             <span>Schedule & Auto-Expiry</span>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Departure Date & Time *
-              </label>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+            <div className="field">
+              <label htmlFor="sf-departureDate">Departure Date & Time *</label>
               <input
+                id="sf-departureDate"
                 type="datetime-local"
                 {...register("departureDate")}
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
               {errors.departureDate && (
-                <p className="text-[11px] text-rose-600 mt-1">
+                <p className="text-xs text-rose-600">
                   {errors.departureDate.message}
                 </p>
               )}
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Arrival Date & Time
-              </label>
+            <div className="field">
+              <label htmlFor="sf-arrivalDate">Arrival Date & Time</label>
               <input
+                id="sf-arrivalDate"
                 type="datetime-local"
                 {...register("arrivalDate")}
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Public Auto-Expiry *
-              </label>
+            <div className="field">
+              <label htmlFor="sf-expiresAt">Public Auto-Expiry *</label>
               <input
+                id="sf-expiresAt"
                 type="datetime-local"
                 {...register("expiresAt")}
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
-              <p className="text-[10px] text-zinc-400 mt-1">
-                Auto-hides from public site after this time
-              </p>
+              <small>Auto-hides from public site after this time</small>
             </div>
           </div>
         </section>
 
         {/* Section 3: Baggage Policy */}
-        <section className="space-y-3">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2">
-            <Luggage className="w-3.5 h-3.5 text-indigo-600" />
+        <section className="space-y-3.5">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2.5">
+            <Luggage className="w-4 h-4 text-indigo-600" />
             <span>Baggage Policy</span>
           </div>
 
-          <div className="flex flex-wrap gap-1.5 mb-2">
+          <div className="flex flex-wrap gap-2">
             {BAGGAGE_PRESETS.map((preset) => (
               <button
                 key={preset}
                 type="button"
                 onClick={() => setValue("baggageInfo", preset)}
-                className={`px-2.5 py-1 rounded text-[11px] font-medium border transition-colors cursor-pointer ${
+                className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
                   watchBaggage === preset
                     ? "bg-indigo-50 border-indigo-200 text-indigo-700"
                     : "bg-zinc-50 border-zinc-200 text-zinc-600 hover:bg-zinc-100"
@@ -493,70 +500,64 @@ export function SpecialFareDrawer({
             ))}
           </div>
 
-          <input
-            {...register("baggageInfo")}
-            placeholder="e.g. 30 Kg Check-in + 7 Kg Cabin"
-            className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
-          />
+          <div className="field">
+            <input
+              {...register("baggageInfo")}
+              placeholder="e.g. 30 Kg Check-in + 7 Kg Cabin"
+            />
+          </div>
         </section>
 
         {/* Section 4: Seats, Pricing & Margin */}
-        <section className="space-y-3.5">
-          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2">
-            <IndianRupee className="w-3.5 h-3.5 text-indigo-600" />
+        <section className="space-y-4">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2.5">
+            <IndianRupee className="w-4 h-4 text-indigo-600" />
             <span>Seats & Commercials</span>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Total Quota *
-              </label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="field">
+              <label htmlFor="sf-totalSeats">Total Quota *</label>
               <input
+                id="sf-totalSeats"
                 type="number"
                 min={1}
                 {...register("totalSeats", { valueAsNumber: true })}
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Available Seats *
-              </label>
+            <div className="field">
+              <label htmlFor="sf-availableSeats">Available Seats *</label>
               <input
+                id="sf-availableSeats"
                 type="number"
                 min={0}
                 {...register("availableSeats", { valueAsNumber: true })}
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Supplier Cost (₹)
-              </label>
+            <div className="field">
+              <label htmlFor="sf-supplierCost">Supplier Cost (₹)</label>
               <input
+                id="sf-supplierCost"
                 type="number"
                 min={0}
                 placeholder="Staff only"
                 {...register("supplierCost", { valueAsNumber: true })}
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Customer Fare (₹) *
-              </label>
+            <div className="field">
+              <label htmlFor="sf-farePerSeat">Customer Fare (₹) *</label>
               <input
+                id="sf-farePerSeat"
                 type="number"
                 min={1}
                 {...register("farePerSeat", { valueAsNumber: true })}
-                className="w-full px-3 py-2 text-xs font-semibold border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                className="font-semibold"
               />
               {errors.farePerSeat && (
-                <p className="text-[11px] text-rose-600 mt-1">
+                <p className="text-xs text-rose-600">
                   {errors.farePerSeat.message}
                 </p>
               )}
@@ -566,7 +567,7 @@ export function SpecialFareDrawer({
           {/* Live Profit Preview Banner */}
           {watchFare > 0 && watchCost > 0 && (
             <div
-              className={`p-3 rounded-lg border flex items-center justify-between text-xs ${
+              className={`p-3.5 rounded-lg border flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs ${
                 marginAmount > 0
                   ? "bg-emerald-50 border-emerald-200 text-emerald-800"
                   : "bg-rose-50 border-rose-200 text-rose-800"
@@ -589,36 +590,35 @@ export function SpecialFareDrawer({
             </div>
           )}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
+          <div className="form-grid">
+            <div className="field">
+              <label htmlFor="sf-pnrNumber">
                 Group PNR Reference (Staff Only)
               </label>
               <input
+                id="sf-pnrNumber"
                 {...register("pnrNumber")}
                 placeholder="e.g. GRP9821X"
-                className="w-full px-3 py-2 text-xs font-mono border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                className="font-mono"
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-medium text-zinc-700 mb-1">
-                Internal Staff Remarks
-              </label>
+            <div className="field">
+              <label htmlFor="sf-notes">Internal Staff Remarks</label>
               <input
+                id="sf-notes"
                 {...register("notes")}
                 placeholder="e.g. Non-refundable bulk batch from supplier X"
-                className="w-full px-3 py-2 text-xs border border-zinc-200 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
               />
             </div>
           </div>
         </section>
 
         {/* Section 5: Extensible Additional Details (Ready for custom business fields) */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between border-b border-zinc-100 pb-2">
+        <section className="space-y-3.5">
+          <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              <Info className="w-3.5 h-3.5 text-indigo-600" />
+              <Info className="w-4 h-4 text-indigo-600" />
               <span>Additional Booking Details (Custom Fields)</span>
             </div>
             <button
@@ -626,42 +626,45 @@ export function SpecialFareDrawer({
               onClick={() =>
                 setCustomFields((prev) => [...prev, { key: "", value: "" }])
               }
-              className="text-[11px] font-medium text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1 cursor-pointer"
+              className="text-xs font-medium text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1 cursor-pointer"
             >
-              <Plus className="w-3 h-3" />
+              <Plus className="w-3.5 h-3.5" />
               Add Field
             </button>
           </div>
 
           {customFields.length === 0 ? (
-            <p className="text-[11px] text-zinc-400 italic">
+            <p className="text-xs text-zinc-500 notice">
               Optional custom attributes (e.g., Terminal, Meal Policy, Market
-              Counter Fare). Click "Add Field" to attach extra ticket details.
+              Counter Fare). Click &ldquo;Add Field&rdquo; to attach extra
+              ticket details.
             </p>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-3">
               {customFields.map((field, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <input
-                    value={field.key}
-                    onChange={(e) => {
-                      const next = [...customFields];
-                      next[index].key = e.target.value;
-                      setCustomFields(next);
-                    }}
-                    placeholder="Field Name (e.g. Market Rate)"
-                    className="flex-1 px-2.5 py-1.5 text-xs border border-zinc-200 rounded-md focus:outline-none focus:border-indigo-500"
-                  />
-                  <input
-                    value={field.value}
-                    onChange={(e) => {
-                      const next = [...customFields];
-                      next[index].value = e.target.value;
-                      setCustomFields(next);
-                    }}
-                    placeholder="Value (e.g. 14500)"
-                    className="flex-1 px-2.5 py-1.5 text-xs border border-zinc-200 rounded-md focus:outline-none focus:border-indigo-500"
-                  />
+                <div key={index} className="flex items-center gap-3">
+                  <div className="field flex-1">
+                    <input
+                      value={field.key}
+                      onChange={(e) => {
+                        const next = [...customFields];
+                        next[index].key = e.target.value;
+                        setCustomFields(next);
+                      }}
+                      placeholder="Field Name (e.g. Market Rate)"
+                    />
+                  </div>
+                  <div className="field flex-1">
+                    <input
+                      value={field.value}
+                      onChange={(e) => {
+                        const next = [...customFields];
+                        next[index].value = e.target.value;
+                        setCustomFields(next);
+                      }}
+                      placeholder="Value (e.g. 14500)"
+                    />
+                  </div>
                   <button
                     type="button"
                     onClick={() =>
@@ -669,10 +672,10 @@ export function SpecialFareDrawer({
                         prev.filter((_, i) => i !== index),
                       )
                     }
-                    className="p-1.5 text-zinc-400 hover:text-rose-600 cursor-pointer"
+                    className="icon-button hover:text-rose-600 cursor-pointer"
                     aria-label="Remove field"
                   >
-                    <Trash2 className="w-3.5 h-3.5" />
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               ))}

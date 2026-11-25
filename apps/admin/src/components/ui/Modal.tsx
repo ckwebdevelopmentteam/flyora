@@ -38,6 +38,7 @@ export function Modal({
   panelClassName = "",
   drawer = false,
   hideHeader = false,
+  closing = false,
 }: {
   title: string;
   description?: ReactNode;
@@ -49,6 +50,7 @@ export function Modal({
   panelClassName?: string;
   drawer?: boolean;
   hideHeader?: boolean;
+  closing?: boolean;
 }) {
   const id = useId();
   const depth = useContext(DialogDepth);
@@ -125,7 +127,7 @@ export function Modal({
   return createPortal(
     <DialogDepth.Provider value={depth + 1}>
       <div
-        className={`modal-layer ${drawer ? "drawer-layer" : ""}`}
+        className={`modal-layer ${drawer ? "drawer-layer" : ""} ${closing ? "is-closing" : ""}`}
         style={{ zIndex: 100 + depth * 10 }}
         onMouseDown={(event) => {
           if (event.target === event.currentTarget && !busy) onClose();

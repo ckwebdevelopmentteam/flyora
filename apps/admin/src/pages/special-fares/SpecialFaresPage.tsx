@@ -609,7 +609,7 @@ export function SpecialFaresPage() {
                 type="button"
                 disabled={deleteMutation.isPending}
                 onClick={() => setTicketToDelete(null)}
-                className="px-4 py-2 text-xs font-medium text-zinc-700 bg-white border border-zinc-200 rounded-md hover:bg-zinc-50 cursor-pointer"
+                className="button-secondary cursor-pointer"
               >
                 Cancel
               </button>
@@ -617,10 +617,10 @@ export function SpecialFaresPage() {
                 type="button"
                 disabled={deleteMutation.isPending}
                 onClick={() => deleteMutation.mutate(ticketToDelete.id)}
-                className="px-4 py-2 text-xs font-semibold text-white bg-rose-600 hover:bg-rose-700 rounded-md inline-flex items-center gap-1.5 cursor-pointer"
+                className="button-primary button-danger cursor-pointer"
               >
                 {deleteMutation.isPending && (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 )}
                 <span>Delete Allotment</span>
               </button>
