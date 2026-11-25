@@ -125,9 +125,9 @@ export function SpecialFareTicketCard({
             <div className="text-lg sm:text-xl font-bold text-[#1C1815] leading-none">
               {formatTime(ticket.departureDate)}
             </div>
-            <div className="text-xs font-semibold text-stone-700 mt-1">
+            <div className="text-xs font-semibold text-stone-700 mt-1 capitalize">
               {ticket.originCity}{" "}
-              <span className="text-stone-400 font-mono">
+              <span className="text-stone-400 font-mono uppercase">
                 ({ticket.originCode})
               </span>
             </div>
@@ -162,9 +162,9 @@ export function SpecialFareTicketCard({
                 </span>
               )}
             </div>
-            <div className="text-xs font-semibold text-stone-700 mt-1">
+            <div className="text-xs font-semibold text-stone-700 mt-1 capitalize">
               {ticket.destinationCity}{" "}
-              <span className="text-stone-400 font-mono">
+              <span className="text-stone-400 font-mono uppercase">
                 ({ticket.destinationCode})
               </span>
             </div>

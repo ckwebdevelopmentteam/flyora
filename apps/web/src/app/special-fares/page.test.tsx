@@ -168,16 +168,44 @@ describe("SpecialFaresPage", () => {
     expect(screen.getByText("lead-sf-99")).toBeDefined();
   });
 
-  it("displays Departure Time and Arrival Time filter sections and airport combobox dropdown", async () => {
+  it("shows Price Range, Travel Window, and Baggage filters by default, and reveals Departure/Arrival Time when a date is chosen", async () => {
     render(<SpecialFaresPage />);
     await screen.findByRole("heading", { name: "Air India Express" });
 
-    expect(screen.getByText("Departure Time")).toBeDefined();
+    // Default multi-date filters shown
+    expect(screen.getByText("Price Range")).toBeDefined();
+    expect(screen.getByText("Travel Window")).toBeDefined();
+    expect(screen.getByText("Baggage Included")).toBeDefined();
+
+    // Time filters hidden until a date is selected
+    expect(screen.queryByText("Departure Time")).toBeNull();
+    expect(screen.queryByText("Arrival Time")).toBeNull();
+
+    // Filter by 30 Kg+ Check-in
+    fireEvent.click(screen.getByRole("button", { name: "30 Kg+ Check-in" }));
+    expect(
+      screen.getByRole("heading", { name: "Air India Express" }),
+    ).toBeDefined();
+    expect(screen.queryByRole("heading", { name: "IndiGo" })).toBeNull();
+
+    // Reset filter and select a specific date from Date Price Strip
+    fireEvent.click(screen.getByRole("button", { name: /Reset/i }));
+    const dateStrip = screen.getByRole("button", {
+      name: /All Dates/i,
+    }).parentElement!;
+    const dateBtn = Array.from(dateStrip.querySelectorAll("button")).find((b) =>
+      b.textContent?.includes("₹9,499"),
+    );
+    expect(dateBtn).toBeDefined();
+    fireEvent.click(dateBtn!);
+
+    // Conditional Departure & Arrival Time filters appear
+    expect(await screen.findByText("Departure Time")).toBeDefined();
     expect(screen.getByText("Arrival Time")).toBeDefined();
 
+    // Verify AirportCombobox still opens cleanly
     const fromInput = screen.getByLabelText("From");
     fireEvent.focus(fromInput);
-
     expect(await screen.findByText("Important Airports")).toBeDefined();
     expect(screen.getAllByText("Mumbai").length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText("BOM").length).toBeGreaterThanOrEqual(1);

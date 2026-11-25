@@ -2,12 +2,25 @@
 
 import React from "react";
 import type { FlightType } from "@flyora/types";
-import { RotateCcw, Sun, Sunset, Moon, Sunrise } from "lucide-react";
+import {
+  RotateCcw,
+  Sun,
+  Sunset,
+  Moon,
+  Sunrise,
+  Luggage,
+  CalendarRange,
+} from "lucide-react";
 
 export type DepartureWindow = "MORNING" | "AFTERNOON" | "EVENING" | "NIGHT";
+export type TravelWindow = "ALL" | "NEXT_7_DAYS" | "THIS_MONTH" | "NEXT_MONTH";
+export type BaggageTier = "ALL" | "30KG_PLUS" | "20KG_PLUS";
 
 export interface SpecialFareFilterState {
   flightType: FlightType | "ALL";
+  maxPrice: number | null;
+  travelWindow: TravelWindow;
+  baggageTier: BaggageTier;
   departureWindows: DepartureWindow[];
   arrivalWindows: DepartureWindow[];
   selectedAirlines: string[];
@@ -26,6 +39,8 @@ interface SpecialFareFiltersProps {
   airlines: AirlineFilterOption[];
   nonStopMinFare?: number | null;
   connectingMinFare?: number | null;
+  priceBounds: { min: number; max: number };
+  showTimeFilters: boolean;
 }
 
 const TIME_WINDOWS: Array<{
@@ -40,6 +55,13 @@ const TIME_WINDOWS: Array<{
   { id: "NIGHT", label: "Night", range: "11pm - 05am", icon: Moon },
 ];
 
+const TRAVEL_WINDOWS: Array<{ id: TravelWindow; label: string }> = [
+  { id: "ALL", label: "Anytime" },
+  { id: "NEXT_7_DAYS", label: "Next 7 Days" },
+  { id: "THIS_MONTH", label: "This Month" },
+  { id: "NEXT_MONTH", label: "Next Month" },
+];
+
 export function SpecialFareFilters({
   filters,
   onChange,
@@ -47,9 +69,14 @@ export function SpecialFareFilters({
   airlines,
   nonStopMinFare,
   connectingMinFare,
+  priceBounds,
+  showTimeFilters,
 }: SpecialFareFiltersProps) {
   const hasActiveFilters =
     filters.flightType !== "ALL" ||
+    filters.maxPrice !== null ||
+    filters.travelWindow !== "ALL" ||
+    filters.baggageTier !== "ALL" ||
     filters.departureWindows.length > 0 ||
     filters.arrivalWindows.length > 0 ||
     filters.selectedAirlines.length > 0;
@@ -74,6 +101,9 @@ export function SpecialFareFilters({
     });
   };
 
+  const effectiveMaxPrice =
+    filters.maxPrice !== null ? filters.maxPrice : priceBounds.max;
+
   return (
     <aside className="bg-white rounded-[14px] border border-stone-200/90 p-5 shadow-2xs space-y-6">
       {/* Header */}
@@ -93,8 +123,49 @@ export function SpecialFareFilters({
         )}
       </div>
 
-      {/* 1. Stops Filter */}
-      <div className="space-y-2.5">
+      {/* 1. Price Range Slider */}
+      {priceBounds.max > 0 && (
+        <div className="space-y-2.5">
+          <div className="flex items-center justify-between">
+            <h3 className="text-xs font-semibold text-[#1C1815]">
+              Price Range
+            </h3>
+            <span className="text-xs font-bold text-[#002f89]">
+              Up to ₹{effectiveMaxPrice.toLocaleString("en-IN")}
+            </span>
+          </div>
+          {priceBounds.max > priceBounds.min ? (
+            <>
+              <input
+                type="range"
+                aria-label="Maximum fare price"
+                min={priceBounds.min}
+                max={priceBounds.max}
+                step={500}
+                value={effectiveMaxPrice}
+                onChange={(e) => {
+                  const val = Number(e.target.value);
+                  onChange({
+                    maxPrice: val >= priceBounds.max ? null : val,
+                  });
+                }}
+                className="w-full accent-[#002f89] cursor-pointer h-1.5 bg-stone-200 rounded-lg"
+              />
+              <div className="flex items-center justify-between text-[10px] font-medium text-stone-400">
+                <span>₹{priceBounds.min.toLocaleString("en-IN")}</span>
+                <span>₹{priceBounds.max.toLocaleString("en-IN")}</span>
+              </div>
+            </>
+          ) : (
+            <p className="text-[11px] text-stone-500">
+              All deals priced at ₹{priceBounds.min.toLocaleString("en-IN")}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* 2. Stops Filter */}
+      <div className="space-y-2.5 pt-2 border-t border-stone-100">
         <h3 className="text-xs font-semibold text-[#1C1815]">Stops</h3>
         <div className="grid grid-cols-2 gap-2">
           <button
@@ -147,63 +218,143 @@ export function SpecialFareFilters({
         </div>
       </div>
 
-      {/* 2. Departure Times */}
+      {/* 3. Travel Window (Multi-Date Flexibility) */}
       <div className="space-y-2.5 pt-2 border-t border-stone-100">
-        <h3 className="text-xs font-semibold text-[#1C1815]">Departure Time</h3>
+        <h3 className="text-xs font-semibold text-[#1C1815] flex items-center gap-1.5">
+          <CalendarRange className="w-3.5 h-3.5 text-stone-400" />
+          <span>Travel Window</span>
+        </h3>
         <div className="grid grid-cols-2 gap-2">
-          {TIME_WINDOWS.map((win) => {
-            const Icon = win.icon;
-            const active = filters.departureWindows.includes(win.id);
+          {TRAVEL_WINDOWS.map((win) => {
+            const active = filters.travelWindow === win.id;
             return (
               <button
-                key={`dep-${win.id}`}
+                key={win.id}
                 type="button"
-                onClick={() => toggleTimeWindow("departureWindows", win.id)}
-                className={`p-2 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                onClick={() =>
+                  onChange({
+                    travelWindow: active && win.id !== "ALL" ? "ALL" : win.id,
+                  })
+                }
+                className={`px-2.5 py-2 rounded-lg border text-[11px] font-medium transition-all cursor-pointer ${
                   active
-                    ? "border-[#002f89] bg-[#002f89]/5 text-[#002f89]"
+                    ? "border-[#002f89] bg-[#002f89]/5 text-[#002f89] font-semibold"
                     : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-medium leading-tight">
-                  {win.range}
-                </span>
+                {win.label}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* 3. Arrival Times */}
+      {/* 4. Baggage Included */}
       <div className="space-y-2.5 pt-2 border-t border-stone-100">
-        <h3 className="text-xs font-semibold text-[#1C1815]">Arrival Time</h3>
+        <h3 className="text-xs font-semibold text-[#1C1815] flex items-center gap-1.5">
+          <Luggage className="w-3.5 h-3.5 text-stone-400" />
+          <span>Baggage Included</span>
+        </h3>
         <div className="grid grid-cols-2 gap-2">
-          {TIME_WINDOWS.map((win) => {
-            const Icon = win.icon;
-            const active = filters.arrivalWindows.includes(win.id);
-            return (
-              <button
-                key={`arr-${win.id}`}
-                type="button"
-                onClick={() => toggleTimeWindow("arrivalWindows", win.id)}
-                className={`p-2 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
-                  active
-                    ? "border-[#002f89] bg-[#002f89]/5 text-[#002f89]"
-                    : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
-                }`}
-              >
-                <Icon className="w-3.5 h-3.5" />
-                <span className="text-[10px] font-medium leading-tight">
-                  {win.range}
-                </span>
-              </button>
-            );
-          })}
+          <button
+            type="button"
+            onClick={() =>
+              onChange({
+                baggageTier:
+                  filters.baggageTier === "30KG_PLUS" ? "ALL" : "30KG_PLUS",
+              })
+            }
+            className={`px-2.5 py-2 rounded-lg border text-[11px] font-medium transition-all cursor-pointer ${
+              filters.baggageTier === "30KG_PLUS"
+                ? "border-[#002f89] bg-[#002f89]/5 text-[#002f89] font-semibold"
+                : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+            }`}
+          >
+            30 Kg+ Check-in
+          </button>
+          <button
+            type="button"
+            onClick={() =>
+              onChange({
+                baggageTier:
+                  filters.baggageTier === "20KG_PLUS" ? "ALL" : "20KG_PLUS",
+              })
+            }
+            className={`px-2.5 py-2 rounded-lg border text-[11px] font-medium transition-all cursor-pointer ${
+              filters.baggageTier === "20KG_PLUS"
+                ? "border-[#002f89] bg-[#002f89]/5 text-[#002f89] font-semibold"
+                : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+            }`}
+          >
+            20 Kg+ Check-in
+          </button>
         </div>
       </div>
 
-      {/* 3. Airlines */}
+      {/* 5. Conditional Departure & Arrival Time (Only when specific date with multiple flights is active) */}
+      {showTimeFilters && (
+        <>
+          <div className="space-y-2.5 pt-2 border-t border-stone-100 animate-in fade-in duration-150">
+            <h3 className="text-xs font-semibold text-[#1C1815]">
+              Departure Time
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {TIME_WINDOWS.map((win) => {
+                const Icon = win.icon;
+                const active = filters.departureWindows.includes(win.id);
+                return (
+                  <button
+                    key={`dep-${win.id}`}
+                    type="button"
+                    onClick={() => toggleTimeWindow("departureWindows", win.id)}
+                    className={`p-2 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                      active
+                        ? "border-[#002f89] bg-[#002f89]/5 text-[#002f89]"
+                        : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span className="text-[10px] font-medium leading-tight">
+                      {win.range}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <div className="space-y-2.5 pt-2 border-t border-stone-100 animate-in fade-in duration-150">
+            <h3 className="text-xs font-semibold text-[#1C1815]">
+              Arrival Time
+            </h3>
+            <div className="grid grid-cols-2 gap-2">
+              {TIME_WINDOWS.map((win) => {
+                const Icon = win.icon;
+                const active = filters.arrivalWindows.includes(win.id);
+                return (
+                  <button
+                    key={`arr-${win.id}`}
+                    type="button"
+                    onClick={() => toggleTimeWindow("arrivalWindows", win.id)}
+                    className={`p-2 rounded-lg border text-center transition-all cursor-pointer flex flex-col items-center gap-1 ${
+                      active
+                        ? "border-[#002f89] bg-[#002f89]/5 text-[#002f89]"
+                        : "border-stone-200 bg-white text-stone-600 hover:border-stone-300"
+                    }`}
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    <span className="text-[10px] font-medium leading-tight">
+                      {win.range}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* 6. Airlines */}
       {airlines.length > 0 && (
         <div className="space-y-2.5 pt-2 border-t border-stone-100">
           <h3 className="text-xs font-semibold text-[#1C1815]">Airlines</h3>

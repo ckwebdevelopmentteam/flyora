@@ -44,6 +44,11 @@ function getDepartureWindow(iso: string): DepartureWindow {
   return "NIGHT";
 }
 
+function parseCheckedBaggageKg(baggageInfo: string): number {
+  const match = baggageInfo.match(/(\d+)\s*kg/i);
+  return match ? Number(match[1]) : 0;
+}
+
 export default function SpecialFaresPage() {
   return (
     <Suspense
@@ -86,6 +91,9 @@ function SpecialFaresContent() {
   // Sidebar Filters & Sort
   const [filters, setFilters] = useState<SpecialFareFilterState>({
     flightType: "ALL",
+    maxPrice: null,
+    travelWindow: "ALL",
+    baggageTier: "ALL",
     departureWindows: [],
     arrivalWindows: [],
     selectedAirlines: [],
@@ -189,6 +197,9 @@ function SpecialFaresContent() {
     setAppliedSearch({ from: "", to: "", date: "" });
     setFilters({
       flightType: "ALL",
+      maxPrice: null,
+      travelWindow: "ALL",
+      baggageTier: "ALL",
       departureWindows: [],
       arrivalWindows: [],
       selectedAirlines: [],
@@ -277,53 +288,100 @@ function SpecialFaresContent() {
     );
   }, [tickets]);
 
-  // Filter options derived from active tickets
-  const { airlines, nonStopMinFare, connectingMinFare } = useMemo(() => {
-    const airlineMap = new Map<string, { minFare: number; count: number }>();
-    let minNonStop: number | null = null;
-    let minConnecting: number | null = null;
+  // Filter options & price bounds derived from active tickets
+  const { airlines, nonStopMinFare, connectingMinFare, priceBounds } =
+    useMemo(() => {
+      const airlineMap = new Map<string, { minFare: number; count: number }>();
+      let minNonStop: number | null = null;
+      let minConnecting: number | null = null;
+      let minPrice = Infinity;
+      let maxPrice = 0;
 
-    for (const t of tickets) {
-      const existing = airlineMap.get(t.airlineName);
-      if (!existing) {
-        airlineMap.set(t.airlineName, { minFare: t.farePerSeat, count: 1 });
-      } else {
-        existing.count += 1;
-        if (t.farePerSeat < existing.minFare) existing.minFare = t.farePerSeat;
+      for (const t of tickets) {
+        if (t.farePerSeat < minPrice) minPrice = t.farePerSeat;
+        if (t.farePerSeat > maxPrice) maxPrice = t.farePerSeat;
+
+        const existing = airlineMap.get(t.airlineName);
+        if (!existing) {
+          airlineMap.set(t.airlineName, { minFare: t.farePerSeat, count: 1 });
+        } else {
+          existing.count += 1;
+          if (t.farePerSeat < existing.minFare)
+            existing.minFare = t.farePerSeat;
+        }
+
+        if (t.flightType === "NON_STOP") {
+          if (minNonStop === null || t.farePerSeat < minNonStop)
+            minNonStop = t.farePerSeat;
+        } else {
+          if (minConnecting === null || t.farePerSeat < minConnecting)
+            minConnecting = t.farePerSeat;
+        }
       }
 
-      if (t.flightType === "NON_STOP") {
-        if (minNonStop === null || t.farePerSeat < minNonStop)
-          minNonStop = t.farePerSeat;
-      } else {
-        if (minConnecting === null || t.farePerSeat < minConnecting)
-          minConnecting = t.farePerSeat;
-      }
-    }
+      const airlinesList = Array.from(airlineMap.entries())
+        .map(([name, info]) => ({ name, ...info }))
+        .sort((a, b) => a.minFare - b.minFare);
 
-    const airlinesList = Array.from(airlineMap.entries())
-      .map(([name, info]) => ({ name, ...info }))
-      .sort((a, b) => a.minFare - b.minFare);
+      return {
+        airlines: airlinesList,
+        nonStopMinFare: minNonStop,
+        connectingMinFare: minConnecting,
+        priceBounds: {
+          min: minPrice === Infinity ? 0 : Math.floor(minPrice / 500) * 500,
+          max: maxPrice === 0 ? 0 : Math.ceil(maxPrice / 500) * 500,
+        },
+      };
+    }, [tickets]);
 
-    return {
-      airlines: airlinesList,
-      nonStopMinFare: minNonStop,
-      connectingMinFare: minConnecting,
-    };
-  }, [tickets]);
+  // Show Departure/Arrival clock filters only when a specific date is selected
+  const showTimeFilters = Boolean(appliedSearch.date);
 
   // Filtered & Sorted Results
   const visibleTickets = useMemo(() => {
+    const now = new Date();
+    const in7Days = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const currentMonth = now.getMonth();
+    const currentYear = now.getFullYear();
+    const nextMonth = (currentMonth + 1) % 12;
+    const nextMonthYear = currentMonth === 11 ? currentYear + 1 : currentYear;
+
     const list = tickets.filter((t) => {
       if (t.availableSeats < passengers) return false;
+      if (filters.maxPrice !== null && t.farePerSeat > filters.maxPrice) {
+        return false;
+      }
       if (filters.flightType !== "ALL" && t.flightType !== filters.flightType) {
         return false;
       }
-      if (filters.departureWindows.length > 0) {
+      if (filters.travelWindow !== "ALL") {
+        const dep = new Date(t.departureDate);
+        if (filters.travelWindow === "NEXT_7_DAYS" && dep > in7Days) {
+          return false;
+        }
+        if (
+          filters.travelWindow === "THIS_MONTH" &&
+          (dep.getMonth() !== currentMonth || dep.getFullYear() !== currentYear)
+        ) {
+          return false;
+        }
+        if (
+          filters.travelWindow === "NEXT_MONTH" &&
+          (dep.getMonth() !== nextMonth || dep.getFullYear() !== nextMonthYear)
+        ) {
+          return false;
+        }
+      }
+      if (filters.baggageTier !== "ALL") {
+        const kg = parseCheckedBaggageKg(t.baggageInfo);
+        if (filters.baggageTier === "30KG_PLUS" && kg < 30) return false;
+        if (filters.baggageTier === "20KG_PLUS" && kg < 20) return false;
+      }
+      if (showTimeFilters && filters.departureWindows.length > 0) {
         const win = getDepartureWindow(t.departureDate);
         if (!filters.departureWindows.includes(win)) return false;
       }
-      if (filters.arrivalWindows.length > 0) {
+      if (showTimeFilters && filters.arrivalWindows.length > 0) {
         if (!t.arrivalDate) return false;
         const win = getDepartureWindow(t.arrivalDate);
         if (!filters.arrivalWindows.includes(win)) return false;
@@ -346,7 +404,7 @@ function SpecialFaresContent() {
         new Date(b.departureDate).getTime()
       );
     });
-  }, [tickets, passengers, filters, sortBy]);
+  }, [tickets, passengers, filters, sortBy, showTimeFilters]);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#1C1815]">
@@ -505,7 +563,7 @@ function SpecialFaresContent() {
                           : "bg-white text-stone-700 border-stone-200 hover:border-[#002f89]/40"
                       }`}
                     >
-                      <span>
+                      <span className="capitalize">
                         {route.originCity} ➔ {route.destinationCity}
                       </span>
                       <span
@@ -534,6 +592,9 @@ function SpecialFaresContent() {
                 onReset={() =>
                   setFilters({
                     flightType: "ALL",
+                    maxPrice: null,
+                    travelWindow: "ALL",
+                    baggageTier: "ALL",
                     departureWindows: [],
                     arrivalWindows: [],
                     selectedAirlines: [],
@@ -542,6 +603,8 @@ function SpecialFaresContent() {
                 airlines={airlines}
                 nonStopMinFare={nonStopMinFare}
                 connectingMinFare={connectingMinFare}
+                priceBounds={priceBounds}
+                showTimeFilters={showTimeFilters}
               />
             </div>
 
@@ -753,6 +816,9 @@ function SpecialFaresContent() {
               onReset={() =>
                 setFilters({
                   flightType: "ALL",
+                  maxPrice: null,
+                  travelWindow: "ALL",
+                  baggageTier: "ALL",
                   departureWindows: [],
                   arrivalWindows: [],
                   selectedAirlines: [],
@@ -761,6 +827,8 @@ function SpecialFaresContent() {
               airlines={airlines}
               nonStopMinFare={nonStopMinFare}
               connectingMinFare={connectingMinFare}
+              priceBounds={priceBounds}
+              showTimeFilters={showTimeFilters}
             />
             <button
               type="button"
