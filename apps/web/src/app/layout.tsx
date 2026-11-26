@@ -26,6 +26,11 @@ export const metadata: Metadata = {
   title: "Flyora Tours & Travels | Curated Holidays, Flights & Visa Services",
   description:
     "Custom tour packages, confirmed flights, visa assistance, and luxury stays across India and the world. Built around you since 2014.",
+  icons: {
+    icon: "/flyora-logo.png",
+    shortcut: "/flyora-logo.png",
+    apple: "/flyora-logo.png",
+  },
 };
 
 export default function RootLayout({

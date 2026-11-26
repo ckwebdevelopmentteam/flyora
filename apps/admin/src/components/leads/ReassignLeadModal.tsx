@@ -106,7 +106,7 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
         {/* Header */}
         <div className="px-5 py-4 border-b border-zinc-100 flex items-center justify-between bg-[#FAFAF9]">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-zinc-900 text-white flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-[#002f89] text-white flex items-center justify-center">
               <UserCheck className="w-4 h-4" />
             </div>
             <div>
@@ -236,7 +236,7 @@ export const ReassignLeadModal: React.FC<ReassignLeadModalProps> = ({
                 !!usersError ||
                 !eligibleCoordinators.some((user) => user.id === selectedUserId)
               }
-              className="px-4 py-2 rounded-xl bg-zinc-900 hover:bg-black text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50"
+              className="px-4 py-2 rounded-xl bg-[#002f89] hover:bg-[#002f89] text-white text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-50"
             >
               {reassignMutation.isPending ? (
                 <>

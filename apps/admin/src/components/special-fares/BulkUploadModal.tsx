@@ -189,7 +189,7 @@ export function BulkUploadModal({
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-black hover:bg-zinc-800 text-white text-xs font-medium cursor-pointer transition-colors"
+              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-medium cursor-pointer transition-colors"
             >
               <Upload className="w-3.5 h-3.5" />
               <span>Choose CSV / TSV File</span>
@@ -239,7 +239,7 @@ export function BulkUploadModal({
                 setFileName("sample-preview.csv");
                 setSheetText(SAMPLE_SPECIAL_FARES_CSV);
               }}
-              className="text-[11px] font-medium text-indigo-600 hover:underline cursor-pointer"
+              className="text-[11px] font-medium text-blue-700 hover:underline cursor-pointer"
             >
               Load Sample Rows
             </button>
@@ -250,7 +250,7 @@ export function BulkUploadModal({
             value={sheetText}
             onChange={(e) => setSheetText(e.target.value)}
             placeholder="Paste spreadsheet table including the header row (e.g. airlineName, flightNumber, originCode, destinationCode, departureDate, departureTime, farePerSeat, childFare, infantFare, totalSeats, isRefundable)..."
-            className="w-full font-mono text-[11px] leading-relaxed p-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+            className="w-full font-mono text-[11px] leading-relaxed p-3 border border-zinc-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
           />
         </div>
 

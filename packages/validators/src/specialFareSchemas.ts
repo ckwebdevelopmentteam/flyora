@@ -13,7 +13,7 @@ export const specialFareStatusEnum = z.enum([
   "PAUSED",
 ]);
 
-export const createSpecialFareSchema = z.object({
+const specialFareFields = z.object({
   airlineName: z.string().min(1, "Airline name is required").trim(),
   airlineCode: z.string().trim().optional().nullable(),
   flightNumber: z.string().trim().optional().nullable(),
@@ -65,6 +65,52 @@ export const createSpecialFareSchema = z.object({
   displayOrder: z.coerce.number().int().default(0),
 });
 
+export const createSpecialFareSchema = specialFareFields.superRefine(
+  (data, ctx) => {
+    const departure = new Date(data.departureDate);
+    if (isNaN(departure.getTime())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["departureDate"],
+        message: "Departure date & time must be valid",
+      });
+    }
+
+    if (data.arrivalDate) {
+      const arrival = new Date(data.arrivalDate);
+      if (isNaN(arrival.getTime()) || arrival <= departure) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["arrivalDate"],
+          message: "Arrival must be after departure",
+        });
+      }
+    }
+
+    if (data.expiresAt) {
+      const expiry = new Date(data.expiresAt);
+      if (isNaN(expiry.getTime()) || expiry >= departure) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["expiresAt"],
+          message: "Stop ticketing must be before departure",
+        });
+      }
+    }
+
+    if (
+      data.availableSeats !== undefined &&
+      data.availableSeats > data.totalSeats
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["availableSeats"],
+        message: "Available seats cannot exceed the total quota",
+      });
+    }
+  },
+);
+
 export const bulkCreateSpecialFaresSchema = z.object({
   items: z
     .array(createSpecialFareSchema)
@@ -72,7 +118,7 @@ export const bulkCreateSpecialFaresSchema = z.object({
     .max(100, "Maximum 100 allotments per bulk upload"),
 });
 
-export const updateSpecialFareSchema = createSpecialFareSchema.partial();
+export const updateSpecialFareSchema = specialFareFields.partial();
 
 export const updateSpecialFareSeatsSchema = z
   .object({

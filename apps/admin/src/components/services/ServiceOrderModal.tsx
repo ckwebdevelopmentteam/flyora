@@ -95,7 +95,7 @@ export function ServiceOrderModal({
           <button
             onClick={() => void save()}
             disabled={!dirty || mutation.isPending || conflict || !!activeId}
-            className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm text-white disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#002f89] px-4 py-2.5 text-sm text-white disabled:opacity-50"
           >
             {mutation.isPending && (
               <Loader2 size={16} className="animate-spin" />
@@ -171,7 +171,7 @@ export function ServiceOrderModal({
             {active ? (
               <div
                 aria-hidden="true"
-                className="flex items-center gap-3 rounded-lg border border-indigo-200 bg-white p-4 text-sm shadow-lg"
+                className="flex items-center gap-3 rounded-lg border border-blue-200 bg-white p-4 text-sm shadow-lg"
               >
                 <GripVertical size={18} />
                 {active.name}
@@ -226,7 +226,7 @@ function SortableService({
         {...listeners}
         disabled={disabled}
         aria-label={`Drag ${service.name}`}
-        className="grid h-11 w-11 shrink-0 cursor-grab touch-none place-items-center rounded-md text-slate-400 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-indigo-500 active:cursor-grabbing"
+        className="grid h-11 w-11 shrink-0 cursor-grab touch-none place-items-center rounded-md text-slate-400 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-500 active:cursor-grabbing"
       >
         <GripVertical size={19} />
       </button>

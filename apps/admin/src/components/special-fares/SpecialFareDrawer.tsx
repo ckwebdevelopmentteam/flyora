@@ -39,7 +39,7 @@ const BAGGAGE_PRESETS = [
   "20 Kg Check-in + 7 Kg Cabin",
   "30 Kg Check-in + 7 Kg Cabin",
   "40 Kg Check-in + 7 Kg Cabin",
-  "15 Kg Check-in + 7 Kg Cabin",
+  "7 Kg Cabin",
 ];
 
 const WEEKDAYS = [
@@ -101,6 +101,19 @@ function buildDateSeries(
     cursor.setDate(cursor.getDate() + 1);
   }
   return dates;
+}
+
+function formatFlightDuration(
+  departureDate: string,
+  arrivalDate: string,
+): string | null {
+  if (!departureDate || !arrivalDate) return null;
+  const departure = new Date(departureDate);
+  const arrival = new Date(arrivalDate);
+  const durationMs = arrival.getTime() - departure.getTime();
+  if (isNaN(durationMs) || durationMs <= 0) return null;
+  const totalMinutes = Math.round(durationMs / 60000);
+  return `${Math.floor(totalMinutes / 60)}h ${String(totalMinutes % 60).padStart(2, "0")}m`;
 }
 
 export function SpecialFareDrawer({
@@ -331,6 +344,7 @@ export function SpecialFareDrawer({
   }, [isOpen, initialData, reset]);
 
   const watchDeparture = watch("departureDate");
+  const watchArrival = watch("arrivalDate") || "";
   const watchFare = watch("farePerSeat") || 0;
   const watchCost = watch("supplierCost") || 0;
   const watchTotalSeats = watch("totalSeats") || 0;
@@ -340,6 +354,7 @@ export function SpecialFareDrawer({
   const watchAirlineName = watch("airlineName") || "";
   const watchFlightType = watch("flightType");
   const watchIsRefundable = watch("isRefundable");
+  const flightDuration = formatFlightDuration(watchDeparture, watchArrival);
 
   // Auto-calculate expiresAt from preset when departureDate changes
   useEffect(() => {
@@ -550,7 +565,7 @@ export function SpecialFareDrawer({
         {/* Section 1: Sector, Airport Search & Airline */}
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2.5">
-            <Plane className="w-4 h-4 text-indigo-600" />
+            <Plane className="w-4 h-4 text-blue-700" />
             <span>Sector & Flight Info</span>
           </div>
 
@@ -562,9 +577,10 @@ export function SpecialFareDrawer({
                 value={watchOriginCity}
                 placeholder="Search e.g. Kozhikode or CCJ"
                 options={airportOptions}
-                onChangeText={(text) =>
-                  setValue("originCity", text, { shouldValidate: true })
-                }
+                onChangeText={(text) => {
+                  setValue("originCity", text, { shouldValidate: true });
+                  setValue("originCode", "", { shouldValidate: true });
+                }}
                 onSelectOption={(opt) => {
                   setValue("originCity", opt.label, { shouldValidate: true });
                   if (opt.badge) {
@@ -614,9 +630,14 @@ export function SpecialFareDrawer({
                 value={watchDestCity}
                 placeholder="Search e.g. Dubai or DXB"
                 options={airportOptions}
-                onChangeText={(text) =>
-                  setValue("destinationCity", text, { shouldValidate: true })
-                }
+                onChangeText={(text) => {
+                  setValue("destinationCity", text, {
+                    shouldValidate: true,
+                  });
+                  setValue("destinationCode", "", {
+                    shouldValidate: true,
+                  });
+                }}
                 onSelectOption={(opt) => {
                   setValue("destinationCity", opt.label, {
                     shouldValidate: true,
@@ -670,9 +691,10 @@ export function SpecialFareDrawer({
                 value={watchAirlineName}
                 placeholder="Search e.g. Salam Air"
                 options={airlineOptions}
-                onChangeText={(text) =>
-                  setValue("airlineName", text, { shouldValidate: true })
-                }
+                onChangeText={(text) => {
+                  setValue("airlineName", text, { shouldValidate: true });
+                  setValue("airlineCode", "");
+                }}
                 onSelectOption={(opt) => {
                   setValue("airlineName", opt.label, { shouldValidate: true });
                   if (opt.badge) setValue("airlineCode", opt.badge);
@@ -733,7 +755,7 @@ export function SpecialFareDrawer({
                   type="radio"
                   value="NON_STOP"
                   {...register("flightType")}
-                  className="accent-indigo-600"
+                  className="accent-blue-700"
                 />
                 <span>Non-Stop Flight</span>
               </label>
@@ -742,7 +764,7 @@ export function SpecialFareDrawer({
                   type="radio"
                   value="CONNECTING"
                   {...register("flightType")}
-                  className="accent-indigo-600"
+                  className="accent-blue-700"
                 />
                 <span>Connecting Flight</span>
               </label>
@@ -799,7 +821,7 @@ export function SpecialFareDrawer({
         <section className="space-y-4">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-zinc-100 pb-2.5">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              <Calendar className="w-4 h-4 text-indigo-600" />
+              <Calendar className="w-4 h-4 text-blue-700" />
               <span>Schedule & Stop Ticketing Cut-Off</span>
             </div>
 
@@ -810,7 +832,7 @@ export function SpecialFareDrawer({
                   onClick={() => setSeriesMode(false)}
                   className={`px-2.5 py-1 rounded-md transition cursor-pointer ${
                     !seriesMode
-                      ? "bg-white text-zinc-900 shadow-2xs"
+                      ? "bg-blue-700 text-white shadow-2xs"
                       : "text-zinc-500 hover:text-zinc-800"
                   }`}
                 >
@@ -818,10 +840,15 @@ export function SpecialFareDrawer({
                 </button>
                 <button
                   type="button"
-                  onClick={() => setSeriesMode(true)}
+                  onClick={() => {
+                    setSeriesMode(true);
+                    if (expiryPreset === "CUSTOM") {
+                      setExpiryPreset("6H_BEFORE");
+                    }
+                  }}
                   className={`px-2.5 py-1 rounded-md inline-flex items-center gap-1 transition cursor-pointer ${
                     seriesMode
-                      ? "bg-indigo-600 text-white shadow-2xs"
+                      ? "bg-blue-700 text-white shadow-2xs"
                       : "text-zinc-500 hover:text-zinc-800"
                   }`}
                 >
@@ -833,48 +860,67 @@ export function SpecialFareDrawer({
           </div>
 
           {!seriesMode ? (
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <div className="field">
-                <label htmlFor="sf-departureDate">
-                  Departure Date & Time *
-                </label>
-                <input
-                  id="sf-departureDate"
-                  type="datetime-local"
-                  {...register("departureDate")}
-                />
-                {errors.departureDate && (
-                  <p className="text-xs text-rose-600">
-                    {errors.departureDate.message}
-                  </p>
-                )}
-              </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="field">
+                  <label htmlFor="sf-departureDate">
+                    Departure Date & Time *
+                  </label>
+                  <input
+                    id="sf-departureDate"
+                    type="datetime-local"
+                    {...register("departureDate")}
+                  />
+                  {errors.departureDate && (
+                    <p className="text-xs text-rose-600">
+                      {errors.departureDate.message}
+                    </p>
+                  )}
+                </div>
 
-              <div className="field">
-                <label htmlFor="sf-arrivalDate">Arrival Date & Time</label>
-                <input
-                  id="sf-arrivalDate"
-                  type="datetime-local"
-                  {...register("arrivalDate")}
-                />
-              </div>
+                <div className="field">
+                  <label htmlFor="sf-arrivalDate">Arrival Date & Time</label>
+                  <input
+                    id="sf-arrivalDate"
+                    type="datetime-local"
+                    {...register("arrivalDate")}
+                  />
+                  {errors.arrivalDate && (
+                    <p className="text-xs text-rose-600">
+                      {errors.arrivalDate.message}
+                    </p>
+                  )}
+                </div>
 
-              <div className="field">
-                <label htmlFor="sf-expiresAt">Stop Ticketing / Expiry *</label>
-                <input
-                  id="sf-expiresAt"
-                  type="datetime-local"
-                  {...register("expiresAt")}
-                  onChange={(e) => {
-                    setExpiryPreset("CUSTOM");
-                    setValue("expiresAt", e.target.value);
-                  }}
-                />
-                <small>Auto-hides from site after this timestamp</small>
+                <div className="field">
+                  <label htmlFor="sf-expiresAt">
+                    Stop Ticketing / Expiry *
+                  </label>
+                  <input
+                    id="sf-expiresAt"
+                    type="datetime-local"
+                    {...register("expiresAt")}
+                    onChange={(e) => {
+                      setExpiryPreset("CUSTOM");
+                      setValue("expiresAt", e.target.value);
+                    }}
+                  />
+                  <small>Auto-hides from site after this timestamp</small>
+                  {errors.expiresAt && (
+                    <p className="text-xs text-rose-600">
+                      {errors.expiresAt.message}
+                    </p>
+                  )}
+                </div>
               </div>
-            </div>
+              {flightDuration && (
+                <p className="text-xs text-zinc-500 -mt-1">
+                  Estimated flight duration: {flightDuration}
+                </p>
+              )}
+            </>
           ) : (
-            <div className="space-y-4 p-4 rounded-xl bg-indigo-50/40 border border-indigo-200/70">
+            <div className="space-y-4 p-4 rounded-xl bg-blue-50/40 border border-blue-200/70">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="field">
                   <label htmlFor="sf-series-from">From Date *</label>
@@ -935,7 +981,7 @@ export function SpecialFareDrawer({
                           }
                           className={`px-2.5 py-1 rounded-md text-xs font-medium border transition cursor-pointer ${
                             active
-                              ? "bg-indigo-600 border-indigo-600 text-white"
+                              ? "bg-blue-700 border-blue-700 text-white"
                               : "bg-white border-zinc-200 text-zinc-600 hover:bg-zinc-100"
                           }`}
                         >
@@ -946,7 +992,7 @@ export function SpecialFareDrawer({
                     <button
                       type="button"
                       onClick={() => setSeriesWeekdays([0, 1, 2, 3, 4, 5, 6])}
-                      className="text-[11px] font-medium text-indigo-600 hover:underline ml-1 cursor-pointer"
+                      className="text-[11px] font-medium text-blue-700 hover:underline ml-1 cursor-pointer"
                     >
                       All Days
                     </button>
@@ -958,13 +1004,13 @@ export function SpecialFareDrawer({
                     type="checkbox"
                     checked={seriesNextDayArrival}
                     onChange={(e) => setSeriesNextDayArrival(e.target.checked)}
-                    className="accent-indigo-600"
+                    className="accent-blue-700"
                   />
                   <span>Arrival Next Day (+1)</span>
                 </label>
               </div>
 
-              <div className="text-xs font-medium text-indigo-900 bg-white/80 border border-indigo-200 rounded-lg px-3 py-2">
+              <div className="text-xs font-medium text-blue-900 bg-white/80 border border-blue-200 rounded-lg px-3 py-2">
                 {seriesDates.length > 0 ? (
                   <span>
                     Will create <strong>{seriesDates.length} allotments</strong>{" "}
@@ -999,20 +1045,25 @@ export function SpecialFareDrawer({
                 onClick={() => setExpiryPreset(preset.id)}
                 className={`px-2.5 py-1 rounded-md text-[11px] font-medium border transition cursor-pointer ${
                   expiryPreset === preset.id
-                    ? "bg-indigo-50 border-indigo-300 text-indigo-700"
+                    ? "bg-blue-50 border-blue-300 text-blue-700"
                     : "bg-zinc-50 border-zinc-200 text-zinc-600 hover:bg-zinc-100"
                 }`}
               >
                 {preset.label}
               </button>
             ))}
+            {seriesMode && (
+              <span className="text-[11px] text-zinc-500">
+                The selected cutoff applies to every departure in this series.
+              </span>
+            )}
           </div>
         </section>
 
         {/* Section 3: Baggage Policy */}
         <section className="space-y-3.5">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2.5">
-            <Luggage className="w-4 h-4 text-indigo-600" />
+            <Luggage className="w-4 h-4 text-blue-700" />
             <span>Baggage Policy</span>
           </div>
 
@@ -1024,7 +1075,7 @@ export function SpecialFareDrawer({
                 onClick={() => setValue("baggageInfo", preset)}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium border transition-colors cursor-pointer ${
                   watchBaggage === preset
-                    ? "bg-indigo-50 border-indigo-200 text-indigo-700"
+                    ? "bg-blue-50 border-blue-200 text-blue-700"
                     : "bg-zinc-50 border-zinc-200 text-zinc-600 hover:bg-zinc-100"
                 }`}
               >
@@ -1044,7 +1095,7 @@ export function SpecialFareDrawer({
         {/* Section 4: Seats, Pricing (Adult / Child / Infant) & Margin */}
         <section className="space-y-4">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-100 pb-2.5">
-            <IndianRupee className="w-4 h-4 text-indigo-600" />
+            <IndianRupee className="w-4 h-4 text-blue-700" />
             <span>Seats &amp; Commercials</span>
           </div>
 
@@ -1067,8 +1118,14 @@ export function SpecialFareDrawer({
                 id="sf-availableSeats"
                 type="number"
                 min={0}
+                max={watchTotalSeats || undefined}
                 {...register("availableSeats", { valueAsNumber: true })}
               />
+              {errors.availableSeats && (
+                <p className="text-xs text-rose-600">
+                  {errors.availableSeats.message}
+                </p>
+              )}
             </div>
 
             <div className="field">
@@ -1083,7 +1140,7 @@ export function SpecialFareDrawer({
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 items-start">
             <div className="field">
               <label htmlFor="sf-farePerSeat">Adult Special Fare (₹) *</label>
               <input
@@ -1128,9 +1185,12 @@ export function SpecialFareDrawer({
                 id="sf-originalFare"
                 type="number"
                 min={0}
-                placeholder="Red crossed price"
+                placeholder="e.g. 22000 (optional)"
                 {...register("originalFare", { valueAsNumber: true })}
               />
+              <p className="text-xs text-zinc-500">
+                Optional. Red strikethrough price to show discount.
+              </p>
             </div>
           </div>
 
@@ -1193,7 +1253,7 @@ export function SpecialFareDrawer({
         <section className="space-y-3.5">
           <div className="flex items-center justify-between border-b border-zinc-100 pb-2.5">
             <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-zinc-500">
-              <Info className="w-4 h-4 text-indigo-600" />
+              <Info className="w-4 h-4 text-blue-700" />
               <span>Additional Booking Details (Custom Fields)</span>
             </div>
             <button
@@ -1201,7 +1261,7 @@ export function SpecialFareDrawer({
               onClick={() =>
                 setCustomFields((prev) => [...prev, { key: "", value: "" }])
               }
-              className="text-xs font-medium text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1 cursor-pointer"
+              className="text-xs font-medium text-blue-700 hover:text-blue-700 inline-flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               Add Field

@@ -200,7 +200,7 @@ export const Header = ({ onToggleSidebar }: HeaderProps) => {
               className="w-7 h-7 rounded-md object-cover object-[center_20%] [image-rendering:-webkit-optimize-contrast] border border-zinc-200"
             />
           ) : (
-            <div className="w-7 h-7 rounded-md bg-black text-white flex items-center justify-center font-mono text-xs">
+            <div className="w-7 h-7 rounded-md bg-[#002f89] text-white flex items-center justify-center font-mono text-xs">
               {user?.fullName?.charAt(0).toUpperCase() || "U"}
             </div>
           )}

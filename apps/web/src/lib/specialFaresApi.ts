@@ -67,7 +67,7 @@ export async function submitSpecialFareEnquiry(
   );
   const body = await res.json();
   if (!res.ok || !body.data?.success) {
-    throw new Error(body.message || "Unable to submit booking enquiry.");
+    throw new Error(body.message || "Unable to submit your enquiry.");
   }
   return body.data;
 }

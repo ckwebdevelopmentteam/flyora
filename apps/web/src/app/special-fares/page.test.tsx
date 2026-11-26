@@ -135,15 +135,20 @@ describe("SpecialFaresPage", () => {
     expect(screen.queryByRole("heading", { name: "IndiGo" })).toBeNull();
   });
 
-  it("opens Claim Modal and submits a booking enquiry", async () => {
+  it("opens the enquiry modal and submits an enquiry without presenting a booking flow", async () => {
     render(<SpecialFaresPage />);
     await screen.findByRole("heading", { name: "Air India Express" });
 
-    const bookButtons = screen.getAllByRole("button", { name: "Book Now" });
-    fireEvent.click(bookButtons[0]);
+    const enquiryButtons = screen.getAllByRole("button", {
+      name: "Enquire Now",
+    });
+    fireEvent.click(enquiryButtons[0]);
 
     expect(
-      await screen.findByRole("heading", { name: "Claim Your Special Fare" }),
+      await screen.findByRole("heading", { name: "Enquire About This Fare" }),
+    ).toBeDefined();
+    expect(
+      screen.getByText(/This is an enquiry only\. Seats are not reserved/i),
     ).toBeDefined();
 
     fireEvent.change(
@@ -154,7 +159,7 @@ describe("SpecialFaresPage", () => {
       target: { value: "9876543210" },
     });
 
-    fireEvent.click(screen.getByRole("button", { name: "Request Booking" }));
+    fireEvent.click(screen.getByRole("button", { name: "Send Enquiry" }));
 
     await waitFor(() => {
       expect(submitSpecialFareEnquiry).toHaveBeenCalledWith("sf-1", {
@@ -166,7 +171,9 @@ describe("SpecialFaresPage", () => {
       });
     });
 
-    expect(await screen.findByText("Seat Request Received!")).toBeDefined();
+    expect(
+      await screen.findByText("Special Fare Enquiry Received!"),
+    ).toBeDefined();
     expect(screen.getByText("lead-sf-99")).toBeDefined();
   });
 

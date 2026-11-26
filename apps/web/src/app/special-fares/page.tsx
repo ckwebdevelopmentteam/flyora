@@ -32,6 +32,9 @@ import {
   X,
   Loader2,
   RotateCcw,
+  Percent,
+  Luggage,
+  UsersRound,
 } from "lucide-react";
 
 type SortMode = "CHEAPEST" | "EARLIEST";
@@ -407,30 +410,66 @@ function SpecialFaresContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF9F6] text-[#1C1815]">
-      <Navbar activePath="/special-fares" />
+      <Navbar activePath="/special-fares" isFixed />
 
-      <main className="flex-1 pt-24 sm:pt-28 pb-16">
-        {/* Top Search Setup Strip */}
-        <section className="w-full max-w-[1360px] mx-auto px-4 sm:px-5">
-          <div className="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#002f89]">
-                Exclusive Group Allotments
-              </span>
-              <h1 className="text-2xl sm:text-3xl font-bold text-[#1C1815] tracking-tight mt-1">
-                Special Fare Flight Deals
-              </h1>
+      <main className="flex-1 pb-16">
+        {/* Top Sky & Aircraft Hero Banner */}
+        <section className="relative overflow-hidden bg-[#dbeafe] pt-24 sm:pt-28 pb-16 sm:pb-20">
+          <img
+            src="/special-fare-bg.png"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-gradient-to-b from-slate-950/20 via-slate-950/10 to-[#FAF9F6]/85 pointer-events-none"
+          />
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,255,255,0.5)_0%,transparent_68%)] pointer-events-none"
+          />
+
+          <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-5 text-center">
+            <div className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-[#002f89]">
+              <span className="hidden sm:inline-block w-8 h-px bg-[#002f89]/40" />
+              <span>Exclusive Group Allotments</span>
+              <span className="hidden sm:inline-block w-8 h-px bg-[#002f89]/40" />
             </div>
-            <p className="text-xs sm:text-sm text-stone-500 max-w-md">
+
+            <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight mt-1.5 leading-tight">
+              <span className="text-[#0c2233]">Special Fare </span>
+              <span className="text-[#ef4444]">Flight Deals</span>
+            </h1>
+
+            <p className="text-xs sm:text-sm text-[#1c2d42]/85 max-w-xl mx-auto mt-2 font-medium">
               Pre-purchased airline blocks at up to 40% lower rates with
               guaranteed baggage. Limited seats per departure.
             </p>
-          </div>
 
+            <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white/90 shadow-xs text-xs font-semibold text-[#0c2233]">
+                <Percent className="w-3.5 h-3.5 text-[#002f89]" />
+                <span>Up to 40% Lower Fares</span>
+              </span>
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white/90 shadow-xs text-xs font-semibold text-[#0c2233]">
+                <Luggage className="w-3.5 h-3.5 text-[#002f89]" />
+                <span>Guaranteed Baggage</span>
+              </span>
+              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white/90 shadow-xs text-xs font-semibold text-[#0c2233]">
+                <UsersRound className="w-3.5 h-3.5 text-[#002f89]" />
+                <span>Group Allotments</span>
+              </span>
+            </div>
+          </div>
+        </section>
+
+        {/* Top Search Setup Strip (Overlapping Banner) */}
+        <section className="relative z-20 w-full max-w-[1360px] mx-auto px-4 sm:px-5 -mt-10 sm:-mt-12">
           {/* Search Setup Form (Akbar reference adapted cleanly to Flyora theme) */}
           <form
             onSubmit={handleSearchSubmit}
-            className="bg-white rounded-[14px] border border-stone-200/90 shadow-sm p-3.5 sm:p-4"
+            className="bg-white rounded-[14px] border border-stone-200/90 shadow-lg shadow-slate-900/5 p-3.5 sm:p-4"
           >
             <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
               {/* Origin */}

@@ -6,6 +6,7 @@ import {
   resolveService,
 } from "../../lib/service-catalog";
 import { useServicesCatalog } from "../../lib/use-services-catalog";
+import { LiveSpecialFaresStrip } from "../special-fares/LiveSpecialFaresStrip";
 import type { PackageSummary, ShowcaseData } from "@flyora/types";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import Image from "next/image";
@@ -751,6 +752,7 @@ export default function CarouselCards({
                 onEnquire={enquire}
               />
             )}
+          <LiveSpecialFaresStrip />
           {featuredItems.length > 0 &&
             showcase?.config?.featuredActive !== false && (
               <PackageCarouselSection

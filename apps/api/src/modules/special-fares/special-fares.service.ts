@@ -11,6 +11,7 @@ import {
   CabinClass,
   SpecialFareAdminDetail,
   SpecialFareRoute,
+  SpecialFareStatus,
   SpecialFareSummary,
 } from "@flyora/types";
 
@@ -37,8 +38,7 @@ const PUBLIC_SELECT = {
   childFare: true,
   infantFare: true,
   expiresAt: true,
-  metadata: true,
-  // CRITICAL: supplierCost, pnrNumber, rbd, notes are OMITTED
+  // CRITICAL: metadata, supplierCost, pnrNumber, rbd, and notes are OMITTED
 } as const;
 
 function toPublicSummary(t: any): SpecialFareSummary {
@@ -74,7 +74,6 @@ function toPublicSummary(t: any): SpecialFareSummary {
         ? Number(t.infantFare)
         : null,
     expiresAt: t.expiresAt.toISOString(),
-    metadata: (t.metadata as Record<string, unknown>) || null,
   };
 }
 
@@ -95,6 +94,7 @@ function toAdminDetail(t: any): SpecialFareAdminDetail {
     supplierCost: cost,
     pnrNumber: t.pnrNumber,
     notes: t.notes,
+    metadata: (t.metadata as Record<string, unknown>) || null,
     marginAmount:
       marginAmount !== null ? Math.round(marginAmount * 100) / 100 : null,
     marginPercent:
@@ -107,8 +107,53 @@ function toAdminDetail(t: any): SpecialFareAdminDetail {
   };
 }
 
+function assertTicketIntegrity({
+  departureDate,
+  arrivalDate,
+  expiresAt,
+  totalSeats,
+  availableSeats,
+}: {
+  departureDate: Date;
+  arrivalDate: Date | null;
+  expiresAt: Date;
+  totalSeats: number;
+  availableSeats: number;
+}) {
+  if (isNaN(departureDate.getTime())) {
+    throw { statusCode: 400, message: "Departure date & time must be valid." };
+  }
+  if (
+    arrivalDate &&
+    (isNaN(arrivalDate.getTime()) || arrivalDate <= departureDate)
+  ) {
+    throw { statusCode: 400, message: "Arrival must be after departure." };
+  }
+  if (isNaN(expiresAt.getTime()) || expiresAt >= departureDate) {
+    throw {
+      statusCode: 400,
+      message: "Stop ticketing must be before departure.",
+    };
+  }
+  if (availableSeats < 0 || availableSeats > totalSeats) {
+    throw {
+      statusCode: 400,
+      message: "Available seats must be between zero and the total quota.",
+    };
+  }
+}
+
+function getConsistentStatus(
+  requestedStatus: SpecialFareStatus,
+  availableSeats: number,
+): SpecialFareStatus {
+  if (availableSeats === 0) return "SOLD_OUT";
+  return requestedStatus === "SOLD_OUT" ? "ACTIVE" : requestedStatus;
+}
+
 function buildCreateData(input: CreateSpecialFareInput) {
   const departureDate = new Date(input.departureDate);
+  const arrivalDate = input.arrivalDate ? new Date(input.arrivalDate) : null;
   const expiresAt = input.expiresAt
     ? new Date(input.expiresAt)
     : new Date(departureDate.getTime() - 6 * 60 * 60 * 1000);
@@ -116,6 +161,14 @@ function buildCreateData(input: CreateSpecialFareInput) {
     input.availableSeats !== undefined
       ? input.availableSeats
       : input.totalSeats;
+
+  assertTicketIntegrity({
+    departureDate,
+    arrivalDate,
+    expiresAt,
+    totalSeats: input.totalSeats,
+    availableSeats,
+  });
 
   return {
     airlineName: input.airlineName,
@@ -128,7 +181,7 @@ function buildCreateData(input: CreateSpecialFareInput) {
     destinationCode: input.destinationCode.toUpperCase(),
     destinationTerminal: input.destinationTerminal || null,
     departureDate,
-    arrivalDate: input.arrivalDate ? new Date(input.arrivalDate) : null,
+    arrivalDate,
     flightType: input.flightType,
     cabinClass: input.cabinClass || "ECONOMY",
     rbd: input.rbd ? input.rbd.toUpperCase() : null,
@@ -145,7 +198,7 @@ function buildCreateData(input: CreateSpecialFareInput) {
     notes: input.notes ?? null,
     metadata: input.metadata ? (input.metadata as any) : undefined,
     expiresAt,
-    status: input.status,
+    status: getConsistentStatus(input.status, availableSeats),
     isActive: input.isActive,
     displayOrder: input.displayOrder,
   };
@@ -168,6 +221,7 @@ export class SpecialFaresService {
       isActive: true,
       status: "ACTIVE",
       availableSeats: { gt: 0 },
+      departureDate: { gt: now },
       expiresAt: { gt: now }, // Zero-maintenance auto-expiry filter
     };
 
@@ -202,10 +256,15 @@ export class SpecialFaresService {
         const endOfDay = new Date(searchDate);
         endOfDay.setUTCHours(23, 59, 59, 999);
 
-        where.departureDate = {
-          gte: startOfDay,
-          lte: endOfDay,
-        };
+        where.AND = [
+          ...(where.AND || []),
+          {
+            departureDate: {
+              gte: startOfDay,
+              lte: endOfDay,
+            },
+          },
+        ];
       }
     }
 
@@ -249,6 +308,7 @@ export class SpecialFaresService {
         isActive: true,
         status: "ACTIVE",
         availableSeats: { gt: 0 },
+        departureDate: { gt: now },
         expiresAt: { gt: now },
       },
       select: {
@@ -303,6 +363,7 @@ export class SpecialFaresService {
       !t ||
       !t.isActive ||
       t.status !== "ACTIVE" ||
+      t.departureDate <= new Date() ||
       t.expiresAt <= new Date() ||
       t.availableSeats <= 0
     ) {
@@ -316,7 +377,7 @@ export class SpecialFaresService {
   }
 
   /**
-   * Public: Enquire & Claim a Special Fare Deal
+   * Public: Submit a Special Fare Enquiry
    * Creates a customer & tagged CRM lead automatically.
    */
   async submitSpecialFareEnquiry(
@@ -332,6 +393,7 @@ export class SpecialFaresService {
       !ticket ||
       !ticket.isActive ||
       ticket.status !== "ACTIVE" ||
+      ticket.departureDate <= new Date() ||
       ticket.expiresAt <= new Date() ||
       ticket.availableSeats <= 0
     ) {
@@ -442,6 +504,20 @@ export class SpecialFaresService {
     filter: SpecialFareSearchQueryInput,
   ): Promise<{ items: SpecialFareAdminDetail[]; total: number }> {
     const prisma = this.fastify.prisma;
+    const now = new Date();
+    if (typeof prisma.specialFareTicket.updateMany === "function") {
+      await prisma.specialFareTicket.updateMany({
+        where: {
+          status: { in: ["ACTIVE", "PAUSED"] },
+          OR: [{ expiresAt: { lte: now } }, { departureDate: { lte: now } }],
+        },
+        data: {
+          status: "EXPIRED",
+          isActive: false,
+        },
+      });
+    }
+
     const where: any = {};
 
     if (filter.status) where.status = filter.status;
@@ -539,6 +615,31 @@ export class SpecialFaresService {
     if (!existing)
       throw { statusCode: 404, message: "Special fare ticket not found" };
 
+    const departureDate =
+      input.departureDate !== undefined
+        ? new Date(input.departureDate)
+        : existing.departureDate;
+    const arrivalDate =
+      input.arrivalDate !== undefined
+        ? input.arrivalDate
+          ? new Date(input.arrivalDate)
+          : null
+        : existing.arrivalDate;
+    const expiresAt =
+      input.expiresAt !== undefined
+        ? new Date(input.expiresAt)
+        : existing.expiresAt;
+    const totalSeats = input.totalSeats ?? existing.totalSeats;
+    const availableSeats = input.availableSeats ?? existing.availableSeats;
+
+    assertTicketIntegrity({
+      departureDate,
+      arrivalDate,
+      expiresAt,
+      totalSeats,
+      availableSeats,
+    });
+
     const data: any = {};
     if (input.airlineName !== undefined) data.airlineName = input.airlineName;
     if (input.airlineCode !== undefined) data.airlineCode = input.airlineCode;
@@ -555,10 +656,8 @@ export class SpecialFaresService {
       data.destinationCode = input.destinationCode.toUpperCase();
     if (input.destinationTerminal !== undefined)
       data.destinationTerminal = input.destinationTerminal;
-    if (input.departureDate !== undefined)
-      data.departureDate = new Date(input.departureDate);
-    if (input.arrivalDate !== undefined)
-      data.arrivalDate = input.arrivalDate ? new Date(input.arrivalDate) : null;
+    if (input.departureDate !== undefined) data.departureDate = departureDate;
+    if (input.arrivalDate !== undefined) data.arrivalDate = arrivalDate;
     if (input.flightType !== undefined) data.flightType = input.flightType;
     if (input.cabinClass !== undefined) data.cabinClass = input.cabinClass;
     if (input.rbd !== undefined)
@@ -566,9 +665,9 @@ export class SpecialFaresService {
     if (input.baggageInfo !== undefined) data.baggageInfo = input.baggageInfo;
     if (input.isRefundable !== undefined)
       data.isRefundable = input.isRefundable;
-    if (input.totalSeats !== undefined) data.totalSeats = input.totalSeats;
+    if (input.totalSeats !== undefined) data.totalSeats = totalSeats;
     if (input.availableSeats !== undefined)
-      data.availableSeats = input.availableSeats;
+      data.availableSeats = availableSeats;
     if (input.originalFare !== undefined)
       data.originalFare = input.originalFare;
     if (input.farePerSeat !== undefined) data.farePerSeat = input.farePerSeat;
@@ -579,9 +678,11 @@ export class SpecialFaresService {
     if (input.pnrNumber !== undefined) data.pnrNumber = input.pnrNumber;
     if (input.notes !== undefined) data.notes = input.notes;
     if (input.metadata !== undefined) data.metadata = input.metadata as any;
-    if (input.expiresAt !== undefined)
-      data.expiresAt = new Date(input.expiresAt);
-    if (input.status !== undefined) data.status = input.status;
+    if (input.expiresAt !== undefined) data.expiresAt = expiresAt;
+    data.status = getConsistentStatus(
+      input.status ?? existing.status,
+      availableSeats,
+    );
     if (input.isActive !== undefined) data.isActive = input.isActive;
     if (input.displayOrder !== undefined)
       data.displayOrder = input.displayOrder;
@@ -654,7 +755,13 @@ export class SpecialFaresService {
 
     const updated = await prisma.specialFareTicket.update({
       where: { id },
-      data: { isActive: !ticket.isActive },
+      data:
+        ticket.status === "PAUSED" && !ticket.isActive
+          ? {
+              isActive: true,
+              status: getConsistentStatus("ACTIVE", ticket.availableSeats),
+            }
+          : { isActive: !ticket.isActive },
       select: { id: true, isActive: true },
     });
 
@@ -662,11 +769,14 @@ export class SpecialFaresService {
   }
 
   /**
-   * Admin: Delete special fare allotment
+   * Admin: Soft-delete (archive) a special fare allotment.
    */
   async deleteSpecialFare(id: string): Promise<{ success: boolean }> {
     const prisma = this.fastify.prisma;
-    await prisma.specialFareTicket.delete({ where: { id } });
+    await prisma.specialFareTicket.update({
+      where: { id },
+      data: { isActive: false, status: "PAUSED" },
+    });
     return { success: true };
   }
 }

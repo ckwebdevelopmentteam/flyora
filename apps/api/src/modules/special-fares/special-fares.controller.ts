@@ -63,7 +63,7 @@ export const publicSpecialFaresRoutes: FastifyPluginAsync = async (fastify) => {
     }
   });
 
-  // POST /api/v1/public/special-fares/:id/enquire (Claim a special fare seat)
+  // POST /api/v1/public/special-fares/:id/enquire (submit an enquiry only)
   fastify.post("/:id/enquire", async (request, reply) => {
     const { id } = request.params as { id: string };
     const parseResult = specialFareEnquirySchema.safeParse(request.body);
@@ -193,7 +193,8 @@ export const adminSpecialFaresRoutes: FastifyPluginAsync = async (fastify) => {
       } catch (err: any) {
         return reply.status(err.statusCode || 500).send({
           statusCode: err.statusCode || 500,
-          error: "Internal Server Error",
+          error:
+            err.statusCode === 400 ? "Bad Request" : "Internal Server Error",
           message: err.message,
         });
       }
@@ -229,7 +230,8 @@ export const adminSpecialFaresRoutes: FastifyPluginAsync = async (fastify) => {
       } catch (err: any) {
         return reply.status(err.statusCode || 500).send({
           statusCode: err.statusCode || 500,
-          error: "Internal Server Error",
+          error:
+            err.statusCode === 400 ? "Bad Request" : "Internal Server Error",
           message: err.message,
         });
       }
@@ -264,7 +266,12 @@ export const adminSpecialFaresRoutes: FastifyPluginAsync = async (fastify) => {
       } catch (err: any) {
         return reply.status(err.statusCode || 500).send({
           statusCode: err.statusCode || 500,
-          error: err.statusCode === 404 ? "Not Found" : "Internal Server Error",
+          error:
+            err.statusCode === 404
+              ? "Not Found"
+              : err.statusCode === 400
+                ? "Bad Request"
+                : "Internal Server Error",
           message: err.message,
         });
       }

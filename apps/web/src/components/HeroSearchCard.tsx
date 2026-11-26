@@ -2686,7 +2686,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
               )}`}
               className="inline-flex items-center gap-1 text-[#002f89] hover:text-[#00246b] font-bold whitespace-nowrap shrink-0 underline underline-offset-2"
             >
-              <span>View &amp; Book Special Fare</span>
+              <span>View &amp; Enquire About Special Fare</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

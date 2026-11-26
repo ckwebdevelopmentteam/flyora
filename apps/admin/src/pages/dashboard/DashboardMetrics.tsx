@@ -63,6 +63,8 @@ function MetricCard({
   icon: Icon,
   to,
   loading,
+  cardClassName,
+  iconClassName,
 }: {
   title: string;
   value?: string;
@@ -70,16 +72,26 @@ function MetricCard({
   icon: LucideIcon;
   to: string;
   loading: boolean;
+  cardClassName?: string;
+  iconClassName?: string;
 }) {
   return (
     <Link
       to={to}
-      className="metric-card"
+      className={`metric-card h-full justify-between ${cardClassName ?? "bg-white"}`}
       aria-label={`${title}: ${value ?? (loading ? "Loading" : "Unavailable")}`}
     >
       <span className="metric-label">
-        {title}
-        <Icon size={18} aria-hidden="true" />
+        <span>{title}</span>
+        {iconClassName ? (
+          <span
+            className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${iconClassName}`}
+          >
+            <Icon size={17} aria-hidden="true" />
+          </span>
+        ) : (
+          <Icon size={18} aria-hidden="true" />
+        )}
       </span>
       {loading && value === undefined ? (
         <span className="metric-skeleton" aria-label="Loading number" />
@@ -376,7 +388,15 @@ function ContentMetrics({ userId }: { userId: string }) {
     </section>
   );
 }
-function EnquiryMetrics({ role, userId }: { role: string; userId: string }) {
+function EnquiryMetrics({
+  role,
+  userId,
+  gridClassName = "metrics-grid",
+}: {
+  role: string;
+  userId: string;
+  gridClassName?: string;
+}) {
   const manager = role === "SUPER_ADMIN" || role === "OPERATIONS_MANAGER";
   const enquiries = useQuery({
     queryKey: ["dashboard", userId, "my-enquiries"],
@@ -395,9 +415,36 @@ function EnquiryMetrics({ role, userId }: { role: string; userId: string }) {
     refetchOnMount: "always",
   });
   const definitions = [
-    { title: "All enquiries", status: undefined },
-    { title: "New enquiries", status: "NEW" as const },
-    { title: "Contacted", status: "CONTACTED" as const },
+    {
+      title: "All enquiries",
+      status: undefined,
+      icon: Inbox,
+      cardClassName: "bg-blue-50/70 border-blue-200/80 hover:border-blue-300",
+      iconClassName: "bg-blue-100 text-[#002f89]",
+    },
+    {
+      title: "New enquiries",
+      status: "NEW" as const,
+      icon: Layers,
+      cardClassName: "bg-sky-50/80 border-sky-200/80 hover:border-sky-300",
+      iconClassName: "bg-sky-100 text-sky-700",
+    },
+    {
+      title: "Contacted",
+      status: "CONTACTED" as const,
+      icon: Clock,
+      cardClassName:
+        "bg-amber-50/70 border-amber-200/80 hover:border-amber-300",
+      iconClassName: "bg-amber-100 text-amber-700",
+    },
+    {
+      title: "Booked",
+      status: "BOOKED" as const,
+      icon: CalendarCheck,
+      cardClassName:
+        "bg-emerald-50/70 border-emerald-200/80 hover:border-emerald-300",
+      iconClassName: "bg-emerald-100 text-emerald-700",
+    },
   ];
   const totals = useQueries({
     queries: definitions.map(({ status }) => ({
@@ -421,6 +468,8 @@ function EnquiryMetrics({ role, userId }: { role: string; userId: string }) {
       icon: Inbox,
       to: "/leads?tab=my-leads",
       loading: enquiries.isPending,
+      cardClassName: "bg-blue-50/70 border-blue-200/80 hover:border-blue-300",
+      iconClassName: "bg-blue-100 text-[#002f89]",
     },
     {
       title: "Available enquiries",
@@ -428,6 +477,8 @@ function EnquiryMetrics({ role, userId }: { role: string; userId: string }) {
       icon: Layers,
       to: "/leads?tab=pool",
       loading: pool.isPending,
+      cardClassName: "bg-sky-50/80 border-sky-200/80 hover:border-sky-300",
+      iconClassName: "bg-sky-100 text-sky-700",
     },
     {
       title: "Follow-ups due",
@@ -435,18 +486,31 @@ function EnquiryMetrics({ role, userId }: { role: string; userId: string }) {
       icon: Clock,
       to: "/leads?tab=my-leads",
       loading: enquiries.isPending,
+      cardClassName:
+        "bg-amber-50/70 border-amber-200/80 hover:border-amber-300",
+      iconClassName: "bg-amber-100 text-amber-700",
+    },
+    {
+      title: "Booked",
+      value: mine && mine.filter((lead) => lead.status === "BOOKED").length,
+      icon: CalendarCheck,
+      to: "/leads?tab=my-leads&status=BOOKED",
+      loading: enquiries.isPending,
+      cardClassName:
+        "bg-emerald-50/70 border-emerald-200/80 hover:border-emerald-300",
+      iconClassName: "bg-emerald-100 text-emerald-700",
     },
   ];
   return (
     <section
       aria-label={manager ? "Enquiry metrics" : "Your work metrics"}
-      className="space-y-4"
+      className="h-full flex flex-col"
     >
       <MetricsHeader
         title="Enquiries"
         description={manager ? "Across your team" : "Your assigned services"}
       />
-      <div className="metrics-grid">
+      <div className={gridClassName}>
         {manager
           ? definitions.map((definition, index) => (
               <MetricCard
@@ -458,7 +522,9 @@ function EnquiryMetrics({ role, userId }: { role: string; userId: string }) {
                     : count.format(totals[index].data!)
                 }
                 hint=""
-                icon={Inbox}
+                icon={definition.icon}
+                cardClassName={definition.cardClassName}
+                iconClassName={definition.iconClassName}
                 to={`/admin/leads${definition.status ? `?status=${definition.status}` : ""}`}
                 loading={totals[index].isPending}
               />
@@ -487,13 +553,19 @@ function EnquiryMetrics({ role, userId }: { role: string; userId: string }) {
 export function DashboardMetrics({
   role,
   userId,
+  gridClassName,
 }: {
   role: string;
   userId: string;
+  gridClassName?: string;
 }) {
   if (!adminFeatures.bookingWorkflow && role !== "CONTENT_MANAGER") {
     return role === "ACCOUNTS" ? null : (
-      <EnquiryMetrics role={role} userId={userId} />
+      <EnquiryMetrics
+        role={role}
+        userId={userId}
+        gridClassName={gridClassName}
+      />
     );
   }
   return role === "CONTENT_MANAGER" ? (

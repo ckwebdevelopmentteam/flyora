@@ -88,11 +88,6 @@ export function SpecialFareTicketCard({
       .slice(0, 2)
       .toUpperCase();
 
-  const metadataEntries =
-    ticket.metadata && typeof ticket.metadata === "object"
-      ? Object.entries(ticket.metadata)
-      : [];
-
   return (
     <article className="bg-white rounded-[14px] border border-stone-200/90 hover:border-[#002f89]/40 shadow-2xs hover:shadow-md transition-all duration-200 overflow-hidden">
       {/* Main Horizontal Row */}
@@ -220,7 +215,7 @@ export function SpecialFareTicketCard({
                 onClick={() => onClaim(ticket)}
                 className="px-4 py-2 rounded-md bg-[#002f89] hover:bg-[#00246b] active:scale-[0.98] text-white text-xs font-semibold tracking-wide transition-all cursor-pointer shadow-xs whitespace-nowrap"
               >
-                Book Now
+                Enquire Now
               </button>
               <button
                 type="button"
@@ -342,15 +337,6 @@ export function SpecialFareTicketCard({
               </span>
             </div>
           )}
-
-          {metadataEntries.map(([key, val]) => (
-            <div key={key}>
-              <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
-                {key}
-              </span>
-              <span className="font-medium text-stone-800">{String(val)}</span>
-            </div>
-          ))}
         </div>
       )}
     </article>

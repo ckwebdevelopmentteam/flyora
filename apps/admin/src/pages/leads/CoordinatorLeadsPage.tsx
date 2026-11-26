@@ -37,8 +37,8 @@ const STAGES: { key: string; label: string; dotClass: string }[] = [
   { key: "ALL", label: "All", dotClass: "bg-zinc-400" },
   { key: "NEW", label: "New", dotClass: "bg-blue-500" },
   { key: "CONTACTED", label: "Contacted", dotClass: "bg-amber-500" },
-  { key: "QUOTED", label: "Quoted", dotClass: "bg-purple-500" },
-  { key: "NEGOTIATING", label: "Negotiating", dotClass: "bg-indigo-500" },
+  { key: "QUOTED", label: "Quoted", dotClass: "bg-blue-500" },
+  { key: "NEGOTIATING", label: "Negotiating", dotClass: "bg-blue-500" },
   { key: "BOOKED", label: "Booked", dotClass: "bg-emerald-500" },
   { key: "LOST", label: "Lost", dotClass: "bg-zinc-400" },
 ];
@@ -251,7 +251,7 @@ export const CoordinatorLeadsPage = () => {
           <div
             className={`flex items-center gap-2.5 px-4 py-3 rounded-xl border shadow-lg text-xs font-medium ${
               toast.type === "success"
-                ? "bg-zinc-900 border-zinc-800 text-white"
+                ? "bg-[#002f89] border-[#00246b] text-white"
                 : toast.type === "error"
                   ? "bg-rose-50 border-rose-200 text-rose-800"
                   : "bg-white border-zinc-200 text-zinc-900"
@@ -471,7 +471,7 @@ export const CoordinatorLeadsPage = () => {
                       <button
                         onClick={() => claimMutation.mutate(lead.id)}
                         disabled={isClaiming || !!lead.assignedToId}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 disabled:opacity-50 text-xs font-medium transition shadow-xs"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#002f89] text-white hover:bg-[#00246b] disabled:opacity-50 text-xs font-medium transition shadow-xs"
                       >
                         {isClaiming ? (
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -570,7 +570,7 @@ export const CoordinatorLeadsPage = () => {
               </p>
               <button
                 onClick={() => setTab("pool")}
-                className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 text-xs font-medium transition shadow-xs"
+                className="mt-4 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#002f89] text-white hover:bg-[#00246b] text-xs font-medium transition shadow-xs"
               >
                 <span>View available</span>
                 <ArrowRight className="w-3 h-3" />
@@ -656,9 +656,9 @@ export const CoordinatorLeadsPage = () => {
                                       : lead.status === "CONTACTED"
                                         ? "bg-amber-500"
                                         : lead.status === "QUOTED"
-                                          ? "bg-purple-500"
+                                          ? "bg-blue-500"
                                           : lead.status === "NEGOTIATING"
-                                            ? "bg-indigo-500"
+                                            ? "bg-blue-500"
                                             : lead.status === "NEW"
                                               ? "bg-blue-500"
                                               : "bg-zinc-400"

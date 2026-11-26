@@ -31,7 +31,6 @@ export interface SpecialFareSummary {
   childFare?: number | null;
   infantFare?: number | null;
   expiresAt: string;
-  metadata?: Record<string, unknown> | null;
 }
 
 /**
@@ -44,6 +43,7 @@ export interface SpecialFareAdminDetail extends SpecialFareSummary {
   supplierCost?: number | null;
   pnrNumber?: string | null;
   notes?: string | null;
+  metadata?: Record<string, unknown> | null;
   marginAmount?: number | null;
   marginPercent?: number | null;
   status: SpecialFareStatus;

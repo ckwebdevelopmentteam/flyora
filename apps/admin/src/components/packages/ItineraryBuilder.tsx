@@ -55,7 +55,7 @@ export const ItineraryBuilder = ({
         <button
           type="button"
           onClick={handleAddDay}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition shadow-xs"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#002f89] text-white text-xs font-medium hover:bg-[#00246b] transition shadow-xs"
         >
           <Plus className="w-3.5 h-3.5" />
           <span>Add Day {fields.length + 1}</span>
@@ -80,7 +80,7 @@ export const ItineraryBuilder = ({
           <button
             type="button"
             onClick={handleAddDay}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-black text-white text-xs font-medium shadow-xs hover:bg-zinc-800 transition"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-[#002f89] text-white text-xs font-medium shadow-xs hover:bg-[#00246b] transition"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Day 1</span>
@@ -99,7 +99,7 @@ export const ItineraryBuilder = ({
                 {/* Day Header & Controls */}
                 <div className="flex items-center justify-between pb-2 border-b border-zinc-100">
                   <div className="flex items-center gap-2">
-                    <span className="w-7 h-7 rounded-md bg-black text-white font-mono text-xs font-semibold flex items-center justify-center">
+                    <span className="w-7 h-7 rounded-md bg-[#002f89] text-white font-mono text-xs font-semibold flex items-center justify-center">
                       D{index + 1}
                     </span>
                     <span className="text-xs font-medium text-zinc-900">

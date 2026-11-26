@@ -301,7 +301,7 @@ export const PackagesListPage = () => {
         {canManagePackages && (
           <Link
             to="/packages/new"
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition shadow-xs self-start sm:self-auto"
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-[#002f89] text-white text-xs font-medium hover:bg-[#00246b] transition shadow-xs self-start sm:self-auto"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>New Tour Package</span>
@@ -329,7 +329,7 @@ export const PackagesListPage = () => {
 
       {/* Success Notification */}
       {successToast && (
-        <div className="p-3 rounded-md bg-zinc-900 text-white flex items-center gap-2.5 text-xs shadow-md">
+        <div className="p-3 rounded-md bg-[#002f89] text-white flex items-center gap-2.5 text-xs shadow-md">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{successToast}</span>
         </div>
@@ -485,7 +485,7 @@ export const PackagesListPage = () => {
                     ) : canManagePackages ? (
                       <Link
                         to="/packages/new"
-                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
+                        className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-[#002f89] text-white text-xs font-medium hover:bg-[#00246b] transition"
                       >
                         <Plus className="w-3.5 h-3.5" />
                         <span>Create Package</span>

@@ -53,15 +53,15 @@ const STATUS_CONFIG: Record<
   },
   QUOTED: {
     label: "Quoted",
-    dotClass: "bg-purple-500",
-    bgClass: "bg-purple-50",
-    textClass: "text-purple-700",
+    dotClass: "bg-blue-500",
+    bgClass: "bg-blue-50",
+    textClass: "text-blue-700",
   },
   NEGOTIATING: {
     label: "Negotiating",
-    dotClass: "bg-indigo-500",
-    bgClass: "bg-indigo-50",
-    textClass: "text-indigo-700",
+    dotClass: "bg-blue-500",
+    bgClass: "bg-blue-50",
+    textClass: "text-blue-700",
   },
   BOOKED: {
     label: "Booked",
@@ -354,7 +354,7 @@ export const LeadDetailDrawer = ({
               <div className="bg-[#F8F8F6] p-4 rounded-xl border border-zinc-200/80">
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-medium text-zinc-800 flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-black" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-[#002f89]" />
                     Enquiry stage
                   </label>
                   {isUpdatingStatus && (
@@ -545,7 +545,7 @@ export const LeadDetailDrawer = ({
                   <button
                     type="submit"
                     disabled={isSubmittingNote || !noteText.trim()}
-                    className="self-end px-3 py-2 rounded-lg bg-black text-white hover:bg-zinc-800 disabled:opacity-50 text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
+                    className="self-end px-3 py-2 rounded-lg bg-[#002f89] text-white hover:bg-[#00246b] disabled:opacity-50 text-xs font-medium transition flex items-center gap-1.5 shadow-xs"
                   >
                     {isSubmittingNote ? (
                       <Loader2 className="w-3 h-3 animate-spin" />

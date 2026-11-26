@@ -2,6 +2,7 @@ import { test, describe, it, beforeEach } from "node:test";
 import assert from "node:assert/strict";
 import Fastify from "fastify";
 import { SpecialFaresService } from "../src/modules/special-fares/special-fares.service";
+import { createSpecialFareSchema } from "@flyora/validators";
 
 describe("SpecialFaresService Unit & Contract Tests", () => {
   it("verifies public special fare DTO strips supplier costs and PNR numbers", async () => {
@@ -48,6 +49,35 @@ describe("SpecialFaresService Unit & Contract Tests", () => {
     assert.equal((item as any).pnrNumber, undefined);
     assert.equal((item as any).notes, undefined);
     assert.equal((item as any).rbd, undefined);
+    assert.equal((item as any).metadata, undefined);
+  });
+
+  it("rejects invalid schedule, expiry, and seat-count relationships", () => {
+    const base = {
+      airlineName: "Air India Express",
+      originCity: "Kozhikode",
+      originCode: "CCJ",
+      destinationCity: "Dubai",
+      destinationCode: "DXB",
+      departureDate: "2026-12-10T10:00:00.000Z",
+      arrivalDate: "2026-12-10T09:00:00.000Z",
+      baggageInfo: "30 Kg Check-in + 7 Kg Cabin",
+      totalSeats: 5,
+      availableSeats: 6,
+      farePerSeat: 12000,
+      expiresAt: "2026-12-10T11:00:00.000Z",
+    };
+
+    const parsed = createSpecialFareSchema.safeParse(base);
+    assert.equal(parsed.success, false);
+    if (!parsed.success) {
+      const messages = parsed.error.issues.map((issue) => issue.message);
+      assert.ok(messages.includes("Arrival must be after departure"));
+      assert.ok(messages.includes("Stop ticketing must be before departure"));
+      assert.ok(
+        messages.includes("Available seats cannot exceed the total quota"),
+      );
+    }
   });
 
   it("bulk creates series allotments inside a transaction", async () => {
@@ -204,5 +234,28 @@ describe("SpecialFaresService Unit & Contract Tests", () => {
     });
     assert.equal(res.availableSeats, 0);
     assert.equal(res.status, "SOLD_OUT");
+  });
+
+  it("restores an archived exhausted allotment as SOLD_OUT", async () => {
+    let updateData: any;
+    const mockPrisma: any = {
+      specialFareTicket: {
+        findUnique: async () => ({
+          id: "ticket-archived-1",
+          isActive: false,
+          status: "PAUSED",
+          availableSeats: 0,
+        }),
+        update: async ({ data }: any) => {
+          updateData = data;
+          return { id: "ticket-archived-1", isActive: data.isActive };
+        },
+      },
+    };
+
+    const service = new SpecialFaresService({ prisma: mockPrisma } as any);
+    await service.toggleSpecialFareStatus("ticket-archived-1");
+
+    assert.deepEqual(updateData, { isActive: true, status: "SOLD_OUT" });
   });
 });

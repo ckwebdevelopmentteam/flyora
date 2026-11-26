@@ -25,7 +25,7 @@
   }
 
   ::selection {
-    background-color: #18181b;
+    background-color: #002f89;
     color: #ffffff;
   }
 }
@@ -35,8 +35,8 @@
   --surface: #fff;
   --line: #e5e7eb;
   --muted: #64748b;
-  --accent: #4f46e5;
-  --accent-soft: #eef2ff;
+  --accent: #002f89;
+  --accent-soft: #eff6ff;
   --ink: #111827;
 }
 button {
@@ -47,7 +47,7 @@ button:disabled {
   opacity: 0.55;
 }
 :focus-visible {
-  outline: 3px solid #a5b4fc;
+  outline: 3px solid #93c5fd;
   outline-offset: 3px;
 }
 input:not([type="checkbox"]):not([type="radio"]):not([type="file"]),
@@ -81,8 +81,8 @@ input[type="radio"] {
 .text-zinc-400 {
   color: #717b89;
 }
-.bg-black {
-  background-color: #111827;
+.bg-[#002f89] {
+  background-color: #002f89;
 }
 [class~="bg-[#F8F8F6]"],
 [class~="bg-[#F6F6F3]"],
@@ -124,7 +124,7 @@ td {
   z-index: 200;
   padding: 10px 16px;
   background: #fff;
-  color: #4338ca;
+  color: #002f89;
   border-radius: 6px;
   transform: translateY(-160%);
 }
@@ -179,7 +179,7 @@ td {
   letter-spacing: -0.6px;
 }
 .brand-mark {
-  background: #111827;
+  background: #002f89;
   color: white;
   width: 32px;
   height: 32px;
@@ -220,7 +220,7 @@ td {
 }
 .nav-link.active {
   background: var(--accent-soft);
-  color: #4338ca;
+  color: #002f89;
 }
 .nav-link.active::before {
   position: absolute;
@@ -247,8 +247,8 @@ td {
   border-radius: 50%;
   display: grid;
   place-items: center;
-  background: #e0e7ff;
-  color: #4338ca;
+  background: #dbeafe;
+  color: #002f89;
   font-weight: 600;
   flex-shrink: 0;
 }
@@ -295,11 +295,11 @@ td {
   transition: background 0.15s;
 }
 .button-primary {
-  background: #111827;
+  background: #002f89;
   color: #fff;
 }
 .button-primary:hover {
-  background: #1f2937;
+  background: #00246b;
 }
 .button-danger {
   background: #dc2626;
@@ -337,6 +337,7 @@ td {
 .field {
   display: grid;
   gap: 7px;
+  align-content: start;
 }
 .field > label {
   font-size: 13px;
@@ -350,6 +351,10 @@ td {
   padding: 10px 12px;
   border: 1px solid #dfe3e8;
   background: #fff;
+}
+.field input.catalog-autocomplete-input {
+  padding-left: 32px;
+  padding-right: 28px;
 }
 .field small {
   color: var(--muted);
@@ -550,18 +555,18 @@ td {
   font-size: 11px;
 }
 .form-steps li[aria-current="step"] {
-  color: #4338ca;
-  border-color: #4f46e5;
+  color: #002f89;
+  border-color: #002f89;
   font-weight: 600;
 }
 .form-steps li[aria-current="step"] > span:first-child {
-  background: #4f46e5;
-  border-color: #4f46e5;
+  background: #002f89;
+  border-color: #002f89;
   color: #fff;
 }
 .form-steps li.is-complete {
-  border-color: #a5b4fc;
-  color: #4338ca;
+  border-color: #93c5fd;
+  color: #002f89;
 }
 .login-screen {
   min-height: 100dvh;
@@ -602,10 +607,10 @@ td {
 .login-card .button-primary {
   width: 100%;
   margin-top: 25px;
-  background: #111827;
+  background: #002f89;
 }
 .login-card .button-primary:hover {
-  background: #1f2937;
+  background: #00246b;
 }
 .login-footnote {
   font-size: 12px;
@@ -727,7 +732,6 @@ td {
   gap: 17px;
   padding: 21px;
   border: 1px solid var(--line);
-  background: white;
   border-radius: 10px;
   min-width: 0;
   transition:
@@ -992,8 +996,8 @@ td {
   background: #ecfdf5;
 }
 .quotation-status.status-sent {
-  color: #4338ca;
-  background: #eef2ff;
+  color: #002f89;
+  background: #eff6ff;
 }
 .quotation-status.status-expired {
   color: #92400e;
@@ -1189,7 +1193,7 @@ td {
 }
 .enquiry-views a[aria-current="page"] {
   border-bottom-color: var(--accent);
-  color: #4338ca;
+  color: #002f89;
   font-weight: 600;
 }
 .enquiry-toolbar {
@@ -1210,9 +1214,9 @@ td {
   padding: 10px 12px;
 }
 .enquiry-toolbar .due-filter-selected {
-  color: #4338ca;
-  border-color: #a5b4fc;
-  background: #eef2ff;
+  color: #002f89;
+  border-color: #93c5fd;
+  background: #eff6ff;
 }
 @media (max-width: 600px) {
   .enquiry-toolbar {
@@ -1362,7 +1366,7 @@ a.chart-row:hover {
 .chart-fill {
   display: block;
   height: 100%;
-  background: #6366f1;
+  background: #2563eb;
   border-radius: 3px;
 }
 .chart-booked,
@@ -1414,14 +1418,14 @@ a.chart-row:hover {
   border-radius: 7px;
 }
 .enquiry-subnav a[aria-current="page"] {
-  background: #eef2ff;
-  color: #4338ca;
+  background: #eff6ff;
+  color: #002f89;
   font-weight: 600;
 }
 .role-badge {
-  border: 1px solid #c7d2fe;
-  color: #4338ca;
-  background: #eef2ff;
+  border: 1px solid #bfdbfe;
+  color: #002f89;
+  background: #eff6ff;
   border-radius: 5px;
   padding: 2px 6px;
   font-size: 11px;
@@ -1520,7 +1524,7 @@ a.chart-row:hover {
   overflow: hidden;
 }
 .package-preview-thumbs button[aria-pressed="true"] {
-  border-color: #4f46e5;
+  border-color: #002f89;
 }
 .package-preview-thumbs img,
 .package-preview-thumbs .package-image-empty {
@@ -1579,7 +1583,7 @@ a.chart-row:hover {
   color: #64748b;
 }
 .package-photo-drop:hover {
-  border-color: #6366f1;
+  border-color: #2563eb;
   background: #f5f5ff;
 }
 .package-gallery-grid {
@@ -1626,7 +1630,7 @@ a.chart-row:hover {
   font-size: 11px;
 }
 .package-use-cover:disabled {
-  background: #4338cae6;
+  background: #002f89e6;
 }
 .package-tag-editor {
   border: 1px solid #e2e8f0;
@@ -1742,7 +1746,7 @@ a.chart-row:hover {
   flex-shrink: 0;
 }
 .distribution-new {
-  background: #6366f1;
+  background: #2563eb;
 }
 .distribution-contacted {
   background: #38bdf8;
@@ -1857,9 +1861,9 @@ a.chart-row:hover {
   align-items: center;
   justify-content: center;
   border-radius: 7px;
-  background: #eef2ff;
-  border: 1px solid #c7d2fe;
-  color: #4338ca;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #002f89;
   font-size: 13px;
   font-weight: 600;
   line-height: 15px;
@@ -1876,7 +1880,7 @@ a.chart-row:hover {
   background: #f8fafc;
 }
 .package-day-card.expanded {
-  border-color: #c7d2fe;
+  border-color: #bfdbfe;
   background: white;
 }
 .package-day-card > button {
@@ -1891,7 +1895,7 @@ a.chart-row:hover {
 }
 .package-day-card > button:hover,
 .package-day-card.expanded > button {
-  background: #eef2ff;
+  background: #eff6ff;
 }
 .package-day-title {
   font-weight: 600;
@@ -1906,12 +1910,12 @@ a.chart-row:hover {
   border: 1px solid #e2e8f0;
   border-radius: 5px;
   background: white;
-  color: #6366f1;
+  color: #2563eb;
   flex-shrink: 0;
 }
 .package-day-description {
   padding: 12px;
-  border-top: 1px solid #e0e7ff;
+  border-top: 1px solid #dbeafe;
 }
 .package-day-description > p {
   white-space: pre-line;

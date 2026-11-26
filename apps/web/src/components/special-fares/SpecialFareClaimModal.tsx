@@ -89,7 +89,7 @@ export function SpecialFareClaimModal({
       setSuccessData({ leadId: res.leadId, message: res.message });
     } catch (err: any) {
       setErrorMsg(
-        err?.message || "Could not submit your claim. Please try again.",
+        err?.message || "Could not submit your enquiry. Please try again.",
       );
     } finally {
       setSubmitting(false);
@@ -98,8 +98,8 @@ export function SpecialFareClaimModal({
 
   const whatsappText = encodeURIComponent(
     successData
-      ? `Hi Flyora Travels, I just claimed the Special Fare deal (${ticket.originCode} to ${ticket.destinationCode} on ${ticket.airlineName}). My booking enquiry ref: ${successData.leadId}.`
-      : `Hi Flyora Travels, I want to book ${passengerCount} seat(s) on the ${ticket.originCode} to ${ticket.destinationCode} Special Fare (${ticket.airlineName} at ₹${ticket.farePerSeat}).`,
+      ? `Hi Flyora Travels, I submitted an enquiry for the Special Fare deal (${ticket.originCode} to ${ticket.destinationCode} on ${ticket.airlineName}). My enquiry reference: ${successData.leadId}.`
+      : `Hi Flyora Travels, I would like to enquire about ${passengerCount} seat(s) on the ${ticket.originCode} to ${ticket.destinationCode} Special Fare (${ticket.airlineName} at ₹${ticket.farePerSeat}).`,
   );
 
   return (
@@ -127,15 +127,15 @@ export function SpecialFareClaimModal({
               className="text-lg sm:text-xl font-bold text-[#1C1815] mt-1"
             >
               {successData
-                ? "Seat Request Received!"
-                : "Claim Your Special Fare"}
+                ? "Special Fare Enquiry Received!"
+                : "Enquire About This Fare"}
             </h2>
           </div>
           <button
             type="button"
             disabled={submitting}
             onClick={onClose}
-            aria-label="Close booking dialog"
+            aria-label="Close enquiry dialog"
             className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-100 transition cursor-pointer"
           >
             <X className="w-5 h-5" />
@@ -214,7 +214,7 @@ export function SpecialFareClaimModal({
                   className="w-full sm:w-auto px-5 py-2.5 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold inline-flex items-center justify-center gap-2 transition"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Confirm Faster on WhatsApp</span>
+                  <span>Discuss on WhatsApp</span>
                 </a>
                 <button
                   type="button"
@@ -239,6 +239,11 @@ export function SpecialFareClaimModal({
                   {errorMsg}
                 </div>
               )}
+
+              <p className="rounded-lg bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-800">
+                This is an enquiry only. Seats are not reserved until a Flyora
+                flight coordinator confirms availability and your booking.
+              </p>
 
               <div>
                 <label className="block text-xs font-semibold text-stone-700 mb-1.5">
@@ -322,7 +327,7 @@ export function SpecialFareClaimModal({
               <div className="pt-2 border-t border-stone-100 flex items-center justify-between">
                 <div>
                   <span className="block text-[11px] text-stone-500">
-                    Total Deal Price ({passengerCount}{" "}
+                    Estimated fare ({passengerCount}{" "}
                     {passengerCount === 1 ? "seat" : "seats"})
                   </span>
                   <span className="text-lg font-bold text-[#1C1815]">
@@ -336,7 +341,7 @@ export function SpecialFareClaimModal({
                   className="px-6 py-2.5 rounded-md bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold tracking-wide inline-flex items-center gap-2 transition cursor-pointer disabled:opacity-60"
                 >
                   {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  <span>Request Booking</span>
+                  <span>Send Enquiry</span>
                 </button>
               </div>
             </form>
