@@ -235,9 +235,14 @@ export function DestinationsShowcase({
 
         {/* Main Content Columns */}
         {loading ? (
-          <p role="status" className="py-24 text-white">
-            Loading destinations…
-          </p>
+          <div
+            role="status"
+            className="py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 animate-pulse"
+          >
+            <span className="sr-only">Loading destinations…</span>
+            <div className="lg:col-span-5 h-64 rounded-2xl bg-white/10 border border-white/15" />
+            <div className="lg:col-span-7 h-64 rounded-2xl bg-white/10 border border-white/15" />
+          </div>
         ) : error ? (
           <div role="alert" className="py-24 text-white">
             We couldn’t load our destinations.{" "}

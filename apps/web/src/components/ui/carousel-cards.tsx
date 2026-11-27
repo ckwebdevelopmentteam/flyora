@@ -735,9 +735,24 @@ export default function CarouselCards({
           </button>
         </p>
       ) : loading || !loaded ? (
-        <p role="status" className="px-6">
-          Loading packages…
-        </p>
+        <div
+          role="status"
+          className="w-full px-4 sm:px-10 lg:px-[105px] space-y-5"
+        >
+          <span className="sr-only">Loading packages…</span>
+          <div className="space-y-2 animate-pulse">
+            <div className="h-3 w-36 bg-stone-200 rounded" />
+            <div className="h-7 w-64 bg-stone-200 rounded" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 animate-pulse">
+            {[0, 1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="h-[340px] rounded-2xl bg-stone-100 border border-stone-200/70"
+              />
+            ))}
+          </div>
+        </div>
       ) : !popularItems.length && !featuredItems.length ? (
         <p className="px-6">New holiday packages are coming soon.</p>
       ) : (

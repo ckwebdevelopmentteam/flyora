@@ -91,17 +91,17 @@ export function SpecialFareTicketCard({
   return (
     <article className="bg-white rounded-[14px] border border-stone-200/90 hover:border-[#002f89]/40 shadow-2xs hover:shadow-md transition-all duration-200 overflow-hidden">
       {/* Main Horizontal Row */}
-      <div className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+      <div className="p-3.5 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3.5 sm:gap-6">
         {/* 1. Airline Info */}
-        <div className="flex items-center gap-3.5 md:w-[190px] shrink-0">
-          <div className="w-11 h-11 rounded-xl bg-[#F4F6FA] border border-stone-200/80 flex items-center justify-center font-mono font-bold text-sm text-[#002f89] shrink-0">
+        <div className="flex items-center gap-3 md:w-[190px] shrink-0">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#F4F6FA] border border-stone-200/80 flex items-center justify-center font-mono font-bold text-xs sm:text-sm text-[#002f89] shrink-0">
             {codeBadge}
           </div>
           <div className="min-w-0">
             <h3 className="text-sm font-bold text-[#1C1815] leading-tight truncate">
               {ticket.airlineName}
             </h3>
-            <div className="flex items-center gap-1.5 mt-1 text-[11px] text-stone-500 font-medium">
+            <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-[11px] text-stone-500 font-medium">
               {ticket.flightNumber && (
                 <span className="font-mono text-stone-600">
                   {ticket.flightNumber}
@@ -113,14 +113,14 @@ export function SpecialFareTicketCard({
           </div>
         </div>
 
-        {/* 2. Route & Timing Timeline */}
-        <div className="flex items-center justify-between sm:justify-center gap-4 sm:gap-6 flex-1 min-w-0">
+        {/* 2. Route & Timing Timeline (Where-is-my-Train style clarity) */}
+        <div className="flex items-center justify-between sm:justify-center gap-2.5 sm:gap-6 flex-1 min-w-0 bg-[#FAF9F6]/70 md:bg-transparent rounded-xl p-2.5 md:p-0 border border-stone-100 md:border-0">
           {/* Origin */}
-          <div className="text-left sm:text-right min-w-[75px]">
-            <div className="text-lg sm:text-xl font-bold text-[#1C1815] leading-none">
+          <div className="text-left sm:text-right min-w-0 max-w-[34%] sm:min-w-[75px] sm:max-w-none">
+            <div className="text-base sm:text-xl font-bold text-[#1C1815] leading-none tabular-nums">
               {formatTime(ticket.departureDate)}
             </div>
-            <div className="text-xs font-semibold text-stone-700 mt-1 capitalize">
+            <div className="text-[11px] sm:text-xs font-semibold text-stone-700 mt-1 capitalize truncate">
               {ticket.originCity}{" "}
               <span className="text-stone-400 font-mono uppercase">
                 ({ticket.originCode})
@@ -129,25 +129,28 @@ export function SpecialFareTicketCard({
           </div>
 
           {/* Flight Line */}
-          <div className="flex flex-col items-center flex-1 max-w-[160px] px-1">
-            <span className="text-[11px] font-medium text-stone-500 mb-1 whitespace-nowrap">
+          <div className="flex flex-col items-center flex-1 max-w-[130px] sm:max-w-[160px] px-1 shrink-0">
+            <span className="text-[10px] sm:text-[11px] font-medium text-stone-500 mb-1 whitespace-nowrap">
               {duration ||
                 (ticket.flightType === "NON_STOP" ? "Direct Flight" : "1 Stop")}
             </span>
             <div className="relative w-full flex items-center justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#002f89]/40 shrink-0" />
               <div className="w-full border-t border-dashed border-stone-300" />
-              <div className="absolute bg-white px-1.5">
-                <Plane className="w-3.5 h-3.5 text-[#002f89] rotate-90 sm:rotate-0" />
+              <div className="bg-[#FAF9F6] md:bg-white px-1">
+                <Plane className="w-3.5 h-3.5 text-[#002f89]" />
               </div>
+              <div className="w-full border-t border-dashed border-stone-300" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#002f89] shrink-0" />
             </div>
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-stone-400 mt-1">
+            <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-stone-400 mt-1">
               {ticket.flightType === "NON_STOP" ? "Non-Stop" : "Connecting"}
             </span>
           </div>
 
           {/* Destination */}
-          <div className="text-right sm:text-left min-w-[75px]">
-            <div className="text-lg sm:text-xl font-bold text-[#1C1815] leading-none flex items-baseline gap-1 justify-end sm:justify-start">
+          <div className="text-right sm:text-left min-w-0 max-w-[34%] sm:min-w-[75px] sm:max-w-none">
+            <div className="text-base sm:text-xl font-bold text-[#1C1815] leading-none tabular-nums flex items-baseline gap-1 justify-end sm:justify-start">
               <span>
                 {ticket.arrivalDate ? formatTime(ticket.arrivalDate) : "TBA"}
               </span>
@@ -157,7 +160,7 @@ export function SpecialFareTicketCard({
                 </span>
               )}
             </div>
-            <div className="text-xs font-semibold text-stone-700 mt-1 capitalize">
+            <div className="text-[11px] sm:text-xs font-semibold text-stone-700 mt-1 capitalize truncate">
               {ticket.destinationCity}{" "}
               <span className="text-stone-400 font-mono uppercase">
                 ({ticket.destinationCode})
@@ -167,7 +170,7 @@ export function SpecialFareTicketCard({
         </div>
 
         {/* 3. Seat Urgency & Price + CTA */}
-        <div className="flex items-center justify-between md:justify-end gap-4 sm:gap-5 pt-3 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
+        <div className="flex flex-wrap items-center justify-between md:justify-end gap-3 sm:gap-5 pt-2.5 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
           {/* Seats Remaining */}
           <div className="flex flex-col items-start md:items-center">
             <div
@@ -192,16 +195,16 @@ export function SpecialFareTicketCard({
             )}
           </div>
 
-          {/* Price & Claim Button */}
-          <div className="flex items-center gap-3.5 sm:gap-4">
+          {/* Price & CTA */}
+          <div className="flex items-center justify-end gap-3 sm:gap-4 ml-auto md:ml-0">
             <div className="text-right">
               {ticket.originalFare &&
                 ticket.originalFare > ticket.farePerSeat && (
-                  <div className="text-xs font-semibold text-rose-600 line-through leading-none mb-0.5">
+                  <div className="text-xs font-semibold text-rose-600 line-through leading-none mb-0.5 tabular-nums">
                     ₹{ticket.originalFare.toLocaleString("en-IN")}
                   </div>
                 )}
-              <div className="text-lg sm:text-xl font-bold text-emerald-700 leading-tight">
+              <div className="text-lg sm:text-xl font-bold text-emerald-700 leading-tight tabular-nums">
                 ₹{ticket.farePerSeat.toLocaleString("en-IN")}
               </div>
               <div className="text-[10px] font-medium text-stone-500">
@@ -213,14 +216,14 @@ export function SpecialFareTicketCard({
               <button
                 type="button"
                 onClick={() => onClaim(ticket)}
-                className="px-4 py-2 rounded-md bg-[#002f89] hover:bg-[#00246b] active:scale-[0.98] text-white text-xs font-semibold tracking-wide transition-all cursor-pointer shadow-xs whitespace-nowrap"
+                className="min-h-[40px] px-4 py-2 rounded-lg bg-[#002f89] hover:bg-[#00246b] active:scale-[0.98] text-white text-xs font-semibold tracking-wide transition-all cursor-pointer shadow-xs whitespace-nowrap"
               >
                 Enquire Now
               </button>
               <button
                 type="button"
                 onClick={() => setShowDetails((prev) => !prev)}
-                className="text-[11px] font-medium text-[#002f89] hover:underline inline-flex items-center gap-0.5 cursor-pointer"
+                className="text-[11px] font-medium text-[#002f89] hover:underline inline-flex items-center gap-0.5 cursor-pointer py-0.5"
               >
                 <span>{showDetails ? "Hide Details" : "+ Details"}</span>
                 {showDetails ? (

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useMemo, useState, Suspense } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import type { SpecialFareRoute, SpecialFareSummary } from "@flyora/types";
 import { Navbar } from "../../components/layout/Navbar";
@@ -35,6 +36,7 @@ import {
   Percent,
   Luggage,
   UsersRound,
+  Check,
 } from "lucide-react";
 
 type SortMode = "CHEAPEST" | "EARLIEST";
@@ -67,8 +69,26 @@ export default function SpecialFaresPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen flex items-center justify-center bg-[#FAF9F6] text-stone-500 text-sm">
-          Loading special fare deals…
+        <div
+          role="status"
+          className="min-h-screen bg-[#FAF9F6] pt-24 pb-16 px-4 sm:px-5"
+        >
+          <span className="sr-only">Loading special fare deals…</span>
+          <div className="max-w-[1360px] mx-auto space-y-6 animate-pulse">
+            <div className="h-32 sm:h-44 rounded-2xl bg-blue-100/70" />
+            <div className="h-24 rounded-2xl bg-white border border-stone-200/80" />
+            <div className="grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] gap-6">
+              <div className="hidden lg:block h-96 rounded-[14px] bg-white border border-stone-200/80" />
+              <div className="space-y-3.5">
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="h-36 rounded-[14px] bg-white border border-stone-200/80"
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
         </div>
       }
     >
@@ -336,6 +356,19 @@ function SpecialFaresContent() {
   // Show Departure/Arrival clock filters only when a specific date is selected
   const showTimeFilters = Boolean(appliedSearch.date);
 
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (filters.flightType !== "ALL") count++;
+    if (filters.maxPrice !== null) count++;
+    if (filters.travelWindow !== "ALL") count++;
+    if (filters.baggageTier !== "ALL") count++;
+    if (filters.refundableOnly) count++;
+    if (showTimeFilters && filters.departureWindows.length > 0) count++;
+    if (showTimeFilters && filters.arrivalWindows.length > 0) count++;
+    if (filters.selectedAirlines.length > 0) count++;
+    return count;
+  }, [filters, showTimeFilters]);
+
   // Filtered & Sorted Results
   const visibleTickets = useMemo(() => {
     const now = new Date();
@@ -414,12 +447,15 @@ function SpecialFaresContent() {
 
       <main className="flex-1 pb-16">
         {/* Top Sky & Aircraft Hero Banner */}
-        <section className="relative overflow-hidden bg-[#dbeafe] pt-24 sm:pt-28 pb-16 sm:pb-20">
-          <img
+        <section className="relative overflow-hidden bg-[#dbeafe] pt-[92px] sm:pt-28 pb-9 sm:pb-20">
+          <Image
             src="/special-fare-bg.png"
             alt=""
             aria-hidden="true"
-            className="absolute inset-0 w-full h-full object-cover object-center pointer-events-none select-none"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center pointer-events-none select-none"
           />
           <div
             aria-hidden="true"
@@ -431,32 +467,32 @@ function SpecialFaresContent() {
           />
 
           <div className="relative z-10 w-full max-w-[1360px] mx-auto px-4 sm:px-5 text-center">
-            <div className="inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-[#002f89]">
-              <span className="hidden sm:inline-block w-8 h-px bg-[#002f89]/40" />
+            <div className="hidden sm:inline-flex items-center gap-3 text-[11px] font-bold uppercase tracking-[0.2em] text-[#002f89]">
+              <span className="w-8 h-px bg-[#002f89]/40" />
               <span>Exclusive Group Allotments</span>
-              <span className="hidden sm:inline-block w-8 h-px bg-[#002f89]/40" />
+              <span className="w-8 h-px bg-[#002f89]/40" />
             </div>
 
-            <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold tracking-tight mt-1.5 leading-tight">
+            <h1 className="text-[22px] sm:text-4xl lg:text-[42px] font-extrabold tracking-tight sm:mt-1.5 leading-tight">
               <span className="text-[#0c2233]">Special Fare </span>
               <span className="text-[#ef4444]">Flight Deals</span>
             </h1>
 
-            <p className="text-xs sm:text-sm text-[#1c2d42]/85 max-w-xl mx-auto mt-2 font-medium">
+            <p className="hidden sm:block text-sm text-[#1c2d42]/85 max-w-xl mx-auto mt-2 font-medium">
               Pre-purchased airline blocks at up to 40% lower rates with
               guaranteed baggage. Limited seats per departure.
             </p>
 
-            <div className="mt-4 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white/90 shadow-xs text-xs font-semibold text-[#0c2233]">
+            <div className="hidden sm:flex mt-4 flex-wrap items-center justify-center gap-3">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/85 backdrop-blur-md border border-white/90 shadow-xs text-xs font-semibold text-[#0c2233]">
                 <Percent className="w-3.5 h-3.5 text-[#002f89]" />
                 <span>Up to 40% Lower Fares</span>
               </span>
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white/90 shadow-xs text-xs font-semibold text-[#0c2233]">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/85 backdrop-blur-md border border-white/90 shadow-xs text-xs font-semibold text-[#0c2233]">
                 <Luggage className="w-3.5 h-3.5 text-[#002f89]" />
                 <span>Guaranteed Baggage</span>
               </span>
-              <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/80 backdrop-blur-md border border-white/90 shadow-xs text-xs font-semibold text-[#0c2233]">
+              <span className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-white/85 backdrop-blur-md border border-white/90 shadow-xs text-xs font-semibold text-[#0c2233]">
                 <UsersRound className="w-3.5 h-3.5 text-[#002f89]" />
                 <span>Group Allotments</span>
               </span>
@@ -465,86 +501,102 @@ function SpecialFaresContent() {
         </section>
 
         {/* Top Search Setup Strip (Overlapping Banner) */}
-        <section className="relative z-20 w-full max-w-[1360px] mx-auto px-4 sm:px-5 -mt-10 sm:-mt-12">
-          {/* Search Setup Form (Akbar reference adapted cleanly to Flyora theme) */}
+        <section className="relative z-20 w-full max-w-[1360px] mx-auto px-3.5 sm:px-5 -mt-5 sm:-mt-12">
+          {/* Search Setup Form (Where-Is-My-Train mobile ergonomics + Flyora desktop grid) */}
           <form
             onSubmit={handleSearchSubmit}
-            className="bg-white rounded-[14px] border border-stone-200/90 shadow-lg shadow-slate-900/5 p-3.5 sm:p-4"
+            className="bg-white rounded-2xl border border-stone-200/90 shadow-lg shadow-slate-900/5 p-3.5 sm:p-4"
           >
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
-              {/* Origin */}
-              <div className="md:col-span-3">
-                <AirportCombobox
-                  inputId="sf-from-input"
-                  label="From"
-                  placeholder="City or IATA (e.g. CCJ)"
-                  value={fromInput}
-                  onChange={(val) => setFromInput(val)}
-                  recentAirports={recentOriginOptions}
-                  extraAirports={extraAirportOptions}
-                />
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-2.5 sm:gap-3 items-end">
+              {/* Origin + Mobile Floating Swap + Destination */}
+              <div className="relative grid grid-cols-1 gap-2.5 md:contents">
+                {/* Origin */}
+                <div className="md:col-span-3">
+                  <AirportCombobox
+                    inputId="sf-from-input"
+                    label="From"
+                    placeholder="City or IATA (e.g. CCJ)"
+                    value={fromInput}
+                    onChange={(val) => setFromInput(val)}
+                    recentAirports={recentOriginOptions}
+                    extraAirports={extraAirportOptions}
+                  />
+                </div>
 
-              {/* Swap Button */}
-              <div className="hidden md:flex md:col-span-1 items-center justify-center pb-1">
+                {/* Mobile Floating Swap Button (Where-is-my-Train style) */}
                 <button
                   type="button"
                   onClick={handleSwap}
-                  aria-label="Swap origin and destination"
-                  className="p-2.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-600 hover:text-[#002f89] transition cursor-pointer"
+                  aria-label="Swap origin and destination (mobile)"
+                  className="md:hidden absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full border border-stone-200 bg-white shadow-sm hover:bg-stone-50 text-[#002f89] flex items-center justify-center active:scale-95 transition cursor-pointer"
                 >
-                  <ArrowLeftRight className="w-4 h-4" />
+                  <ArrowLeftRight className="w-4 h-4 rotate-90" />
                 </button>
-              </div>
 
-              {/* Destination */}
-              <div className="md:col-span-3">
-                <AirportCombobox
-                  inputId="sf-to-input"
-                  label="To"
-                  placeholder="City or IATA (e.g. DXB)"
-                  value={toInput}
-                  onChange={(val) => setToInput(val)}
-                  recentAirports={recentDestOptions}
-                  extraAirports={extraAirportOptions}
-                />
-              </div>
+                {/* Desktop Swap Button */}
+                <div className="hidden md:flex md:col-span-1 items-center justify-center pb-1">
+                  <button
+                    type="button"
+                    onClick={handleSwap}
+                    aria-label="Swap origin and destination"
+                    className="p-2.5 rounded-full border border-stone-200 bg-white hover:bg-stone-50 text-stone-600 hover:text-[#002f89] transition cursor-pointer"
+                  >
+                    <ArrowLeftRight className="w-4 h-4" />
+                  </button>
+                </div>
 
-              {/* Departure Date */}
-              <div className="md:col-span-2">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
-                  Departure Date
-                </label>
-                <div className="relative">
-                  <Calendar className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <input
-                    type="date"
-                    value={dateInput}
-                    onChange={(e) => setDateInput(e.target.value)}
-                    className="w-full pl-9 pr-2.5 py-2.5 text-sm font-medium text-[#1C1815] bg-[#FAF9F6] border border-stone-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002f89]/20 focus:border-[#002f89]"
+                {/* Destination */}
+                <div className="md:col-span-3">
+                  <AirportCombobox
+                    inputId="sf-to-input"
+                    label="To"
+                    placeholder="City or IATA (e.g. DXB)"
+                    value={toInput}
+                    onChange={(val) => setToInput(val)}
+                    recentAirports={recentDestOptions}
+                    extraAirports={extraAirportOptions}
                   />
                 </div>
               </div>
 
-              {/* Travellers */}
-              <div className="md:col-span-1">
-                <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
-                  Seats
-                </label>
-                <div className="relative">
-                  <Users className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                  <select
-                    value={passengers}
-                    onChange={(e) => setPassengers(Number(e.target.value))}
-                    aria-label="Number of passengers"
-                    className="w-full pl-8 pr-2 py-2.5 text-sm font-semibold text-[#1C1815] bg-[#FAF9F6] border border-stone-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002f89]/20 focus:border-[#002f89]"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-                      <option key={n} value={n}>
-                        {n}
-                      </option>
-                    ))}
-                  </select>
+              {/* Date + Seats side-by-side on mobile, inline on desktop */}
+              <div className="grid grid-cols-2 gap-2.5 md:contents">
+                {/* Departure Date */}
+                <div className="md:col-span-2">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
+                    Departure Date
+                  </label>
+                  <div className="relative">
+                    <Calendar className="w-4 h-4 text-stone-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="date"
+                      value={dateInput}
+                      onChange={(e) => setDateInput(e.target.value)}
+                      className="w-full min-h-[42px] pl-9 pr-2 py-2 text-sm font-medium text-[#1C1815] bg-[#FAF9F6] border border-stone-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002f89]/20 focus:border-[#002f89]"
+                    />
+                  </div>
+                </div>
+
+                {/* Travellers */}
+                <div className="md:col-span-1">
+                  <label className="block text-[10px] font-bold uppercase tracking-wider text-stone-400 mb-1">
+                    Seats
+                  </label>
+                  <div className="relative">
+                    <Users className="w-3.5 h-3.5 text-stone-400 absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <select
+                      value={passengers}
+                      onChange={(e) => setPassengers(Number(e.target.value))}
+                      aria-label="Number of passengers"
+                      className="w-full min-h-[42px] pl-8 pr-2 py-2 text-sm font-semibold text-[#1C1815] bg-[#FAF9F6] border border-stone-200 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#002f89]/20 focus:border-[#002f89]"
+                    >
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                        <option key={n} value={n}>
+                          {n}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -552,7 +604,7 @@ function SpecialFaresContent() {
               <div className="md:col-span-2">
                 <button
                   type="submit"
-                  className="w-full py-2.5 px-4 rounded-md bg-[#002f89] hover:bg-[#00246b] active:scale-[0.98] text-white text-xs font-bold uppercase tracking-wider inline-flex items-center justify-center gap-2 transition cursor-pointer shadow-xs min-h-[42px]"
+                  className="w-full min-h-[44px] py-2.5 px-4 rounded-lg bg-[#002f89] hover:bg-[#00246b] active:scale-[0.98] text-white text-xs font-bold uppercase tracking-wider inline-flex items-center justify-center gap-2 transition cursor-pointer shadow-xs"
                 >
                   <Search className="w-4 h-4" />
                   <span>Find Fares</span>
@@ -560,9 +612,9 @@ function SpecialFaresContent() {
               </div>
             </div>
 
-            {/* Active Route Quick Pills */}
+            {/* Active Route Quick Pills (Desktop/Tablet only so mobile goes straight to results) */}
             {routes.length > 0 && (
-              <div className="mt-3 pt-3 border-t border-stone-100 flex items-center gap-2 overflow-x-auto no-scrollbar">
+              <div className="hidden md:flex mt-3 pt-3 border-t border-stone-100 items-center gap-2 overflow-x-auto no-scrollbar">
                 <span className="text-[11px] font-semibold text-stone-400 shrink-0">
                   Popular Sectors:
                 </span>
@@ -619,7 +671,7 @@ function SpecialFaresContent() {
           </form>
 
           {/* 2-Column Workspace */}
-          <div className="mt-7 grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] gap-6 items-start">
+          <div className="mt-4 sm:mt-7 grid grid-cols-1 lg:grid-cols-[260px_minmax(0,1fr)] gap-6 items-start">
             {/* Left Sidebar Filters (Desktop) */}
             <div className="hidden lg:block sticky top-24">
               <SpecialFareFilters
@@ -637,38 +689,25 @@ function SpecialFaresContent() {
             </div>
 
             {/* Right Results Area */}
-            <div className="min-w-0 space-y-4">
-              {/* Mobile Filter Trigger */}
-              <div className="flex lg:hidden items-center justify-between gap-2">
-                <button
-                  type="button"
-                  onClick={() => setMobileFiltersOpen(true)}
-                  className="px-4 py-2 rounded-lg bg-white border border-stone-200 text-xs font-semibold text-stone-700 inline-flex items-center gap-2 cursor-pointer"
-                >
-                  <SlidersHorizontal className="w-3.5 h-3.5 text-[#002f89]" />
-                  <span>Filter Flights</span>
-                </button>
-                <span className="text-xs text-stone-500 font-medium">
-                  {visibleTickets.length} deals available
-                </span>
-              </div>
-
-              {/* Date Price Strip (Horizontal Dates) */}
+            <div className="min-w-0 space-y-3 sm:space-y-4">
+              {/* Date Price Strip (Compact Horizontal Dates) */}
               {datePriceStrip.length > 0 && (
-                <div className="bg-white rounded-[14px] border border-stone-200/90 p-2 flex items-center gap-2 overflow-x-auto no-scrollbar">
+                <div className="bg-white rounded-xl sm:rounded-[14px] border border-stone-200/90 p-1.5 sm:p-2 flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
                   <button
                     type="button"
                     onClick={() => {
                       setDateInput("");
                       setAppliedSearch((prev) => ({ ...prev, date: "" }));
                     }}
-                    className={`px-3.5 py-2 rounded-lg text-center shrink-0 transition cursor-pointer ${
+                    className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-center shrink-0 transition cursor-pointer ${
                       !appliedSearch.date
                         ? "bg-[#002f89]/10 text-[#002f89] border border-[#002f89]/30 font-semibold"
                         : "text-stone-600 hover:bg-stone-50 border border-transparent"
                     }`}
                   >
-                    <div className="text-xs font-semibold">All Dates</div>
+                    <div className="text-[11px] sm:text-xs font-semibold">
+                      All Dates
+                    </div>
                     <div className="text-[10px] text-stone-500">Flexible</div>
                   </button>
 
@@ -693,14 +732,16 @@ function SpecialFaresContent() {
                             date: d.isoDate,
                           }));
                         }}
-                        className={`px-3.5 py-2 rounded-lg text-center shrink-0 transition border cursor-pointer ${
+                        className={`px-2.5 sm:px-3.5 py-1.5 sm:py-2 rounded-lg text-center shrink-0 transition border cursor-pointer ${
                           isActive
                             ? "bg-[#002f89]/10 border-[#002f89] text-[#002f89]"
                             : "bg-white border-stone-100 hover:border-stone-300 text-stone-700"
                         }`}
                       >
-                        <div className="text-xs font-semibold">{label}</div>
-                        <div className="text-[11px] font-bold text-emerald-700">
+                        <div className="text-[11px] sm:text-xs font-semibold">
+                          {label}
+                        </div>
+                        <div className="text-[10px] sm:text-[11px] font-bold text-emerald-700">
                           ₹{d.minFare.toLocaleString("en-IN")}
                         </div>
                       </button>
@@ -709,13 +750,28 @@ function SpecialFaresContent() {
                 </div>
               )}
 
-              {/* Sort Pills & Count Bar */}
-              <div className="flex flex-wrap items-center justify-between gap-3 bg-white rounded-[14px] border border-stone-200/90 px-4 py-2.5">
-                <div className="flex items-center gap-2">
+              {/* Unified Filter + Sort + Count Bar */}
+              <div className="flex items-center justify-between gap-2 bg-white rounded-xl sm:rounded-[14px] border border-stone-200/90 p-2 sm:px-4 sm:py-2.5 shadow-2xs">
+                <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto no-scrollbar">
+                  <button
+                    type="button"
+                    aria-label="Filter Flights"
+                    onClick={() => setMobileFiltersOpen(true)}
+                    className="lg:hidden min-h-[36px] px-3 py-1.5 rounded-lg bg-[#002f89]/8 border border-[#002f89]/20 text-xs font-semibold text-[#002f89] inline-flex items-center gap-1.5 shrink-0 cursor-pointer active:scale-95 transition"
+                  >
+                    <SlidersHorizontal className="w-3.5 h-3.5" />
+                    <span>Filters</span>
+                    {activeFilterCount > 0 && (
+                      <span className="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#002f89] text-white text-[10px] font-bold">
+                        {activeFilterCount}
+                      </span>
+                    )}
+                  </button>
+
                   <button
                     type="button"
                     onClick={() => setSortBy("CHEAPEST")}
-                    className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
+                    className={`min-h-[36px] px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold transition shrink-0 cursor-pointer ${
                       sortBy === "CHEAPEST"
                         ? "bg-[#002f89] text-white"
                         : "bg-stone-100 text-stone-700 hover:bg-stone-200"
@@ -726,32 +782,152 @@ function SpecialFaresContent() {
                   <button
                     type="button"
                     onClick={() => setSortBy("EARLIEST")}
-                    className={`px-3.5 py-1.5 rounded-md text-xs font-semibold transition cursor-pointer ${
+                    className={`min-h-[36px] px-3 sm:px-3.5 py-1.5 rounded-lg text-xs font-semibold transition shrink-0 cursor-pointer ${
                       sortBy === "EARLIEST"
                         ? "bg-[#002f89] text-white"
                         : "bg-stone-100 text-stone-700 hover:bg-stone-200"
                     }`}
                   >
-                    Earliest Departure
+                    <span className="sm:hidden">Earliest</span>
+                    <span className="hidden sm:inline">Earliest Departure</span>
                   </button>
                 </div>
 
-                <div className="text-xs text-stone-500 font-medium">
-                  Showing{" "}
-                  <strong className="text-[#1C1815]">
-                    {visibleTickets.length}
-                  </strong>{" "}
-                  special {visibleTickets.length === 1 ? "fare" : "fares"}
+                <div className="text-[11px] sm:text-xs text-stone-500 font-medium shrink-0 pr-1 sm:pr-0">
+                  <span className="sm:hidden">
+                    <strong className="text-[#1C1815]">
+                      {visibleTickets.length}
+                    </strong>{" "}
+                    {visibleTickets.length === 1 ? "deal" : "deals"}
+                  </span>
+                  <span className="hidden sm:inline">
+                    Showing{" "}
+                    <strong className="text-[#1C1815]">
+                      {visibleTickets.length}
+                    </strong>{" "}
+                    special {visibleTickets.length === 1 ? "fare" : "fares"}
+                  </span>
                 </div>
               </div>
 
+              {/* Active Filter Summary Chips (Tour Packages style) */}
+              {activeFilterCount > 0 && (
+                <div className="px-3 py-2.5 bg-white border border-stone-200/80 rounded-xl flex flex-wrap items-center gap-1.5">
+                  <span className="text-[11px] font-semibold text-stone-500 mr-1">
+                    Active:
+                  </span>
+                  {filters.flightType !== "ALL" && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF9F6] border border-stone-200 text-[11px] font-medium text-stone-700">
+                      <span>
+                        {filters.flightType === "NON_STOP"
+                          ? "Direct only"
+                          : "1+ Stop"}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Clear stops filter"
+                        onClick={() =>
+                          setFilters((prev) => ({ ...prev, flightType: "ALL" }))
+                        }
+                        className="text-stone-400 hover:text-stone-700 p-0.5 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {filters.maxPrice !== null && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF9F6] border border-stone-200 text-[11px] font-medium text-stone-700">
+                      <span>
+                        Up to ₹{filters.maxPrice.toLocaleString("en-IN")}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Clear max price filter"
+                        onClick={() =>
+                          setFilters((prev) => ({ ...prev, maxPrice: null }))
+                        }
+                        className="text-stone-400 hover:text-stone-700 p-0.5 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {filters.baggageTier !== "ALL" && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF9F6] border border-stone-200 text-[11px] font-medium text-stone-700">
+                      <span>
+                        {filters.baggageTier === "30KG_PLUS"
+                          ? "30 Kg+ bag"
+                          : "20 Kg+ bag"}
+                      </span>
+                      <button
+                        type="button"
+                        aria-label="Clear baggage filter"
+                        onClick={() =>
+                          setFilters((prev) => ({
+                            ...prev,
+                            baggageTier: "ALL",
+                          }))
+                        }
+                        className="text-stone-400 hover:text-stone-700 p-0.5 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  {filters.refundableOnly && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#FAF9F6] border border-stone-200 text-[11px] font-medium text-stone-700">
+                      <span>Refundable</span>
+                      <button
+                        type="button"
+                        aria-label="Clear refundable filter"
+                        onClick={() =>
+                          setFilters((prev) => ({
+                            ...prev,
+                            refundableOnly: false,
+                          }))
+                        }
+                        className="text-stone-400 hover:text-stone-700 p-0.5 cursor-pointer"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => setFilters(INITIAL_FILTERS)}
+                    className="ml-auto text-[11px] font-semibold text-[#002f89] hover:underline inline-flex items-center gap-1 cursor-pointer"
+                  >
+                    <RotateCcw className="w-3 h-3" />
+                    <span>Clear all</span>
+                  </button>
+                </div>
+              )}
+
               {/* Ticket List Content */}
               {loading ? (
-                <div className="bg-white rounded-[14px] border border-stone-200/90 p-14 flex flex-col items-center justify-center gap-3 text-stone-500">
-                  <Loader2 className="w-7 h-7 animate-spin text-[#002f89]" />
-                  <p className="text-xs font-medium">
-                    Searching Flyora group flight inventory…
-                  </p>
+                <div role="status" className="space-y-3.5">
+                  <div className="flex items-center gap-2 px-1 text-xs font-medium text-stone-500">
+                    <Loader2 className="w-4 h-4 animate-spin text-[#002f89]" />
+                    <span>Searching Flyora group flight inventory…</span>
+                  </div>
+                  {[0, 1, 2].map((i) => (
+                    <div
+                      key={i}
+                      className="bg-white rounded-[14px] border border-stone-200/90 p-4 sm:p-5 space-y-3 animate-pulse"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-stone-100" />
+                          <div className="space-y-1.5">
+                            <div className="h-3.5 w-28 bg-stone-100 rounded" />
+                            <div className="h-3 w-20 bg-stone-100 rounded" />
+                          </div>
+                        </div>
+                        <div className="h-8 w-24 bg-stone-100 rounded-lg" />
+                      </div>
+                      <div className="h-10 rounded-xl bg-stone-50" />
+                    </div>
+                  ))}
                 </div>
               ) : loadError ? (
                 <div
@@ -819,42 +995,102 @@ function SpecialFaresContent() {
         </section>
       </main>
 
-      {/* Mobile Filters Slide-Over Drawer */}
+      {/* Mobile Slide-Up Bottom Sheet Filter Drawer (Tour Packages style) */}
       {mobileFiltersOpen && (
-        <div
-          className="fixed inset-0 z-50 bg-black/40 lg:hidden flex justify-end"
-          onMouseDown={(e) => {
-            if (e.target === e.currentTarget) setMobileFiltersOpen(false);
-          }}
-        >
-          <div className="w-[85vw] max-w-sm bg-[#FAF9F6] h-full overflow-y-auto p-4 space-y-4">
-            <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-              <span className="text-sm font-bold">Filter Special Fares</span>
+        <div className="fixed inset-0 z-50 lg:hidden flex flex-col justify-end">
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-xs transition-opacity"
+            onClick={() => setMobileFiltersOpen(false)}
+          />
+          <div className="relative bg-white rounded-t-3xl max-h-[86dvh] flex flex-col shadow-2xl z-10 overflow-hidden">
+            {/* Drag Handle & Header */}
+            <div className="pt-2.5 px-5 pb-3.5 border-b border-stone-100">
+              <div className="w-10 h-1 rounded-full bg-stone-200 mx-auto mb-3" />
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-stone-900">
+                    Filter Special Fares
+                  </h3>
+                  <span className="text-xs text-stone-400 font-mono">
+                    ({visibleTickets.length} available)
+                  </span>
+                </div>
+                <button
+                  type="button"
+                  aria-label="Close filters"
+                  onClick={() => setMobileFiltersOpen(false)}
+                  className="p-2 rounded-full hover:bg-stone-100 text-stone-500 cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+
+            {/* Scrollable Filter Content */}
+            <div className="p-4 sm:p-5 overflow-y-auto flex-1 bg-[#FAF9F6] space-y-3">
+              {/* Sort By inside Mobile Sheet */}
+              <div className="bg-white rounded-xl border border-stone-200/90 p-3.5">
+                <span className="block text-[11px] font-bold uppercase tracking-wider text-stone-500 mb-2">
+                  Sort Fares By
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setSortBy("CHEAPEST")}
+                    className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer ${
+                      sortBy === "CHEAPEST"
+                        ? "bg-[#002f89] text-white border-[#002f89]"
+                        : "bg-stone-50 text-stone-700 border-stone-200"
+                    }`}
+                  >
+                    Cheapest First
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSortBy("EARLIEST")}
+                    className={`min-h-[38px] px-3 py-1.5 rounded-lg text-xs font-semibold border transition cursor-pointer ${
+                      sortBy === "EARLIEST"
+                        ? "bg-[#002f89] text-white border-[#002f89]"
+                        : "bg-stone-50 text-stone-700 border-stone-200"
+                    }`}
+                  >
+                    Earliest Flight
+                  </button>
+                </div>
+              </div>
+
+              <SpecialFareFilters
+                filters={filters}
+                onChange={(next) =>
+                  setFilters((prev) => ({ ...prev, ...next }))
+                }
+                onReset={() => setFilters(INITIAL_FILTERS)}
+                airlines={airlines}
+                nonStopMinFare={nonStopMinFare}
+                connectingMinFare={connectingMinFare}
+                priceBounds={priceBounds}
+                showTimeFilters={showTimeFilters}
+              />
+            </div>
+
+            {/* Sticky Footer Actions */}
+            <div className="p-4 border-t border-stone-100 bg-white flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setFilters(INITIAL_FILTERS)}
+                className="min-h-[44px] py-2.5 px-4 rounded-xl border border-stone-200 text-stone-700 text-xs font-semibold hover:bg-stone-50 transition cursor-pointer"
+              >
+                Clear All
+              </button>
               <button
                 type="button"
                 onClick={() => setMobileFiltersOpen(false)}
-                className="p-1.5 text-stone-500 hover:text-black cursor-pointer"
+                className="flex-1 min-h-[44px] py-2.5 px-4 rounded-xl bg-[#002f89] text-white text-xs font-semibold shadow-sm hover:bg-[#00246b] transition flex items-center justify-center gap-2 cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <Check className="w-4 h-4" />
+                <span>Show {visibleTickets.length} Fares</span>
               </button>
             </div>
-            <SpecialFareFilters
-              filters={filters}
-              onChange={(next) => setFilters((prev) => ({ ...prev, ...next }))}
-              onReset={() => setFilters(INITIAL_FILTERS)}
-              airlines={airlines}
-              nonStopMinFare={nonStopMinFare}
-              connectingMinFare={connectingMinFare}
-              priceBounds={priceBounds}
-              showTimeFilters={showTimeFilters}
-            />
-            <button
-              type="button"
-              onClick={() => setMobileFiltersOpen(false)}
-              className="w-full py-2.5 rounded-md bg-[#002f89] text-white text-xs font-semibold cursor-pointer"
-            >
-              Show {visibleTickets.length} Results
-            </button>
           </div>
         </div>
       )}

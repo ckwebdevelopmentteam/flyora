@@ -3,6 +3,7 @@ import { adminFeatures } from "../../config/features";
 import { useQueries, useQuery } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { Loader2 } from "lucide-react";
 import { enquiryStages } from "../../lib/enquiryFilters";
 import { leadsApi } from "../../lib/leadsApi";
 import { bookingsApi } from "../bookings/bookingsApi";
@@ -196,9 +197,13 @@ function EnquiryDonutCard({
                   <p className="text-xs font-medium text-slate-500 truncate max-w-[120px]">
                     {displayLabel}
                   </p>
-                  <p className="text-3xl font-bold text-slate-900 leading-tight">
-                    {displayValue}
-                  </p>
+                  {total === undefined && rows.some((r) => r.loading) ? (
+                    <Loader2 className="w-6 h-6 animate-spin text-[#002f89] my-1.5" />
+                  ) : (
+                    <p className="text-3xl font-bold text-slate-900 leading-tight">
+                      {displayValue}
+                    </p>
+                  )}
                   {displayPercentage !== null && (
                     <p className="text-xs font-semibold text-[#002f89]">
                       [{displayPercentage.toFixed(0)}%]

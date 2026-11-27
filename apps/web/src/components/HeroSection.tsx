@@ -149,12 +149,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   return (
     <div
       ref={trackRef}
-      className="sticky top-0 z-0 h-screen w-full text-white overflow-hidden"
+      className="sticky top-0 z-0 min-h-[100svh] sm:h-screen w-full text-white overflow-hidden"
     >
       {/* =========================================================================
           HERO MAIN VIEWPORT: Fixed Fullscreen Hero Viewport
           ========================================================================= */}
-      <section className="relative z-0 flex h-full w-full items-center justify-center overflow-hidden bg-[#0a231f]">
+      <section className="relative z-0 flex min-h-[100svh] sm:h-full w-full items-center justify-center overflow-hidden bg-[#0a231f]">
         {/* Background Video & Scrim Overlays */}
         <div className="absolute inset-0 animate-hero-zoom overflow-hidden">
           <video
@@ -196,29 +196,29 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                 ? `translate3d(0, -${progress * 140}px, 0)`
                 : undefined,
           }}
-          className={`relative z-30 w-full max-w-[1360px] mx-auto px-4 sm:px-5 -mt-6 pt-6 sm:pt-8 md:pt-10 pb-6 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none ${
+          className={`relative z-30 w-full max-w-[1360px] mx-auto px-4 sm:px-5 mt-0 sm:-mt-6 pt-20 pb-6 sm:pt-8 md:pt-10 sm:pb-8 flex flex-col items-center gap-1.5 sm:gap-2 text-center select-none ${
             progress > 0 ? "will-change-transform" : ""
           }`}
         >
-          {/* Eyebrow Tagline */}
-          <span className="animate-hero-eyebrow font-heading text-[11px] sm:text-xs lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">
+          {/* Eyebrow Tagline (hidden on mobile to keep full form above the fold) */}
+          <span className="hidden sm:inline-block animate-hero-eyebrow font-heading text-[11px] sm:text-xs lg:text-[13px] text-white/90 tracking-[0.18em] uppercase font-light drop-shadow-sm">
             Flyora Tours & Travels • Est. 2014
           </span>
 
-          {/* Main Editorial Heading */}
-          <h1 className="animate-hero-heading font-heading text-[22px] leading-[1.18] sm:text-[34px] sm:leading-[1.1] md:max-xl:text-[40px] md:max-xl:leading-[1.1] xl:text-[46px] xl:leading-[1.1] text-white max-w-4xl font-normal tracking-[-0.01em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
+          {/* Main Editorial Heading (visually hidden on mobile, kept accessible for SEO/screen readers) */}
+          <h1 className="sr-only sm:not-sr-only animate-hero-heading font-heading text-[22px] leading-[1.18] sm:text-[34px] sm:leading-[1.1] md:max-xl:text-[40px] md:max-xl:leading-[1.1] xl:text-[46px] xl:leading-[1.1] text-white max-w-4xl font-normal tracking-[-0.01em] drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
             It’s not where you go,
             <br className="hidden sm:inline" /> but{" "}
             <span className="font-serif italic font-normal">how you feel.</span>
           </h1>
 
-          {/* Subheading / Description */}
-          <p className="animate-hero-description text-[11px] sm:text-sm leading-relaxed max-w-2xl text-white/90 font-light px-2 sm:px-4 drop-shadow-sm">
+          {/* Subheading / Description (hidden on mobile) */}
+          <p className="hidden sm:block animate-hero-description text-[11px] sm:text-sm leading-relaxed max-w-2xl text-white/90 font-light px-2 sm:px-4 drop-shadow-sm">
             {description}
           </p>
 
           {/* Luxury Search & Visa CTA Widget matching reference design */}
-          <div className="animate-hero-cta w-full mt-2 sm:mt-2.5">
+          <div className="animate-hero-cta w-full mt-0 sm:mt-2.5">
             <HeroSearchCard
               defaultTripMode={defaultTripMode}
               onOpenEnquiry={onOpenEnquiry || onPrimaryCtaClick}

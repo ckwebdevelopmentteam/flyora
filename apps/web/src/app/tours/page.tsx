@@ -32,9 +32,13 @@ export default function ToursPage() {
   return (
     <Suspense
       fallback={
-        <p className="p-8" role="status">
-          Loading packages…
-        </p>
+        <div
+          role="status"
+          className="min-h-screen bg-white flex flex-col items-center justify-center gap-3 p-8 text-stone-500 text-sm"
+        >
+          <Loader2 className="w-6 h-6 animate-spin text-[#002f89]" />
+          <span>Loading packages…</span>
+        </div>
       }
     >
       <ToursRoute />
@@ -258,7 +262,11 @@ function ToursCatalog({
 
       {/* Main Page Canvas (Wider than Navbar like Homepage Image Section: 1440px) */}
       <main className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-18">
-        {loading && <p role="status">Loading packages…</p>}
+        {loading && (
+          <p role="status" className="sr-only">
+            Loading packages…
+          </p>
+        )}
         {loadError && (
           <div role="alert">
             {loadError}{" "}

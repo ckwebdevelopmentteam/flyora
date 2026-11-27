@@ -104,7 +104,7 @@ export function SpecialFareClaimModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/55 backdrop-blur-xs animate-in fade-in duration-200"
+      className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/55 backdrop-blur-xs animate-in fade-in duration-200"
       onMouseDown={(e) => {
         if (e.target === e.currentTarget && !submitting) onClose();
       }}
@@ -113,7 +113,7 @@ export function SpecialFareClaimModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="sf-modal-title"
-        className="bg-white rounded-[20px] shadow-2xl border border-stone-200/80 w-full max-w-[540px] max-h-[92dvh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+        className="bg-white rounded-t-3xl sm:rounded-[20px] shadow-2xl border border-stone-200/80 w-full max-w-[540px] max-h-[92dvh] flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
       >
         {/* Header */}
         <div className="px-6 py-5 border-b border-stone-100 flex items-start justify-between gap-4">

@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import type { SpecialFareSummary } from "@flyora/types";
-import { ArrowRight, Calendar, Luggage, Plane, Sparkles } from "lucide-react";
+import { ArrowRight, Calendar, Luggage, Plane } from "lucide-react";
 import { fetchPublicSpecialFares } from "../../lib/specialFaresApi";
 
 export function LiveSpecialFaresStrip() {
@@ -29,17 +29,17 @@ export function LiveSpecialFaresStrip() {
 
   const cardsGridCols =
     deals.length === 1
-      ? "grid-cols-1 max-w-md"
+      ? "grid grid-cols-1 max-w-md"
       : deals.length === 2
-        ? "grid-cols-1 sm:grid-cols-2"
-        : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3";
+        ? "flex overflow-x-auto snap-x snap-mandatory gap-3 pb-1.5 -mx-1 px-1 no-scrollbar sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:grid sm:grid-cols-2 sm:gap-4"
+        : "flex overflow-x-auto snap-x snap-mandatory gap-3 pb-1.5 -mx-1 px-1 no-scrollbar sm:mx-0 sm:px-0 sm:pb-0 sm:overflow-visible sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-4";
 
   return (
     <div
       aria-label="Live special fare deals"
       className="w-full pt-0 pb-4 px-4 sm:px-10 lg:px-[105px]"
     >
-      <div className="relative overflow-hidden w-full rounded-2xl bg-white p-5 sm:p-7 shadow-[0_10px_32px_rgba(0,47,137,0.12)]">
+      <div className="relative overflow-hidden w-full rounded-2xl bg-white p-4 sm:p-6 lg:p-7 shadow-[0_10px_32px_rgba(0,47,137,0.12)]">
         <div
           className="absolute inset-0 pointer-events-none bg-cover bg-bottom bg-no-repeat z-0 -scale-x-100"
           style={{
@@ -47,24 +47,24 @@ export function LiveSpecialFaresStrip() {
           }}
           aria-hidden="true"
         />
-        <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-4 sm:gap-6">
           {/* Left Heading */}
           <div className="shrink-0 xl:max-w-[270px]">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-gradient-to-r from-[#ef4444] via-[#dc2626] to-[#991b1b] text-white text-[10px] font-bold uppercase tracking-wider shadow-xs">
               <Plane className="w-3 h-3" />
               Special Fares
             </span>
-            <h2 className="font-serif text-xl sm:text-3xl font-normal text-[#1E1A17] tracking-tight mt-2.5">
+            <h2 className="font-serif text-xl sm:text-2xl lg:text-3xl font-normal text-[#1E1A17] tracking-tight mt-2">
               Live Group Seat Deals
             </h2>
-            <p className="text-xs sm:text-sm text-stone-500 mt-1.5">
+            <p className="text-xs sm:text-sm text-stone-500 mt-1">
               Pre-purchased airline blocks at up to 40% off with guaranteed
               baggage.
             </p>
           </div>
 
-          {/* Right Cards (1, 2, or 3 deals) */}
-          <div className={`flex-1 grid ${cardsGridCols} gap-4`}>
+          {/* Right Cards (Swipeable horizontal rail on mobile, grid on sm+) */}
+          <div className={`flex-1 min-w-0 ${cardsGridCols}`}>
             {deals.map((deal) => {
               const depDate = new Date(deal.departureDate).toLocaleDateString(
                 "en-IN",
@@ -81,7 +81,11 @@ export function LiveSpecialFaresStrip() {
                   href={`/special-fares?from=${encodeURIComponent(
                     deal.originCode,
                   )}&to=${encodeURIComponent(deal.destinationCode)}`}
-                  className="group rounded-2xl bg-[#002f89] p-2.5 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between"
+                  className={`group rounded-2xl bg-[#002f89] p-2 sm:p-2.5 shadow-sm hover:shadow-xl hover:-translate-y-0.5 transition-all duration-200 flex flex-col justify-between ${
+                    deals.length > 1
+                      ? "min-w-[82vw] max-w-[300px] snap-start shrink-0 sm:min-w-0 sm:max-w-none sm:shrink"
+                      : ""
+                  }`}
                 >
                   {/* White Inner Content Card (no image) */}
                   <div className="bg-white rounded-xl p-4 min-h-[144px] flex flex-col justify-between gap-3">
@@ -130,13 +134,12 @@ export function LiveSpecialFaresStrip() {
                         {deal.originCity} → {deal.destinationCity}
                       </span>
                       <span
-                        className={`inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
+                        className={`inline-flex items-center text-[10px] font-semibold px-2 py-0.5 rounded-full shrink-0 ${
                           urgentSeats
                             ? "bg-amber-400/20 text-amber-200 border border-amber-300/30"
                             : "bg-white/15 text-blue-100 border border-white/20"
                         }`}
                       >
-                        <Sparkles className="w-2.5 h-2.5" />
                         {deal.availableSeats}{" "}
                         {deal.availableSeats === 1 ? "seat" : "seats"} left
                       </span>
@@ -170,10 +173,10 @@ export function LiveSpecialFaresStrip() {
         </div>
 
         {/* Centered CTA Button Below */}
-        <div className="relative z-10 mt-6 flex justify-center">
+        <div className="relative z-10 mt-4 sm:mt-6 flex justify-center">
           <Link
             href="/special-fares"
-            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs sm:text-[13px] font-semibold tracking-wide transition-colors shadow-xs whitespace-nowrap"
+            className="w-full sm:w-auto min-h-[44px] inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-lg bg-[#002f89] hover:bg-[#00246b] active:bg-[#001c54] text-white text-xs sm:text-[13px] font-semibold tracking-wide transition-colors shadow-xs whitespace-nowrap"
           >
             <span>See Full Tickets</span>
             <ArrowRight className="w-4 h-4" />
