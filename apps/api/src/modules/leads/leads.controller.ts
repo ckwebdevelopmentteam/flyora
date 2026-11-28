@@ -384,7 +384,14 @@ export const leadsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     "/",
     {
-      preHandler: [fastify.authenticate],
+      preHandler: [
+        fastify.authenticate,
+        requireRole([
+          "SUPER_ADMIN",
+          "OPERATIONS_MANAGER",
+          "SERVICE_COORDINATOR",
+        ]),
+      ],
     },
     async (request, reply) => {
       const parseResult = createLeadSchema.safeParse(request.body);

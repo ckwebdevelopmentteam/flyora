@@ -152,48 +152,60 @@ export class BookingsService {
     const travelDate = new Date(input.travelDate);
     const totalAmount = Number(quotation.sellingPrice);
 
-    const booking = await this.fastify.prisma.$transaction(async (tx) => {
-      // 1. Create confirmed booking record
-      const created = await tx.booking.create({
-        data: {
-          bookingRef,
-          leadId: quotation.leadId,
-          quotationId: quotation.id,
-          status: "CONFIRMED",
-          totalAmount,
-          paidAmount: 0,
-          dueAmount: totalAmount,
-          travelDate,
-        },
-      });
+    let booking;
+    try {
+      booking = await this.fastify.prisma.$transaction(async (tx) => {
+        // 1. Create confirmed booking record
+        const created = await tx.booking.create({
+          data: {
+            bookingRef,
+            leadId: quotation.leadId,
+            quotationId: quotation.id,
+            status: "CONFIRMED",
+            totalAmount,
+            paidAmount: 0,
+            dueAmount: totalAmount,
+            travelDate,
+          },
+        });
 
-      // 2. Mark quote accepted
-      await tx.quotation.update({
-        where: { id: quotation.id },
-        data: {
-          status: "ACCEPTED",
-          acceptedAt: new Date(),
-        },
-      });
+        // 2. Mark quote accepted
+        await tx.quotation.update({
+          where: { id: quotation.id },
+          data: {
+            status: "ACCEPTED",
+            acceptedAt: new Date(),
+          },
+        });
 
-      // 3. Mark lead BOOKED
-      await tx.lead.update({
-        where: { id: quotation.leadId },
-        data: { status: "BOOKED" },
-      });
+        // 3. Mark lead BOOKED
+        await tx.lead.update({
+          where: { id: quotation.leadId },
+          data: { status: "BOOKED" },
+        });
 
-      // 4. Log audit activity
-      await tx.leadActivity.create({
-        data: {
-          leadId: quotation.leadId,
-          userId,
-          action: "BOOKING_CONFIRMED",
-          details: `Confirmed booking ${bookingRef} from quote ${quotation.quoteNumber} for ₹${totalAmount.toLocaleString()}`,
-        },
-      });
+        // 4. Log audit activity
+        await tx.leadActivity.create({
+          data: {
+            leadId: quotation.leadId,
+            userId,
+            action: "BOOKING_CONFIRMED",
+            details: `Confirmed booking ${bookingRef} from quote ${quotation.quoteNumber} for ₹${totalAmount.toLocaleString()}`,
+          },
+        });
 
-      return created;
-    });
+        return created;
+      });
+    } catch (err: any) {
+      if (err?.code === "P2002") {
+        const conflictErr: any = new Error(
+          "Quotation is already converted to a booking",
+        );
+        conflictErr.statusCode = 409;
+        throw conflictErr;
+      }
+      throw err;
+    }
 
     return this.getBookingById(booking.id, userId, userRole);
   }

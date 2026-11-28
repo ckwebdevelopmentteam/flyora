@@ -6,6 +6,7 @@ import {
   recordPaymentSchema,
   verifyPaymentSchema,
 } from "@flyora/validators";
+import { requireRole } from "../../middleware/rbac";
 import { z } from "zod";
 
 const bookingIdParamSchema = z.object({
@@ -27,7 +28,14 @@ export const bookingsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     "/convert-quote",
     {
-      preHandler: [fastify.authenticate],
+      preHandler: [
+        fastify.authenticate,
+        requireRole([
+          "SUPER_ADMIN",
+          "OPERATIONS_MANAGER",
+          "SERVICE_COORDINATOR",
+        ]),
+      ],
     },
     async (request, reply) => {
       const parseResult = convertQuoteToBookingSchema.safeParse(request.body);
@@ -64,7 +72,15 @@ export const bookingsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
     "/",
     {
-      preHandler: [fastify.authenticate],
+      preHandler: [
+        fastify.authenticate,
+        requireRole([
+          "SUPER_ADMIN",
+          "OPERATIONS_MANAGER",
+          "SERVICE_COORDINATOR",
+          "ACCOUNTS",
+        ]),
+      ],
     },
     async (request, reply) => {
       const filterResult = bookingFilterSchema.safeParse(request.query);
@@ -100,7 +116,15 @@ export const bookingsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.get(
     "/:id",
     {
-      preHandler: [fastify.authenticate],
+      preHandler: [
+        fastify.authenticate,
+        requireRole([
+          "SUPER_ADMIN",
+          "OPERATIONS_MANAGER",
+          "SERVICE_COORDINATOR",
+          "ACCOUNTS",
+        ]),
+      ],
     },
     async (request, reply) => {
       const paramResult = bookingIdParamSchema.safeParse(request.params);
@@ -136,7 +160,15 @@ export const bookingsRoutes: FastifyPluginAsync = async (fastify) => {
   fastify.post(
     "/:id/payments",
     {
-      preHandler: [fastify.authenticate],
+      preHandler: [
+        fastify.authenticate,
+        requireRole([
+          "SUPER_ADMIN",
+          "OPERATIONS_MANAGER",
+          "SERVICE_COORDINATOR",
+          "ACCOUNTS",
+        ]),
+      ],
     },
     async (request, reply) => {
       const paramResult = bookingIdParamSchema.safeParse(request.params);

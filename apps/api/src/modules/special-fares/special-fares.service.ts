@@ -426,25 +426,19 @@ export class SpecialFaresService {
       };
     }
 
-    // Upsert Customer
-    let customer = await prisma.customer.findFirst({
+    // Upsert Customer atomically by unique phone number
+    const customer = await prisma.customer.upsert({
       where: { phone: input.phone },
+      update: {
+        ...(input.fullName ? { fullName: input.fullName } : {}),
+        ...(input.email ? { email: input.email } : {}),
+      },
+      create: {
+        fullName: input.fullName,
+        phone: input.phone,
+        email: input.email || null,
+      },
     });
-
-    if (!customer) {
-      customer = await prisma.customer.create({
-        data: {
-          fullName: input.fullName,
-          phone: input.phone,
-          email: input.email || null,
-        },
-      });
-    } else if (input.fullName && customer.fullName !== input.fullName) {
-      customer = await prisma.customer.update({
-        where: { id: customer.id },
-        data: { fullName: input.fullName },
-      });
-    }
 
     const childCount = input.childCount || 0;
     const infantCount = input.infantCount || 0;
@@ -703,42 +697,55 @@ export class SpecialFaresService {
     input: UpdateSpecialFareSeatsInput,
   ): Promise<{ id: string; availableSeats: number; status: string }> {
     const prisma = this.fastify.prisma;
-    const ticket = await prisma.specialFareTicket.findUnique({ where: { id } });
+    const run = async (db: typeof prisma) => {
+      if (typeof (db as any).$executeRaw === "function") {
+        // Row-level lock inside transaction prevents lost updates under concurrent +/- clicks
+        await (db as any)
+          .$queryRaw`SELECT id FROM "SpecialFareTicket" WHERE id = ${id} FOR UPDATE`;
+      }
+      const ticket = await db.specialFareTicket.findUnique({ where: { id } });
 
-    if (!ticket)
-      throw { statusCode: 404, message: "Special fare ticket not found" };
+      if (!ticket)
+        throw { statusCode: 404, message: "Special fare ticket not found" };
 
-    let newSeats = ticket.availableSeats;
-    if (input.change !== undefined) {
-      newSeats = Math.max(
-        0,
-        Math.min(ticket.totalSeats, ticket.availableSeats + input.change),
-      );
-    } else if (input.availableSeats !== undefined) {
-      newSeats = Math.max(0, Math.min(ticket.totalSeats, input.availableSeats));
+      let newSeats = ticket.availableSeats;
+      if (input.change !== undefined) {
+        newSeats = Math.max(
+          0,
+          Math.min(ticket.totalSeats, ticket.availableSeats + input.change),
+        );
+      } else if (input.availableSeats !== undefined) {
+        newSeats = Math.max(
+          0,
+          Math.min(ticket.totalSeats, input.availableSeats),
+        );
+      }
+
+      let status = ticket.status;
+      if (newSeats === 0) {
+        status = "SOLD_OUT";
+      } else if (status === "SOLD_OUT" && newSeats > 0) {
+        status = "ACTIVE";
+      }
+
+      return db.specialFareTicket.update({
+        where: { id },
+        data: {
+          availableSeats: newSeats,
+          status,
+        },
+        select: {
+          id: true,
+          availableSeats: true,
+          status: true,
+        },
+      });
+    };
+
+    if (typeof prisma.$transaction === "function") {
+      return prisma.$transaction((tx) => run(tx as typeof prisma));
     }
-
-    let status = ticket.status;
-    if (newSeats === 0) {
-      status = "SOLD_OUT";
-    } else if (status === "SOLD_OUT" && newSeats > 0) {
-      status = "ACTIVE";
-    }
-
-    const updated = await prisma.specialFareTicket.update({
-      where: { id },
-      data: {
-        availableSeats: newSeats,
-        status,
-      },
-      select: {
-        id: true,
-        availableSeats: true,
-        status: true,
-      },
-    });
-
-    return updated;
+    return run(prisma);
   }
 
   /**
