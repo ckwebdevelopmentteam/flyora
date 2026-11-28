@@ -13,6 +13,9 @@ jobs:
   checks:
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    env:
+      NEXT_PUBLIC_API_URL: https://api.flyoratravels.com/api/v1
+      VITE_API_URL: https://api.flyoratravels.com/api/v1
     steps:
       - name: Check out repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
@@ -35,3 +38,35 @@ jobs:
         run: npm run build --workspace=@flyora/admin
       - name: Build website
         run: npm run build --workspace=@flyora/web
+      - name: Verify shared API packages load
+        run: node --import tsx -e "require('@flyora/validators'); require('@flyora/database')"
+      - name: Package release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          tar -czf "$RUNNER_TEMP/flyora-release.tar.gz" \
+            --exclude='./.git' \
+            --exclude='./.github' \
+            --exclude='./docs' \
+            --exclude='.env' \
+            --exclude='.env.*' \
+            --exclude='*.tsbuildinfo' \
+            --exclude='*/.next/cache' \
+            .
+      - name: Verify packaged release
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p "$RUNNER_TEMP/flyora-validation"
+          tar -xzf "$RUNNER_TEMP/flyora-release.tar.gz" -C "$RUNNER_TEMP/flyora-validation"
+          cd "$RUNNER_TEMP/flyora-validation"
+          test -f apps/api/dist/server.js
+          test -f apps/admin/dist/index.html
+          test -f apps/web/.next/BUILD_ID
+          node --import tsx -e "require('@flyora/validators'); require('@flyora/database')"
+      - name: Save release package
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: flyora-release-${{ github.sha }}
+          path: ${{ runner.temp }}/flyora-release.tar.gz
+          if-no-files-found: error
+          retention-days: 7
