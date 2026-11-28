@@ -285,7 +285,7 @@ export const BookingsPage: React.FC = () => {
                 onClick={() => setStatusFilter(t.val)}
                 className={`text-xs px-3 py-1.5 rounded-lg transition font-medium ${
                   statusFilter === t.val
-                    ? "bg-black text-white shadow-xs"
+                    ? "bg-[#002f89] text-white shadow-xs"
                     : "text-zinc-600 hover:text-black hover:bg-zinc-100"
                 }`}
               >
@@ -329,7 +329,7 @@ export const BookingsPage: React.FC = () => {
               onClick={() => setPaymentFilter(p.val)}
               className={`text-[11px] px-2.5 py-1 rounded-md border transition font-mono ${
                 paymentFilter === p.val
-                  ? "bg-zinc-900 text-white border-zinc-900 font-semibold"
+                  ? "bg-[#002f89] text-white border-[#002f89] font-semibold"
                   : "bg-[#FAFAF9] text-zinc-600 border-zinc-200 hover:bg-zinc-100"
               }`}
             >
@@ -508,7 +508,7 @@ export const BookingsPage: React.FC = () => {
                             onClick={() =>
                               setSelectedBookingForPayment(booking)
                             }
-                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-black hover:bg-zinc-800 text-white text-[11px] font-medium transition shadow-xs"
+                            className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-[#002f89] hover:bg-[#00246b] text-white text-[11px] font-medium transition shadow-xs"
                             title="Record manual offline payment"
                           >
                             <CreditCard className="w-3 h-3" />

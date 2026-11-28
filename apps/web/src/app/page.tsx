@@ -452,7 +452,7 @@ export default function Home() {
         <section
           id="destinations"
           ref={destinationsRef}
-          className="relative z-10 pt-6 sm:pt-8 lg:pt-10 pb-8 sm:pb-20 lg:pb-24 overflow-hidden scroll-mt-0"
+          className="relative z-10 pt-5 sm:pt-8 lg:pt-10 pb-10 sm:pb-20 lg:pb-24 overflow-hidden scroll-mt-0"
         >
           {/* Top gradient matching exact cloud white, transitioning softly into Featured Destinations sky blue */}
           <div className="absolute inset-0 pointer-events-none bg-[linear-gradient(to_bottom,#ffffff_0%,#F2F7FC_20%,#F8FBFE_80%,#ffffff_100%)]" />

@@ -98,7 +98,7 @@ export const InclusionsExclusionsSelector: React.FC<
             aria-label="Add included service"
             onClick={() => handleAddInclusion(customInc)}
             disabled={!customInc.trim()}
-            className="px-2.5 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 disabled:opacity-40 text-xs font-medium transition"
+            className="px-2.5 py-1.5 rounded-lg bg-[#002f89] text-white hover:bg-[#00246b] disabled:opacity-40 text-xs font-medium transition"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>
@@ -188,7 +188,7 @@ export const InclusionsExclusionsSelector: React.FC<
             aria-label="Add excluded service"
             onClick={() => handleAddExclusion(customExc)}
             disabled={!customExc.trim()}
-            className="px-2.5 py-1.5 rounded-lg bg-black text-white hover:bg-zinc-800 disabled:opacity-40 text-xs font-medium transition"
+            className="px-2.5 py-1.5 rounded-lg bg-[#002f89] text-white hover:bg-[#00246b] disabled:opacity-40 text-xs font-medium transition"
           >
             <Plus className="w-3.5 h-3.5" />
           </button>

@@ -71,7 +71,7 @@ export function ServicesPage() {
             Reorder
           </button>
           <button
-            className="inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm font-medium text-white"
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#002f89] px-4 py-2.5 text-sm font-medium text-white"
             onClick={() => {
               setNotice("");
               setEditing("new");
@@ -156,7 +156,7 @@ export function ServicesPage() {
                     </td>
                     <td className="px-5 py-4 whitespace-nowrap">
                       {isDom && isIntl ? (
-                        <span className="inline-flex items-center gap-1 rounded-md bg-indigo-50 px-2 py-1 text-xs font-medium text-indigo-700 border border-indigo-100">
+                        <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 border border-blue-100">
                           <Globe size={12} />
                           Domestic & Intl
                         </span>
@@ -324,7 +324,7 @@ function ServiceEditor({
             type="submit"
             form="service-editor"
             disabled={mutation.isPending || isUploading}
-            className="inline-flex items-center gap-2 rounded-lg bg-slate-900 px-4 py-2.5 text-sm text-white disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg bg-[#002f89] px-4 py-2.5 text-sm text-white disabled:opacity-50"
           >
             {(mutation.isPending || isUploading) && (
               <Loader2 size={16} className="animate-spin" />

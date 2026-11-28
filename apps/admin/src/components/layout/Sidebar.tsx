@@ -3,13 +3,13 @@ import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuthStore } from "../../stores/authStore";
 import {
-  Compass,
   Briefcase,
   LayoutDashboard,
   Users,
   Inbox,
   CreditCard,
   Palmtree,
+  PlaneTakeoff,
   PanelLeftClose,
   PanelLeftOpen,
   X,
@@ -64,6 +64,9 @@ export const Sidebar = ({
       : []),
     ...(manager || user?.role === "CONTENT_MANAGER"
       ? [{ name: "Tour packages", path: "/packages", icon: Palmtree }]
+      : []),
+    ...(sales
+      ? [{ name: "Special fares", path: "/special-fares", icon: PlaneTakeoff }]
       : []),
     ...(user?.role === "SUPER_ADMIN"
       ? [{ name: "Services", path: "/services", icon: Briefcase }]
@@ -128,12 +131,11 @@ export const Sidebar = ({
             aria-label="Flyora overview"
             className={collapsed ? "lg:hidden" : ""}
           >
-            <span className="brand-mark">
-              <Compass size={19} />
-            </span>
-            <span>
-              flyora<span className="text-indigo-600">.</span>
-            </span>
+            <img
+              src="/flyora-logo.png"
+              alt="Flyora"
+              className="h-8 w-auto object-contain"
+            />
           </Link>
           <button
             className="icon-button ml-auto desktop-only"

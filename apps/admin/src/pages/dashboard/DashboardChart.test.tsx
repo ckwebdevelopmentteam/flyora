@@ -121,18 +121,16 @@ it("does not fetch sales or payment charts for Content Managers", () => {
 it("uses each stage's share of the total rather than the largest stage", async () => {
   show();
   await screen.findByRole("link", { name: "Booked: 4" });
-  const segments = document.querySelectorAll(".distribution-bar > span");
-  const widths = Array.from(segments).map((segment) =>
-    parseFloat((segment as HTMLElement).style.width),
+  const segments = document.querySelectorAll("circle[data-segment]");
+  const shares = Array.from(segments).map((segment) =>
+    parseFloat(segment.getAttribute("data-percentage") || "0"),
   );
-  expect(widths.reduce((sum, width) => sum + width, 0)).toBeCloseTo(100);
+  expect(shares.reduce((sum, share) => sum + share, 0)).toBeCloseTo(100);
   expect(
     parseFloat(
-      (
-        document.querySelector(
-          ".distribution-bar > .distribution-booked",
-        ) as HTMLElement
-      ).style.width,
+      document
+        .querySelector('circle[data-segment="Booked"]')
+        ?.getAttribute("data-percentage") || "0",
     ),
   ).toBeCloseTo(100 / 3);
   expect(screen.getByRole("link", { name: "Booked: 4" }).textContent).toContain(

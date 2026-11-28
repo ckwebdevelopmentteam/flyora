@@ -139,7 +139,7 @@ export const MasterLeadsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Toast Alert */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 bg-zinc-900 text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs animate-in fade-in slide-in-from-bottom-2">
+        <div className="fixed bottom-6 right-6 z-50 bg-[#002f89] text-white px-4 py-3 rounded-xl shadow-xl flex items-center gap-2.5 text-xs animate-in fade-in slide-in-from-bottom-2">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span role="status">{toastMessage}</span>
         </div>
@@ -491,7 +491,7 @@ export const MasterLeadsPage: React.FC = () => {
                             </button>
                             <button
                               onClick={() => setReassigningLead(lead)}
-                              className="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-zinc-900 hover:text-white text-zinc-700 text-[11px] font-medium transition flex items-center gap-1"
+                              className="px-2.5 py-1 rounded-lg bg-zinc-100 hover:bg-[#002f89] hover:text-white text-zinc-700 text-[11px] font-medium transition flex items-center gap-1"
                               title="Reassign Coordinator"
                             >
                               <UserCheck className="w-3 h-3" />

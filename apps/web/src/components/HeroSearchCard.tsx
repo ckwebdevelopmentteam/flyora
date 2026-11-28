@@ -3,7 +3,9 @@
 import { useServicesCatalog } from "../lib/use-services-catalog";
 import { resolveService } from "../lib/service-catalog";
 import { serviceImage } from "../lib/service-visuals";
-import type { ServiceSummary } from "@flyora/types";
+import { fetchPublicSpecialFares } from "../lib/specialFaresApi";
+import type { ServiceSummary, SpecialFareSummary } from "@flyora/types";
+import Link from "next/link";
 import React, {
   useState,
   useRef,
@@ -501,10 +503,10 @@ const ConciergePillField: React.FC<ConciergePillFieldProps> = ({
             inputRef.current.focus();
           }
         }}
-        className={`w-full flex items-center justify-between text-left py-2 px-3 sm:px-3.5 rounded-xl transition-all duration-150 cursor-pointer ${
+        className={`w-full flex items-center justify-between text-left py-2 px-2.5 sm:px-3.5 rounded-xl border sm:border-transparent transition-all duration-150 cursor-pointer ${
           isOpen
-            ? "bg-white text-neutral-900 ring-1 ring-neutral-300/80 shadow-xs"
-            : "hover:bg-neutral-100/70 active:bg-neutral-200/50"
+            ? "bg-white text-neutral-900 border-neutral-300/80 shadow-xs"
+            : "bg-neutral-50/80 sm:bg-transparent border-neutral-200/70 hover:bg-neutral-100/70 active:bg-neutral-200/50"
         }`}
       >
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
@@ -835,10 +837,10 @@ const TravelersPicker: React.FC<TravelersPickerProps> = ({
     <div ref={containerRef} className={`group ${className}`}>
       <div
         onClick={onToggle}
-        className={`w-full flex items-center justify-between text-left py-2 px-3 sm:px-3.5 rounded-xl transition-all duration-150 cursor-pointer ${
+        className={`w-full flex items-center justify-between text-left py-2 px-2.5 sm:px-3.5 rounded-xl border sm:border-transparent transition-all duration-150 cursor-pointer ${
           isOpen
-            ? "bg-white text-neutral-900 ring-1 ring-neutral-300/80 shadow-xs"
-            : "hover:bg-neutral-100/70 active:bg-neutral-200/50"
+            ? "bg-white text-neutral-900 border-neutral-300/80 shadow-xs"
+            : "bg-neutral-50/80 sm:bg-transparent border-neutral-200/70 hover:bg-neutral-100/70 active:bg-neutral-200/50"
         }`}
       >
         <div className="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
@@ -1304,6 +1306,56 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
     }
   }, [activeServiceSlug]);
 
+  // Special Fare Matching Engine when Flight Booking is active
+  const [matchedSpecialFares, setMatchedSpecialFares] = useState<
+    SpecialFareSummary[]
+  >([]);
+
+  const extractAirportOrCity = (val: string): string => {
+    const trimmed = val.trim();
+    if (!trimmed) return "";
+    const match = trimmed.match(/\(([A-Z]{3})\)/i);
+    if (match?.[1]) return match[1].toUpperCase();
+    return trimmed.split(",")[0]?.trim() || trimmed;
+  };
+
+  useEffect(() => {
+    if (activeServiceSlug !== "flight-booking") {
+      setMatchedSpecialFares([]);
+      return;
+    }
+
+    const fromTerm = extractAirportOrCity(selectedOrigin);
+    const toTerm = extractAirportOrCity(selectedDestination);
+    if (!fromTerm && !toTerm) {
+      setMatchedSpecialFares([]);
+      return;
+    }
+
+    const controller = new AbortController();
+    const timer = setTimeout(() => {
+      fetchPublicSpecialFares(
+        {
+          from: fromTerm || undefined,
+          to: toTerm || undefined,
+          limit: 5,
+        },
+        controller.signal,
+      )
+        .then((res) => {
+          setMatchedSpecialFares(res.items || []);
+        })
+        .catch(() => {
+          setMatchedSpecialFares([]);
+        });
+    }, 250);
+
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [activeServiceSlug, selectedOrigin, selectedDestination]);
+
   // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -1718,9 +1770,9 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           - Perfectly aligned 4 fields + Request a Quote button
           ======================================================================= */}
       <div className="relative z-40 w-full bg-[#FAF8F5]/98 sm:backdrop-blur-md text-[#1E1A17] rounded-[14px] p-2.5 sm:px-6 sm:py-3.5 shadow-[0_12px_32px_rgba(0,0,0,0.08)] border border-white/80 transition-all duration-300">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-2">
-          {/* Active Service Fields Group */}
-          <div className="flex-1 flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-0 divide-y sm:divide-y-0 divide-neutral-200/60 min-w-0">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-2">
+          {/* Active Service Fields Group (2x2 compact grid on mobile, single row on sm+) */}
+          <div className="flex-1 grid grid-cols-2 sm:flex sm:flex-row sm:items-center gap-1.5 sm:gap-0 min-w-0">
             {/* 1. FLIGHT BOOKING FIELDS (Dynamic Typing Enabled) */}
             {activeServiceSlug === "flight-booking" && (
               <>
@@ -1835,6 +1887,7 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
                   onChangeText={(val) => setSelectedDestination(val)}
                   placeholder="Where do you want to go?"
                   align="left"
+                  className="flex-1 min-w-0 col-span-2 sm:col-span-1"
                 />
                 <div className="h-8 w-px bg-neutral-200/80 mx-2 hidden sm:block shrink-0" />
                 <ConciergePillField
@@ -2602,6 +2655,43 @@ export const HeroSearchCard: React.FC<HeroSearchCardProps> = ({
           </button>
         </div>
       </div>
+
+      {/* Live Special Fare Match Callout Banner */}
+      {activeServiceSlug === "flight-booking" &&
+        matchedSpecialFares.length > 0 && (
+          <div className="mt-2.5 bg-white/95 backdrop-blur-md border border-emerald-200 rounded-[14px] px-4 py-2.5 shadow-md flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs animate-in fade-in slide-in-from-top-1 duration-200">
+            <div className="flex items-center gap-2 text-stone-800">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-gradient-to-r from-[#ef4444] via-[#dc2626] to-[#991b1b] text-white text-[10px] font-bold uppercase tracking-wider shrink-0">
+                <Plane className="w-3 h-3" />
+                Special Fare
+              </span>
+              <span className="font-medium leading-snug">
+                <strong>
+                  {matchedSpecialFares[0].originCode} ➔{" "}
+                  {matchedSpecialFares[0].destinationCode}
+                </strong>{" "}
+                group seats available from{" "}
+                <strong className="text-emerald-700">
+                  ₹{matchedSpecialFares[0].farePerSeat.toLocaleString("en-IN")}
+                </strong>{" "}
+                ({matchedSpecialFares[0].baggageInfo} ·{" "}
+                {matchedSpecialFares.length}{" "}
+                {matchedSpecialFares.length === 1 ? "deal" : "deals"} found)
+              </span>
+            </div>
+            <Link
+              href={`/special-fares?from=${encodeURIComponent(
+                extractAirportOrCity(selectedOrigin),
+              )}&to=${encodeURIComponent(
+                extractAirportOrCity(selectedDestination),
+              )}`}
+              className="inline-flex items-center gap-1 text-[#002f89] hover:text-[#00246b] font-bold whitespace-nowrap shrink-0 underline underline-offset-2"
+            >
+              <span>View &amp; Enquire About Special Fare</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
     </div>
   );
 };

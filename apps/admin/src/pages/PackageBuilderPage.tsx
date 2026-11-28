@@ -312,7 +312,7 @@ export const PackageBuilderPage = () => {
             type="button"
             disabled={saveMutation.isPending || isSubmitting || uploadingImages}
             onClick={handleSubmit(onSubmit, onInvalid)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition shadow-xs"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-[#002f89] text-white text-xs font-medium hover:bg-[#00246b] disabled:opacity-50 transition shadow-xs"
           >
             {saveMutation.isPending ? (
               <>
@@ -331,7 +331,7 @@ export const PackageBuilderPage = () => {
 
       {/* Success Notification */}
       {successToast && (
-        <div className="p-3 rounded-md bg-zinc-900 text-white flex items-center gap-2.5 text-xs shadow-md">
+        <div className="p-3 rounded-md bg-[#002f89] text-white flex items-center gap-2.5 text-xs shadow-md">
           <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
           <span>{successToast}</span>
         </div>
@@ -714,7 +714,7 @@ export const PackageBuilderPage = () => {
                   )
                     setActiveTab("media");
                 }}
-                className="px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
+                className="px-4 py-2 rounded-md bg-[#002f89] text-white text-xs font-medium hover:bg-[#00246b] transition"
               >
                 Continue to photos →
               </button>
@@ -793,7 +793,7 @@ export const PackageBuilderPage = () => {
                 type="button"
                 disabled={uploadingImages}
                 onClick={() => setActiveTab("itinerary")}
-                className="px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
+                className="px-4 py-2 rounded-md bg-[#002f89] text-white text-xs font-medium hover:bg-[#00246b] transition"
               >
                 Proceed to Itinerary Builder →
               </button>
@@ -821,7 +821,7 @@ export const PackageBuilderPage = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab("inclusions")}
-                className="px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
+                className="px-4 py-2 rounded-md bg-[#002f89] text-white text-xs font-medium hover:bg-[#00246b] transition"
               >
                 Proceed to Inclusions & Exclusions →
               </button>
@@ -890,7 +890,7 @@ export const PackageBuilderPage = () => {
               <button
                 type="button"
                 onClick={() => setActiveTab("seo")}
-                className="px-4 py-2 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 transition"
+                className="px-4 py-2 rounded-md bg-[#002f89] text-white text-xs font-medium hover:bg-[#00246b] transition"
               >
                 Proceed to SEO & SERP →
               </button>
@@ -1002,7 +1002,7 @@ export const PackageBuilderPage = () => {
                   saveMutation.isPending || isSubmitting || uploadingImages
                 }
                 onClick={handleSubmit(onSubmit, onInvalid)}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-black text-white text-xs font-medium hover:bg-zinc-800 disabled:opacity-50 transition shadow-xs"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-md bg-[#002f89] text-white text-xs font-medium hover:bg-[#00246b] disabled:opacity-50 transition shadow-xs"
               >
                 {saveMutation.isPending ? (
                   <>

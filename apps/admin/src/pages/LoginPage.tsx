@@ -7,7 +7,7 @@ import { loginDestination } from "../routes/GuestRoute";
 import { login } from "../lib/apiClient";
 import { userMessage } from "../lib/userMessage";
 import { FormError } from "../components/ui/Modal";
-import { Eye, EyeOff, Loader2, ArrowRight, Compass } from "lucide-react";
+import { Eye, EyeOff, Loader2, ArrowRight } from "lucide-react";
 
 export const LoginPage = () => {
   const navigate = useNavigate();
@@ -54,10 +54,11 @@ export const LoginPage = () => {
     <main className="login-screen">
       <div className="login-card">
         <div className="login-brand">
-          <span className="brand-mark">
-            <Compass size={20} />
-          </span>
-          Flyora
+          <img
+            src="/flyora-logo.png"
+            alt="Flyora"
+            className="h-9 w-auto object-contain"
+          />
         </div>
         <h1>Welcome back</h1>
         <p className="subtitle">Sign in to your staff workspace.</p>

@@ -383,7 +383,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
               {!receiptFileKey ? (
                 <button
                   type="button"
-                  className="w-full border-2 border-dashed rounded-lg p-8 text-center hover:border-indigo-400 bg-slate-50"
+                  className="w-full border-2 border-dashed rounded-lg p-8 text-center hover:border-blue-400 bg-slate-50"
                   onDragOver={(event) => event.preventDefault()}
                   onDrop={handleDrop}
                   onClick={() => fileInputRef.current?.click()}
@@ -401,7 +401,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
                     <>
                       <UploadCloud
                         size={26}
-                        className="text-indigo-500 mx-auto mb-3"
+                        className="text-blue-500 mx-auto mb-3"
                       />
                       <span className="block font-medium">
                         Choose a file or drop it here
@@ -465,7 +465,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
                 ))}
               </dl>
               {notes && <div className="notice">{notes}</div>}
-              <div className="notice border-indigo-100 bg-indigo-50 text-indigo-900">
+              <div className="notice border-blue-100 bg-blue-50 text-blue-900">
                 The payment will be marked as pending. The customer's balance
                 changes only after your accounts team verifies it.
               </div>

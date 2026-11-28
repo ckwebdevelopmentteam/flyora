@@ -207,6 +207,14 @@ export const Footer: React.FC<FooterProps> = ({
               ))}
               <li>
                 <Link
+                  href="/special-fares"
+                  className="hover:text-[#002f89] transition-colors inline-flex items-center gap-1.5 font-semibold text-[#dc2626]"
+                >
+                  <span>Special Fares</span>
+                </Link>
+              </li>
+              <li>
+                <Link
                   href="/explore"
                   className="hover:text-[#002f89] transition-colors inline-block"
                 >

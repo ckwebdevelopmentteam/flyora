@@ -133,7 +133,7 @@ export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
                 <div className="flex items-center gap-2 pt-2 border-t border-zinc-200/60">
                   <a
                     href={`tel:${lead.customer.phone}`}
-                    className="flex-1 py-1.5 px-3 rounded-lg bg-zinc-900 hover:bg-black text-white text-xs font-medium flex items-center justify-center gap-1.5 transition"
+                    className="flex-1 py-1.5 px-3 rounded-lg bg-[#002f89] hover:bg-[#002f89] text-white text-xs font-medium flex items-center justify-center gap-1.5 transition"
                   >
                     <Phone className="w-3.5 h-3.5" />
                     Call
@@ -220,7 +220,7 @@ export const LeadActivityDrawer: React.FC<LeadActivityDrawerProps> = ({
                   <div className="relative pl-6 space-y-6 before:absolute before:left-2.5 before:top-2 before:bottom-2 before:w-0.5 before:bg-zinc-200">
                     {lead.activities.map((act) => (
                       <div key={act.id} className="relative group">
-                        <div className="absolute -left-6 top-1 w-3 h-3 rounded-full bg-zinc-900 border-2 border-white"></div>
+                        <div className="absolute -left-6 top-1 w-3 h-3 rounded-full bg-[#002f89] border-2 border-white"></div>
                         <div className="bg-[#FAFAF9] p-3 rounded-xl border border-zinc-200 text-xs">
                           <div className="flex items-center justify-between mb-1">
                             <span className="font-semibold text-zinc-900">

@@ -443,6 +443,43 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               Contact
             </Link>
+
+            {/* Special Fares — Brush-Stroke Offer Badge */}
+            <Link
+              href="/special-fares"
+              aria-current={
+                activePath === "/special-fares" ? "page" : undefined
+              }
+              className="group relative inline-flex items-center justify-center px-4 py-1.5 select-none transition-transform duration-200 hover:scale-[1.04] active:scale-[0.98]"
+            >
+              <svg
+                viewBox="0 0 180 46"
+                preserveAspectRatio="none"
+                aria-hidden="true"
+                className="absolute inset-0 w-full h-full drop-shadow-[0_2px_6px_rgba(220,38,38,0.28)]"
+              >
+                <defs>
+                  <linearGradient
+                    id="special-fares-brush-grad"
+                    x1="0%"
+                    y1="50%"
+                    x2="100%"
+                    y2="50%"
+                  >
+                    <stop offset="0%" stopColor="#ef4444" />
+                    <stop offset="55%" stopColor="#dc2626" />
+                    <stop offset="100%" stopColor="#991b1b" />
+                  </linearGradient>
+                </defs>
+                <path
+                  d="M12,7 C48,3 128,4 166,7 C171,7.5 174,10 172,13 C177,15 178,20 173,23 C176,27 175,32 169,34 C172,38 168,42 161,41 C124,44 52,43 14,41 C7,40.5 5,37 9,33 C3,30 4,24 9,21 C4,17 5,10 12,7 Z"
+                  fill="url(#special-fares-brush-grad)"
+                />
+              </svg>
+              <span className="relative z-10 text-[10.5px] lg:text-[11px] font-sans font-bold uppercase tracking-[0.14em] text-white whitespace-nowrap">
+                Special Fares
+              </span>
+            </Link>
           </nav>
 
           {/* Right: Quick actions + CTA */}
@@ -704,6 +741,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               <Mail className="w-3.5 h-3.5 text-stone-400" />
               Contact
             </Link>
+
+            {/* Special Fares (Mobile Offer Badge) */}
+            <div className="pt-2 pb-1">
+              <Link
+                href="/special-fares"
+                aria-current={
+                  activePath === "/special-fares" ? "page" : undefined
+                }
+                onClick={() => setMobileMenuOpen(false)}
+                className="relative w-full py-2.5 px-4 rounded-lg bg-gradient-to-r from-[#ef4444] via-[#dc2626] to-[#991b1b] text-white text-xs font-sans font-bold uppercase tracking-[0.14em] flex items-center justify-center gap-2 shadow-sm"
+              >
+                <Plane className="w-3.5 h-3.5 text-white" />
+                <span>Special Fares · Flight Deals</span>
+              </Link>
+            </div>
 
             {/* Bottom action area */}
             <div className="pt-3 border-t border-zinc-100 space-y-2.5">

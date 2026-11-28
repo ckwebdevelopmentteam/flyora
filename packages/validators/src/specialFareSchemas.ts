@@ -1,0 +1,168 @@
+import { z } from "zod";
+
+export const specialFareFlightTypeEnum = z.enum(["NON_STOP", "CONNECTING"]);
+export const specialFareCabinClassEnum = z.enum([
+  "ECONOMY",
+  "BUSINESS",
+  "FIRST_CLASS",
+]);
+export const specialFareStatusEnum = z.enum([
+  "ACTIVE",
+  "SOLD_OUT",
+  "EXPIRED",
+  "PAUSED",
+]);
+
+const specialFareFields = z.object({
+  airlineName: z.string().min(1, "Airline name is required").trim(),
+  airlineCode: z.string().trim().optional().nullable(),
+  flightNumber: z.string().trim().optional().nullable(),
+  originCity: z.string().min(1, "Origin city is required").trim(),
+  originCode: z
+    .string()
+    .min(2, "Origin airport code is required")
+    .max(5)
+    .trim()
+    .toUpperCase(),
+  originTerminal: z.string().trim().max(20).optional().nullable(),
+  destinationCity: z.string().min(1, "Destination city is required").trim(),
+  destinationCode: z
+    .string()
+    .min(2, "Destination airport code is required")
+    .max(5)
+    .trim()
+    .toUpperCase(),
+  destinationTerminal: z.string().trim().max(20).optional().nullable(),
+  departureDate: z.string().min(1, "Departure date & time is required"),
+  arrivalDate: z.string().optional().nullable(),
+  flightType: specialFareFlightTypeEnum.default("NON_STOP"),
+  cabinClass: specialFareCabinClassEnum.default("ECONOMY"),
+  rbd: z.string().trim().max(4).toUpperCase().optional().nullable(),
+  baggageInfo: z
+    .string()
+    .trim()
+    .min(1, "Baggage info is required")
+    .default("30 Kg Check-in + 7 Kg Cabin"),
+  isRefundable: z.boolean().default(false),
+  totalSeats: z.coerce
+    .number()
+    .int()
+    .positive("Total seats must be at least 1"),
+  availableSeats: z.coerce.number().int().nonnegative().optional(),
+  originalFare: z.coerce.number().nonnegative().optional().nullable(),
+  farePerSeat: z.coerce
+    .number()
+    .positive("Fare per seat must be greater than 0"),
+  childFare: z.coerce.number().nonnegative().optional().nullable(),
+  infantFare: z.coerce.number().nonnegative().optional().nullable(),
+  supplierCost: z.coerce.number().nonnegative().optional().nullable(),
+  pnrNumber: z.string().trim().optional().nullable(),
+  notes: z.string().trim().optional().nullable(),
+  metadata: z.record(z.unknown()).optional().nullable(),
+  expiresAt: z.string().optional(),
+  status: specialFareStatusEnum.default("ACTIVE"),
+  isActive: z.boolean().default(true),
+  displayOrder: z.coerce.number().int().default(0),
+});
+
+export const createSpecialFareSchema = specialFareFields.superRefine(
+  (data, ctx) => {
+    const departure = new Date(data.departureDate);
+    if (isNaN(departure.getTime())) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["departureDate"],
+        message: "Departure date & time must be valid",
+      });
+    }
+
+    if (data.arrivalDate) {
+      const arrival = new Date(data.arrivalDate);
+      if (isNaN(arrival.getTime()) || arrival <= departure) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["arrivalDate"],
+          message: "Arrival must be after departure",
+        });
+      }
+    }
+
+    if (data.expiresAt) {
+      const expiry = new Date(data.expiresAt);
+      if (isNaN(expiry.getTime()) || expiry >= departure) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["expiresAt"],
+          message: "Stop ticketing must be before departure",
+        });
+      }
+    }
+
+    if (
+      data.availableSeats !== undefined &&
+      data.availableSeats > data.totalSeats
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["availableSeats"],
+        message: "Available seats cannot exceed the total quota",
+      });
+    }
+  },
+);
+
+export const bulkCreateSpecialFaresSchema = z.object({
+  items: z
+    .array(createSpecialFareSchema)
+    .min(1, "At least 1 allotment is required")
+    .max(100, "Maximum 100 allotments per bulk upload"),
+});
+
+export const updateSpecialFareSchema = specialFareFields.partial();
+
+export const updateSpecialFareSeatsSchema = z
+  .object({
+    change: z.coerce.number().int().optional(),
+    availableSeats: z.coerce.number().int().nonnegative().optional(),
+  })
+  .refine(
+    (data) => data.change !== undefined || data.availableSeats !== undefined,
+    { message: "Either change or availableSeats must be provided" },
+  );
+
+export const specialFareSearchQuerySchema = z.object({
+  from: z.string().trim().optional(),
+  to: z.string().trim().optional(),
+  date: z.string().trim().optional(),
+  airline: z.string().trim().optional(),
+  status: specialFareStatusEnum.optional(),
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+});
+
+export const specialFareEnquirySchema = z.object({
+  fullName: z.string().min(2, "Name must be at least 2 characters").trim(),
+  phone: z.string().min(7, "Valid phone number is required").trim(),
+  email: z.string().email("Invalid email address").optional().or(z.literal("")),
+  passengerCount: z.coerce
+    .number()
+    .int()
+    .positive("Must be at least 1 passenger")
+    .default(1),
+  childCount: z.coerce.number().int().nonnegative().default(0).optional(),
+  infantCount: z.coerce.number().int().nonnegative().default(0).optional(),
+  notes: z.string().trim().optional(),
+});
+
+export type CreateSpecialFareInput = z.infer<typeof createSpecialFareSchema>;
+export type BulkCreateSpecialFaresInput = z.infer<
+  typeof bulkCreateSpecialFaresSchema
+>;
+export type UpdateSpecialFareInput = z.infer<typeof updateSpecialFareSchema>;
+export type UpdateSpecialFareSeatsInput = z.infer<
+  typeof updateSpecialFareSeatsSchema
+>;
+export type SpecialFareSearchQueryInput = z.infer<
+  typeof specialFareSearchQuerySchema
+>;
+export type SpecialFareEnquiryInput = z.infer<typeof specialFareEnquirySchema>;

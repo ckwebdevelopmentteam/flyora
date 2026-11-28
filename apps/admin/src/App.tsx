@@ -1,5 +1,6 @@
 import { adminFeatures } from "./config/features";
 import { useEffect } from "react";
+import { Loader2 } from "lucide-react";
 import { initializeAuth } from "./lib/apiClient";
 import { useAuthStore } from "./stores/authStore";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -21,6 +22,7 @@ import { CoordinatorLeadsPage } from "./pages/leads/CoordinatorLeadsPage";
 import { MasterLeadsPage } from "./pages/admin/MasterLeadsPage";
 import { BookingsPage } from "./pages/bookings/BookingsPage";
 import { AccountPage } from "./pages/account/AccountPage";
+import { SpecialFaresPage } from "./pages/special-fares/SpecialFaresPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -43,8 +45,21 @@ export default function App() {
   }, []);
   if (isLoading)
     return (
-      <main className="min-h-screen grid place-items-center" role="status">
-        Checking your session…
+      <main
+        className="min-h-screen bg-slate-50 grid place-items-center p-6"
+        role="status"
+      >
+        <div className="flex flex-col items-center gap-3 text-center">
+          <img
+            src="/flyora-logo.png"
+            alt="Flyora"
+            className="h-9 w-auto object-contain"
+          />
+          <div className="inline-flex items-center gap-2 text-xs font-medium text-slate-600">
+            <Loader2 className="w-4 h-4 animate-spin text-[#002f89]" />
+            <span>Checking your session…</span>
+          </div>
+        </div>
       </main>
     );
   if (unavailable)
@@ -126,6 +141,21 @@ export default function App() {
 
               <Route element={<RoleGuard allowedRoles={["SUPER_ADMIN"]} />}>
                 <Route path="services" element={<ServicesPage />} />
+              </Route>
+
+              {/* Special Fare Tickets Inventory */}
+              <Route
+                element={
+                  <RoleGuard
+                    allowedRoles={[
+                      "SUPER_ADMIN",
+                      "OPERATIONS_MANAGER",
+                      "SERVICE_COORDINATOR",
+                    ]}
+                  />
+                }
+              >
+                <Route path="special-fares" element={<SpecialFaresPage />} />
               </Route>
               {/* Team Management - Restricted to Super Admin & Operations Manager */}
               <Route

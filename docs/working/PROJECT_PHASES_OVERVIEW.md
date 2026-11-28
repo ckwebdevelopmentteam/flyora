@@ -30,22 +30,26 @@
              │
              ▼
 [Phase 7: End-to-End Integration, Role Audit & Production Deployment]
+             │
+             ▼
+[Phase 8: Module 9 — Special Fare Tickets (Bulk Flight Deals & Search Match)]
 ```
 
 ---
 
 ## 2. Phase Breakdown & Scope
 
-| Phase | Core Modules Covered | Primary Deliverables | Exit Gate (When is it Done?) |
-| :--- | :--- | :--- | :--- |
-| **Phase 0** | **Foundation** | Turborepo setup, `apps/web`, `apps/admin`, `apps/api`, `packages/database`, `packages/types`, `packages/validators`. | Root `npm run dev` boots all apps without errors. |
-| **Phase 1** | **Module 1** | Auth, Staff accounts, Roles, Service-Coordinator mappings, Admin Team settings. | Dev 1 & 2 can log in as Admin and Coordinator with correct permission views. |
-| **Phase 2** | **Module 2 & 7** | Services & Tour Packages CRUD, Itinerary builder, Cloudflare R2 image upload service. | Admin uploads tour photos to R2 and publishes a package with full itinerary. |
-| **Phase 3** | **Module 3 & 4** | "Take Lead" service pool, atomic claim locks, phone alert routing, coordinator notes & status. | Lead enquiry arrives; Coordinator clicks "Take Lead", locks it, and adds client notes. |
-| **Phase 4** | **Module 5** | Quotation builder with manual flight/hotel inputs, Margin Guard check, `/quote/[token]` public link. | Coordinator creates quote; margin calculates; customer opens public link. |
-| **Phase 5** | **Module 6** | One-click booking conversion, offline payment logs (bank UTR), R2 receipt proof upload & verification. | Booking converted; receipt uploaded to R2; Accounts marks payment verified. |
-| **Phase 6** | **Module 8** | Public Next.js site, dynamic tour pages, Click-to-WhatsApp with package context, SEO meta & JSON-LD. | Public site loads tours from API with dynamic OpenGraph and fast Core Web Vitals. |
-| **Phase 7** | **Final Launch** | Role security testing, Cloudflare CDN setup, staging deployment, environment variable audits. | Staging tested end-to-end with 8–10 staff test accounts. |
+| Phase       | Core Modules Covered | Primary Deliverables                                                                                                                              | Exit Gate (When is it Done?)                                                                               |
+| :---------- | :------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------- |
+| **Phase 0** | **Foundation**       | Turborepo setup, `apps/web`, `apps/admin`, `apps/api`, `packages/database`, `packages/types`, `packages/validators`.                              | Root `npm run dev` boots all apps without errors.                                                          |
+| **Phase 1** | **Module 1**         | Auth, Staff accounts, Roles, Service-Coordinator mappings, Admin Team settings.                                                                   | Dev 1 & 2 can log in as Admin and Coordinator with correct permission views.                               |
+| **Phase 2** | **Module 2 & 7**     | Services & Tour Packages CRUD, Itinerary builder, Cloudflare R2 image upload service.                                                             | Admin uploads tour photos to R2 and publishes a package with full itinerary.                               |
+| **Phase 3** | **Module 3 & 4**     | "Take Lead" service pool, atomic claim locks, phone alert routing, coordinator notes & status.                                                    | Lead enquiry arrives; Coordinator clicks "Take Lead", locks it, and adds client notes.                     |
+| **Phase 4** | **Module 5**         | Quotation builder with manual flight/hotel inputs, Margin Guard check, `/quote/[token]` public link.                                              | Coordinator creates quote; margin calculates; customer opens public link.                                  |
+| **Phase 5** | **Module 6**         | One-click booking conversion, offline payment logs (bank UTR), R2 receipt proof upload & verification.                                            | Booking converted; receipt uploaded to R2; Accounts marks payment verified.                                |
+| **Phase 6** | **Module 8**         | Public Next.js site, dynamic tour pages, Click-to-WhatsApp with package context, SEO meta & JSON-LD.                                              | Public site loads tours from API with dynamic OpenGraph and fast Core Web Vitals.                          |
+| **Phase 7** | **Final Launch**     | Role security testing, Cloudflare CDN setup, staging deployment, environment variable audits.                                                     | Staging tested end-to-end with 8–10 staff test accounts.                                                   |
+| **Phase 8** | **Module 9**         | Special Fare Tickets bulk inventory, 1-click seat adjustment, zero-maintenance auto-expiry, Hero flight search matching, `/special-fares` portal. | Admin creates bulk PNR allotment; visitor searching route sees deal and claims seat; lead recorded in CRM. |
 
 ---
 
@@ -53,7 +57,7 @@
 
 1. **Shared Contract First:**  
    Before writing application code for any module, the Prisma schema (`packages/database`), shared TypeScript types (`packages/types`), and Zod validation schemas (`packages/validators`) must be established so neither developer gets blocked.
-2. **Feature Branching:**  
+2. **Feature Branching:**
    - `main` branch is always stable.
    - Each developer works on a feature branch (e.g., `feat/m1-api-auth` for Dev 1, `feat/m1-admin-auth-ui` for Dev 2).
 3. **Never Push Directly to `main`:**  

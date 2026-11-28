@@ -3,3 +3,4 @@ export * from "./lead";
 export * from "./quote";
 export * from "./booking";
 export * from "./package";
+export * from "./specialFare";

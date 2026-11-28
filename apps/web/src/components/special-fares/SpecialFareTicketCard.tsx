@@ -1,0 +1,347 @@
+"use client";
+
+import React, { useState } from "react";
+import type { SpecialFareSummary } from "@flyora/types";
+import {
+  Plane,
+  Luggage,
+  Armchair,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+} from "lucide-react";
+
+interface SpecialFareTicketCardProps {
+  ticket: SpecialFareSummary;
+  passengers: number;
+  onClaim: (ticket: SpecialFareSummary) => void;
+}
+
+function formatTime(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "--:--";
+  return d.toLocaleTimeString("en-IN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+}
+
+function formatShortDate(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString("en-IN", {
+    weekday: "short",
+    day: "2-digit",
+    month: "short",
+  });
+}
+
+function computeDuration(
+  depIso: string,
+  arrIso?: string | null,
+): string | null {
+  if (!arrIso) return null;
+  const dep = new Date(depIso).getTime();
+  const arr = new Date(arrIso).getTime();
+  if (isNaN(dep) || isNaN(arr) || arr <= dep) return null;
+  const mins = Math.round((arr - dep) / 60000);
+  const h = Math.floor(mins / 60);
+  const m = mins % 60;
+  return `${h}h ${m.toString().padStart(2, "0")}m`;
+}
+
+function isNextDay(depIso: string, arrIso?: string | null): boolean {
+  if (!arrIso) return false;
+  const dep = new Date(depIso);
+  const arr = new Date(arrIso);
+  return (
+    arr.getUTCDate() !== dep.getUTCDate() ||
+    arr.getUTCMonth() !== dep.getUTCMonth() ||
+    arr.getUTCFullYear() !== dep.getUTCFullYear()
+  );
+}
+
+export function SpecialFareTicketCard({
+  ticket,
+  passengers,
+  onClaim,
+}: SpecialFareTicketCardProps) {
+  const [showDetails, setShowDetails] = useState(false);
+
+  const duration = computeDuration(ticket.departureDate, ticket.arrivalDate);
+  const nextDay = isNextDay(ticket.departureDate, ticket.arrivalDate);
+  const isLowSeats = ticket.availableSeats <= 3;
+
+  const hoursLeft = Math.max(
+    0,
+    Math.floor((new Date(ticket.expiresAt).getTime() - Date.now()) / 3600000),
+  );
+  const isExpiringSoon = hoursLeft <= 24;
+
+  const codeBadge =
+    ticket.airlineCode?.toUpperCase() ||
+    ticket.airlineName
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .slice(0, 2)
+      .toUpperCase();
+
+  return (
+    <article className="bg-white rounded-[14px] border border-stone-200/90 hover:border-[#002f89]/40 shadow-2xs hover:shadow-md transition-all duration-200 overflow-hidden">
+      {/* Main Horizontal Row */}
+      <div className="p-3.5 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3.5 sm:gap-6">
+        {/* 1. Airline Info */}
+        <div className="flex items-center gap-3 md:w-[190px] shrink-0">
+          <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-[#F4F6FA] border border-stone-200/80 flex items-center justify-center font-mono font-bold text-xs sm:text-sm text-[#002f89] shrink-0">
+            {codeBadge}
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-sm font-bold text-[#1C1815] leading-tight truncate">
+              {ticket.airlineName}
+            </h3>
+            <div className="flex items-center gap-1.5 mt-0.5 sm:mt-1 text-[11px] text-stone-500 font-medium">
+              {ticket.flightNumber && (
+                <span className="font-mono text-stone-600">
+                  {ticket.flightNumber}
+                </span>
+              )}
+              {ticket.flightNumber && <span>·</span>}
+              <span>{formatShortDate(ticket.departureDate)}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. Route & Timing Timeline (Where-is-my-Train style clarity) */}
+        <div className="flex items-center justify-between sm:justify-center gap-2.5 sm:gap-6 flex-1 min-w-0 bg-[#FAF9F6]/70 md:bg-transparent rounded-xl p-2.5 md:p-0 border border-stone-100 md:border-0">
+          {/* Origin */}
+          <div className="text-left sm:text-right min-w-0 max-w-[34%] sm:min-w-[75px] sm:max-w-none">
+            <div className="text-base sm:text-xl font-bold text-[#1C1815] leading-none tabular-nums">
+              {formatTime(ticket.departureDate)}
+            </div>
+            <div className="text-[11px] sm:text-xs font-semibold text-stone-700 mt-1 capitalize truncate">
+              {ticket.originCity}{" "}
+              <span className="text-stone-400 font-mono uppercase">
+                ({ticket.originCode})
+              </span>
+            </div>
+          </div>
+
+          {/* Flight Line */}
+          <div className="flex flex-col items-center flex-1 max-w-[130px] sm:max-w-[160px] px-1 shrink-0">
+            <span className="text-[10px] sm:text-[11px] font-medium text-stone-500 mb-1 whitespace-nowrap">
+              {duration ||
+                (ticket.flightType === "NON_STOP" ? "Direct Flight" : "1 Stop")}
+            </span>
+            <div className="relative w-full flex items-center justify-center">
+              <span className="w-1.5 h-1.5 rounded-full bg-[#002f89]/40 shrink-0" />
+              <div className="w-full border-t border-dashed border-stone-300" />
+              <div className="bg-[#FAF9F6] md:bg-white px-1">
+                <Plane className="w-3.5 h-3.5 text-[#002f89]" />
+              </div>
+              <div className="w-full border-t border-dashed border-stone-300" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[#002f89] shrink-0" />
+            </div>
+            <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider text-stone-400 mt-1">
+              {ticket.flightType === "NON_STOP" ? "Non-Stop" : "Connecting"}
+            </span>
+          </div>
+
+          {/* Destination */}
+          <div className="text-right sm:text-left min-w-0 max-w-[34%] sm:min-w-[75px] sm:max-w-none">
+            <div className="text-base sm:text-xl font-bold text-[#1C1815] leading-none tabular-nums flex items-baseline gap-1 justify-end sm:justify-start">
+              <span>
+                {ticket.arrivalDate ? formatTime(ticket.arrivalDate) : "TBA"}
+              </span>
+              {nextDay && (
+                <span className="text-[10px] font-semibold text-[#002f89]">
+                  +1d
+                </span>
+              )}
+            </div>
+            <div className="text-[11px] sm:text-xs font-semibold text-stone-700 mt-1 capitalize truncate">
+              {ticket.destinationCity}{" "}
+              <span className="text-stone-400 font-mono uppercase">
+                ({ticket.destinationCode})
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* 3. Seat Urgency & Price + CTA */}
+        <div className="flex flex-wrap items-center justify-between md:justify-end gap-3 sm:gap-5 pt-2.5 md:pt-0 border-t md:border-t-0 border-stone-100 shrink-0">
+          {/* Seats Remaining */}
+          <div className="flex flex-col items-start md:items-center">
+            <div
+              className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold border ${
+                isLowSeats
+                  ? "bg-rose-50 text-rose-700 border-rose-200"
+                  : "bg-stone-50 text-stone-700 border-stone-200"
+              }`}
+            >
+              <Armchair className="w-3 h-3 shrink-0" />
+              <span>
+                {isLowSeats
+                  ? `Only ${ticket.availableSeats} Left`
+                  : `${ticket.availableSeats} Left`}
+              </span>
+            </div>
+            {isExpiringSoon && (
+              <span className="text-[10px] font-medium text-amber-700 mt-1 inline-flex items-center gap-0.5">
+                <Clock className="w-2.5 h-2.5" />
+                Ends in {hoursLeft}h
+              </span>
+            )}
+          </div>
+
+          {/* Price & CTA */}
+          <div className="flex items-center justify-end gap-3 sm:gap-4 ml-auto md:ml-0">
+            <div className="text-right">
+              {ticket.originalFare &&
+                ticket.originalFare > ticket.farePerSeat && (
+                  <div className="text-xs font-semibold text-rose-600 line-through leading-none mb-0.5 tabular-nums">
+                    ₹{ticket.originalFare.toLocaleString("en-IN")}
+                  </div>
+                )}
+              <div className="text-lg sm:text-xl font-bold text-emerald-700 leading-tight tabular-nums">
+                ₹{ticket.farePerSeat.toLocaleString("en-IN")}
+              </div>
+              <div className="text-[10px] font-medium text-stone-500">
+                Per seat · Special Fare
+              </div>
+            </div>
+
+            <div className="flex flex-col items-end gap-1">
+              <button
+                type="button"
+                onClick={() => onClaim(ticket)}
+                className="min-h-[40px] px-4 py-2 rounded-lg bg-[#002f89] hover:bg-[#00246b] active:scale-[0.98] text-white text-xs font-semibold tracking-wide transition-all cursor-pointer shadow-xs whitespace-nowrap"
+              >
+                Enquire Now
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowDetails((prev) => !prev)}
+                className="text-[11px] font-medium text-[#002f89] hover:underline inline-flex items-center gap-0.5 cursor-pointer py-0.5"
+              >
+                <span>{showDetails ? "Hide Details" : "+ Details"}</span>
+                {showDetails ? (
+                  <ChevronUp className="w-3 h-3" />
+                ) : (
+                  <ChevronDown className="w-3 h-3" />
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Compact Footer Info Strip */}
+      <div className="px-4 sm:px-5 py-2 bg-[#FAF9F6] border-t border-stone-100 flex flex-wrap items-center justify-between gap-2 text-[11px] text-stone-600">
+        <div className="flex flex-wrap items-center gap-2.5">
+          <span className="inline-flex items-center gap-1.5">
+            <Luggage className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+            <span className="font-medium text-stone-700">
+              {ticket.baggageInfo}
+            </span>
+          </span>
+
+          <span
+            className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+              ticket.isRefundable
+                ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                : "bg-stone-100 text-stone-500 border-stone-200"
+            }`}
+          >
+            {ticket.isRefundable ? "Refundable" : "Non-Refundable"}
+          </span>
+
+          {ticket.cabinClass && ticket.cabinClass !== "ECONOMY" && (
+            <span className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#002f89]/10 text-[#002f89] border border-[#002f89]/20">
+              {ticket.cabinClass.replace("_", " ")}
+            </span>
+          )}
+        </div>
+
+        <div className="text-stone-500">
+          {passengers > 1 && (
+            <span>
+              Total for {passengers} travellers:{" "}
+              <strong className="text-stone-900">
+                ₹{(ticket.farePerSeat * passengers).toLocaleString("en-IN")}
+              </strong>
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Expandable Details Panel */}
+      {showDetails && (
+        <div className="px-4 sm:px-5 py-3.5 bg-white border-t border-stone-100 text-xs text-stone-600 grid grid-cols-1 sm:grid-cols-3 gap-3 animate-in fade-in duration-150">
+          <div>
+            <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
+              Fare &amp; Cabin Class
+            </span>
+            <span className="font-medium text-stone-800">
+              {(ticket.cabinClass || "ECONOMY").replace("_", " ")} ·{" "}
+              {ticket.isRefundable ? "Refundable" : "Non-Refundable"}
+            </span>
+          </div>
+
+          <div>
+            <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
+              Baggage Allowance
+            </span>
+            <span className="font-medium text-stone-800">
+              {ticket.baggageInfo}
+            </span>
+          </div>
+
+          <div>
+            <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
+              Deal Availability Window
+            </span>
+            <span className="font-medium text-stone-800">
+              Book before{" "}
+              {new Date(ticket.expiresAt).toLocaleString("en-IN", {
+                day: "2-digit",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit",
+              })}
+            </span>
+          </div>
+
+          {(ticket.originTerminal || ticket.destinationTerminal) && (
+            <div>
+              <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
+                Terminals
+              </span>
+              <span className="font-medium text-stone-800">
+                Dep: {ticket.originTerminal || "—"} · Arr:{" "}
+                {ticket.destinationTerminal || "—"}
+              </span>
+            </div>
+          )}
+
+          {(ticket.childFare != null || ticket.infantFare != null) && (
+            <div>
+              <span className="block text-[10px] uppercase tracking-wider text-stone-400 font-semibold">
+                Child / Infant Fares
+              </span>
+              <span className="font-medium text-stone-800">
+                {ticket.childFare != null
+                  ? `Child: ₹${ticket.childFare.toLocaleString("en-IN")}`
+                  : "Child: Same"}
+                {ticket.infantFare != null
+                  ? ` · Infant: ₹${ticket.infantFare.toLocaleString("en-IN")}`
+                  : ""}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+    </article>
+  );
+}

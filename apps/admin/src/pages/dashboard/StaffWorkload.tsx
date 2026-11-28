@@ -23,7 +23,10 @@ export function StaffWorkload({ userId }: { userId: string }) {
     <section className="surface p-5" aria-label="Staff workload">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-base font-semibold">Staff workload</h2>
-        <Link className="text-sm text-indigo-600" to="/team">
+        <Link
+          className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold transition-colors shadow-xs"
+          to="/team"
+        >
           Manage team
         </Link>
       </div>

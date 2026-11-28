@@ -53,9 +53,9 @@ const BOOKING_STATUS_CONFIG: Record<
   },
   COMPLETED: {
     label: "Completed",
-    dotClass: "bg-purple-500",
-    bgClass: "bg-purple-50",
-    textClass: "text-purple-700",
+    dotClass: "bg-blue-500",
+    bgClass: "bg-blue-50",
+    textClass: "text-blue-700",
   },
   CANCELLED: {
     label: "Cancelled",
@@ -274,7 +274,7 @@ ${publicVoucherUrl}`;
                 href={directWhatsAppUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-black text-white hover:bg-zinc-800 text-xs font-medium transition shadow-xs"
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-lg bg-[#002f89] text-white hover:bg-[#00246b] text-xs font-medium transition shadow-xs"
               >
                 <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
                 <span>WhatsApp Voucher</span>
@@ -386,7 +386,7 @@ ${publicVoucherUrl}`;
               <button
                 type="button"
                 onClick={onRecordPaymentClick}
-                className="w-full mt-2 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-black hover:bg-zinc-800 text-white text-xs font-semibold shadow-xs transition"
+                className="w-full mt-2 inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#002f89] hover:bg-[#00246b] text-white text-xs font-semibold shadow-xs transition"
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Record payment</span>
@@ -479,7 +479,7 @@ ${publicVoucherUrl}`;
                     onClick={() => setActivePaymentTab("all")}
                     className={`px-2 py-0.5 rounded ${
                       activePaymentTab === "all"
-                        ? "bg-black text-white"
+                        ? "bg-[#002f89] text-white"
                         : "text-zinc-500 hover:text-black"
                     }`}
                   >
